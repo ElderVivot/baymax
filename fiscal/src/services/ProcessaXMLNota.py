@@ -1,6 +1,6 @@
 from model.Emitente import Emitente
 from model.Destinatario import Destinatario
-# from model.NotaFiscal import NotaFiscal
+from model.NotaFiscal import NotaFiscal
 import xmltodict as xmldict
 
 class ProcessaXMLNota(object):
@@ -13,6 +13,9 @@ class ProcessaXMLNota(object):
         self.__chaveNota = ProcessaXMLNota.setChaveNota(xmlDados)
         self.__NumeroNota = ProcessaXMLNota.setNumeroNota(xmlDados)
         self.__emissaoNota = ProcessaXMLNota.setEmissaoNota(xmlDados)
+        self.__modeloNota = ProcessaXMLNota.setModeloNota(xmlDados)
+        self.__valorNota = ProcessaXMLNota.setValorNota(xmlDados)
+        self.__valorICMS = ProcessaXMLNota.setValorICMS(xmlDados)
         self.__cnpjEmitente = ProcessaXMLNota.setCNPJEmitente(xmlDados)
         self.__nomeEmitente = ProcessaXMLNota.setNomeEmitente(xmlDados)
         self.__cnpjDestinatario = ProcessaXMLNota.setCNPJDestinatario(xmlDados)
@@ -22,6 +25,9 @@ class ProcessaXMLNota(object):
         self.__emitente = Emitente(self.__cnpjEmitente, self.__nomeEmitente)
 
         self.__destinatario = Destinatario(self.__cnpjDestinatario, self.__nomeDestinatario)
+
+        self.__notaFiscal = NotaFiscal(self.__chaveNota, self.__NumeroNota, self.__emissaoNota, self.__modeloNota,\
+            self.__valorNota, self.__valorICMS, self.__emitente, self.__destinatario)
 
     @staticmethod
     def setChaveNota(xml):
@@ -51,6 +57,33 @@ class ProcessaXMLNota(object):
             emissao = None
 
         return emissao
+
+    @staticmethod
+    def setModeloNota(xml):
+        try:
+            modelo = xml['nfeProc']['NFe']['infNFe']['ide']['mod']
+        except Exception:
+            modelo = None
+
+        return modelo
+
+    @staticmethod
+    def setValorNota(xml):
+        try:
+            valorNota = xml['nfeProc']['NFe']['infNFe']['total']['ICMSTot']['vNF']
+        except Exception:
+            valorNota = None
+
+        return valorNota
+
+    @staticmethod
+    def setValorICMS(xml):
+        try:
+            valorICMS = xml['nfeProc']['NFe']['infNFe']['total']['ICMSTot']['vICMS']
+        except Exception:
+            valorICMS = None
+
+        return valorICMS
 
     @staticmethod
     def setCNPJEmitente(xml):
@@ -95,6 +128,10 @@ class ProcessaXMLNota(object):
         try:
             nomeDestinatario = xml['nfeProc']['NFe']['infNFe']['dest']['xNome']
         except Exception:
-            nomeDestinatario = 'CONSUMIDOR FINAL'
+            nomeDestinatario = 'SEM NOME DEFINIDO PRO DESTINATÁRIO'
 
-        return nomeDestinatario      
+        return nomeDestinatario
+
+    @property
+    def notaFiscal(self):
+        return self.__notaFiscal      
