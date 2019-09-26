@@ -1,6 +1,7 @@
 import unicodedata
 import re
 import datetime
+import hashlib
 
 def removerAcentosECaracteresEspeciais(palavra):
     # Unicode normalize transforma um caracter em seu equivalente em latin.
@@ -92,3 +93,13 @@ def buscaPosicaoCampo(campoCabecalho, nomeCampo='', posicaoCampo=0):
         numPosicaoCampo = posicaoCampo
 
     return numPosicaoCampo
+
+def md5Checksum(filePath):
+    with open(filePath, 'rb') as fh:
+        m = hashlib.md5()
+        while True:
+            data = fh.read(8192)
+            if not data:
+                break
+            m.update(data)
+        return m.hexdigest()

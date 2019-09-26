@@ -8,7 +8,7 @@ import csv
 import time
 import sys
 import datetime
-from . import funcoesUteis
+import funcoesUteis
 
 def buscaArquivosEmPasta(caminho, extensao, buscarSubpastas=True):
     
@@ -54,81 +54,70 @@ def buscaSubpastas(caminhoPrincipal):
 
     return subpastas
 
-# def leXls_Xlsx(arquivos=buscaArquivosEmPasta(),saida=""):
-#     saida = open(saida, "w", encoding='utf-8')
-#     lista_dados = []
-#     dados_linha = []
-#     for arquivo in arquivos:
-#         try:
-#             arquivo = xlrd.open_workbook(arquivo, logfile=open(os.devnull, 'w'))
-#         except Exception:
-#             arquivo = xlrd.open_workbook(arquivo, logfile=open(os.devnull, 'w'), encoding_override='Windows-1252')
+def leXls_Xlsx(arquivo):
+    lista_dados = []
+    dados_linha = []
 
-#         # guarda todas as planilhas que tem dentro do arquivo excel
-#         planilhas = arquivo.sheet_names()
+    if os.path.getsize(arquivo) > 0:
+        try:
+            arquivo = xlrd.open_workbook(arquivo, logfile=open(os.devnull, 'w'))
+        except Exception:
+            arquivo = xlrd.open_workbook(arquivo, logfile=open(os.devnull, 'w'), encoding_override='Windows-1252')
 
-#         # lê cada planilha
-#         for p in planilhas:
+        # guarda todas as planilhas que tem dentro do arquivo excel
+        planilhas = arquivo.sheet_names()
 
-#             # pega o nome da planilha
-#             planilha = arquivo.sheet_by_name(p)
+        # lê cada planilha
+        for p in planilhas:
 
-#             # pega a quantidade de linha que a planilha tem
-#             max_row = planilha.nrows
-#             # pega a quantidade de colunca que a planilha tem
-#             max_column = planilha.ncols
+            # pega o nome da planilha
+            planilha = arquivo.sheet_by_name(p)
 
-#             # lê cada linha e coluna da planilha e imprime
-#             for i in range(0, max_row):
+            # pega a quantidade de linha que a planilha tem
+            max_row = planilha.nrows
+            # pega a quantidade de colunca que a planilha tem
+            max_column = planilha.ncols
 
-#                 valor_linha = planilha.row_values(rowx=i)
+            # lê cada linha e coluna da planilha e imprime
+            for i in range(0, max_row):
 
-#                 # ignora linhas em branco
-#                 if valor_linha.count("") == max_column:
-#                     continue
+                valor_linha = planilha.row_values(rowx=i)
 
-#                 # lê as colunas
-#                 for j in range(0, max_column):
+                # ignora linhas em branco
+                if valor_linha.count("") == max_column:
+                    continue
 
-#                     # as linhas abaixo analisa o tipo de dado que está na planilha e retorna no formato correto, sem ".0" para números ou a data no formato numérico
-#                     tipo_valor = planilha.cell_type(rowx=i, colx=j)
-#                     valor_celula = funcoesUteis.removerAcentosECaracteresEspeciais(str(planilha.cell_value(rowx=i, colx=j)))
-#                     if tipo_valor == 2:
-#                         valor_casas_decimais = valor_celula.split('.')
-#                         valor_casas_decimais = valor_casas_decimais[1]
-#                         if int(valor_casas_decimais) == 0:
-#                             valor_celula = valor_celula.split('.')
-#                             valor_celula = valor_celula[0]
-#                     elif tipo_valor == 3:
-#                         valor_celula = float(planilha.cell_value(rowx=i, colx=j))
-#                         valor_celula = xlrd.xldate.xldate_as_datetime(valor_celula, datemode=0)
-#                         valor_celula = valor_celula.strftime("%d/%m/%Y")
+                # lê as colunas
+                for j in range(0, max_column):
 
-#                     # retira espaços e quebra de linha da célula
-#                     valor_celula = str(valor_celula).strip().replace('\n', '')
+                    # as linhas abaixo analisa o tipo de dado que está na planilha e retorna no formato correto, sem ".0" para números ou a data no formato numérico
+                    tipo_valor = planilha.cell_type(rowx=i, colx=j)
+                    valor_celula = funcoesUteis.removerAcentosECaracteresEspeciais(str(planilha.cell_value(rowx=i, colx=j)))
+                    if tipo_valor == 2:
+                        valor_casas_decimais = valor_celula.split('.')
+                        valor_casas_decimais = valor_casas_decimais[1]
+                        if int(valor_casas_decimais) == 0:
+                            valor_celula = valor_celula.split('.')
+                            valor_celula = valor_celula[0]
+                    elif tipo_valor == 3:
+                        valor_celula = float(planilha.cell_value(rowx=i, colx=j))
+                        valor_celula = xlrd.xldate.xldate_as_datetime(valor_celula, datemode=0)
+                        valor_celula = valor_celula.strftime("%d/%m/%Y")
 
-#                     # gera o resultado num arquivo
-#                     resultado = valor_celula + ';'
-#                     resultado = resultado.replace('None', '')
-#                     saida.write(resultado)
+                    # retira espaços e quebra de linha da célula
+                    valor_celula = str(valor_celula).strip().replace('\n', '')
 
-#                     # adiciona o valor da célula na lista de dados_linha
-#                     dados_linha.append(valor_celula)
+                    # adiciona o valor da célula na lista de dados_linha
+                    dados_linha.append(valor_celula)
 
-#                 # faz uma quebra de linha para passar pra nova linha
-#                 saida.write('\n')
+                # copia os dados da linha para o vetor de lista_dados
+                lista_dados.append(dados_linha[:])
 
-#                 # copia os dados da linha para o vetor de lista_dados
-#                 lista_dados.append(dados_linha[:])
+                # limpa os dados da linha para ler a próxima
+                dados_linha.clear()
 
-#                 # limpa os dados da linha para ler a próxima
-#                 dados_linha.clear()
-
-#     # fecha o arquivo
-#     saida.close()
-
-#     # retorna uma lista dos dados
-#     return lista_dados
+    # retorna uma lista dos dados
+    return lista_dados
 
 # def leCsv(arquivos=buscaArquivosEmPasta(extensao=(".csv")),saida="",separadorCampos=';'):
 #     saida = open(saida, "w", encoding='utf-8')
