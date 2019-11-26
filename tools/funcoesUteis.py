@@ -1,3 +1,9 @@
+import os
+import sys
+
+fileDir = os.path.dirname(os.path.realpath('__file__'))
+sys.path.append(fileDir)
+
 import unicodedata
 import re
 import datetime

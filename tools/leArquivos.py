@@ -8,7 +8,11 @@ import csv
 import time
 import sys
 import datetime
-import funcoesUteis
+
+fileDir = os.path.dirname(os.path.realpath('__file__'))
+sys.path.append(fileDir)
+
+import .funcoesUteis
 
 def buscaArquivosEmPasta(caminho, extensao, buscarSubpastas=True):
     

@@ -16,16 +16,17 @@ class extractEfentradas():
         self._cursor = None
         self._wayCompanies = os.path.join(fileDir, 'extract/data/empresas.json')
 
-    def exportaDados(self, filterCompanie=1, filterMonthStart=1, filterYearStart=2018):
+    def exportaDados(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2018):
         with open(self._wayCompanies) as companies:
             data = json.load(companies)
-            for companie in data:
-                self._wayToSave = os.path.join(fileDir, f"extract/data/{companie['codi_emp']}-efentradas.json")
-                
-                # only companies actives
-                if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:
-                    if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
-                        try:
+            try:
+                for companie in data:
+                    self._wayToSave = os.path.join(fileDir, f"extract/data/entradas/{companie['codi_emp']}-efentradas.json")
+                    
+                    # only companies actives
+                    if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:
+                        if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
+                            print(f"- Exportando efentradas da empresa {companie['codi_emp']} - {companie['nome_emp']}")
                             self._cursor = self._connection.cursor()
                             sql = ( f"SELECT codi_emp, codi_ent, nume_ent, codi_for, codi_esp, codi_acu, codi_nat, segi_ent, seri_ent, dent_ent, ddoc_ent, vcon_ent "
                                     f"  FROM bethadba.efentradas "
@@ -38,9 +39,9 @@ class extractEfentradas():
                             df = pd.read_sql_query(sql, self._connection)
 
                             df.to_json(self._wayToSave, orient='records', date_format='iso' ) 
-                        except Exception as e:
-                            print(f"Erro ao executar a consulta. O erro é: {e}")
-                        finally:
-                            if self._cursor is not None:
-                                self._cursor.close()
-                            self._DB.closeConnection()
+            except Exception as e:
+                print(f"Erro ao executar a consulta. O erro é: {e}")
+            finally:
+                if self._cursor is not None:
+                    self._cursor.close()
+                self._DB.closeConnection()
