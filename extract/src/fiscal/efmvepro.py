@@ -9,7 +9,7 @@ from db.ConexaoBanco import DB
 
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 
-class extractEfentradas():
+class extractEfmvepro():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
@@ -27,11 +27,14 @@ class extractEfentradas():
                     if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
                         try:
                             self._cursor = self._connection.cursor()
-                            sql = ( f"SELECT codi_emp, codi_ent, nume_ent, codi_for, codi_esp, codi_acu, codi_nat, segi_ent, seri_ent, dent_ent, ddoc_ent, vcon_ent "
-                                    f"  FROM bethadba.efentradas "
-                                    f" WHERE codi_emp = {companie['codi_emp']}"
-                                    f"   AND year(dent_ent) >= {filterYearStart}"
-                                    f"   AND month(dent_ent) >= {filterMonthStart}"
+                            sql = ( f"SELECT  "
+                                    f"  FROM bethadba.efmvepro AS pro "
+                                    f"       INNER JOIN bethadba.efentradas AS ent "
+                                    f"            ON    ent.codi_emp = pro.codi_emp "
+                                    f"              AND ent.codi_ent = pro.codi_ent "
+                                    f" WHERE ent.codi_emp = {companie['codi_emp']}"
+                                    f"   AND year(ent.dent_ent) >= {filterYearStart}"
+                                    f"   AND month(ent.dent_ent) >= {filterMonthStart}"
                                     f"ORDER BY codi_emp, codi_ent")
                             self._cursor.execute(sql)
 
