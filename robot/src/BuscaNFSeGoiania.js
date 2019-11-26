@@ -21,12 +21,12 @@ const buscaNFSeGoiania = async() => {
     // 3 - Clica no botão portal do contribuinte
     await page.click('#GoianiaTheme_wt27_block_wtMainContent_wtSistemaTable_ctl03_wt28')
 
-    await page.waitFor(3000)
+    await page.waitFor(7000)
 
     // 4 - clicando no botão Nota Fiscal
     await page.click('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_wt25_WebPatterns_wt72_block_wtText_wtNFEletronica')
 
-    await page.waitFor(3000)
+    await page.waitFor(5000)
 
     // 5 - Abre a página da Nota Fiscal e passa pelo alert
     try {
@@ -44,13 +44,13 @@ const buscaNFSeGoiania = async() => {
         console.log(e)
     }
 
-    await page.waitFor(3000)
+    await page.waitFor(7000)
 
     // 6 - Passa pelo Alerta do Simples Nacional que Abre
     const frameAlertSimplesNacional = page.frames().find(frame => frame.name() === 'cpo');
     await frameAlertSimplesNacional.click('center a')
     
-    await page.waitFor(3000)
+    await page.waitFor(5000)
 
     // 7 - Clica no botão de Download do XML
     const frameDownXML = page.frames().find(frame => frame.name() === 'cpo');

@@ -1,9 +1,16 @@
+'use strict';
+
 const puppeteer = require('puppeteer')
 const fs = require('fs')
 const request = require('request');
 
 const buscaNFeSaidaGoias = async() => {
-    const browser = await puppeteer.launch({headless: false, args: ['--start-maximized']})
+    const browser = await puppeteer.launch({
+        headless: false, 
+        args: 
+            [
+            '--start-maximized']
+    })
 
     const page = await browser.newPage()
 
@@ -16,6 +23,8 @@ const buscaNFeSaidaGoias = async() => {
 
     // Enable Request Interception
     await page.setRequestInterception(true);
+
+    await page.waitFor(3000)
 
     // Client cert files
     const cert = fs.readFileSync('C:\\temp\\1\\17ac5ea3218f001e0ab18262308117b5.crt');
@@ -42,7 +51,7 @@ const buscaNFeSaidaGoias = async() => {
             }
 
             // Return retrieved response to interceptedRequest
-            interceptedRequest.respond({
+            interceptedRequest.get({
                 status: resp.statusCode,
                 contentType: resp.headers['content-type'],
                 headers: resp.headers,

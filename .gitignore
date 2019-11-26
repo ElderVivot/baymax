@@ -203,3 +203,7 @@ public
 
 # DynamoDB Local files
 .dynamodb/
+
+# *** adicionados manualmente ***
+/extract/data
+/.vscode/
