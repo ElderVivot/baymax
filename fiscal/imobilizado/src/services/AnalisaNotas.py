@@ -3,9 +3,7 @@ import os
 
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 sys.path.append(fileDir)
-print(sys.path)
 
-import os
 import json
 from tools.leArquivos import leXls_Xlsx
 
@@ -14,7 +12,7 @@ from tools.leArquivos import leXls_Xlsx
 class AnalisaNotasImobilizado(object):
     def __init__(self):
         self._wayCompanies = os.path.join(fileDir, 'extract/data/empresas.json')
-        self._wayEntryNotes = os.path.join(fileDir, 'extract/data/entradas')
+        # self._wayEntryNotes = os.path.join(fileDir, 'extract/data/entradas')
         self._namesProductsBase =  leXls_Xlsx(os.path.join(fileDir, 'extract/data/produtos_comparar.xlsx'))
         print(self._namesProductsBase)
 

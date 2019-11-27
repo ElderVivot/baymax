@@ -9,10 +9,10 @@ import time
 import sys
 import datetime
 
-fileDir = os.path.dirname(os.path.realpath('__file__'))
+fileDir = os.path.dirname(__file__)
 sys.path.append(fileDir)
 
-import .funcoesUteis
+import funcoesUteis
 
 def buscaArquivosEmPasta(caminho, extensao, buscarSubpastas=True):
     

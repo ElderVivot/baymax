@@ -1,4 +1,9 @@
 import os
+import sys
+
+fileDir = os.path.dirname(__file__)
+sys.path.append(fileDir)
+
 from services.AnalisaNotas import AnalisaNotasImobilizado
 
 # fileDir = os.path.dirname(os.path.realpath('__file__'))
