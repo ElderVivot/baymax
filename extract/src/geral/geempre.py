@@ -19,7 +19,7 @@ class extractGeempre():
     def exportaDados(self):
         try:
             self._cursor = self._connection.cursor()
-            sql = ("SELECT * FROM bethadba.geempre WHERE stat_emp NOT IN ('I') AND dina_emp IS NOT NULL ORDER BY codi_emp")
+            sql = ("SELECT * FROM bethadba.geempre WHERE stat_emp NOT IN ('I') AND dina_emp IS NULL ORDER BY codi_emp")
             self._cursor.execute(sql)
 
             row = self._cursor.fetchone()

@@ -17,7 +17,7 @@ class MainImobilizado:
     #         print(arquivo)
 
     analisaNotasImobilizado = AnalisaNotasImobilizado()
-    
-
+    analisaNotasImobilizado.processIfNoteIsAnAsset()
+  
 if __name__ == '__main__':
     mainFiscal = MainImobilizado() 

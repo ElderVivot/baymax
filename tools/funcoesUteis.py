@@ -66,7 +66,7 @@ def trataCampoDecimal(valorCampo, qtdCasaDecimais=2):
 def retornaCampoComoData(valorCampo, formatoData=1):
     """
     :param valorCampo: Informar o campo string que será transformado para DATA
-    :param formatoData: 1 = 'DD/MM/YYYY' ; 2 = 'YYYY-MM-DD'
+    :param formatoData: 1 = 'DD/MM/YYYY' ; 2 = 'YYYY-MM-DD; 3 = ISO'
     :return: retorna como uma data. Caso não seja uma data válida irá retornar um campo vazio
     """
     valorCampo = str(valorCampo).strip()
@@ -77,7 +77,7 @@ def retornaCampoComoData(valorCampo, formatoData=1):
         formatoDataStr = "%Y-%m-%d"
 
     try:
-        return datetime.datetime.strptime(valorCampo, formatoDataStr).date()
+        return datetime.datetime.strptime(valorCampo[:10], formatoDataStr).date()
     except ValueError:
         return None
 

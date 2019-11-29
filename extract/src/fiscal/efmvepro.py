@@ -16,7 +16,7 @@ class extractEfmvepro():
         self._cursor = None
         self._wayCompanies = os.path.join(fileDir, 'extract/data/empresas.json')
 
-    def exportaDados(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2018):
+    def exportaDados(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013):
         with open(self._wayCompanies) as companies:
             data = json.load(companies)
             try:

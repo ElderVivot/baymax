@@ -16,7 +16,7 @@ class extractEfentradas():
         self._cursor = None
         self._wayCompanies = os.path.join(fileDir, 'extract/data/empresas.json')
 
-    def exportaDados(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2018):
+    def exportaDados(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013):
         with open(self._wayCompanies) as companies:
             data = json.load(companies)
             try:
@@ -28,12 +28,16 @@ class extractEfentradas():
                         if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
                             print(f"- Exportando efentradas da empresa {companie['codi_emp']} - {companie['nome_emp']}")
                             self._cursor = self._connection.cursor()
-                            sql = ( f"SELECT codi_emp, codi_ent, nume_ent, codi_for, codi_esp, codi_acu, codi_nat, segi_ent, seri_ent, dent_ent, ddoc_ent, vcon_ent "
-                                    f"  FROM bethadba.efentradas "
-                                    f" WHERE codi_emp = {companie['codi_emp']}"
-                                    f"   AND year(dent_ent) >= {filterYearStart}"
-                                    f"   AND month(dent_ent) >= {filterMonthStart}"
-                                    f"ORDER BY codi_emp, codi_ent")
+                            sql = ( f"SELECT ent.codi_emp, ent.codi_ent, ent.nume_ent, ent.codi_for, forn.nome_for, ent.codi_esp, ent.codi_acu, ent.codi_nat, ent.segi_ent, "
+                                    f"       ent.seri_ent, ent.dent_ent, ent.ddoc_ent, ent.vcon_ent "
+                                    f"  FROM bethadba.efentradas AS ent "
+                                    f"       INNER JOIN bethadba.effornece AS forn "
+                                    f"            ON    forn.codi_emp = ent.codi_emp "
+                                    f"              AND forn.codi_for = ent.codi_for "
+                                    f" WHERE ent.codi_emp = {companie['codi_emp']}"
+                                    f"   AND year(ent.dent_ent) >= {filterYearStart}"
+                                    f"   AND month(ent.dent_ent) >= {filterMonthStart}"
+                                    f"ORDER BY ent.codi_emp, ent.codi_ent")
                             self._cursor.execute(sql)
 
                             df = pd.read_sql_query(sql, self._connection)
