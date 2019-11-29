@@ -8,6 +8,9 @@ import csv
 import time
 import sys
 import datetime
+import platform
+import pytesseract as ocr
+from PIL import Image
 
 fileDir = os.path.dirname(__file__)
 sys.path.append(fileDir)
@@ -160,18 +163,45 @@ def leXls_Xlsx(arquivo):
 #     # retorna uma lista dos dados
 #     return lista_dados
 
-# def PDFToText(arquivos=buscaArquivosEmPasta(extensao=(".PDF")), mode = "simple"):
-#     for arquivo in arquivos:
-#         nome_arquivo = os.path.basename(arquivo)
-#         saida = "temp\\" + str(nome_arquivo[0:len(nome_arquivo)-4]) + ".txt"
-#         try:
-#             comando = f"bin\\pdftotext.exe -{mode} \"{arquivo}\" \"{saida}\""
-#             os.system(comando)
-#         except Exception as ex:
-#             print(f"Nao foi possivel transformar o arquivo \"{saida}\". O erro é: {str(ex)}")
+def ImageToText(arquivo):
+    nome_arquivo = os.path.basename(arquivo)
+    saida = f"temp\\" + str(nome_arquivo[0:len(nome_arquivo)-4]) + ".tmp"
+    saida = open(saida, "w", encoding='utf-8')
+    phrase = ocr.image_to_string(Image.open(arquivo), lang='por')
+    saida.write(phrase)
+    saida.close()
 
-# # chama a geração da transformação pra PDF
-# #PDFToText()
+def PDFImgToText(arquivo):
+    nome_arquivo = os.path.basename(arquivo)
+    saida = f"temp\\" + str(nome_arquivo[0:len(nome_arquivo)-4]) + ".jpg"
+
+    comando = f"magick -density 300 \"{arquivo}\" \"{saida}\""
+    os.system(comando)
+
+    ImageToText(saida)
+    
+def PDFToText(arquivo, mode = "simple"):
+    nome_arquivo = os.path.basename(arquivo)
+    saida = f"temp\\" + str(nome_arquivo[0:len(nome_arquivo)-4]) + ".tmp"
+    try:
+        # verifica se o Windows é 32 ou 64 bits
+        architecture = platform.architecture()
+        if architecture[0].count('32') > 0:
+            pdftotext = "pdftotext32.exe"
+        else:
+            pdftotext = "pdftotext64.exe"
+        
+        # chama o comando pra transformação do PDF
+        comando = f"exe\\{pdftotext} -{mode} \"{arquivo}\" \"{saida}\""
+        os.system(comando)
+
+        # analisa se o PDF é uma imagem
+        tamanho_arquivo = os.path.getsize(saida)
+        if(tamanho_arquivo <= 5):
+            PDFImgToText(arquivo)
+
+    except Exception as ex:
+        print(f"Nao foi possivel transformar o arquivo \"{arquivo}\". O erro é: {str(ex)}")
 
 def leTxt(caminho):
     lista_linha = []

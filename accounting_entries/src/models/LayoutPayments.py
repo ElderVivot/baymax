@@ -1,0 +1,2 @@
+class LayoutPayments(object):
+    
