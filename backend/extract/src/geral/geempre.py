@@ -3,17 +3,22 @@
 import pandas as pd
 import pyodbc
 import os
+import json
 from db.ConexaoBanco import DB
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
 
 fileDir = os.path.dirname(os.path.realpath('__file__'))
+
+wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
+wayDefault = json.load(wayToSaveFiles)
+wayToSaveFiles.close()
 
 class extractGeempre():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
         self._cursor = None
-        self._wayToSave = os.path.join(fileDir, 'extract/data/empresas.json') 
+        self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
         self._columns = []
 
     def exportaDados(self):

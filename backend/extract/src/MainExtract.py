@@ -6,11 +6,11 @@ from fiscal.efmvepro import extractEfmvepro
 
 class MainExtract:
 
-    # geempre = extractGeempre()
-    # geempre.exportaDados()
+    geempre = extractGeempre()
+    geempre.exportaDados()
 
-    efentradas = extractEfentradas()
-    efentradas.exportaDados()
+    # efentradas = extractEfentradas()
+    # efentradas.exportaDados()
 
     # efmvepro = extractEfmvepro()
     # efmvepro.exportaDados()

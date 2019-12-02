@@ -205,5 +205,5 @@ public
 .dynamodb/
 
 # *** adicionados manualmente ***
-/extract/data
+/backend/extract/data
 /.vscode/

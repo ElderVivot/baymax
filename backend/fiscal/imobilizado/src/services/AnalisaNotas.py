@@ -2,24 +2,25 @@ import sys
 import os
 
 fileDir = os.path.dirname(os.path.realpath('__file__'))
-sys.path.append(fileDir)
+sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json
 from tools.leArquivos import leXls_Xlsx
 from tools.funcoesUteis import removerAcentosECaracteresEspeciais, transformaCampoDataParaFormatoBrasileiro, retornaCampoComoData
 
-# 1556, 2556, 1407 e 2407
+wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
+wayDefault = json.load(wayToSaveFiles)
+wayToSaveFiles.close()
 
 class AnalisaNotasImobilizado(object):
     def __init__(self):
-        self._wayCompanies = os.path.join(fileDir, 'extract/data/empresas.json')
-        self._wayEntryNotes = os.path.join(fileDir, 'extract/data/entradas')
-        self._namesProductsBase =  leXls_Xlsx(os.path.join(fileDir, 'extract/data/produtos_comparar.xlsx'))
+        self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json')
+        self._namesProductsBase =  leXls_Xlsx(os.path.join(wayDefault['wayDefaultToSaveFiles'], 'produtos_comparar.xlsx'))
 
         with open(self._wayCompanies) as companies:
             self._companies = json.load(companies)
 
-        self._exportNotas = os.path.join(fileDir, 'extract/data/analise_imobilizado.csv')
+        self._exportNotas = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'analise_imobilizado.csv')
         self._exportNotas = open(self._exportNotas, 'w', encoding='utf-8')
 
         self._exportNotas.write(
@@ -94,8 +95,8 @@ class AnalisaNotasImobilizado(object):
             if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:
                 if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
                     try:
-                        self._wayEntryNotesProducts = os.path.join(fileDir, f"extract/data/entradas_produtos/{companie['codi_emp']}-efmvepro.json")
-                        self._wayEntryNotes = os.path.join(fileDir, f"extract/data/entradas/{companie['codi_emp']}-efentradas.json")
+                        self._wayEntryNotesProducts = os.path.join(wayDefault['wayDefaultToSaveFiles'], f"entradas_produtos/{companie['codi_emp']}-efmvepro.json")
+                        self._wayEntryNotes = os.path.join(wayDefault['wayDefaultToSaveFiles'], f"entradas/{companie['codi_emp']}-efentradas.json")
                         self.noteIsAnAsset(self._wayEntryNotesProducts, self._wayEntryNotes)
                     except Exception as e:
                         print(e)

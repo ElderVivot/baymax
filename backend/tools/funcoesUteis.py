@@ -37,31 +37,61 @@ def minimalizeSpaces(text):
     _result = _result.strip()
     return _result
 
-def trataCampoTexto(valorCampo):
-    valorCampo = str(valorCampo)
+def handlesTextField(value):
     try:
-        return minimalizeSpaces(removerAcentosECaracteresEspeciais(valorCampo.strip().upper()))
+        return minimalizeSpaces(removerAcentosECaracteresEspeciais(value.strip().upper()))
     except Exception:
         return ""
 
-def trataCampoNumero(valorCampo):
-    return re.sub('[^0-9]', '', valorCampo)
+def handlesTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
+    if numberOfField > 0:
+        try:
+            return handlesTextField(data[numberOfField])
+        except Exception:
+            return ""
+    # criar o else pra planilhas que tem o cabeçalho
+    else:
+        return ""
 
-def trataCampoDecimal(valorCampo, qtdCasaDecimais=2):
-    valorCampo = str(valorCampo)
-    valorCampo = re.sub('[^0-9.,]', '', valorCampo)
-    if valorCampo.count(',') > 0 and valorCampo.count('.') > 0:
-        valorCampo = valorCampo.replace('.','')
-
-    if ',' in valorCampo:
-        valorCampo = valorCampo.replace(',','.')
-    
+def handlesNumberField(value):
     try:
-        valorCampo = float(valorCampo)
-    except Exception as e:
-        valorCampo = float(0)
+        return re.sub("[^0-9]", '', value)
+    except Exception:
+        return 0
 
-    return valorCampo
+def handlesNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldHeader=''):
+    if numberOfField >= 0:
+        try:
+            return handlesNumberField(data[numberOfField])
+        except Exception:
+            return 0
+    # criar o else pra planilhas que tem o cabeçalho
+    else:
+        return 0
+
+def handlesDecimalField(value, numberOfDecimalPlaces=2):
+    try:
+        value = str(value)
+        value = re.sub('[^0-9.,]', '', value)
+        if value.find(',') > 0 and value.find('.') > 0:
+            value = value.replace('.','')
+
+        if value.find(','):
+            value = value.replace(',','.')
+        
+        return float(value)
+    except Exception:
+        return float(0)
+
+def handlesDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
+    if numberOfField > 0:
+        try:
+            return handlesDecimalField(data[numberOfField])
+        except Exception:
+            return float(0)
+    # criar o else pra planilhas que tem o cabeçalho
+    else:
+        return float(0)
 
 def retornaCampoComoData(valorCampo, formatoData=1):
     """

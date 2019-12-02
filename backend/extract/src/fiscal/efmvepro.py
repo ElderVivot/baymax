@@ -9,19 +9,23 @@ from db.ConexaoBanco import DB
 
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 
+wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
+wayDefault = json.load(wayToSaveFiles)
+wayToSaveFiles.close()
+
 class extractEfmvepro():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
         self._cursor = None
-        self._wayCompanies = os.path.join(fileDir, 'extract/data/empresas.json')
+        self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
 
     def exportaDados(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013):
         with open(self._wayCompanies) as companies:
             data = json.load(companies)
             try:
                 for companie in data:
-                    self._wayToSave = os.path.join(fileDir, f"extract/data/entradas_produtos/{companie['codi_emp']}-efmvepro.json")
+                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], f"entradas_produtos/{companie['codi_emp']}-efmvepro.json")
                     
                     # only companies actives
                     if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:
