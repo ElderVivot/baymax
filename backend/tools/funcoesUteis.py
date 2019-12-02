@@ -46,7 +46,7 @@ def handlesTextField(value):
 def handlesTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
     if numberOfField > 0:
         try:
-            return handlesTextField(data[numberOfField])
+            return handlesTextField(data[numberOfField-1])
         except Exception:
             return ""
     # criar o else pra planilhas que tem o cabeçalho
@@ -62,7 +62,7 @@ def handlesNumberField(value):
 def handlesNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldHeader=''):
     if numberOfField >= 0:
         try:
-            return handlesNumberField(data[numberOfField])
+            return handlesNumberField(data[numberOfField-1])
         except Exception:
             return 0
     # criar o else pra planilhas que tem o cabeçalho
@@ -86,7 +86,7 @@ def handlesDecimalField(value, numberOfDecimalPlaces=2):
 def handlesDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
     if numberOfField > 0:
         try:
-            return handlesDecimalField(data[numberOfField])
+            return handlesDecimalField(data[numberOfField-1])
         except Exception:
             return float(0)
     # criar o else pra planilhas que tem o cabeçalho
