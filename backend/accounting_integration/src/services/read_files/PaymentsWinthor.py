@@ -22,7 +22,7 @@ class PaymentsWinthorPDF(object):
         for data in dataFile:
 
             data = str(data).strip()
-            data = funcoesUteis.handlesTextField(data)
+            data = funcoesUteis.treatTextField(data)
 
             fieldsSeparatedBySpace = data.split(' ')
 
@@ -36,7 +36,7 @@ class PaymentsWinthorPDF(object):
                         funcoesUteis.retornaCampoComoData(valueOfLine[1]))
                 
                 # identifica se é uma linha de lançamento com o idLanc devidamente preenchido
-                if funcoesUteis.handlesNumberField(valueOfLine[0]).isnumeric() and ( self._valuesOfLine[key+1][0] == "HISTORICO" \
+                if funcoesUteis.treatNumberField(valueOfLine[0]).isnumeric() and ( self._valuesOfLine[key+1][0] == "HISTORICO" \
                      or ( valueOfLine[1].isnumeric() and valueOfLine[2].isnumeric() ) ):
                     self._valuesPaymentDates[valueOfLine[0]] = self._paymentDate
             except Exception as e:
@@ -65,44 +65,44 @@ class PaymentsWinthorExcel(object):
         for key, data in enumerate(dataFile):
 
             try:
-                idLanc = funcoesUteis.handlesNumberFieldInVector(data, 1)
+                idLanc = funcoesUteis.treatNumberFieldInVector(data, 1)
 
                 paymentDate = paymentDatesByIdLanc[idLanc]
                 paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
 
-                nameProvider = funcoesUteis.handlesTextFieldInVector(data, 9)
+                nameProvider = funcoesUteis.treatTextFieldInVector(data, 9)
 
-                document = funcoesUteis.handlesTextFieldInVector(data, 11)
+                document = funcoesUteis.treatTextFieldInVector(data, 11)
 
-                accountPlan = funcoesUteis.handlesTextFieldInVector(data, 6)
+                accountPlan = funcoesUteis.treatTextFieldInVector(data, 6)
 
-                historic = funcoesUteis.handlesTextFieldInVector(data, 4)
+                historic = funcoesUteis.treatTextFieldInVector(data, 4)
                 if paymentDate is not None and historic == "":
-                    historic = funcoesUteis.handlesTextFieldInVector(dataFile[key+1], 4)
+                    historic = funcoesUteis.treatTextFieldInVector(dataFile[key+1], 4)
 
-                parcelNumber = funcoesUteis.handlesNumberFieldInVector(data, 13)
+                parcelNumber = funcoesUteis.treatNumberFieldInVector(data, 13)
 
-                amountPaid = funcoesUteis.handlesDecimalFieldInVector(data, 15)
+                amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 15)
 
-                amountDevolution = funcoesUteis.handlesDecimalFieldInVector(data, 17)
+                amountDevolution = funcoesUteis.treatDecimalFieldInVector(data, 17)
 
-                amountDiscount = funcoesUteis.handlesDecimalFieldInVector(data, 18)
+                amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 18)
 
-                amountInterest = funcoesUteis.handlesDecimalFieldInVector(data, 19)
+                amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 19)
 
-                amountOriginal = funcoesUteis.handlesDecimalFieldInVector(data, 21)
+                amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 21)
 
-                paymentType = funcoesUteis.handlesTextFieldInVector(data, 22)
+                paymentType = funcoesUteis.treatTextFieldInVector(data, 22)
 
-                bank = funcoesUteis.handlesTextFieldInVector(data, 24)
+                bank = funcoesUteis.treatTextFieldInVector(data, 24)
                 try:
                     bank = self._valuesOfBanks[bank]
                 except Exception:
                     bank = bank
 
-                bankCheck = funcoesUteis.handlesTextFieldInVector(data, 25)
+                bankCheck = funcoesUteis.treatTextFieldInVector(data, 25)
 
-                companyBranch = funcoesUteis.handlesTextFieldInVector(data, 28)
+                companyBranch = funcoesUteis.treatTextFieldInVector(data, 28)
 
                 if paymentDate is not None and amountPaid > 0:
                     self._valuesOfLine = {

@@ -37,39 +37,39 @@ def minimalizeSpaces(text):
     _result = _result.strip()
     return _result
 
-def handlesTextField(value):
+def treatTextField(value):
     try:
         return minimalizeSpaces(removerAcentosECaracteresEspeciais(value.strip().upper()))
     except Exception:
         return ""
 
-def handlesTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
+def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
     if numberOfField > 0:
         try:
-            return handlesTextField(data[numberOfField-1])
+            return treatTextField(data[numberOfField-1])
         except Exception:
             return ""
     # criar o else pra planilhas que tem o cabeçalho
     else:
         return ""
 
-def handlesNumberField(value):
+def treatNumberField(value):
     try:
         return re.sub("[^0-9]", '', value)
     except Exception:
         return 0
 
-def handlesNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldHeader=''):
+def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldHeader=''):
     if numberOfField >= 0:
         try:
-            return handlesNumberField(data[numberOfField-1])
+            return treatNumberField(data[numberOfField-1])
         except Exception:
             return 0
     # criar o else pra planilhas que tem o cabeçalho
     else:
         return 0
 
-def handlesDecimalField(value, numberOfDecimalPlaces=2):
+def treatDecimalField(value, numberOfDecimalPlaces=2):
     try:
         value = str(value)
         value = re.sub('[^0-9.,]', '', value)
@@ -83,10 +83,10 @@ def handlesDecimalField(value, numberOfDecimalPlaces=2):
     except Exception:
         return float(0)
 
-def handlesDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
+def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
     if numberOfField > 0:
         try:
-            return handlesDecimalField(data[numberOfField-1])
+            return treatDecimalField(data[numberOfField-1])
         except Exception:
             return float(0)
     # criar o else pra planilhas que tem o cabeçalho

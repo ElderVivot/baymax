@@ -203,14 +203,31 @@ def PDFToText(arquivo, mode = "simple"):
     except Exception as ex:
         print(f"Nao foi possivel transformar o arquivo \"{arquivo}\". O erro é: {str(ex)}")
 
-def leTxt(caminho):
+def leTxt(caminho, encoding='utf-8', treatAsText=False, removeBlankLines=False):
     lista_linha = []
     
     # le o arquivo e grava num vetor
-    with open(caminho, 'rt') as txtfile:
-        for linha in txtfile:
-            linha = str(linha).replace("\n", "")
-            lista_linha.append(linha)
-    txtfile.close()
+    try:
+        with open(caminho, 'rt', encoding=encoding) as txtfile:
+            for linha in txtfile:
+                linha = str(linha).replace("\n", "")
+                if treatAsText is True:
+                    linha = funcoesUteis.treatTextField(linha)
+                if removeBlankLines is True:
+                    if linha.strip() == "":
+                        continue
+                lista_linha.append(linha)
+        txtfile.close()
+    except Exception as e:
+        with open(caminho, 'rt', encoding='Windows-1252') as txtfile:
+            for linha in txtfile:
+                linha = str(linha).replace("\n", "")
+                if treatAsText is True:
+                    linha = funcoesUteis.treatTextField(linha)
+                if removeBlankLines is True:
+                    if linha.strip() == "":
+                        continue
+                lista_linha.append(linha)
+        txtfile.close()
 
     return lista_linha
