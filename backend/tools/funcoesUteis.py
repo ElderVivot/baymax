@@ -72,7 +72,7 @@ def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldH
 def treatDecimalField(value, numberOfDecimalPlaces=2):
     try:
         value = str(value)
-        value = re.sub('[^0-9.,]', '', value)
+        value = re.sub('[^0-9.,-]', '', value)
         if value.find(',') > 0 and value.find('.') > 0:
             value = value.replace('.','')
 
@@ -96,8 +96,8 @@ def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldH
 def retornaCampoComoData(valorCampo, formatoData=1):
     """
     :param valorCampo: Informar o campo string que será transformado para DATA
-    :param formatoData: 1 = 'DD/MM/YYYY' ; 2 = 'YYYY-MM-DD; 3 = ISO'
-    :return: retorna como uma data. Caso não seja uma data válida irá retornar um campo vazio
+    :param formatoData: 1 = 'DD/MM/YYYY' ; 2 = 'YYYY-MM-DD
+    :return: retorna como uma data. Caso não seja uma data válida irá retornar None
     """
     valorCampo = str(valorCampo).strip()
 
@@ -107,7 +107,7 @@ def retornaCampoComoData(valorCampo, formatoData=1):
         formatoDataStr = "%Y-%m-%d"
 
     try:
-        return datetime.datetime.strptime(valorCampo[:10], formatoDataStr).date()
+        return datetime.datetime.strptime(valorCampo[:8], formatoDataStr).date()
     except ValueError:
         return None
 
