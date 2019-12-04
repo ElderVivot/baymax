@@ -43,9 +43,24 @@ class ExtractsOFX(object):
                 document = funcoesUteis.treatTextField(transction.checknum)
 
                 historic = funcoesUteis.treatTextField(transction.memo)
+
+                self._valuesOfLine = {
+                    "bankId": bankId,
+                    "account": account,
+                    "typeTransaction": typeTransaction,
+                    "dateTransaction": dateTransaction,
+                    "amount": amount,
+                    "operation": operation,
+                    "document": document,
+                    "historic": historic
+                }
+
+                self._valuesOfFile.append(self._valuesOfLine.copy())
         except Exception as e:
             print(e)
 
+        return self._valuesOfFile
+
 if __name__ == "__main__":
     extractOFX = ExtractsOFX()
-    extractOFX.process("C:/_temp/integracao_diviart/Extrato Conta Corrente-44388-9.ofx")
+    print(extractOFX.process("C:/_temp/integracao_diviart/OUTUBRO CX DIVIART.ofx"))

@@ -93,7 +93,8 @@ class SispagItau(object):
                             "amountInterest": float(0),
                             "amountOriginal": float(0),
                             "historic": historic,
-                            "company": company
+                            "company": company,
+                            "foundProof": True
                         }
 
                         self._valuesOfFile.append(self._valuesOfLine.copy())

@@ -37,6 +37,21 @@ def minimalizeSpaces(text):
     _result = _result.strip()
     return _result
 
+def searchPositionFieldForName(header, nameField=''):
+    nameField = treatTextField(nameField)
+    try:
+        positionOfField = header[nameField]
+    except Exception:
+        positionOfField = -1
+
+    return positionOfField
+
+def analyzeIfFieldIsValid(data, name, returnDefault=""):
+    try:
+        return data[name]
+    except Exception:
+        return returnDefault
+
 def treatTextField(value):
     try:
         return minimalizeSpaces(removerAcentosECaracteresEspeciais(value.strip().upper()))
@@ -44,14 +59,23 @@ def treatTextField(value):
         return ""
 
 def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
+    """
+    :param data: Informar o array de dados que quer ler
+    :param numberOfField: numero do campo na planilha (opcional)
+    :param fieldsHeader: linha do cabeçalho armazenado num vetor (opcional)
+    :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
+    :return: retorna um campo como texto, retirando acentos, espaços excessivos, etc
+    """
     if numberOfField > 0:
         try:
             return treatTextField(data[numberOfField-1])
         except Exception:
             return ""
-    # criar o else pra planilhas que tem o cabeçalho
     else:
-        return ""
+        try:
+            return treatTextField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
+        except Exception:
+            return ""
 
 def treatNumberField(value):
     try:
@@ -60,14 +84,23 @@ def treatNumberField(value):
         return 0
 
 def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldHeader=''):
+    """
+    :param data: Informar o array de dados que quer ler
+    :param numberOfField: numero do campo na planilha (opcional)
+    :param fieldsHeader: linha do cabeçalho armazenado num vetor (opcional)
+    :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
+    :return: retorna um campo apenas como número
+    """
     if numberOfField >= 0:
         try:
             return treatNumberField(data[numberOfField-1])
         except Exception:
             return 0
-    # criar o else pra planilhas que tem o cabeçalho
     else:
-        return 0
+        try:
+            return treatNumberField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
+        except Exception:
+            return 0
 
 def treatDecimalField(value, numberOfDecimalPlaces=2):
     try:
@@ -84,14 +117,23 @@ def treatDecimalField(value, numberOfDecimalPlaces=2):
         return float(0)
 
 def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
+    """
+    :param data: Informar o array de dados que quer ler
+    :param numberOfField: numero do campo na planilha (opcional)
+    :param fieldsHeader: linha do cabeçalho armazenado num vetor (opcional)
+    :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
+    :return: retorna um campo como decimal
+    """
     if numberOfField > 0:
         try:
             return treatDecimalField(data[numberOfField-1])
         except Exception:
             return float(0)
-    # criar o else pra planilhas que tem o cabeçalho
     else:
-        return float(0)
+        try:
+            return treatDecimalField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
+        except Exception:
+            return float(0)
 
 def retornaCampoComoData(valorCampo, formatoData=1):
     """
@@ -107,9 +149,29 @@ def retornaCampoComoData(valorCampo, formatoData=1):
         formatoDataStr = "%Y-%m-%d"
 
     try:
-        return datetime.datetime.strptime(valorCampo[:8], formatoDataStr).date()
+        return datetime.datetime.strptime(valorCampo[:10], formatoDataStr).date()
     except ValueError:
         return None
+
+def treatDateFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', formatoData=1):
+    """
+    :param data: Informar o array de dados que quer ler
+    :param numberOfField: numero do campo na planilha (opcional)
+    :param fieldsHeader: linha do cabeçalho armazenado num vetor (opcional)
+    :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
+    :param formatoData: 1 = 'DD/MM/YYYY' ; 2 = 'YYYY-MM-DD (opcional)
+    :return: retorna um campo como decimal
+    """
+    if numberOfField > 0:
+        try:
+            return retornaCampoComoData(data[numberOfField-1], formatoData)
+        except Exception:
+            return None
+    else:
+        try:
+            return retornaCampoComoData(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)], formatoData)
+        except Exception:
+            return None
 
 def transformaCampoDataParaFormatoBrasileiro(valorCampo):
     """
