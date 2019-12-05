@@ -8,6 +8,7 @@ import unicodedata
 import re
 import datetime
 import hashlib
+import json
 
 def removerAcentosECaracteresEspeciais(palavra):
     # Unicode normalize transforma um caracter em seu equivalente em latin.
@@ -182,15 +183,6 @@ def transformaCampoDataParaFormatoBrasileiro(valorCampo):
         return valorCampo.strftime("%d/%m/%Y")
     except AttributeError:
         return None
-
-def buscaPosicaoCampo(campoCabecalho, nomeCampo='', posicaoCampo=0):
-    nomeCampo = str(removerAcentosECaracteresEspeciais(nomeCampo)).upper()
-    try:
-        numPosicaoCampo = campoCabecalho[nomeCampo]
-    except KeyError:
-        numPosicaoCampo = posicaoCampo
-
-    return numPosicaoCampo
 
 def md5Checksum(filePath):
     with open(filePath, 'rb') as fh:

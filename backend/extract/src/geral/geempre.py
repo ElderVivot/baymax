@@ -1,13 +1,16 @@
 # coding: utf-8
 
+import os
+import sys
+
+fileDir = os.path.dirname(os.path.realpath('__file__'))
+sys.path.append(os.path.join(fileDir, 'backend/extract/src'))
+
 import pandas as pd
 import pyodbc
-import os
 import json
 from db.ConexaoBanco import DB
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
-
-fileDir = os.path.dirname(os.path.realpath('__file__'))
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
@@ -21,7 +24,7 @@ class extractGeempre():
         self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
         self._columns = []
 
-    def exportaDados(self):
+    def exportData(self):
         try:
             self._cursor = self._connection.cursor()
             sql = ("SELECT * FROM bethadba.geempre WHERE stat_emp NOT IN ('I') AND dina_emp IS NULL ORDER BY codi_emp")
@@ -44,4 +47,8 @@ class extractGeempre():
                 self._cursor.close()
             self._DB.closeConnection()
 
+
+if __name__ == "__main__":
+    geempre = extractGeempre()
+    geempre.exportData()
 

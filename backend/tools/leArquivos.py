@@ -10,6 +10,7 @@ import sys
 import datetime
 import platform
 import pytesseract as ocr
+import json
 from PIL import Image
 
 fileDir = os.path.dirname(__file__)
@@ -231,3 +232,10 @@ def leTxt(caminho, encoding='utf-8', treatAsText=False, removeBlankLines=False):
         txtfile.close()
 
     return lista_linha
+
+def readJson(caminho):
+    try:
+        with open(caminho) as file:
+            return json.load(file)
+    except Exception as e:
+        print(e)

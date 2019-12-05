@@ -1,13 +1,16 @@
 # coding: utf-8
 
+import os
+import sys
+
+fileDir = os.path.dirname(os.path.realpath('__file__'))
+sys.path.append(os.path.join(fileDir, 'backend/extract/src'))
+
 import pandas as pd
 import pyodbc
-import os
 import json
 from db.ConexaoBanco import DB
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
-
-fileDir = os.path.dirname(os.path.realpath('__file__'))
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
@@ -20,7 +23,7 @@ class extractEfentradas():
         self._cursor = None
         self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
 
-    def exportaDados(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013):
+    def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013):
         with open(self._wayCompanies) as companies:
             data = json.load(companies)
             try:
@@ -53,3 +56,8 @@ class extractEfentradas():
                 if self._cursor is not None:
                     self._cursor.close()
                 self._DB.closeConnection()
+
+
+if __name__ == "__main__":
+    efentradas = extractEfentradas()
+    efentradas.exportData()

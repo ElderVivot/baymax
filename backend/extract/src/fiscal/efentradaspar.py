@@ -1,13 +1,15 @@
 # coding: utf-8
 
-import pandas as pd
-import pyodbc
 import os
-import json
-from db.ConexaoBanco import DB
-# from functions.usefulFunctions import parseTypeFiedValueCorrect
+import sys
 
 fileDir = os.path.dirname(os.path.realpath('__file__'))
+sys.path.append(os.path.join(fileDir, 'backend/extract/src'))
+
+import pandas as pd
+import pyodbc
+import json
+from db.ConexaoBanco import DB
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
@@ -20,7 +22,7 @@ class extractEfentradaspar():
         self._cursor = None
         self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
 
-    def exportData(self, filterCompanie=0):
+    def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013):
         with open(self._wayCompanies) as companies:
             data = json.load(companies)
             try:
@@ -32,15 +34,15 @@ class extractEfentradaspar():
                         if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
                             print(f"- Exportando effornece da empresa {companie['codi_emp']} - {companie['nome_emp']}")
                             self._cursor = self._connection.cursor()
-                            sql = ( f"SELECT  "
+                            sql = ( f"SELECT par.codi_emp, par.codi_ent, ent.nume_ent, ent.ddoc_ent, ent.dent_ent, par.vcto_entp, par.vlor_entp "
                                     f"  FROM bethadba.efentradaspar AS par "
                                     f"       INNER JOIN bethadba.efentradas AS ent "
-                                    f"            ON    ent.codi_emp = pro.codi_emp "
-                                    f"              AND ent.codi_ent = pro.codi_ent "
+                                    f"            ON    ent.codi_emp = par.codi_emp "
+                                    f"              AND ent.codi_ent = par.codi_ent "
                                     f" WHERE ent.codi_emp = {companie['codi_emp']}"
                                     f"   AND year(ent.dent_ent) >= {filterYearStart}"
                                     f"   AND month(ent.dent_ent) >= {filterMonthStart}"
-                                    f"ORDER BY pro.codi_emp, pro.codi_ent, pro.nume_mep")
+                                    f"ORDER BY par.codi_emp, par.codi_ent")
                             self._cursor.execute(sql)
 
                             df = pd.read_sql_query(sql, self._connection)
@@ -52,3 +54,8 @@ class extractEfentradaspar():
                 if self._cursor is not None:
                     self._cursor.close()
                 self._DB.closeConnection()
+
+
+if __name__ == "__main__":
+    efentradaspar = extractEfentradaspar()
+    efentradaspar.exportData()
