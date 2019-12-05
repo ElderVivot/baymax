@@ -15,4 +15,12 @@ from read_files.ExtractsOFX import ExtractsOFX
 
 
 class ComparePaymentsFinalWithDataBase(object):
-    pass
+    
+    def __init__(self):
+        pass
+
+    def returnDataProvider(self):
+        pass
+
+    def comparePaymentsWithDataBase(self):
+        pass
