@@ -9,17 +9,18 @@ from tools.leArquivos import leXls_Xlsx, leTxt
 import tools.funcoesUteis as funcoesUteis
 
 
-class SispagItau(object):
+class ProofsPaymentsItau(object):
 
-    def __init__(self):
+    def __init__(self, file):
         self._valuesOfLine = {}
         self._valuesOfFile = []
         # possíveis textos que a linha de pagamento começa, exemplo: TRANSFERENCIA REALIZADA EM 19.09.2019
         self._valuesOfLinePayments = ["PAGAMENTO EFETUADO EM", "TRANSFERENCIA REALIZADA EM", "TRANSFERENCIA EFETUADA EM", "PAGAMENTO REALIZADO EM", \
             "OPERACAO EFETUADA EM", "TED SOLICITADA EM"]
+        self._file = file
+        self._dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
 
-    def process(self, file):
-        dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
+    def process(self):
 
         nameProvider = ""
         namePayee = ""
@@ -29,7 +30,7 @@ class SispagItau(object):
         cnpjProvider = ""
         amountPaid = float(0)
 
-        for key, data in enumerate(dataFile):
+        for key, data in enumerate(self._dataFile):
 
             data = str(data)
             dataSplit = data.split(':')
@@ -70,7 +71,7 @@ class SispagItau(object):
                 amountPaid = funcoesUteis.treatDecimalField(fieldTwo)
 
             if fieldOne.count("CONTA") > 0 and fieldOne.count("DEBITADA") > 0:
-                bank = f"ITAU - {dataFile[key+1]}"
+                bank = f"ITAU - {self._dataFile[key+1]}"
 
 			# quando é pagamento de imposto não tem o nome do fornecedor, o dados vem na informação complementar
             if historic != "" and dueDate == "" and namePayee == "":
@@ -111,7 +112,67 @@ class SispagItau(object):
 
         return self._valuesOfFile
 
+class SispagItauExcel(object):
+
+    def __init__(self, file):
+        self._file = file
+        self._dataFile = leXls_Xlsx(self._file)
+        self._valuesOfLine = {}
+        self._valuesOfFile = []
+        self._posionsOfHeader = {}
+
+    def isSispagItauExcel(self):
+        for data in self._dataFile:
+            fieldOne = funcoesUteis.treatTextFieldInVector(data, 1)
+            fieldTwo = funcoesUteis.treatTextFieldInVector(data, 2)
+            fieldThree = funcoesUteis.treatTextFieldInVector(data, 3)
+
+            if fieldOne == "NOME DO FAVORECIDO" and fieldTwo == "CPF/CNPJ" and fieldThree == "TIPO DE PAGAMENTO":
+                return True
+
+    def process(self):
+        bank = ""
+        for data in self._dataFile:
+            try:
+                fieldOne = funcoesUteis.treatTextFieldInVector(data, 1)
+
+                if fieldOne.count('NOME DO FAVORECIDO') > 0:
+                    self._posionsOfHeader.clear()
+                    for keyField, nameField in enumerate(data):
+                        nameField = funcoesUteis.treatTextField(nameField)
+                        self._posionsOfHeader[nameField] = keyField
+
+                if fieldOne == "AGENCIA/CONTA:":
+                    bank = f"ITAU {funcoesUteis.treatTextFieldInVector(data, 2)}" 
+
+                paymentDate = funcoesUteis.treatDateFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="Data de pagamento")
+
+                nameProvider = funcoesUteis.treatTextFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="Nome do favorecido")
+
+                amountPaid = funcoesUteis.treatDecimalFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="Valor do Pagamento (R$)")
+
+                cnpjProvider = funcoesUteis.treatNumberFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="CPF/CNPJ")
+
+                if paymentDate is not None and amountPaid > 0:
+                    self._valuesOfLine = {
+                        "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
+                        "nameProvider": nameProvider,
+                        "cnpjProvider": cnpjProvider,
+                        "amountPaid": amountPaid,
+                        "bank": bank
+                    }
+
+                    self._valuesOfFile.append(self._valuesOfLine.copy())
+
+            except Exception as e:
+                print(e)
+
+        return self._valuesOfFile
+
 if __name__ == "__main__":
-    sispagItau = SispagItau()
-    print(sispagItau.process("C:/_temp/integracao_diviart/CONTASANGIOTOMO092019-PAGINA 14-PAGINA 1.tmp"))
+    # proofsPaymentsItau = ProofsPaymentsItau("C:/_temp/integracao_diviart/CONTASANGIOTOMO092019-PAGINA 14-PAGINA 1.tmp")
+    # print(proofsPaymentsItau.process())
+
+    sispagItauExcel = SispagItauExcel("C:/integracao_contabil/1428/arquivos_originais/Sispag detalhada.xlsx")
+    print(sispagItauExcel.process())
             

@@ -1,0 +1,48 @@
+718 - Contas Pagas                                                                                                                                                                                     06/11/2019 09:50:48
+Tipo: Analítico                                                                                                                                                                                                     Page 1
+                                       Período de Lançamento: Todos                                                   Período de Pagamento: Todos
+                                       Período de Vencimento:       01/10/2019 A 31/10/2019                           Período de Emissão:            Todos
+                                       Grupo de Conta:      Todos
+                                       Conta..:    Todas
+                                       Filial...:  '01'                                                               Banco      : Todos
+                                       Usuário Baixa:            Todos
+DT.PAGAMENTO: 01/10/2019
+Lanc.       Grupo                Cod. Conta                            Cod. Fornecedor                         Nº Nota            Valor     Vl.Dev.   Vl.DescFin     Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     21727       301            301009 TARIFAS BANCARIAS                   194 ITAU UNIBANCO S.A.                0        -       3,40       0,00      0,00          0,00         3,40                     3                    12288
+       Histórico   TAR/CUSTAS COBRANCA -                                   Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     21728       301            301009 TARIFAS BANCARIAS                   194 ITAU UNIBANCO S.A.                0        -       8,50       0,00      0,00          0,00         8,50                     3                    12289
+       Histórico   TAR/CUSTAS COBRANCA -                                   Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+   2           Títulos Listados             Total do Dia...........................:     Vl.Dev.                    0,00  Vl.DescFin                          0,00 Vl.Juros                 0,00 Vlr.Título                          11,90
+DT.PAGAMENTO: 02/10/2019
+Lanc.       Grupo                Cod. Conta                            Cod. Fornecedor                         Nº Nota            Valor     Vl.Dev.   Vl.DescFin     Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     21768       100            100001 COMPRA MERCADORIA                    34 GERMANO & SILVA LTDA - ME         1276     -  1    825,00     0,00      0,00          0,00         825,00          DIN      1                    12336
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 1276 -                   Usu.Bx.              LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     21809       301            301009 TARIFAS BANCARIAS                   194 ITAU UNIBANCO S.A.                0        -       6,80       0,00      0,00          0,00         6,80                     3                    12339
+       Histórico   TAR/CUSTAS COBRANCA -                                   Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     21810       301            301009 TARIFAS BANCARIAS                   194 ITAU UNIBANCO S.A.                0        -       35,70      0,00      0,00          0,00         35,70                    3                    12340
+       Histórico   TAR/CUSTAS COBRANCA -                                   Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+   3           Títulos Listados             Total do Dia...........................:     Vl.Dev.                    0,00  Vl.DescFin                          0,00 Vl.Juros                 0,00 Vlr.Título                         867,50
+DT.PAGAMENTO: 03/10/2019
+Lanc.       Grupo                Cod. Conta                            Cod. Fornecedor                         Nº Nota            Valor     Vl.Dev.   Vl.DescFin     Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     21926       300            300018 MATERIAL DE CONSUMO / EXPEDIE3N64TPEJ TAPETES PERSONALIZADOS L1T9D20A ME-                  150,00     0,00      0,00          0,00         150,00                   3                    12432
+       Histórico   PAGAMENTO DE TITULO NR.1920 -                           Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     21927       301            301009 TARIFAS BANCARIAS                   194 ITAU UNIBANCO S.A.                0        -       1,70       0,00      0,00          0,00         1,70                     3                    12433
+       Histórico   TAR/CUSTAS COBRANCA -                                   Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     21928       301            301009 TARIFAS BANCARIAS                   194 ITAU UNIBANCO S.A.                0        -       7,20       0,00      0,00          0,00         7,20                     3                    12434
+       Histórico   TAR/CUSTAS COBRANCA -                                   Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     21948       301            301009 TARIFAS BANCARIAS                   194 ITAU UNIBANCO S.A.                0        -       18,25      0,00      0,00          0,00         18,25                    3                    12457
+       Histórico   TAR SAQUE PESSOAL 09/19 -                               Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     21949       301            301009 TARIFAS BANCARIAS                   194 ITAU UNIBANCO S.A.                0        -       0,36       0,00      0,00          0,00         0,36                     3                    12458
+       Histórico   TAR CTA CERTA EXCED09/19 -                              Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     21950       301            301009 TARIFAS BANCARIAS                   194 ITAU UNIBANCO S.A.                0        -       15,00      0,00      0,00          0,00         15,00                    3                    12459
+       Histórico   TAR DEPOSITO CHQ -                                      Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     21955       301            301009 TARIFAS BANCARIAS                   195 CAIXA ECONOMICA FEDERAL           0        -       99,00      0,00      0,00          0,00         99,00                    4                    12470
+       Histórico   DB CEST PJ -                                            Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     21987       301            301009 TARIFAS BANCARIAS                   172 BANCO DO BRASIL SA - SETOR C0IDADE JA- RDIM        3,42       0,00      0,00          0,00         3,42                     5                    12504
+       Histórico   Cobrança de Juros -                                     Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+   8           Títulos Listados             Total do Dia...........................:     Vl.Dev.                    0,00  Vl.DescFin                          0,00 Vl.Juros                 0,00 Vlr.Título                         294,93
+DT.PAGAMENTO: 04/10/2019
+Lanc.       Grupo                Cod. Conta                            Cod. Fornecedor                         Nº Nota            Valor     Vl.Dev.   Vl.DescFin     Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     17912       100            100001 COMPRA MERCADORIA                    62 SALVARO INDUSTRIA E COMERC1IO91D42E MA-DE4IRA L5T.2D5A0,00    0,00      0,00          0,00         5.250,00        DIN      3                    12542
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 19142 -                                       LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+

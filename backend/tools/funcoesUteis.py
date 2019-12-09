@@ -193,3 +193,26 @@ def md5Checksum(filePath):
                 break
             m.update(data)
         return m.hexdigest()
+
+def removeAnArrayFromWithinAnother(arraySet=[]):
+    newArray = []
+    for array in arraySet:
+        for vector in array:
+            if len(vector) == 0:
+                continue
+            newArray.append(vector)
+    return newArray
+
+def removeAnDictionaryFromWithinArray(arraySet=[]):
+    newDictonary = {}
+    for dictonary in arraySet:
+        for key, value in dictonary.items():
+            if value == "":
+                continue
+            newDictonary[key] = value
+    return newDictonary
+
+def getOnlyNameFile(nameFileOriginal):
+    nameFileSplit = nameFileOriginal.split('.')
+    nameFile = '.'.join(nameFileSplit[:-1])
+    return nameFile

@@ -1,0 +1,48 @@
+718 - Contas Pagas                                                                                                                                                                                        06/11/2019 09:50:48
+Tipo: Analítico                                                                                                                                                                                                        Page 2
+                                  Período de Lançamento: Todos                                                    Período de Pagamento: Todos
+                                  Período de Vencimento:         01/10/2019 A 31/10/2019                          Período de Emissão:           Todos
+                                  Grupo de Conta:        Todos
+                                  Conta..:    Todas
+                                  Filial...:  '01'                                                                Banco     : Todos
+                                  Usuário Baixa:              Todos
+DT.PAGAMENTO: 04/10/2019
+Lanc.       Grupo               Cod. Conta                         Cod. Fornecedor                        Nº Nota            Valor     Vl.Dev.   Vl.DescFin             Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+                                                                       Usu.Bx.
+     18805       100            100001 COMPRA MERCADORIA                  38 HUNTER DOUGLAS DO BRASIL LT3D55A9       -  2    2.878,99   0,00      1,15                  0,00         2.877,84        DIN      3                    12543
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 3559 -               Usu.Bx.             LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     20295       100            100001 COMPRA MERCADORIA                  16 ALTENBURG TEXTIL LTDA          622608   -  1    5.487,45   0,00      0,00                  0,00         5.487,45        DIN      3                    12542
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 622608 -             Usu.Bx.             LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     22025       100            100001 COMPRA MERCADORIA                 366 ESPLANE ESPACOS PLANEJADO2S9L8T6D16A    -  1    16.396,00  0,00      0,00                  0,00         16.396,00       DIN      3                    12541
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 298616 -             Usu.Bx.             LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     22065       301            301009 TARIFAS BANCARIAS                 194 ITAU UNIBANCO S.A.             0        -       5,10       0,00      0,00                  0,00         5,10                     3                    12544
+       Histórico   TAR/CUSTAS COBRANCA -                               Usu.Bx.             RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura                               Filial:  01
+   5           Títulos Listados       Total do Dia...........................:     Vl.Dev.                     0,00  Vl.DescFin                                  1,15 Vl.Juros                 0,00 Vlr.Título                      30.016,39
+DT.PAGAMENTO: 07/10/2019
+Lanc.       Grupo               Cod. Conta                         Cod. Fornecedor                        Nº Nota            Valor     Vl.Dev.   Vl.DescFin             Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     15222       100            100001 COMPRA MERCADORIA                  57 WALSYWA INDUSTRIA E COMERC13IO13D7E1 PR- O6DUTO2S.60M0E,0T0ALU0R,0G0ICOS LT0D,0A0          0,00         2.600,00        DIN      4                    12596
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 131371 -             Usu.Bx.             LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     16470       100            100001 COMPRA MERCADORIA                   2 PLACO DO BRASIL LTDA           20747    -  5    7.142,65   0,00      0,00                  0,00         7.142,65        DIN      4                    12594
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 20747 -              Usu.Bx.             LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     16795       100            100001 COMPRA MERCADORIA                   7 BLACK & DECKER DO BRASIL LTD41A4083     -  3    1.170,27   0,00      0,00                  0,00         1.170,27        DIN      4                    12597
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 414083 -             Usu.Bx.             LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     17579       100            100001 COMPRA MERCADORIA                   2 PLACO DO BRASIL LTDA           21111    -  4    6.348,24   0,00      0,00                  0,00         6.348,24        DIN      4                    12598
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 21111 -              Usu.Bx.             LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     17591       100            100001 COMPRA MERCADORIA                   2 PLACO DO BRASIL LTDA           21110    -  4    6.620,46   0,00      0,00                  0,00         6.620,46        DIN      4                    12599
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 21110 -              Usu.Bx.             LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     18383       100            100001 COMPRA MERCADORIA                   2 PLACO DO BRASIL LTDA           21301    -  3    6.433,52   0,00      0,00                  0,00         6.433,52        DIN      4                    12595
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 21301 -              Usu.Bx.             LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     22161       301            301009 TARIFAS BANCARIAS                 194 ITAU UNIBANCO S.A.             0        -       11,90      0,00      0,00                  0,00         11,90                    3                    12601
+       Histórico   TAR/CUSTAS COBRANCA -                               Usu.Bx.             RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura                               Filial:  01
+   7           Títulos Listados       Total do Dia...........................:     Vl.Dev.                     0,00  Vl.DescFin                                  0,00 Vl.Juros                 0,00 Vlr.Título                      30.327,04
+DT.PAGAMENTO: 08/10/2019
+Lanc.       Grupo               Cod. Conta                         Cod. Fornecedor                        Nº Nota            Valor     Vl.Dev.   Vl.DescFin             Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     22103       100            100016 ICMS NORMAL (SE ESTIVER NO CM1V7)1 SECRETARIA DE ESTADO DA FAZ0ENDA           -  0    64.480,64  0,00      0,00                  0,00         64.480,64       DIN      3                    12637
+       Histórico   PAGAMENTO ICMS NORMAL REF.MES 09/2019 -             Usu.Bx.             RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     22241       301            301009 TARIFAS BANCARIAS                 194 ITAU UNIBANCO S.A.             0        -       15,30      0,00      0,00                  0,00         15,30                    3                    12638
+       Histórico   TAR/CUSTAS COBRANCA -                               Usu.Bx.             RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS                  Func.Assinatura                               Filial:  01
+   2           Títulos Listados       Total do Dia...........................:     Vl.Dev.                     0,00  Vl.DescFin                                  0,00 Vl.Juros                 0,00 Vlr.Título                      64.495,94
+DT.PAGAMENTO: 09/10/2019
+Lanc.       Grupo               Cod. Conta                         Cod. Fornecedor                        Nº Nota            Valor     Vl.Dev.   Vl.DescFin             Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     20080       200            200020 MARKETING E MATERIAL DE VEND3A39 MARCELO MARTINS SANTA ROSA2604304655- 21106          900,00     0,00      0,00                  0,00         900,00          DIN      3                    12691
+

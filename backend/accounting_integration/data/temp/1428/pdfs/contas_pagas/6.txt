@@ -1,0 +1,48 @@
+718 - Contas Pagas                                                                                                                                                                                     06/11/2019 09:50:48
+Tipo: Analítico                                                                                                                                                                                                     Page 6
+                                  Período de Lançamento: Todos                                                         Período de Pagamento: Todos
+                                  Período de Vencimento:             01/10/2019 A 31/10/2019                           Período de Emissão:           Todos
+                                  Grupo de Conta:       Todos
+                                  Conta..:     Todas
+                                  Filial...:   '01'                                                                    Banco     : Todos
+                                  Usuário Baixa:                   Todos
+DT.PAGAMENTO: 17/10/2019
+Lanc.       Grupo               Cod. Conta                             Cod. Fornecedor                         Nº Nota            Valor     Vl.Dev.   Vl.DescFin     Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+   3           Títulos Listados             Total do Dia...........................:     Vl.Dev.                    0,00  Vl.DescFin                          0,00 Vl.Juros                 0,01 Vlr.Título                       9.157,02
+DT.PAGAMENTO: 18/10/2019
+Lanc.       Grupo               Cod. Conta                             Cod. Fornecedor                         Nº Nota            Valor     Vl.Dev.   Vl.DescFin     Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     15209       100            100001 COMPRA MERCADORIA                    4 BARBIERI DO BRASIL IND. COM D1E04P9E5RFIS- L4TDA. 37.020,30    0,00      0,00          0,00         37.020,30       DIN      3                    13177
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 10495 -                  Usu.Bx.              LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     17709       100            100001 COMPRA MERCADORIA                   20 ANCORA CHUMBADORES-LT              240720   -  3    1.156,79   0,00      0,00          0,00         1.156,79        DIN      3                    13177
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 240720 -                 Usu.Bx.              LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     21303       100            100001 COMPRA MERCADORIA                   13 ROLL-FOR ARTEFATOS METALIC8O4S14L5TDA-         1    1.203,60   0,00      0,00          0,00         1.203,60        DIN      3                    13178
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 84145 -                  Usu.Bx.              LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     21307       100            100001 COMPRA MERCADORIA                   13 ROLL-FOR ARTEFATOS METALIC8O4S14L4TDA-         1    1.252,00   0,00      0,00          0,00         1.252,00        DIN      3                    13178
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 84144 -                  Usu.Bx.              LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     23074       301            301009 TARIFAS BANCARIAS                  194 ITAU UNIBANCO S.A.                 0        -       1,70       0,00      0,00          0,00         1,70                     3                    13179
+       Histórico   TAR/CUSTAS COBRANCA -                                   Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+     23075       301            301009 TARIFAS BANCARIAS                  194 ITAU UNIBANCO S.A.                 0        -       10,20      0,00      0,00          0,00         10,20                    3                    13180
+       Histórico   TAR/CUSTAS COBRANCA -                                   Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+   6           Títulos Listados             Total do Dia...........................:     Vl.Dev.                    0,00  Vl.DescFin                          0,00 Vl.Juros                 0,00 Vlr.Título                      40.644,59
+DT.PAGAMENTO: 21/10/2019
+Lanc.       Grupo               Cod. Conta                             Cod. Fornecedor                         Nº Nota            Valor     Vl.Dev.   Vl.DescFin     Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     22012       600            600013 INSS                                76 SECRETARIA DA RECEITA FEDER0AL DO B-RA0SIL          1.204,18   0,00      0,00          0,00         1.204,18        DIN      3                    13229
+       Histórico   PAGAMENTO INSS REF.MES 09/2019 -                        Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     22028       100            100002 FRETES DE MERCADORIA                69 M-10 TRANSPORTES LTDA. - EPP46941           -  1    2.340,00   0,00      0,00          0,00         2.340,00        DIN      3                    13230
+       Histórico VLR. REF. FRETE CONF. CONHECIMENTO NUM. NF: 298616U-su.Bx.                     LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     23192       100            100002 FRETES DE MERCADORIA               371 EXPRESSO REGIONAL TRANSPO5RTES EIR- EL1I            5.100,00   0,00      0,00          0,00         5.100,00        DIN      3                    13226
+       Histórico VLR. REF. FRETE CONF. CONHECIMENTO NUM. NF: 22679 -Usu.Bx.                     LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     23215       301            301009 TARIFAS BANCARIAS                  194 ITAU UNIBANCO S.A.                 0        -       8,50       0,00      0,00          0,00         8,50                     3                    13231
+       Histórico   TAR/CUSTAS COBRANCA -                                   Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura                               Filial:  01
+   4           Títulos Listados             Total do Dia...........................:     Vl.Dev.                    0,00  Vl.DescFin                          0,00 Vl.Juros                 0,00 Vlr.Título                       8.652,68
+DT.PAGAMENTO: 22/10/2019
+Lanc.       Grupo               Cod. Conta                             Cod. Fornecedor                         Nº Nota            Valor     Vl.Dev.   Vl.DescFin     Vl.Juros    Vlr.Título      TpPgto   Bco.   Cheque      Trans
+     17308       401            401014 MANUTENCAO/ ACESSORIOS - VEIC8U1LCOESNTRO OESTE LUBRIFICANTES1L5T2D89A - E-PP3             435,67     0,00      0,00          0,00         435,67          DIN      3                    13271
+       Histórico   PAGAMENTO DE TITULO NR.15289 -     (Parc. 3/3)          Usu.Bx.              RAFAEL.SANTOS                  Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     17958       100            100001 COMPRA MERCADORIA                    4 BARBIERI DO BRASIL IND. COM D1E06P7E4RFIS- L3TDA. 33.204,60    0,00      0,00          0,00         33.204,60       DIN      3                    13270
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 10674 -                  Usu.Bx.              LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     19660       100            100001 COMPRA MERCADORIA                    2 PLACO DO BRASIL LTDA               21670    -  3    6.784,93   0,00      0,00          0,00         6.784,93        DIN      3                    13270
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 21670 -                  Usu.Bx.              LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+     20755       100            100001 COMPRA MERCADORIA                   13 ROLL-FOR ARTEFATOS METALIC8O4S03L9TDA-         2    4.570,02   0,00      0,00          0,00         4.570,02        DIN      3                    13270
+       Histórico   VLR. REF. COMPRAS CF. NF. NUM. 84039 -                                       LUAN                           Func. Bx.:   RAFAEL SILVA DOS SANTOS          Func.Assinatura        RAFAEL.SANTOS          Filial:  01
+

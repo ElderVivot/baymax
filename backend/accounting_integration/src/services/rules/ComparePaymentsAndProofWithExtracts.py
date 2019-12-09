@@ -9,9 +9,9 @@ import json
 from datetime import datetime, timedelta
 from tools.leArquivos import leXls_Xlsx, leTxt
 import tools.funcoesUteis as funcoesUteis
-from read_files.PaymentsCDI import PaymentsCDI
-from read_files.SispagItau import SispagItau
-from read_files.ExtractsOFX import ExtractsOFX
+# from read_files.PaymentsCDI import PaymentsCDI
+# from read_files.SispagItau import SispagItau
+# from read_files.ExtractsOFX import ExtractsOFX
 
 
 class ComparePaymentsAndProofWithExtracts(object):
@@ -84,16 +84,19 @@ class ComparePaymentsAndProofWithExtracts(object):
                 return extract
 
     def compareProofWithPayments(self):
-        for proof in self._proofOfPayments:
-            paymentArray = self.returnDataPayment(proof["paymentDate"], proof["amountPaid"])
-            payment = paymentArray[0]
+        try:
+            for proof in self._proofOfPayments:
+                paymentArray = self.returnDataPayment(proof["paymentDate"], proof["amountPaid"])
+                payment = paymentArray[0]
 
-            proof["document"] = funcoesUteis.analyzeIfFieldIsValid(payment, "document")
-            proof["historic"] = funcoesUteis.analyzeIfFieldIsValid(payment, "historic")
+                proof["document"] = funcoesUteis.analyzeIfFieldIsValid(payment, "document")
+                proof["historic"] = funcoesUteis.analyzeIfFieldIsValid(payment, "historic")
 
-            self._paymentsFinal.append(proof)
+                self._paymentsFinal.append(proof)
 
-            self._paymentsAlreadyRead.append(paymentArray[1])
+                self._paymentsAlreadyRead.append(paymentArray[1])
+        except Exception as e:
+            pass
 
     def comparePaymentsWithProof(self):
         for key, payment in enumerate(self._payments):
@@ -126,15 +129,15 @@ class ComparePaymentsAndProofWithExtracts(object):
 
         return self._paymentsFinal
 
-if __name__ == "__main__":
-    paymentsCDI = PaymentsCDI()
-    payments = paymentsCDI.processPayments("C:/_temp/integracao_diviart/angio.xlsx")
+# if __name__ == "__main__":
+#     paymentsCDI = PaymentsCDI()
+#     payments = paymentsCDI.processPayments("C:/_temp/integracao_diviart/angio.xlsx")
 
-    sispagItau = SispagItau()
-    proofOfPayments = sispagItau.process("C:/_temp/integracao_diviart/ARQUIVOCONTAANGIO082019-PAGINA 8.tmp")
+#     sispagItau = SispagItau()
+#     proofOfPayments = sispagItau.process("C:/_temp/integracao_diviart/ARQUIVOCONTAANGIO082019-PAGINA 8.tmp")
 
-    extractOFX = ExtractsOFX()
-    extracts = extractOFX.process("C:/_temp/integracao_diviart/extratoangio082019.ofx")
+#     extractOFX = ExtractsOFX()
+#     extracts = extractOFX.process("C:/_temp/integracao_diviart/extratoangio082019.ofx")
 
-    comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
-    comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
+#     comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
+#     comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()

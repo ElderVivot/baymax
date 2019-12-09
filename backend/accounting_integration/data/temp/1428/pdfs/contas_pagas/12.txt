@@ -1,0 +1,38 @@
+718 - Contas Pagas                                                                                                                                                       06/11/2019 09:50:48
+Tipo: Analítico                                                                                                                                                                     Page 12
+                               Período de Lançamento: Todos                                     Período de Pagamento: Todos
+                               Período de Vencimento:       01/10/2019 A 31/10/2019             Período de Emissão:    Todos
+                               Grupo de Conta:      Todos
+                               Conta..:    Todas
+                               Filial...:  '01'                                                 Banco   : Todos
+                               Usuário Baixa:            Todos
+
+Resumo por Tipo de Pagamento
+      Tipo Pagto                                 Qtde. Títulos                                Valor Pago
+      DIN                                                 125                                 590.261,39
+                                                           47                                    1.085,18
+                   TOTAL:                                172                                591.346,57
+
+Resumo por Banco Baixado e Moeda
+  Banco Baixado                                    Qtde. Títulos                              Valor Pago
+  3       BANCO ITAU 44388-9                                128                               482.542,87
+  5       BANCO DO BRASIL 41449-2                            29                                 64.367,59
+  4       CEF 51493-0                                        12                                 43.193,11
+  1       TESOURARIA CENTRAL                                   3                                 1.243,00
+                   TOTAL:                                 172                               591.346,57
+Resumo por Usuário Lanc.
+    Usuário                                        Qtde. Títulos                              Valor Pago
+   RAFAEL.SANTOS                                            101                               164.859,44
+   LUAN                                                      71                               426.487,13
+                    TOTAL:                                 172                              591.346,57
+
+Resumo por Usuário Baixa
+    Usuário                                        Qtde. Títulos                              Valor Pago
+    RAFAEL SILVA DOS SANTOS                                 172                               591.346,57
+                    TOTAL:                                 172                              591.346,57
+Resumo por Usuário Assinatura
+    Usuário                                        Qtde. Títulos                              Valor Pago
+    RAFAEL.SANTOS                                           125                                590.261,39
+                                                             47                                  1.085,18
+                    TOTAL:                                 172                              591.346,57
+

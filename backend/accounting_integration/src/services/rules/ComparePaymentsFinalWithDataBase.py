@@ -10,9 +10,6 @@ from math import floor
 from datetime import datetime, timedelta
 from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
-from read_files.PaymentsCDI import PaymentsCDI
-from read_files.SispagItau import SispagItau
-from read_files.ExtractsOFX import ExtractsOFX
 
 
 class ComparePaymentsFinalWithDataBase(object):
@@ -72,6 +69,11 @@ class ComparePaymentsFinalWithDataBase(object):
         return nameChanged
 
     def returnDataProvider(self, codi_for=0, cgce=None, name=None, degreeOfReliability=0):
+        # caso os campos sejam vazios deixa eles como nulos
+        if cgce == "":
+            cgce = None
+        if name == "":
+            name = None
 
         for provider in self._providers:
 
@@ -120,50 +122,81 @@ class ComparePaymentsFinalWithDataBase(object):
                 return provider
 
     def returnDataEntryNote(self, note=0, cgceProvider=None, ddoc_ent = None, dent_ent = None, amountPayment = 0.0, nameProvider=None):
+        if note == "":
+            note = 0
+        if cgceProvider == "":
+            cgceProvider = None
+        if ddoc_ent == "":
+            ddoc_ent = None
+        if dent_ent == "":
+            dent_ent = None
+        if nameProvider == "":
+            nameProvider = None
 
         for entryNote in self._entryNotes:
             provider = self.returnDataProvider(entryNote["codi_for"])
-            # print(provider)
-                    
+
+            cgceProviderEntryNote = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for", None)
+            noteEntryNote = int(funcoesUteis.analyzeIfFieldIsValid(entryNote, "nume_ent", 0))
+            issueEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
+                funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "ddoc_ent"), 2) )
+            entryEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
+                funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "dent_ent"), 2) )
+            amountPaidEntryNote = float(funcoesUteis.analyzeIfFieldIsValid(entryNote, "vcon_ent", 0.0))
+
             # utilizo uma função pois foi precisar comparar o cgce duas vezes, então chamo ele nos dois casos diferentes
             def returnNote(cgceProviderSearch):
-                if int(entryNote['nume_ent']) == note and cgceProviderSearch == cgceProvider:
+                if noteEntryNote == note and cgceProviderEntryNote == cgceProviderSearch:
                     return entryNote
 
-                if int(entryNote['nume_ent']) == note and entryNote["ddoc_ent"] == ddoc_ent:
+                if noteEntryNote == note and issueEntryNote == ddoc_ent and ddoc_ent is not None:
                     return entryNote
 
-                if int(entryNote['nume_ent']) == note and entryNote["dent_ent"] == dent_ent:
+                if noteEntryNote == note and entryEntryNote == dent_ent and dent_ent is not None:
                     return entryNote
 
-                if int(entryNote['nume_ent']) == note and float(entryNote["vcon_ent"]) == amountPayment:
+                if noteEntryNote == note and amountPaidEntryNote == amountPayment and amountPayment > 0:
                     return entryNote
 
-                if entryNote['ddoc_ent'] == ddoc_ent and cgceProviderSearch == cgceProvider:
+                if issueEntryNote == ddoc_ent and cgceProviderEntryNote == cgceProviderSearch and ddoc_ent is not None:
                     return entryNote
 
-                if entryNote["dent_ent"] == dent_ent and cgceProviderSearch == cgceProvider:
+                if entryEntryNote== dent_ent and cgceProviderEntryNote == cgceProviderSearch and dent_ent is not None:
                     return entryNote
                 
-                if float(entryNote["vcon_ent"]) == amountPayment and cgceProviderSearch == cgceProvider:
+                if amountPaidEntryNote == amountPayment and cgceProviderEntryNote == cgceProviderSearch and amountPayment > 0:
                     return entryNote
 
-            cgce_for = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for", None)
+            cgce_for = cgceProvider
             if returnNote(cgce_for) is not None:
                 return returnNote(cgce_for)
 
             # busca a nota olhando pelo nome da empresa
             providerByName = self.returnDataProvider(name=nameProvider, degreeOfReliability=1)
             cgce_for = funcoesUteis.analyzeIfFieldIsValid(providerByName, "cgce_for", None)
-            # print(cgce_for)
-            print(cgce_for, entryNote["nume_ent"])
             if returnNote(cgce_for) is not None:
                 return returnNote(cgce_for)
 
-    # def processComparateWithDataBase(self):
-    #     for payment in self._payments:
+    def process(self):
+        for payment in self._payments:
+            document = funcoesUteis.analyzeIfFieldIsValid(payment, "document")
+            cgceProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "cgceProvider")
+            issueDate = funcoesUteis.analyzeIfFieldIsValid(payment, "issueDate", None)
+            amountPaid = funcoesUteis.analyzeIfFieldIsValid(payment, "amountPaid", 0.0)
+            nameProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "nameProvider", None)
             
+            entryNote = self.returnDataEntryNote(document, cgceProvider, issueDate, issueDate, amountPaid, nameProvider)
+            
+            codi_for = funcoesUteis.analyzeIfFieldIsValid(entryNote, "codi_for", 0)
 
+            provider = self.returnDataProvider(codi_for)
+
+            payment["accountCode"] = funcoesUteis.analyzeIfFieldIsValid(provider, "codi_cta", 0)
+            
+            self._payments.append(payment)
+            print(payment)
+
+        return self._payments
 
 if __name__ == "__main__":
     providers = readJson(os.path.join(fileDir, 'backend/extract/data/fornecedores/1117-effornece.json'))
@@ -175,4 +208,4 @@ if __name__ == "__main__":
     # print(comparePaymentsFinalWithDataBase.returnDataProvider(name='LEXUS ENGENHARIA'))
     # print(comparePaymentsFinalWithDataBase.returnDataProvider(5, "07939369000103"))
     # print(comparePaymentsFinalWithDataBase.returnDataProvider(5))
-    print(comparePaymentsFinalWithDataBase.returnDataEntryNote(164, nameProvider='LEXUS ENGENHARIA'))
+    print(comparePaymentsFinalWithDataBase.returnDataEntryNote(164, amountPayment=2921.4))

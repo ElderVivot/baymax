@@ -10,17 +10,31 @@ import tools.funcoesUteis as funcoesUteis
 
 
 class PaymentsWinthorPDF(object):
-    def __init__(self):
+    def __init__(self, file):
         self._valuesPaymentDates = {}
         self._paymentDate = None
         self._valuesOfLine = []
+        self._file = file
+        self._dataFile = leTxt(self._file)
 
-    def returnPaymentsDates(self, file):
-        dataFile = leTxt(file)
+    def isPaymentWinthorPDF(self):
+        for data in self._dataFile:
+            data = str(data).strip()
+            data = funcoesUteis.treatTextField(data)
 
+            fieldsSeparatedBySpace = data.split(' ')
+
+            count = 0
+            for valueOfField in fieldsSeparatedBySpace:
+                if valueOfField in ("718", "CONTAS", "PAGAS"):
+                    count += 1
+            
+            if count >= 3:
+                return True
+
+    def returnPaymentsDates(self):
         # primeiro percorre e divide cada campo separando por um espaço
-        for data in dataFile:
-
+        for data in self._dataFile:
             data = str(data).strip()
             data = funcoesUteis.treatTextField(data)
 
@@ -34,7 +48,7 @@ class PaymentsWinthorPDF(object):
                 if valueOfLine[0] == "DT.PAGAMENTO:":
                     self._paymentDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(\
                         funcoesUteis.retornaCampoComoData(valueOfLine[1]))
-                
+                    
                 # identifica se é uma linha de lançamento com o idLanc devidamente preenchido
                 if funcoesUteis.treatNumberField(valueOfLine[0]).isnumeric() and ( self._valuesOfLine[key+1][0] == "HISTORICO" \
                      or ( valueOfLine[1].isnumeric() and valueOfLine[2].isnumeric() ) ):

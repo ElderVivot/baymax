@@ -11,7 +11,15 @@ import datetime
 import platform
 import pytesseract as ocr
 import json
+import PyPDF2
+import warnings
+import slate3k as slate
+import logging
 from PIL import Image
+
+warnings.filterwarnings("ignore")
+logging.propagate = False 
+logging.getLogger().setLevel(logging.ERROR)
 
 fileDir = os.path.dirname(__file__)
 sys.path.append(fileDir)
@@ -127,82 +135,61 @@ def leXls_Xlsx(arquivo):
     # retorna uma lista dos dados
     return lista_dados
 
-# def leCsv(arquivos=buscaArquivosEmPasta(extensao=(".csv")),saida="",separadorCampos=';'):
-#     saida = open(saida, "w", encoding='utf-8')
-#     lista_dados = []
-#     dados_linha = []
-#     for arquivo in arquivos:
-#         with open(arquivo, 'rt') as csvfile:
-#             csvreader = csv.reader(csvfile, delimiter=separadorCampos)
-#             for row in csvreader:
-#                 for campo in row:
-#                     valor_celula = funcoesUteis.removerAcentosECaracteresEspeciais(str(campo))
-                    
-#                     # retira espaços e quebra de linha da célula
-#                     valor_celula = str(valor_celula).strip().replace('\n', '')
+def ImageToText(file, wayToSaveFile):
+    nameFile = funcoesUteis.getOnlyNameFile(os.path.basename(file))
+    wayToSave = f"{wayToSaveFile}/{nameFile}.txt"
+    wayToSave = open(wayToSave, "w", encoding='utf-8')
+    content = ocr.image_to_string(Image.open(file), lang='por')
+    wayToSave.write(content)
+    wayToSave.close()
 
-#                     # gera o resultado num arquivo
-#                     resultado = valor_celula + ';'
-#                     resultado = resultado.replace('None', '')
-#                     saida.write(resultado)
+def PDFImgToText(file, wayToSaveFile):
+    nameFile = funcoesUteis.getOnlyNameFile(os.path.basename(file))
+    wayToSave = f"{wayToSaveFile}/{nameFile}.jpg"
 
-#                     # adiciona o valor da célula na lista de dados_linha
-#                     dados_linha.append(valor_celula)
+    command = f'magick -density 300 "{file}" "{wayToSave}"'
+    os.system(command)
 
-#                 # faz uma quebra de linha para passar pra nova linha
-#                 saida.write('\n')
-
-#                 # copia os dados da linha para o vetor de lista_dados
-#                 lista_dados.append(dados_linha[:])
-
-#                 # limpa os dados da linha para ler a próxima
-#                 dados_linha.clear()
-
-#     # fecha o arquivo
-#     saida.close()
-
-#     # retorna uma lista dos dados
-#     return lista_dados
-
-def ImageToText(arquivo):
-    nome_arquivo = os.path.basename(arquivo)
-    saida = f"temp\\" + str(nome_arquivo[0:len(nome_arquivo)-4]) + ".tmp"
-    saida = open(saida, "w", encoding='utf-8')
-    phrase = ocr.image_to_string(Image.open(arquivo), lang='por')
-    saida.write(phrase)
-    saida.close()
-
-def PDFImgToText(arquivo):
-    nome_arquivo = os.path.basename(arquivo)
-    saida = f"temp\\" + str(nome_arquivo[0:len(nome_arquivo)-4]) + ".jpg"
-
-    comando = f"magick -density 300 \"{arquivo}\" \"{saida}\""
-    os.system(comando)
-
-    ImageToText(saida)
+    ImageToText(wayToSave, wayToSaveFile)
     
-def PDFToText(arquivo, mode = "simple"):
-    nome_arquivo = os.path.basename(arquivo)
-    saida = f"temp\\" + str(nome_arquivo[0:len(nome_arquivo)-4]) + ".tmp"
+def PDFToText(file, wayToSaveFile, mode="simple"):
+    nameFile = funcoesUteis.getOnlyNameFile(os.path.basename(file))
+    wayToSave = f"{wayToSaveFile}/{nameFile}.txt"
     try:
-        # verifica se o Windows é 32 ou 64 bits
-        architecture = platform.architecture()
-        if architecture[0].count('32') > 0:
-            pdftotext = "pdftotext32.exe"
+        textPdf = ""
+        with open(file, 'rb') as filePdf:
+            documents = slate.PDF(filePdf)
+            for document in documents:
+                textPdf += document
+            
+        if funcoesUteis.treatTextField(textPdf) == "":
+            PDFImgToText(file, wayToSaveFile)
         else:
-            pdftotext = "pdftotext64.exe"
-        
-        # chama o comando pra transformação do PDF
-        comando = f"exe\\{pdftotext} -{mode} \"{arquivo}\" \"{saida}\""
-        os.system(comando)
-
-        # analisa se o PDF é uma imagem
-        tamanho_arquivo = os.path.getsize(saida)
-        if(tamanho_arquivo <= 5):
-            PDFImgToText(arquivo)
+            command = f'{fileDir}/exe/pdftotext64.exe -{mode} "{file}" "{wayToSave}"'
+            os.system(command)
 
     except Exception as ex:
-        print(f"Nao foi possivel transformar o arquivo \"{arquivo}\". O erro é: {str(ex)}")
+        print(f"Nao foi possivel transformar o arquivo \"{file}\". O erro é: {str(ex)}")
+
+# PDFToText('C:/Programming/baymax/backend/accounting_integration/data/temp/1428/pdfs/01-10-19 placo 20747-005 - diviart/1.pdf', 'C:/Programming/baymax/backend/accounting_integration/data/temp/1428/pdfs/01-10-19 placo 20747-005 - diviart')
+
+def splitPdfOnePageEach(file, wayToSaveFiles):
+    nameFile = funcoesUteis.getOnlyNameFile(os.path.basename(file))
+
+    os.makedirs(os.path.join(wayToSaveFiles, 'pdfs', nameFile))
+    
+    with open(file, 'rb') as filePdf:
+        pdfReader = PyPDF2.PdfFileReader(filePdf)
+        countPages = pdfReader.getNumPages()
+
+        for numberPage in range(countPages):
+            pageContent = pdfReader.getPage(numberPage)
+            
+            pdfWriter = PyPDF2.PdfFileWriter()
+            pdfWriter.addPage(pageContent)
+
+            with open(f'{wayToSaveFiles}\\pdfs\\{nameFile}\\{numberPage+1}.pdf', 'wb') as newPdfPerPage:
+                pdfWriter.write(newPdfPerPage)
 
 def leTxt(caminho, encoding='utf-8', treatAsText=False, removeBlankLines=False):
     lista_linha = []
