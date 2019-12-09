@@ -12,6 +12,7 @@ import tools.funcoesUteis as funcoesUteis
 from read_files.PaymentsCDI import PaymentsCDI
 from read_files.ProofsPaymentsItau import ProofsPaymentsItau
 from read_files.ExtractsOFX import ExtractsOFX
+from read_files.PaymentsWinthor import PaymentsWinthorPDF, PaymentsWinthorExcel
 
 
 class ComparePaymentsAndProofWithExtracts(object):
@@ -25,9 +26,13 @@ class ComparePaymentsAndProofWithExtracts(object):
         self._numberOfDaysInterval = { "daysAfter": 3, "daysBefore": 3 }
 
     def returnDataPayment(self, paymentDate, amountPaid):
+        paymentDatePlusTwo = funcoesUteis.retornaCampoComoData(paymentDate) + timedelta(days=2)
+        paymentDateMinusTwo = funcoesUteis.retornaCampoComoData(paymentDate) + timedelta(days=-2)
         for key, payment in enumerate(self._payments):
-            if payment['paymentDate'] == paymentDate and payment['amountPaid'] == amountPaid:
-                return [payment, key]
+            paymentDateRead = funcoesUteis.retornaCampoComoData(payment['paymentDate'])
+            # pesquisa num intervalo de 2 dias a mais e 2 dias a menos, pois nem sempre o financeiro do cliente é certo
+            if paymentDateMinusTwo <= paymentDateRead and paymentDateRead <= paymentDatePlusTwo and payment['amountPaid'] == amountPaid:
+                return [payment, key] # o key eu retorno pra depois identificar quais pagamentos já foram processados nas provas de pagamentos e não imprimi-los novamente
 
     def returnDayFoundInExtract(self, extract, paymentDate, amountPaid, operation, bank, account):
         paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
@@ -55,7 +60,7 @@ class ComparePaymentsAndProofWithExtracts(object):
 
         # procura nos dias negativo (da data atual até menos 3 dias pra trás)
         for day in range(0, self._numberOfDaysInterval["daysBefore"]+1):
-            paymentDateComparison = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate + timedelta(days=day))
+            paymentDateComparison = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate + timedelta(days=-day)) # - (menos) day pois estou voltando data
             if extract['dateTransaction'] == paymentDateComparison and extract['amount'] == amountPaid and extract['operation'] == operation \
                     and extract['bankId'] == bank and extract['account'].find(account) > 0:
                 dayBefore = day
@@ -72,10 +77,15 @@ class ComparePaymentsAndProofWithExtracts(object):
         if dayAfter is None and dayBefore is None:
             return None
         else:
+            if dayAfter is None and dayBefore is not None:
+                return dayBefore
+            if dayAfter is not None and dayBefore is None:
+                return dayAfter
+                
             if dayAfter < dayBefore:
                 return dayAfter
             else:
-                dayBefore
+                return dayBefore
 
     def returnDataExtract(self, paymentDate, amountPaid, operation, bank='', account=''):
         for extract in self._extracts:
@@ -84,19 +94,25 @@ class ComparePaymentsAndProofWithExtracts(object):
                 return extract
 
     def compareProofWithPayments(self):
-        try:
-            for proof in self._proofOfPayments:
-                paymentArray = self.returnDataPayment(proof["paymentDate"], proof["amountPaid"])
+        for proof in self._proofOfPayments:
+            paymentArray = self.returnDataPayment(proof["paymentDate"], proof["amountPaid"])
+            try:
                 payment = paymentArray[0]
 
-                proof["document"] = funcoesUteis.analyzeIfFieldIsValid(payment, "document")
-                proof["historic"] = funcoesUteis.analyzeIfFieldIsValid(payment, "historic")
-
-                self._paymentsFinal.append(proof)
-
                 self._paymentsAlreadyRead.append(paymentArray[1])
-        except Exception as e:
-            pass
+            except Exception:
+                payment = []
+            
+            proof["foundProof"] = True
+            proof["document"] = funcoesUteis.analyzeIfFieldIsValid(payment, "document")
+            proof["historic"] = funcoesUteis.analyzeIfFieldIsValid(payment, "historic")
+            proof["amountDiscount"] = funcoesUteis.analyzeIfFieldIsValid(payment, "amountDiscount")
+            proof["amountInterest"] = funcoesUteis.analyzeIfFieldIsValid(payment, "amountInterest")
+            proof["amountOriginal"] = funcoesUteis.analyzeIfFieldIsValid(payment, "amountOriginal")
+            proof["accountPlan"] = funcoesUteis.analyzeIfFieldIsValid(payment, "accountPlan")
+            proof["bankCheck"] = funcoesUteis.analyzeIfFieldIsValid(payment, "bankCheck")
+
+            self._paymentsFinal.append(proof)
 
     def comparePaymentsWithProof(self):
         for key, payment in enumerate(self._payments):
@@ -122,7 +138,8 @@ class ComparePaymentsAndProofWithExtracts(object):
             extract = self.returnDataExtract(paymentFinal["paymentDate"], paymentFinal["amountPaid"], operation, bank, account) 
 
             paymentFinal["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
-            paymentFinal["bankExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'bankId')}-{funcoesUteis.analyzeIfFieldIsValid(extract, 'account')}"
+            paymentFinal["bankExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'bankId')}"
+            paymentFinal["accountExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'account')}"
             paymentFinal["historicExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "historic")
 
             self._paymentsFinal[key] = paymentFinal
@@ -130,14 +147,17 @@ class ComparePaymentsAndProofWithExtracts(object):
         return self._paymentsFinal
 
 # if __name__ == "__main__":
-#     paymentsCDI = PaymentsCDI()
-#     payments = paymentsCDI.processPayments("C:/_temp/integracao_diviart/angio.xlsx")
+#     extracts = []
+#     payments = [{'paymentDate': '04/10/2019', 'nameProvider': 'ALTENBURG TEXTIL LTDA', 'document': '622608', 'parcelNumber': '1', 'bank': 'ITAU', 'account': '44388', 'amountPaid': 5487.45, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 5487.45, 'amountDevolution': 0.0, 'bankCheck': '', 'paymentType': 'DIN', 'accountPlan': 'COMPRA MERCADORIA', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 622608 -', 'companyBranch': '01'}, {'paymentDate': '03/10/2019', 'nameProvider': 'ALTENBURG TEXTIL LTDA', 'document': '622608', 'parcelNumber': '1', 'bank': 'ITAU', 'account': '44388', 'amountPaid': 5487.45, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 5487.45, 'amountDevolution': 0.0, 'bankCheck': '', 'paymentType': 'DIN', 'accountPlan': 'COMPRA MERCADORIA', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 622608 -', 'companyBranch': '01'}]
+#     proofOfPayments = [{'paymentDate': '03/10/2019', 'nameProvider': 'ALTENBURG TEXTIL LTDA', 'cnpjProvider': '', 'amountPaid': 5487.45, 'bank': 'ITAU', 'account': ''}]
+    # paymentsCDI = PaymentsCDI()
+    # payments = paymentsCDI.processPayments("C:/_temp/integracao_diviart/angio.xlsx")
 
-#     sispagItau = ProofsPaymentsItau()
-#     proofOfPayments = sispagItau.process("C:/_temp/integracao_diviart/ARQUIVOCONTAANGIO082019-PAGINA 8.tmp")
+    # sispagItau = ProofsPaymentsItau()
+    # proofOfPayments = sispagItau.process("C:/_temp/integracao_diviart/ARQUIVOCONTAANGIO082019-PAGINA 8.tmp")
 
-#     extractOFX = ExtractsOFX()
-#     extracts = extractOFX.process("C:/_temp/integracao_diviart/extratoangio082019.ofx")
+    # extractOFX = ExtractsOFX()
+    # extracts = extractOFX.process("C:/_temp/integracao_diviart/extratoangio082019.ofx")
 
-#     comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
-#     comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
+    # comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
+    # print(comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract())

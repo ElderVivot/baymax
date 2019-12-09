@@ -35,6 +35,7 @@ class GrupoDiviart(object):
             print (f"Error: {e.filename}, {e.strerror}")
 
         # read files originals
+        print(' - Etapa 1: Lendo os arquivos originais tais como extratos, planilhas do Excel!')
         for root, dirs, files in os.walk(self._wayFilesToRead):
             for file in files:
                 wayFile = os.path.join(root, file)
@@ -52,6 +53,7 @@ class GrupoDiviart(object):
                         self._proofsOfPayments.append(sispagItauExcel.process())
 
         # transform pdfs to text
+        print(' - Etapa 2: Transformando pra TXTs os PDFs encontrados!')
         for root, dirs, files in os.walk(self._wayFilesTemp):
             for dir_ in dirs:
                 if dir_ == "pdfs":
@@ -64,6 +66,7 @@ class GrupoDiviart(object):
                                 leArquivos.PDFToText(wayFile, wayDirFile)
                     
         # reads the txts
+        print(' - Etapa 3: Lendo os TXTs e analisando a estrutura deles')
         for root, dirs, files in os.walk(self._wayFilesTemp):
             for dir_ in dirs:
                 if dir_ == "pdfs":
@@ -80,6 +83,7 @@ class GrupoDiviart(object):
 
         paymentsDates = funcoesUteis.removeAnDictionaryFromWithinArray(self._paymentsDates)
         
+        print(' - Etapa 4: Lendo a planilha de contas do cliente e unindo a data de pagamento com o PDF de contas pagas')
         for root, dirs, files in os.walk(self._wayFilesToRead):
             for file in files:
                 wayFile = os.path.join(root, file)
@@ -88,18 +92,22 @@ class GrupoDiviart(object):
                     paymentsWinthorExcel = PaymentsWinthorExcel(self._codiEmp)
                     self._payments.append(paymentsWinthorExcel.processPayments(wayFile, paymentsDates))
 
+        print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos')
         extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
         payments = funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
         proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
         # print(proofOfPayments)
 
+        print(' - Etapa 6: Unindo o Financeiro com os Comprovantes de Pagamentos')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
         paymentsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
         # print(paymentsCompareWithProofAndExtracts)
-        # providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
-        # entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
-        # comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, paymentsCompareWithProofAndExtracts)
-        # paymentsFinal = comparePaymentsFinalWithDataBase.process()
+
+        print(' - Etapa 7: Comparando os pagamentos com o extrato bancário')
+        providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
+        entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
+        comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, paymentsCompareWithProofAndExtracts)
+        paymentsFinal = comparePaymentsFinalWithDataBase.process()
         # print(paymentsFinal)
 
 if __name__ == "__main__":

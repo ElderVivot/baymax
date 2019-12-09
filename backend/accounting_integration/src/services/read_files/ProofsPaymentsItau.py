@@ -143,7 +143,14 @@ class SispagItauExcel(object):
                         self._posionsOfHeader[nameField] = keyField
 
                 if fieldOne == "AGENCIA/CONTA:":
-                    bank = f"ITAU {funcoesUteis.treatTextFieldInVector(data, 2)}" 
+                    agencyAndAccount = funcoesUteis.treatTextFieldInVector(data, 2)
+                    bankSplit = agencyAndAccount.split('/')
+                    try:
+                        account = funcoesUteis.treatNumberField(bankSplit[1][:-1]) # o -1 é pq o último digíto é o verificador, e nem sempre no extrato tem ele
+                    except Exception:
+                        account = ""
+                    
+                    bank = "ITAU" 
 
                 paymentDate = funcoesUteis.treatDateFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="Data de pagamento")
 
@@ -159,7 +166,8 @@ class SispagItauExcel(object):
                         "nameProvider": nameProvider,
                         "cnpjProvider": cnpjProvider,
                         "amountPaid": amountPaid,
-                        "bank": bank
+                        "bank": bank,
+                        "account": account
                     }
 
                     self._valuesOfFile.append(self._valuesOfLine.copy())

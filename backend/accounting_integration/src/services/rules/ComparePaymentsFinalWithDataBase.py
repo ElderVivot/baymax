@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import sys
 import os
 
@@ -18,6 +20,7 @@ class ComparePaymentsFinalWithDataBase(object):
         self._providers = providers
         self._entryNotes = entryNotes
         self._payments = payments
+        self._paymentsFinal = []
         self._listWordsNotConsiderInTheName = ['LTDA', 'LTDA.', '-', 'ME', 'ME.', 'EPP', 'EPP.', 'EIRELI', 'EIRELI.', \
             'MEI', 'MEI.', 'EI', 'EI.', 'S.A.', 'SA', 'S.A', 'S/A']
         self._listWordsAbbreviatedToChange = {
@@ -161,7 +164,7 @@ class ComparePaymentsFinalWithDataBase(object):
                 if issueEntryNote == ddoc_ent and cgceProviderEntryNote == cgceProviderSearch and ddoc_ent is not None:
                     return entryNote
 
-                if entryEntryNote== dent_ent and cgceProviderEntryNote == cgceProviderSearch and dent_ent is not None:
+                if entryEntryNote == dent_ent and cgceProviderEntryNote == cgceProviderSearch and dent_ent is not None:
                     return entryNote
                 
                 if amountPaidEntryNote == amountPayment and cgceProviderEntryNote == cgceProviderSearch and amountPayment > 0:
@@ -178,9 +181,9 @@ class ComparePaymentsFinalWithDataBase(object):
                 return returnNote(cgce_for)
 
     def process(self):
-        for payment in self._payments:
+        for key, payment in enumerate(self._payments):
             document = funcoesUteis.analyzeIfFieldIsValid(payment, "document")
-            cgceProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "cgceProvider")
+            cgceProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "cgceProvider", None)
             issueDate = funcoesUteis.analyzeIfFieldIsValid(payment, "issueDate", None)
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(payment, "amountPaid", 0.0)
             nameProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "nameProvider", None)
@@ -191,21 +194,20 @@ class ComparePaymentsFinalWithDataBase(object):
 
             provider = self.returnDataProvider(codi_for)
 
-            payment["accountCode"] = funcoesUteis.analyzeIfFieldIsValid(provider, "codi_cta", 0)
-            
-            self._payments.append(payment)
-            print(payment)
+            if provider is None:
+                provider = self.returnDataProvider(cgce=cgceProvider, name=nameProvider)
 
-        return self._payments
+            payment["accountCode"] = funcoesUteis.analyzeIfFieldIsValid(provider, "codi_cta", 0)
+            print(f' \t - Processamento pagamento do documento {document} do fornecedor/despesa {nameProvider} referente ao valor {amountPaid}')
+            
+            self._paymentsFinal.append(payment)
+
+        return self._paymentsFinal
 
 # if __name__ == "__main__":
-#     providers = readJson(os.path.join(fileDir, 'backend/extract/data/fornecedores/1117-effornece.json'))
-#     entryNotes = readJson(os.path.join(fileDir, 'backend/extract/data/entradas/1117-efentradas.json'))
+#     providers = [ {'codi_for': 536, 'nome_for': 'WALSYWA INDUSTRIA E COMERCIO DE PRODUTOS', 'nomr_for': 'WALSYWA INDUSTRIA E COMERCIO DE PRODUTOS', 'cgce_for': '05896435000503', 'codi_cta': 1009.0, 'insc_for': '421086370113', 'imun_for': None, 'codigo_municipio': 5091, 'sigl_est': 'SP', 'conta_cliente_for': None, 'conta_compensacao_for': None}]
+#     entryNotes = [{'codi_emp': 1428, 'codi_ent': 3517, 'nume_ent': 135610.0, 'codi_for': 536, 'nome_for': 'WALSYWA INDUSTRIA E COMERCIO DE PRODUTOS', 'codi_esp': 36, 'codi_acu': 6, 'codi_nat': 2102, 'segi_ent': 0, 'seri_ent': '1', 'dent_ent': '2019-10-09T00:00:00.000Z', 'ddoc_ent': '2019-09-30T00:00:00.000Z', 'vcon_ent': 6040.5}, {'codi_emp': 1428, 'codi_ent': 3518, 'nume_ent': 135744.0, 'codi_for': 597, 'nome_for': 'SECURITY SYSTEMS SOLUTIONS COMERCIAL LTD', 'codi_esp': 36, 'codi_acu': 6, 'codi_nat': 2102, 'segi_ent': 0, 'seri_ent': '1', 'dent_ent': '2019-10-09T00:00:00.000Z', 'ddoc_ent': '2019-09-30T00:00:00.000Z', 'vcon_ent': 11303.1}]
+#     payments = [{'paymentDate': '30/10/2019', 'nameProvider': 'WALSYWA INDUSTRIA E COMERCIO D', 'cnpjProvider': '', 'amountPaid': 2340.5, 'bank': 'ITAU', 'account': '44388', 'document': '135610', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 135610 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 2340.5, 'accountPlan': 'COMPRA MERCADORIA', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': ''}]
 #     # print(entryNotes)
-#     comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes)
-#     # comparePaymentsFinalWithDataBase.removeWordsThatAreNotNames(name='LEXUS ENGENHARIA LTDA')
-#     # print(comparePaymentsFinalWithDataBase.changeAbbreviatedWord('P/ SERVICO'))
-#     # print(comparePaymentsFinalWithDataBase.returnDataProvider(name='LEXUS ENGENHARIA'))
-#     # print(comparePaymentsFinalWithDataBase.returnDataProvider(5, "07939369000103"))
-#     # print(comparePaymentsFinalWithDataBase.returnDataProvider(5))
-#     print(comparePaymentsFinalWithDataBase.returnDataEntryNote(164, amountPayment=2921.4))
+#     comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, payments)
+#     print(comparePaymentsFinalWithDataBase.process())
