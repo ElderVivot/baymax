@@ -6,7 +6,7 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json
 from ofxtools.Parser import OFXTree
-from tools.leArquivos import leXls_Xlsx, leTxt
+from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
 
 
@@ -15,7 +15,15 @@ class ExtractsOFX(object):
     def __init__(self):
         self._valuesOfLine = {}
         self._valuesOfFile = []
+        self._banks = readJson(os.path.join(fileDir, f'backend/accounting_integration/data/banks.json'))
+        # print(self._banks["BanksNamePerNumber"])
 
+    def returnNameBank(self, numberBank):
+        try:
+            return self._banks["BanksNamePerNumber"][str(numberBank)]
+        except Exception:
+            return ""
+    
     def process(self, file):
 
         try:
@@ -24,7 +32,9 @@ class ExtractsOFX(object):
             parser.parse(file)
             ofx = parser.convert()
 
-            bankId = ofx.bankmsgsrsv1[0].stmtrs.bankacctfrom.bankid
+            bankId = int(ofx.bankmsgsrsv1[0].stmtrs.bankacctfrom.bankid)
+            bankId = self.returnNameBank(bankId)
+
             account = ofx.bankmsgsrsv1[0].stmtrs.bankacctfrom.acctid
 
             transactions = ofx.bankmsgsrsv1[0].stmtrs.banktranlist

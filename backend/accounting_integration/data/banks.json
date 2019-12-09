@@ -1,0 +1,15 @@
+{
+    "ExtractHasAgency": {
+        "341": 4
+    },
+    "BanksNamePerNumber": {
+        "1": "BRASIL",
+        "341": "ITAU",
+        "104": "CEF",
+        "756": "SICOOB",
+        "237": "BRADESCO",
+        "748": "SICRED",
+        "33": "SANTANDER",
+        "422": "SAFRA"
+    }
+}

@@ -5,7 +5,7 @@ fileDir = os.path.dirname(os.path.realpath('__file__'))
 sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json
-from tools.leArquivos import leXls_Xlsx, leTxt
+from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
 
 
@@ -61,17 +61,19 @@ class PaymentsWinthorPDF(object):
 
 class PaymentsWinthorExcel(object):
 
-    def __init__(self):
+    def __init__(self, codiEmp):
         self._valuesOfLine = {}
         self._valuesOfFile = []
+        self._codiEmp = codiEmp
+        
     # backend/accounting_integration/data
-    def readValuesOfBank(self, file):
+    def returnBank(self, numberBank):
         try:
-            readFile = open(file)
-            self._valuesOfBanks = json.load(readFile)
-            readFile.close()
+            self._banks = readJson(os.path.join(fileDir, f'backend/accounting_integration/data/{self._codiEmp}_banks.json'))
+            bank = self._banks[str(numberBank)].split(' ')
+            return bank
         except Exception:
-            self._valuesOfBanks = {}
+            return ""
 
     def processPayments(self, file, paymentDatesByIdLanc):
         dataFile = leXls_Xlsx(file)
@@ -109,10 +111,13 @@ class PaymentsWinthorExcel(object):
                 paymentType = funcoesUteis.treatTextFieldInVector(data, 22)
 
                 bank = funcoesUteis.treatTextFieldInVector(data, 24)
+                bankVector = self.returnBank(bank)
+                bank = bankVector[0]
+
                 try:
-                    bank = self._valuesOfBanks[bank]
+                    account = bankVector[1]
                 except Exception:
-                    bank = bank
+                    account = ""
 
                 bankCheck = funcoesUteis.treatTextFieldInVector(data, 25)
 
@@ -125,6 +130,7 @@ class PaymentsWinthorExcel(object):
                         "document": document,
                         "parcelNumber": parcelNumber,
                         "bank": bank,
+                        "account": account,
                         "amountPaid": amountPaid,
                         "amountDiscount": amountDiscount,
                         "amountInterest": amountInterest,
@@ -140,15 +146,14 @@ class PaymentsWinthorExcel(object):
                     self._valuesOfFile.append(self._valuesOfLine.copy())
 
             except Exception as e:
-                print(e)
+                pass
 
         return self._valuesOfFile
 
 if __name__ == "__main__":
-    paymentsWinthorPDF = PaymentsWinthorPDF()
-    paymentDates = paymentsWinthorPDF.returnPaymentsDates("C:/_temp/integracao_diviart/teste.txt")
+    paymentsWinthorPDF = PaymentsWinthorPDF("C:/_temp/integracao_diviart/teste.txt")
+    paymentDates = paymentsWinthorPDF.returnPaymentsDates()
 
-    paymentsWinthorExcel = PaymentsWinthorExcel()
-    paymentsWinthorExcel.readValuesOfBank(os.path.join(fileDir, 'backend/accounting_integration/data/1428_banks.json'))
+    paymentsWinthorExcel = PaymentsWinthorExcel("1428")
     print(paymentsWinthorExcel.processPayments("C:/_temp/integracao_diviart/Contas Pagas.xls", paymentDates))
 

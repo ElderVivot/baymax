@@ -85,23 +85,22 @@ class GrupoDiviart(object):
                 wayFile = os.path.join(root, file)
 
                 if file.lower().endswith(('.xls', '.xlsx')):
-                    paymentsWinthorExcel = PaymentsWinthorExcel()
-                    paymentsWinthorExcel.readValuesOfBank(os.path.join(fileDir, 'backend/accounting_integration/data/1428_banks.json'))
+                    paymentsWinthorExcel = PaymentsWinthorExcel(self._codiEmp)
                     self._payments.append(paymentsWinthorExcel.processPayments(wayFile, paymentsDates))
 
         extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
         payments = funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
         proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
+        # print(proofOfPayments)
 
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
         paymentsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
-
-        providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
-        entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
-        print('teste')
-        comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, paymentsCompareWithProofAndExtracts)
-        paymentsFinal = comparePaymentsFinalWithDataBase.process()
-        print(paymentsFinal)
+        # print(paymentsCompareWithProofAndExtracts)
+        # providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
+        # entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
+        # comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, paymentsCompareWithProofAndExtracts)
+        # paymentsFinal = comparePaymentsFinalWithDataBase.process()
+        # print(paymentsFinal)
 
 if __name__ == "__main__":
     grupoDiviart = GrupoDiviart()

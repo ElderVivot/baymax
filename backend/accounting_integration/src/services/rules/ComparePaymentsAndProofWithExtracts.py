@@ -9,9 +9,9 @@ import json
 from datetime import datetime, timedelta
 from tools.leArquivos import leXls_Xlsx, leTxt
 import tools.funcoesUteis as funcoesUteis
-# from read_files.PaymentsCDI import PaymentsCDI
-# from read_files.SispagItau import SispagItau
-# from read_files.ExtractsOFX import ExtractsOFX
+from read_files.PaymentsCDI import PaymentsCDI
+from read_files.ProofsPaymentsItau import ProofsPaymentsItau
+from read_files.ExtractsOFX import ExtractsOFX
 
 
 class ComparePaymentsAndProofWithExtracts(object):
@@ -68,7 +68,7 @@ class ComparePaymentsAndProofWithExtracts(object):
                 dayBefore = day
                 break
 
-        # senão encontrar nenhum dia retorna nulto
+        # senão encontrar nenhum dia retorna nulo
         if dayAfter is None and dayBefore is None:
             return None
         else:
@@ -133,7 +133,7 @@ class ComparePaymentsAndProofWithExtracts(object):
 #     paymentsCDI = PaymentsCDI()
 #     payments = paymentsCDI.processPayments("C:/_temp/integracao_diviart/angio.xlsx")
 
-#     sispagItau = SispagItau()
+#     sispagItau = ProofsPaymentsItau()
 #     proofOfPayments = sispagItau.process("C:/_temp/integracao_diviart/ARQUIVOCONTAANGIO082019-PAGINA 8.tmp")
 
 #     extractOFX = ExtractsOFX()

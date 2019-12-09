@@ -198,14 +198,14 @@ class ComparePaymentsFinalWithDataBase(object):
 
         return self._payments
 
-if __name__ == "__main__":
-    providers = readJson(os.path.join(fileDir, 'backend/extract/data/fornecedores/1117-effornece.json'))
-    entryNotes = readJson(os.path.join(fileDir, 'backend/extract/data/entradas/1117-efentradas.json'))
-    # print(entryNotes)
-    comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes)
-    # comparePaymentsFinalWithDataBase.removeWordsThatAreNotNames(name='LEXUS ENGENHARIA LTDA')
-    # print(comparePaymentsFinalWithDataBase.changeAbbreviatedWord('P/ SERVICO'))
-    # print(comparePaymentsFinalWithDataBase.returnDataProvider(name='LEXUS ENGENHARIA'))
-    # print(comparePaymentsFinalWithDataBase.returnDataProvider(5, "07939369000103"))
-    # print(comparePaymentsFinalWithDataBase.returnDataProvider(5))
-    print(comparePaymentsFinalWithDataBase.returnDataEntryNote(164, amountPayment=2921.4))
+# if __name__ == "__main__":
+#     providers = readJson(os.path.join(fileDir, 'backend/extract/data/fornecedores/1117-effornece.json'))
+#     entryNotes = readJson(os.path.join(fileDir, 'backend/extract/data/entradas/1117-efentradas.json'))
+#     # print(entryNotes)
+#     comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes)
+#     # comparePaymentsFinalWithDataBase.removeWordsThatAreNotNames(name='LEXUS ENGENHARIA LTDA')
+#     # print(comparePaymentsFinalWithDataBase.changeAbbreviatedWord('P/ SERVICO'))
+#     # print(comparePaymentsFinalWithDataBase.returnDataProvider(name='LEXUS ENGENHARIA'))
+#     # print(comparePaymentsFinalWithDataBase.returnDataProvider(5, "07939369000103"))
+#     # print(comparePaymentsFinalWithDataBase.returnDataProvider(5))
+#     print(comparePaymentsFinalWithDataBase.returnDataEntryNote(164, amountPayment=2921.4))

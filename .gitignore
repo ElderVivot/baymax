@@ -206,4 +206,5 @@ public
 
 # *** adicionados manualmente ***
 /backend/extract/data
+backend/accounting_integration/data/temp
 /.vscode/
