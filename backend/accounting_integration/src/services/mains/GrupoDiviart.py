@@ -3,7 +3,8 @@
 import sys
 import os
 
-fileDir = os.path.dirname(os.path.realpath('__file__'))
+absPath = os.path.dirname(os.path.abspath(__file__))
+fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
 sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src/services'))
 
@@ -15,6 +16,7 @@ from read_files.ProofsPaymentsItau import ProofsPaymentsItau, SispagItauExcel
 from read_files.ExtractsOFX import ExtractsOFX
 from rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWithExtracts
 from rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
+from rules.GenerateExcel import GenerateExcel
 
 
 class GrupoDiviart(object):
@@ -35,7 +37,7 @@ class GrupoDiviart(object):
             print (f"Error: {e.filename}, {e.strerror}")
 
         # read files originals
-        print(' - Etapa 1: Lendo os arquivos originais tais como extratos, planilhas do Excel!')
+        print(' - Etapa 1: Lendo os arquivos originais tais como extratos, planilhas do Excel.')
         for root, dirs, files in os.walk(self._wayFilesToRead):
             for file in files:
                 wayFile = os.path.join(root, file)
@@ -53,7 +55,7 @@ class GrupoDiviart(object):
                         self._proofsOfPayments.append(sispagItauExcel.process())
 
         # transform pdfs to text
-        print(' - Etapa 2: Transformando pra TXTs os PDFs encontrados!')
+        print(' - Etapa 2: Transformando pra TXTs os PDFs encontrados.')
         for root, dirs, files in os.walk(self._wayFilesTemp):
             for dir_ in dirs:
                 if dir_ == "pdfs":
@@ -66,7 +68,7 @@ class GrupoDiviart(object):
                                 leArquivos.PDFToText(wayFile, wayDirFile)
                     
         # reads the txts
-        print(' - Etapa 3: Lendo os TXTs e analisando a estrutura deles')
+        print(' - Etapa 3: Lendo os TXTs e analisando a estrutura deles.')
         for root, dirs, files in os.walk(self._wayFilesTemp):
             for dir_ in dirs:
                 if dir_ == "pdfs":
@@ -92,23 +94,29 @@ class GrupoDiviart(object):
                     paymentsWinthorExcel = PaymentsWinthorExcel(self._codiEmp)
                     self._payments.append(paymentsWinthorExcel.processPayments(wayFile, paymentsDates))
 
-        print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos')
+        print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')
         extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
         payments = funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
         proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
         # print(proofOfPayments)
 
-        print(' - Etapa 6: Unindo o Financeiro com os Comprovantes de Pagamentos')
+        print(' - Etapa 6: Unindo o Financeiro com os Comprovantes de Pagamentos.')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
         paymentsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
         # print(paymentsCompareWithProofAndExtracts)
 
-        print(' - Etapa 7: Comparando os pagamentos com o extrato bancário')
+        print(' - Etapa 7: Buscando a conta do fornecedor/despesa dentro do sistema.')
         providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
         entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
-        comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, paymentsCompareWithProofAndExtracts)
+        comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, paymentsCompareWithProofAndExtracts, self._codiEmp)
         paymentsFinal = comparePaymentsFinalWithDataBase.process()
-        # print(paymentsFinal)
+        
+        print(' - Etapa 8: Exportando informações')
+        generateExcel = GenerateExcel(self._codiEmp)
+        generateExcel.generateSheetPayments(paymentsFinal)
+        generateExcel.generateSheetExtract(extracts)
+        generateExcel.closeFile()
+
 
 if __name__ == "__main__":
     grupoDiviart = GrupoDiviart()

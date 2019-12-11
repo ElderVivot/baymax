@@ -1,7 +1,8 @@
 import sys
 import os
 
-fileDir = os.path.dirname(os.path.realpath('__file__'))
+absPath = os.path.dirname(os.path.abspath(__file__))
+fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json

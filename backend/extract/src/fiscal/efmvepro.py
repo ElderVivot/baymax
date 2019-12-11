@@ -7,7 +7,8 @@ import json
 from db.ConexaoBanco import DB
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
 
-fileDir = os.path.dirname(os.path.realpath('__file__'))
+absPath = os.path.dirname(os.path.abspath(__file__))
+fileDir = absPath[:absPath.find('backend')]
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)

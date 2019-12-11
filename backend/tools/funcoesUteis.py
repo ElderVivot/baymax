@@ -1,7 +1,8 @@
 import os
 import sys
 
-fileDir = os.path.dirname(os.path.realpath('__file__'))
+absPath = os.path.dirname(os.path.abspath(__file__))
+fileDir = absPath[:absPath.find('backend')]
 sys.path.append(fileDir)
 
 import unicodedata

@@ -17,7 +17,7 @@ class MainExtract:
     # efmvepro.exportaDados()
 
     effornece = extractEffornece()
-    effornece.exportaDados()
+    effornece.exportData()
 
 if __name__ == '__main__':
     mainExtract = MainExtract() 
