@@ -168,7 +168,8 @@ class SispagItauExcel(object):
                         "cnpjProvider": cnpjProvider,
                         "amountPaid": amountPaid,
                         "bank": bank,
-                        "account": account
+                        "account": account,
+                        "foundProof": True
                     }
 
                     self._valuesOfFile.append(self._valuesOfLine.copy())

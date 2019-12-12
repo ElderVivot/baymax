@@ -217,3 +217,7 @@ def getOnlyNameFile(nameFileOriginal):
     nameFileSplit = nameFileOriginal.split('.')
     nameFile = '.'.join(nameFileSplit[:-1])
     return nameFile
+
+def getDateTimeNowInFormatStr():
+    dateTimeObj = datetime.datetime.now()
+    return dateTimeObj.strftime("%Y_%m_%d %H_%M_%S")

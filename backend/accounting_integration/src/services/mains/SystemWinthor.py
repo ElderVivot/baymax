@@ -9,6 +9,7 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src/services'))
 
 import shutil
+import json
 import tools.leArquivos as leArquivos
 import tools.funcoesUteis as funcoesUteis
 from read_files.PaymentsWinthor import PaymentsWinthorPDF, PaymentsWinthorExcel
@@ -18,16 +19,22 @@ from rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWit
 from rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
 from rules.GenerateExcel import GenerateExcel
 
+wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
+wayDefault = json.load(wayToSaveFiles)
+wayToSaveFiles.close()
 
-class GrupoDiviart(object):
+
+class SystemWinthor(object):
     def __init__(self):
         self._payments = []
         self._paymentsDates = []
         self._proofsOfPayments = []
         self._extracts = []
-        # self._codiEmp = input('- Digite o código da empresa dentro da Domínio que será realizada a integração: ')
-        self._codiEmp = 1428
-        self._wayFilesToRead = f"C:/integracao_contabil/{self._codiEmp}/arquivos_originais/temp"
+        self._codiEmp = input(f'\n\n- Digite o código da empresa dentro da Domínio que será realizada a integração: ')
+        self._dateInicial = input(f'\n\n- Informe a data inicial (dd/mm/aaaa): ')
+        self._dateFinal = input(f'- Informe a data final (dd/mm/aaaa): ')
+        # self._codiEmp = 1428
+        self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
         self._wayFilesTemp = os.path.join(fileDir, f'backend/accounting_integration/data/temp/{self._codiEmp}')
 
     def processesIntegration(self):
@@ -37,7 +44,7 @@ class GrupoDiviart(object):
             print (f"Error: {e.filename}, {e.strerror}")
 
         # read files originals
-        print(' - Etapa 1: Lendo os arquivos originais tais como extratos, planilhas do Excel.')
+        print('\n\n - Etapa 1: Lendo os arquivos originais tais como extratos, planilhas do Excel.')
         for root, dirs, files in os.walk(self._wayFilesToRead):
             for file in files:
                 wayFile = os.path.join(root, file)
@@ -113,11 +120,11 @@ class GrupoDiviart(object):
         
         print(' - Etapa 8: Exportando informações')
         generateExcel = GenerateExcel(self._codiEmp)
-        generateExcel.generateSheetPayments(paymentsFinal)
-        generateExcel.generateSheetExtract(extracts)
+        generateExcel.sheetPayments(paymentsFinal)
+        generateExcel.sheetExtract(extracts)
         generateExcel.closeFile()
 
 
 if __name__ == "__main__":
-    grupoDiviart = GrupoDiviart()
-    grupoDiviart.processesIntegration()
+    systemWinthor = SystemWinthor()
+    systemWinthor.processesIntegration()
