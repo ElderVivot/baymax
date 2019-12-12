@@ -27,12 +27,12 @@ class ComparePaymentsAndProofWithExtracts(object):
         self._numberOfDaysInterval = { "daysAfter": 3, "daysBefore": 3 }
 
     def returnDataPayment(self, paymentDate, amountPaid):
-        paymentDatePlusTwo = funcoesUteis.retornaCampoComoData(paymentDate) + timedelta(days=2)
-        paymentDateMinusTwo = funcoesUteis.retornaCampoComoData(paymentDate) + timedelta(days=-2)
+        paymentDatePlusFive = funcoesUteis.retornaCampoComoData(paymentDate) + timedelta(days=5)
+        paymentDateMinusFive = funcoesUteis.retornaCampoComoData(paymentDate) + timedelta(days=-5)
         for key, payment in enumerate(self._payments):
             paymentDateRead = funcoesUteis.retornaCampoComoData(payment['paymentDate'])
             # pesquisa num intervalo de 2 dias a mais e 2 dias a menos, pois nem sempre o financeiro do cliente é certo
-            if paymentDateMinusTwo <= paymentDateRead and paymentDateRead <= paymentDatePlusTwo and payment['amountPaid'] == amountPaid:
+            if paymentDateMinusFive <= paymentDateRead and paymentDateRead <= paymentDatePlusFive and payment['amountPaid'] == amountPaid:
                 return [payment, key] # o key eu retorno pra depois identificar quais pagamentos já foram processados nas provas de pagamentos e não imprimi-los novamente
 
     def returnDayFoundInExtract(self, extract, paymentDate, amountPaid, operation, bank, account):

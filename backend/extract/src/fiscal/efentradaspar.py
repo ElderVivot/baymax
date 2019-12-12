@@ -35,15 +35,18 @@ class extractEfentradaspar():
                         if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
                             print(f"- Exportando effornece da empresa {companie['codi_emp']} - {companie['nome_emp']}")
                             self._cursor = self._connection.cursor()
-                            sql = ( f"SELECT par.codi_emp, par.codi_ent, ent.nume_ent, ent.ddoc_ent, ent.dent_ent, par.vcto_entp, par.vlor_entp "
+                            sql = ( f"SELECT par.codi_emp, par.codi_ent, par.parc_entp, ent.nume_ent, forn.codi_for, ent.ddoc_ent, ent.dent_ent, par.vcto_entp, par.vlor_entp "
                                     f"  FROM bethadba.efentradaspar AS par "
                                     f"       INNER JOIN bethadba.efentradas AS ent "
                                     f"            ON    ent.codi_emp = par.codi_emp "
                                     f"              AND ent.codi_ent = par.codi_ent "
+                                    f"       INNER JOIN bethadba.effornece AS forn "
+                                    f"            ON    forn.codi_emp = ent.codi_emp "
+                                    f"              AND forn.codi_for = ent.codi_for "
                                     f" WHERE ent.codi_emp = {companie['codi_emp']}"
                                     f"   AND year(ent.dent_ent) >= {filterYearStart}"
                                     f"   AND month(ent.dent_ent) >= {filterMonthStart}"
-                                    f"ORDER BY par.codi_emp, par.codi_ent")
+                                    f"ORDER BY par.codi_emp, ent.dent_ent DESC, par.parc_entp")
                             self._cursor.execute(sql)
 
                             df = pd.read_sql_query(sql, self._connection)

@@ -17,10 +17,11 @@ import tools.funcoesUteis as funcoesUteis
 
 class ComparePaymentsFinalWithDataBase(object):
     
-    def __init__(self, providers=[], entryNotes=[], payments=[], codiEmp=0):
+    def __init__(self, providers=[], entryNotes=[], installments=[], payments=[], codiEmp=0):
         self._providers = providers
         self._entryNotes = entryNotes
         self._payments = payments
+        self._installments = installments
         self._codiEmp = codiEmp
         self._paymentsFinal = []
         self._listWordsNotConsiderInTheName = ['LTDA', 'LTDA.', '-', 'ME', 'ME.', 'EPP', 'EPP.', 'EIRELI', 'EIRELI.', \
@@ -186,25 +187,79 @@ class ComparePaymentsFinalWithDataBase(object):
             if returnNote(cgce_for) is not None:
                 return returnNote(cgce_for)
 
+    def returnDataInstallmentsEntryNote(self, dueDate=None, note=0, cgceProvider=None, ddoc_ent = None, dent_ent = None, amountPayment = 0.0, amountOriginal=0.0):
+        if dueDate is None:
+            return None # se a data de vencimento for nula já nem processa o resto
+
+        if note == "":
+            note = 0
+        if cgceProvider == "":
+            cgceProvider = None
+        if ddoc_ent == "":
+            ddoc_ent = None
+        if dent_ent == "":
+            dent_ent = None
+        if nameProvider == "":
+            nameProvider = None
+
+        for installment in self._installments:
+            provider = self.returnDataProvider(installment["codi_for"])
+
+            dueDateEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
+                funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(installment, "vcto_entp"), 2) )
+            cgceProviderEntryNote = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for", None)
+            noteEntryNote = int(funcoesUteis.analyzeIfFieldIsValid(installment, "nume_ent", 0))
+            issueEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
+                funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(installment, "ddoc_ent"), 2) )
+            entryEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
+                funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(installment, "dent_ent"), 2) )
+            amountInstallmentEntryNote = float(funcoesUteis.analyzeIfFieldIsValid(installment, "vlor_entp", 0.0))
+
+            # o int é pra poder tirar o .0 de quando é exportado os dados
+            note = int(note)
+
+            if dueDateEntryNote == dueDate and noteEntryNote == note:
+                return installment
+
+            if dueDateEntryNote == dueDate and cgceProviderEntryNote == cgceProvider:
+                return installment
+
+            if dueDateEntryNote == dueDate and issueEntryNote == ddoc_ent and ddoc_ent is not None:
+                return installment
+
+            if dueDateEntryNote == dueDate and entryEntryNote == dent_ent and dent_ent is not None:
+                return installment
+
+            if dueDateEntryNote == dueDate and amountInstallmentEntryNote == amountOriginal and amountOriginal > 0:
+                return installment
+                
+            if dueDateEntryNote == dueDate and amountInstallmentEntryNote == amountPayment and amountPayment > 0:
+                return installment
+
     def process(self):
         countTotal = len(self._payments)
         for key, payment in enumerate(self._payments):
             document = funcoesUteis.analyzeIfFieldIsValid(payment, "document")
             cgceProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "cgceProvider", None)
             issueDate = funcoesUteis.analyzeIfFieldIsValid(payment, "issueDate", None)
+            dueDate = funcoesUteis.analyzeIfFieldIsValid(payment, "dueDate", None)
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(payment, "amountPaid", 0.0)
+            amountOriginal = funcoesUteis.analyzeIfFieldIsValid(payment, "amountOriginal", 0.0)
             nameProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "nameProvider", None)
             
             entryNote = self.returnDataEntryNote(document, cgceProvider, issueDate, issueDate, amountPaid, nameProvider)
-            
-            codi_for = funcoesUteis.analyzeIfFieldIsValid(entryNote, "codi_for", 0)
+            if entryNote is None:
+                installmentsEntryNote = self.returnDataInstallmentsEntryNote(dueDate, document, cgceProvider, issueDate, issueDate, amountPaid, amountOriginal)
+                codi_for = funcoesUteis.analyzeIfFieldIsValid(installmentsEntryNote, "codi_for", 0)
+            else:
+                codi_for = funcoesUteis.analyzeIfFieldIsValid(entryNote, "codi_for", 0)
 
             provider = self.returnDataProvider(codi_for)
 
+            #payment["findNote"] = 'False'
+
             if entryNote is not None:
                 payment["findNote"] = True
-            else:
-                payment["findNote"] = False
 
             if provider is None:
                 provider = self.returnDataProvider(cgce=cgceProvider, name=nameProvider)

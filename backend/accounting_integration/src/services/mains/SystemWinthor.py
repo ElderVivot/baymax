@@ -18,6 +18,7 @@ from read_files.ExtractsOFX import ExtractsOFX
 from rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWithExtracts
 from rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
 from rules.GenerateExcel import GenerateExcel
+from rules.FilterPeriod import FilterPeriod
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
@@ -30,9 +31,9 @@ class SystemWinthor(object):
         self._paymentsDates = []
         self._proofsOfPayments = []
         self._extracts = []
-        self._codiEmp = input(f'\n\n- Digite o código da empresa dentro da Domínio que será realizada a integração: ')
-        self._dateInicial = input(f'\n\n- Informe a data inicial (dd/mm/aaaa): ')
-        self._dateFinal = input(f'- Informe a data final (dd/mm/aaaa): ')
+        self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: ')
+        self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
+        self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
         # self._codiEmp = 1428
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
         self._wayFilesTemp = os.path.join(fileDir, f'backend/accounting_integration/data/temp/{self._codiEmp}')
@@ -43,10 +44,13 @@ class SystemWinthor(object):
         except OSError as e:
             print (f"Error: {e.filename}, {e.strerror}")
 
+        sequential = 0 # este sequencial serve pra caso tenha 2 pdfs com mesmo nome em pasta diferentes ele não sobrescreva um ao outro, portanto vai salvar com o nome - sequencial
+            
         # read files originals
-        print('\n\n - Etapa 1: Lendo os arquivos originais tais como extratos, planilhas do Excel.')
+        print('\n - Etapa 1: Lendo os arquivos originais tais como extratos, planilhas do Excel.')
         for root, dirs, files in os.walk(self._wayFilesToRead):
             for file in files:
+
                 wayFile = os.path.join(root, file)
 
                 # extracts
@@ -55,7 +59,8 @@ class SystemWinthor(object):
                     self._extracts.append(extractOFX.process(wayFile))
                 # split pdfs em one page each
                 elif file.lower().endswith(('.pdf')):
-                    leArquivos.splitPdfOnePageEach(wayFile, self._wayFilesTemp)
+                    sequential += 1
+                    leArquivos.splitPdfOnePageEach(wayFile, self._wayFilesTemp, sequential)
                 elif file.lower().endswith(('.xlsx')):
                     sispagItauExcel = SispagItauExcel(wayFile)
                     if sispagItauExcel.isSispagItauExcel():
@@ -85,7 +90,7 @@ class SystemWinthor(object):
                             if file.lower().endswith(('.txt')):
                                 wayFile = os.path.join(rootDir, file)
                                 wayDirFile = os.path.dirname(wayFile)
-                                
+                                print(f' \t - Transformando o arquivo {file}')
                                 paymentsWinthorPDF = PaymentsWinthorPDF(wayFile)
                                 if paymentsWinthorPDF.isPaymentWinthorPDF():
                                     self._paymentsDates.append(paymentsWinthorPDF.returnPaymentsDates())
@@ -115,14 +120,23 @@ class SystemWinthor(object):
         print(' - Etapa 7: Buscando a conta do fornecedor/despesa dentro do sistema.')
         providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
         entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
-        comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, paymentsCompareWithProofAndExtracts, self._codiEmp)
+        installmentsEntryNote = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas_parcelas/{self._codiEmp}-efentradaspar.json'))
+        comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, installmentsEntryNote, paymentsCompareWithProofAndExtracts, self._codiEmp)
         paymentsFinal = comparePaymentsFinalWithDataBase.process()
         
-        print(' - Etapa 8: Exportando informações')
+        print(' - Etapa 8: Filtrando os pagamentos do período informado.')
+        filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsFinal, extracts)
+        extractsWithFilter = filterPeriod.filterExtracts()
+        paymentsWithFilter = filterPeriod.filterPayments()
+
+        print(' - Etapa 9: Exportando informações')
         generateExcel = GenerateExcel(self._codiEmp)
-        generateExcel.sheetPayments(paymentsFinal)
-        generateExcel.sheetExtract(extracts)
+        generateExcel.sheetPayments(paymentsWithFilter)
+        generateExcel.sheetExtract(extractsWithFilter)
         generateExcel.closeFile()
+        
+        print(' - Processo Finalizado.')
+        os.system('pause > nul')
 
 
 if __name__ == "__main__":

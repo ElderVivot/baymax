@@ -55,7 +55,7 @@ class PaymentsWinthorPDF(object):
                      or ( valueOfLine[1].isnumeric() and valueOfLine[2].isnumeric() ) ):
                     self._valuesPaymentDates[valueOfLine[0]] = self._paymentDate
             except Exception as e:
-                print(e)
+                pass
         
         return self._valuesPaymentDates
 

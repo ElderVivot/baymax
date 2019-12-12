@@ -173,23 +173,29 @@ def PDFToText(file, wayToSaveFile, mode="simple"):
 
 # PDFToText('C:/Programming/baymax/backend/accounting_integration/data/temp/1428/pdfs/01-10-19 placo 20747-005 - diviart/1.pdf', 'C:/Programming/baymax/backend/accounting_integration/data/temp/1428/pdfs/01-10-19 placo 20747-005 - diviart')
 
-def splitPdfOnePageEach(file, wayToSaveFiles):
-    nameFile = funcoesUteis.getOnlyNameFile(os.path.basename(file))
+def splitPdfOnePageEach(file, wayToSaveFiles, sequential=0):
+    try:
+        nameFile = funcoesUteis.getOnlyNameFile(os.path.basename(file))
 
-    os.makedirs(os.path.join(wayToSaveFiles, 'pdfs', nameFile))
-    
-    with open(file, 'rb') as filePdf:
-        pdfReader = PyPDF2.PdfFileReader(filePdf)
-        countPages = pdfReader.getNumPages()
+        nameDirectoryToSave = f"{nameFile}-{sequential}"
 
-        for numberPage in range(countPages):
-            pageContent = pdfReader.getPage(numberPage)
-            
-            pdfWriter = PyPDF2.PdfFileWriter()
-            pdfWriter.addPage(pageContent)
+        wayBaseToSaveFile = os.path.join(wayToSaveFiles, 'pdfs', nameDirectoryToSave)
+        os.makedirs(wayBaseToSaveFile)
 
-            with open(f'{wayToSaveFiles}\\pdfs\\{nameFile}\\{numberPage+1}.pdf', 'wb') as newPdfPerPage:
-                pdfWriter.write(newPdfPerPage)
+        with open(file, 'rb') as filePdf:
+            pdfReader = PyPDF2.PdfFileReader(filePdf)
+            countPages = pdfReader.getNumPages()
+
+            for numberPage in range(countPages):
+                pageContent = pdfReader.getPage(numberPage)
+                
+                pdfWriter = PyPDF2.PdfFileWriter()
+                pdfWriter.addPage(pageContent)
+
+                with open(f'{wayBaseToSaveFile}\\{numberPage+1}.pdf', 'wb') as newPdfPerPage:
+                    pdfWriter.write(newPdfPerPage)
+    except Exception as e:
+        pass #print(f'\t - Não foi possível processar o arquivo {file}, provavelmente o PDF está inválido e com erro no momento de abrir!')
 
 def leTxt(caminho, encoding='utf-8', treatAsText=False, removeBlankLines=False):
     lista_linha = []
