@@ -141,6 +141,11 @@ class ComparePaymentsFinalWithDataBase(object):
         if nameProvider == "":
             nameProvider = None
 
+        note = int(note)
+
+        if note == 0 and ddoc_ent is None and dent_ent is None and cgceProvider is None:
+            return None
+
         for entryNote in self._entryNotes:
             provider = self.returnDataProvider(entryNote["codi_for"])
 
@@ -151,8 +156,6 @@ class ComparePaymentsFinalWithDataBase(object):
             entryEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
                 funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "dent_ent"), 2) )
             amountPaidEntryNote = float(funcoesUteis.analyzeIfFieldIsValid(entryNote, "vcon_ent", 0.0))
-
-            note = int(note)
 
             # utilizo uma função pois foi precisar comparar o cgce duas vezes, então chamo ele nos dois casos diferentes
             def returnNote(cgceProviderSearch):
@@ -256,10 +259,10 @@ class ComparePaymentsFinalWithDataBase(object):
 
             provider = self.returnDataProvider(codi_for)
 
-            #payment["findNote"] = 'False'
-
             if entryNote is not None:
                 payment["findNote"] = True
+            else:
+                payment["findNote"] = False
 
             if provider is None:
                 provider = self.returnDataProvider(cgce=cgceProvider, name=nameProvider)

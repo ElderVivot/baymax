@@ -45,7 +45,7 @@ class extractEfentradas():
                                     f" WHERE ent.codi_emp = {companie['codi_emp']}"
                                     f"   AND year(ent.dent_ent) >= {filterYearStart}"
                                     f"   AND month(ent.dent_ent) >= {filterMonthStart}"
-                                    f"ORDER BY ent.codi_emp, ent.dent_ent, ent.codi_ent")
+                                    f"ORDER BY ent.codi_emp, ent.dent_ent DESC, ent.codi_ent")
                             self._cursor.execute(sql)
 
                             df = pd.read_sql_query(sql, self._connection)

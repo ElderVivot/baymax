@@ -20,8 +20,10 @@ class FilterPeriod(object):
 
     def filterPayments(self):
         for payment in self._payments:
-            paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "paymentDate", self._inicialDate))
-            extractDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dateExtract", self._inicialDate))
+            paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "paymentDate", None))
+            extractDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dateExtract", None))
+            if extractDate is None:
+                extractDate = paymentDate
 
             if ( self._inicialDate <= paymentDate and paymentDate <= self._finalDate ) or ( self._inicialDate <= extractDate and extractDate <= self._finalDate ):
                 self._paymentsWithFilter.append(payment)

@@ -77,6 +77,7 @@ class SystemWinthor(object):
                             if file.lower().endswith(('.pdf')):
                                 wayFile = os.path.join(rootDir, file)
                                 wayDirFile = os.path.dirname(wayFile)
+                                print(f' \t - Transformando o arquivo {wayDirFile}')
                                 leArquivos.PDFToText(wayFile, wayDirFile)
                     
         # reads the txts
@@ -90,7 +91,6 @@ class SystemWinthor(object):
                             if file.lower().endswith(('.txt')):
                                 wayFile = os.path.join(rootDir, file)
                                 wayDirFile = os.path.dirname(wayFile)
-                                print(f' \t - Transformando o arquivo {file}')
                                 paymentsWinthorPDF = PaymentsWinthorPDF(wayFile)
                                 if paymentsWinthorPDF.isPaymentWinthorPDF():
                                     self._paymentsDates.append(paymentsWinthorPDF.returnPaymentsDates())
