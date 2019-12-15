@@ -68,14 +68,17 @@ def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
     :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
     :return: retorna um campo como texto, retirando acentos, espaços excessivos, etc
     """
-    if numberOfField > 0:
-        try:
-            return treatTextField(data[numberOfField-1])
-        except Exception:
-            return ""
-    else:
+    if len(fieldsHeader) > 0:
         try:
             return treatTextField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
+        except Exception:
+            try:
+                return treatTextField(data[numberOfField-1])
+            except Exception:
+                return ""
+    else:
+        try:
+            return treatTextField(data[numberOfField-1])
         except Exception:
             return ""
 
@@ -93,16 +96,19 @@ def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldH
     :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
     :return: retorna um campo apenas como número
     """
-    if numberOfField >= 0:
-        try:
-            return treatNumberField(data[numberOfField-1])
-        except Exception:
-            return 0
-    else:
+    if len(fieldsHeader) > 0:
         try:
             return treatNumberField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
         except Exception:
-            return 0
+            try:
+                return treatNumberField(data[numberOfField-1])
+            except Exception:
+                return 0
+    else:
+        try:
+            return treatNumberField(data[numberOfField-1])
+        except Exception:
+            return 0     
 
 def treatDecimalField(value, numberOfDecimalPlaces=2):
     try:
@@ -126,14 +132,17 @@ def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldH
     :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
     :return: retorna um campo como decimal
     """
-    if numberOfField > 0:
-        try:
-            return treatDecimalField(data[numberOfField-1])
-        except Exception:
-            return float(0)
-    else:
+    if len(fieldsHeader) > 0:
         try:
             return treatDecimalField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
+        except Exception:
+            try:
+                return treatDecimalField(data[numberOfField-1])
+            except Exception:
+                return float(0)
+    else:
+        try:
+            return treatDecimalField(data[numberOfField-1])
         except Exception:
             return float(0)
 
@@ -164,14 +173,17 @@ def treatDateFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
     :param formatoData: 1 = 'DD/MM/YYYY' ; 2 = 'YYYY-MM-DD (opcional)
     :return: retorna um campo como decimal
     """
-    if numberOfField > 0:
-        try:
-            return retornaCampoComoData(data[numberOfField-1], formatoData)
-        except Exception:
-            return None
-    else:
+    if len(fieldsHeader) > 0:
         try:
             return retornaCampoComoData(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)], formatoData)
+        except Exception:
+            try:
+                return retornaCampoComoData(data[numberOfField-1], formatoData)
+            except Exception:
+                return None
+    else:
+        try:
+            return retornaCampoComoData(data[numberOfField-1], formatoData)
         except Exception:
             return None
 

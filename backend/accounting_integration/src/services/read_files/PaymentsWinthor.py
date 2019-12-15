@@ -151,10 +151,10 @@ class PaymentsWinthorExcel(object):
 
         return self._valuesOfFile
 
-if __name__ == "__main__":
-    paymentsWinthorPDF = PaymentsWinthorPDF("C:/_temp/integracao_diviart/teste.txt")
-    paymentDates = paymentsWinthorPDF.returnPaymentsDates()
+# if __name__ == "__main__":
+#     paymentsWinthorPDF = PaymentsWinthorPDF("C:/_temp/integracao_diviart/teste.txt")
+#     paymentDates = paymentsWinthorPDF.returnPaymentsDates()
 
-    paymentsWinthorExcel = PaymentsWinthorExcel("1428")
-    print(paymentsWinthorExcel.processPayments("C:/_temp/integracao_diviart/Contas Pagas.xls", paymentDates))
+#     paymentsWinthorExcel = PaymentsWinthorExcel("1428")
+#     print(paymentsWinthorExcel.processPayments("C:/_temp/integracao_diviart/Contas Pagas.xls", paymentDates))
 

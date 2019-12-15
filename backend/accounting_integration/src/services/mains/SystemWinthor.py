@@ -19,6 +19,7 @@ from rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWit
 from rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
 from rules.GenerateExcel import GenerateExcel
 from rules.FilterPeriod import FilterPeriod
+from rules.CompareWithSettings import CompareWithSettings
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
@@ -73,11 +74,11 @@ class SystemWinthor(object):
                 if dir_ == "pdfs":
                     wayDir = os.path.join(root, dir_)
                     for rootDir, dirsDir, filesDir in os.walk(wayDir):
+                        # print(f' \t - Transformando o arquivo {rootDir}')
                         for file in filesDir:
                             if file.lower().endswith(('.pdf')):
                                 wayFile = os.path.join(rootDir, file)
                                 wayDirFile = os.path.dirname(wayFile)
-                                print(f' \t - Transformando o arquivo {wayDirFile}')
                                 leArquivos.PDFToText(wayFile, wayDirFile)
                     
         # reads the txts
@@ -110,7 +111,7 @@ class SystemWinthor(object):
         extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
         payments = funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
         proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
-        # print(proofOfPayments)
+        # print(payments)
 
         print(' - Etapa 6: Unindo o Financeiro com os Comprovantes de Pagamentos.')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
@@ -129,9 +130,14 @@ class SystemWinthor(object):
         extractsWithFilter = filterPeriod.filterExtracts()
         paymentsWithFilter = filterPeriod.filterPayments()
 
-        print(' - Etapa 9: Exportando informações')
+        print(' - Etapa 9: Configurando as contas contábeis de acordo planilha de configuracoes preenchida.')
+        compareWithSettings = CompareWithSettings(self._codiEmp, paymentsWithFilter, extractsWithFilter)
+        # extractsWithFilter = filterPeriod.filterExtracts()
+        paymentsCompareWithSettings = compareWithSettings.processPayments()
+
+        print(' - Etapa 10: Exportando informações')
         generateExcel = GenerateExcel(self._codiEmp)
-        generateExcel.sheetPayments(paymentsWithFilter)
+        generateExcel.sheetPayments(paymentsCompareWithSettings)
         generateExcel.sheetExtract(extractsWithFilter)
         generateExcel.closeFile()
         

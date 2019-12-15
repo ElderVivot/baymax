@@ -74,6 +74,50 @@ class ComparePaymentsFinalWithDataBase(object):
 
         return nameChanged
 
+    def compareTwoNames(self, nameOne, nameTwo):
+        nameOne = self.changeAbbreviatedWord(self.removeWordsThatAreNotNames(nameOne))
+        nameTwo = self.changeAbbreviatedWord(self.removeWordsThatAreNotNames(nameTwo))
+
+        nameOneSplit = nameOne.split(' ')
+
+        countEqualWords = 0
+
+        nameTwoSplit = nameTwo.split(' ')
+        for wordName in nameTwoSplit:
+            if nameOneSplit.count(wordName) > 0: # conta somente as palavras em comuns
+                countEqualWords += 1
+
+        percentWordsEqualsAboutNameOne = countEqualWords / len(nameOneSplit)
+        percentWordsEqualsAboutNameTwo = countEqualWords / len(nameTwoSplit)
+        
+        if nameOne[:7] == nameTwo[:7]:
+            first7LettersEquals = True
+        else:
+            first7LettersEquals = False
+
+        if nameOne[:12] == nameTwo[:12]:
+            first12LettersEquals = True
+        else:
+            first12LettersEquals = False
+
+        if nameOne[:20] == nameTwo[:20]:
+            first20LettersEquals = True
+        else:
+            first20LettersEquals = False
+
+        return {
+            "countLettersNameOne": len(nameOne),
+            "countWordsNameOne": len(nameOneSplit),
+            "countLettersNameTwo": len(nameTwo),
+            "countWordsNameTwo": len(nameTwoSplit),
+            "countEqualWords": countEqualWords,
+            "first7LettersEquals": first7LettersEquals,
+            "first12LettersEquals": first12LettersEquals,
+            "first20LettersEquals": first20LettersEquals,
+            "percentWordsEqualsAboutNameOne": percentWordsEqualsAboutNameOne,
+            "percentWordsEqualsAboutNameTwo": percentWordsEqualsAboutNameTwo
+        }
+
     def returnDataProvider(self, codi_for=0, cgce=None, name=None, degreeOfReliability=0):
         # caso os campos sejam vazios deixa eles como nulos
         if cgce == "":
@@ -110,26 +154,27 @@ class ComparePaymentsFinalWithDataBase(object):
                 if countNameProvider == countEqualWords:
                     return provider
                 
+                # se a quantidade for maior ou igual a 3, no mínimo 70% tem que ser igual
                 if countNameProvider >= 3:
                     if floor(countNameProvider * 0.7) <= countEqualWords:
                         return provider
-                else:
+                else: # caso contrário no mínimo 75% do nome precisa ser igual
                     if nameProvider.count(nameArgument[0:floor(len(nameArgument)*0.75)]) > 0:
                         return provider
 
                 # grau de confibilidade mais baixo, só deve ser usado junto com outra confirmação, como número da nota por exemplo
-                if degreeOfReliability == 1:
-                    if len(nameArgument) >= 10:
-                        if nameProvider.count(nameArgument[0:floor(len(nameArgument)*0.30)]) > 0:
-                            return provider
-                    else:
-                        if nameProvider.count(nameArgument[0:floor(len(nameArgument)*0.60)]) > 0:
-                            return provider
+                # if degreeOfReliability == 1:
+                #     if len(nameArgument) >= 10:
+                #         if nameProvider.count(nameArgument[0:floor(len(nameArgument)*0.30)]) > 0:
+                #             return provider
+                #     else:
+                #         if nameProvider.count(nameArgument[0:floor(len(nameArgument)*0.60)]) > 0:
+                #             return provider
 
             if findProviderForName() is not None:
                 return provider
 
-    def returnDataEntryNote(self, note=0, cgceProvider=None, ddoc_ent = None, dent_ent = None, amountPayment = 0.0, nameProvider=None):
+    def returnDataEntryNote(self, note=0, cgceProvider=None, ddoc_ent = None, dent_ent = None, amountPayment = 0.0, nameProvider=None, dueDate=None, amountOriginal=0.0):
         if note == "":
             note = 0
         if cgceProvider == "":
@@ -138,57 +183,81 @@ class ComparePaymentsFinalWithDataBase(object):
             ddoc_ent = None
         if dent_ent == "":
             dent_ent = None
+        if dueDate == "":
+            dueDate = None
         if nameProvider == "":
             nameProvider = None
 
         note = int(note)
 
-        if note == 0 and ddoc_ent is None and dent_ent is None and cgceProvider is None:
+        if note == 0 and ddoc_ent is None and dent_ent is None and cgceProvider is None and nameProvider is None:
             return None
 
         for entryNote in self._entryNotes:
             provider = self.returnDataProvider(entryNote["codi_for"])
 
             cgceProviderEntryNote = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for", None)
+            nameProviderEntryNote = funcoesUteis.analyzeIfFieldIsValid(provider, "nome_for", None)
             noteEntryNote = int(funcoesUteis.analyzeIfFieldIsValid(entryNote, "nume_ent", 0))
             issueEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
                 funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "ddoc_ent"), 2) )
             entryEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
                 funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "dent_ent"), 2) )
-            amountPaidEntryNote = float(funcoesUteis.analyzeIfFieldIsValid(entryNote, "vcon_ent", 0.0))
+            amountAccountEntryNote = float(funcoesUteis.analyzeIfFieldIsValid(entryNote, "vcon_ent", 0.0))
 
-            # utilizo uma função pois foi precisar comparar o cgce duas vezes, então chamo ele nos dois casos diferentes
-            def returnNote(cgceProviderSearch):
-                if noteEntryNote == note and cgceProviderEntryNote == cgceProviderSearch:
+            if noteEntryNote == note and cgceProviderEntryNote == cgceProvider:
+                return entryNote
+
+            if noteEntryNote == note and issueEntryNote == ddoc_ent and ddoc_ent is not None:
+                return entryNote
+
+            if noteEntryNote == note and entryEntryNote == dent_ent and dent_ent is not None:
+                return entryNote
+
+            if noteEntryNote == note and issueEntryNote == dueDate and dueDate is not None: # a comparação por vencimento e emissão é pq algumas vezes a data de vencimento é a própria emissão
+                return entryNote
+
+            if noteEntryNote == note and amountAccountEntryNote == amountOriginal and amountOriginal > 0:
+                return entryNote
+
+            if noteEntryNote == note and amountAccountEntryNote == amountPayment and amountPayment > 0:
+                return entryNote
+
+            if issueEntryNote == ddoc_ent and cgceProviderEntryNote == cgceProvider and ddoc_ent is not None:
+                return entryNote
+
+            if entryEntryNote == dent_ent and cgceProviderEntryNote == cgceProvider and dent_ent is not None:
+                return entryNote
+
+            if issueEntryNote == dueDate and cgceProviderEntryNote == cgceProvider and dueDate is not None:
+                return entryNote
+            
+            if amountAccountEntryNote == amountOriginal and cgceProviderEntryNote == cgceProvider and amountOriginal > 0:
+                return entryNote
+
+            if amountAccountEntryNote == amountPayment and cgceProviderEntryNote == cgceProvider and amountPayment > 0:
+                return entryNote
+
+            # comparação pelo nome, caso as hipóteses acima não retorne nada
+            compareTwoWords = self.compareTwoNames(nameProviderEntryNote, nameProvider)
+            if compareTwoWords["first7LettersEquals"] is True or compareTwoWords["percentWordsEqualsAboutNameTwo"] >= 0.25:
+                if noteEntryNote == note:
                     return entryNote
 
-                if noteEntryNote == note and issueEntryNote == ddoc_ent and ddoc_ent is not None:
+                if issueEntryNote == ddoc_ent and ddoc_ent is not None:
                     return entryNote
 
-                if noteEntryNote == note and entryEntryNote == dent_ent and dent_ent is not None:
+                if entryEntryNote == dent_ent and dent_ent is not None:
                     return entryNote
 
-                if noteEntryNote == note and amountPaidEntryNote == amountPayment and amountPayment > 0:
-                    return entryNote
-
-                if issueEntryNote == ddoc_ent and cgceProviderEntryNote == cgceProviderSearch and ddoc_ent is not None:
-                    return entryNote
-
-                if entryEntryNote == dent_ent and cgceProviderEntryNote == cgceProviderSearch and dent_ent is not None:
+                if issueEntryNote == dueDate and dueDate is not None:
                     return entryNote
                 
-                if amountPaidEntryNote == amountPayment and cgceProviderEntryNote == cgceProviderSearch and amountPayment > 0:
+                if amountAccountEntryNote == amountOriginal and amountOriginal > 0:
                     return entryNote
 
-            cgce_for = cgceProvider
-            if returnNote(cgce_for) is not None:
-                return returnNote(cgce_for)
-
-            # busca a nota olhando pelo nome da empresa
-            providerByName = self.returnDataProvider(name=nameProvider, degreeOfReliability=1)
-            cgce_for = funcoesUteis.analyzeIfFieldIsValid(providerByName, "cgce_for", None)
-            if returnNote(cgce_for) is not None:
-                return returnNote(cgce_for)
+                if amountAccountEntryNote == amountPayment and amountPayment > 0:
+                    return entryNote
 
     def returnDataInstallmentsEntryNote(self, dueDate=None, note=0, cgceProvider=None, ddoc_ent = None, dent_ent = None, amountPayment = 0.0, amountOriginal=0.0):
         if dueDate is None:
@@ -204,6 +273,10 @@ class ComparePaymentsFinalWithDataBase(object):
             dent_ent = None
         if nameProvider == "":
             nameProvider = None
+
+        # se o vencimento for nulo já nem percorre os dados
+        if dueDate is None:
+            return None
 
         for installment in self._installments:
             provider = self.returnDataProvider(installment["codi_for"])
@@ -278,11 +351,12 @@ class ComparePaymentsFinalWithDataBase(object):
         return self._paymentsFinal
 
 # if __name__ == "__main__":
-#     providers = [ {'codi_for': 531, 'nome_for': 'FORNECEDORES DIVERSOS', 'nomr_for': 'DIVERSOS', 'cgce_for': '33333333000191', 'codi_cta': 1004.0, 'insc_for': None, 'imun_for': None, 'codigo_municipio': 977, 'sigl_est': 'GO', 'conta_cliente_for': None, 'conta_compensacao_for': None}, {'codi_for': 536, 'nome_for': 'WALSYWA INDUSTRIA E COMERCIO DE PRODUTOS', 'nomr_for': 'WALSYWA INDUSTRIA E COMERCIO DE PRODUTOS', 'cgce_for': '05896435000503', 'codi_cta': 1009.0, 'insc_for': '421086370113', 'imun_for': None, 'codigo_municipio': 5091, 'sigl_est': 'SP', 'conta_cliente_for': None, 'conta_compensacao_for': None}]
-#     entryNotes = [{'codi_emp': 1428, 'codi_ent': 3517, 'nume_ent': 135610.0, 'codi_for': 536, 'nome_for': 'WALSYWA INDUSTRIA E COMERCIO DE PRODUTOS', 'codi_esp': 36, 'codi_acu': 6, 'codi_nat': 2102, 'segi_ent': 0, 'seri_ent': '1', 'dent_ent': '2019-10-09T00:00:00.000Z', 'ddoc_ent': '2019-09-30T00:00:00.000Z', 'vcon_ent': 6040.5}, {'codi_emp': 1428, 'codi_ent': 3518, 'nume_ent': 135744.0, 'codi_for': 597, 'nome_for': 'SECURITY SYSTEMS SOLUTIONS COMERCIAL LTD', 'codi_esp': 36, 'codi_acu': 6, 'codi_nat': 2102, 'segi_ent': 0, 'seri_ent': '1', 'dent_ent': '2019-10-09T00:00:00.000Z', 'ddoc_ent': '2019-09-30T00:00:00.000Z', 'vcon_ent': 11303.1}]
-#     payments = [{'paymentDate': '30/10/2019', 'nameProvider': 'WALSYWA INDUSTRIA E COMERCIO D', 'cnpjProvider': '', 'amountPaid': 2340.5, 'bank': 'ITAU', 'account': '44388', 'document': '135610', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 135610 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 2340.5, 'accountPlan': 'COMPRA MERCADORIA', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': ''}]
+    # providers = [ {'codi_for': 531, 'nome_for': 'FORNECEDORES DIVERSOS', 'nomr_for': 'DIVERSOS', 'cgce_for': '33333333000191', 'codi_cta': 1004.0, 'insc_for': None, 'imun_for': None, 'codigo_municipio': 977, 'sigl_est': 'GO', 'conta_cliente_for': None, 'conta_compensacao_for': None}, {'codi_for': 536, 'nome_for': 'WALSYWA INDUSTRIA E COMERCIO DE PRODUTOS', 'nomr_for': 'WALSYWA INDUSTRIA E COMERCIO DE PRODUTOS', 'cgce_for': '05896435000503', 'codi_cta': 1009.0, 'insc_for': '421086370113', 'imun_for': None, 'codigo_municipio': 5091, 'sigl_est': 'SP', 'conta_cliente_for': None, 'conta_compensacao_for': None}]
+    # entryNotes = [{'codi_emp': 1428, 'codi_ent': 3517, 'nume_ent': 135610.0, 'codi_for': 536, 'nome_for': 'WALSYWA INDUSTRIA E COMERCIO DE PRODUTOS', 'codi_esp': 36, 'codi_acu': 6, 'codi_nat': 2102, 'segi_ent': 0, 'seri_ent': '1', 'dent_ent': '2019-10-09T00:00:00.000Z', 'ddoc_ent': '2019-09-30T00:00:00.000Z', 'vcon_ent': 6040.5}, {'codi_emp': 1428, 'codi_ent': 3518, 'nume_ent': 135744.0, 'codi_for': 597, 'nome_for': 'SECURITY SYSTEMS SOLUTIONS COMERCIAL LTD', 'codi_esp': 36, 'codi_acu': 6, 'codi_nat': 2102, 'segi_ent': 0, 'seri_ent': '1', 'dent_ent': '2019-10-09T00:00:00.000Z', 'ddoc_ent': '2019-09-30T00:00:00.000Z', 'vcon_ent': 11303.1}]
+    # payments = [{'paymentDate': '30/10/2019', 'nameProvider': 'WALSYWA INDUSTRIA E COMERCIO D', 'cnpjProvider': '', 'amountPaid': 2340.5, 'bank': 'ITAU', 'account': '44388', 'document': '135610', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 135610 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 2340.5, 'accountPlan': 'COMPRA MERCADORIA', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': ''}]
 # #     # print(entryNotes)
-#     comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, payments)
+    # comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase()
+    # print(comparePaymentsFinalWithDataBase.compareTwoNames('ELDER VIVOT DIAS', 'ELDER VIVOT'))
 #     # print(comparePaymentsFinalWithDataBase.returnDataProvider(name="WALSYWA INDUSTRIA E COMERCIO D", degreeOfReliability=1))
 #     print(comparePaymentsFinalWithDataBase.returnDataEntryNote("135610", None, None, None, 2340.5, "WALSYWA INDUSTRIA E COMERCIO"))
 #     # print(comparePaymentsFinalWithDataBase.process())

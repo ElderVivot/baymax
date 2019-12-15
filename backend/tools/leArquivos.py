@@ -17,6 +17,7 @@ import slate3k as slate
 import logging
 from PIL import Image
 
+# pra ignorar erros que dá no momento de ler um PDF por exemplo
 warnings.filterwarnings("ignore")
 logging.propagate = False 
 logging.getLogger().setLevel(logging.ERROR)
@@ -70,7 +71,7 @@ def buscaSubpastas(caminhoPrincipal):
 
     return subpastas
 
-def leXls_Xlsx(arquivo):
+def leXls_Xlsx(arquivo, nameSheetToFilter='filterAll'):
     lista_dados = []
     dados_linha = []
 
@@ -78,60 +79,66 @@ def leXls_Xlsx(arquivo):
         try:
             arquivo = xlrd.open_workbook(arquivo, logfile=open(os.devnull, 'w'))
         except Exception:
-            arquivo = xlrd.open_workbook(arquivo, logfile=open(os.devnull, 'w'), encoding_override='Windows-1252')
+            try:
+                arquivo = xlrd.open_workbook(arquivo, logfile=open(os.devnull, 'w'), encoding_override='Windows-1252')
+            except Exception:
+                return []
 
         # guarda todas as planilhas que tem dentro do arquivo excel
         planilhas = arquivo.sheet_names()
 
         # lê cada planilha
-        for p in planilhas:
+        for sheetName in planilhas:
 
-            # pega o nome da planilha
-            planilha = arquivo.sheet_by_name(p)
+            # pega os dados da planilha
+            planilha = arquivo.sheet_by_name(sheetName)
 
-            # pega a quantidade de linha que a planilha tem
-            max_row = planilha.nrows
-            # pega a quantidade de colunca que a planilha tem
-            max_column = planilha.ncols
+            # continue only if name sheet equal the name filter of argument
+            if funcoesUteis.treatTextField(sheetName) == funcoesUteis.treatTextField(nameSheetToFilter) or nameSheetToFilter == 'filterAll':
+                # pega a quantidade de linha que a planilha tem
+                max_row = planilha.nrows
+                # pega a quantidade de colunca que a planilha tem
+                max_column = planilha.ncols
 
-            # lê cada linha e coluna da planilha e imprime
-            for i in range(0, max_row):
+                # lê cada linha e coluna da planilha e imprime
+                for i in range(0, max_row):
 
-                valor_linha = planilha.row_values(rowx=i)
+                    valor_linha = planilha.row_values(rowx=i)
 
-                # ignora linhas em branco
-                if valor_linha.count("") == max_column:
-                    continue
+                    # ignora linhas em branco
+                    if valor_linha.count("") == max_column:
+                        continue
 
-                # lê as colunas
-                for j in range(0, max_column):
+                    # lê as colunas
+                    for j in range(0, max_column):
 
-                    # as linhas abaixo analisa o tipo de dado que está na planilha e retorna no formato correto, sem ".0" para números ou a data no formato numérico
-                    tipo_valor = planilha.cell_type(rowx=i, colx=j)
-                    valor_celula = funcoesUteis.removerAcentosECaracteresEspeciais(str(planilha.cell_value(rowx=i, colx=j)))
-                    if tipo_valor == 2:
-                        valor_casas_decimais = valor_celula.split('.')
-                        valor_casas_decimais = valor_casas_decimais[1]
-                        if int(valor_casas_decimais) == 0:
-                            valor_celula = valor_celula.split('.')
-                            valor_celula = valor_celula[0]
-                    elif tipo_valor == 3:
-                        valor_celula = float(planilha.cell_value(rowx=i, colx=j))
-                        valor_celula = xlrd.xldate.xldate_as_datetime(valor_celula, datemode=0)
-                        valor_celula = valor_celula.strftime("%d/%m/%Y")
+                        # as linhas abaixo analisa o tipo de dado que está na planilha e retorna no formato correto, sem ".0" para números ou a data no formato numérico
+                        tipo_valor = planilha.cell_type(rowx=i, colx=j)
+                        valor_celula = funcoesUteis.removerAcentosECaracteresEspeciais(str(planilha.cell_value(rowx=i, colx=j)))
+                        if tipo_valor == 2:
+                            valor_casas_decimais = valor_celula.split('.')
+                            valor_casas_decimais = valor_casas_decimais[1]
+                            if int(valor_casas_decimais) == 0:
+                                valor_celula = valor_celula.split('.')
+                                valor_celula = valor_celula[0]
+                        elif tipo_valor == 3:
+                            valor_celula = float(planilha.cell_value(rowx=i, colx=j))
+                            valor_celula = xlrd.xldate.xldate_as_datetime(valor_celula, datemode=0)
+                            valor_celula = valor_celula.strftime("%d/%m/%Y")
 
-                    # retira espaços e quebra de linha da célula
-                    valor_celula = str(valor_celula).strip().replace('\n', '')
+                        # retira espaços e quebra de linha da célula
+                        valor_celula = str(valor_celula).strip().replace('\n', '')
 
-                    # adiciona o valor da célula na lista de dados_linha
-                    dados_linha.append(valor_celula)
+                        # adiciona o valor da célula na lista de dados_linha
+                        dados_linha.append(valor_celula)
 
-                # copia os dados da linha para o vetor de lista_dados
-                lista_dados.append(dados_linha[:])
+                    # copia os dados da linha para o vetor de lista_dados
+                    lista_dados.append(dados_linha[:])
 
-                # limpa os dados da linha para ler a próxima
-                dados_linha.clear()
-
+                    # limpa os dados da linha para ler a próxima
+                    dados_linha.clear()
+            else:
+                continue
     # retorna uma lista dos dados
     return lista_dados
 
