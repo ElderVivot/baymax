@@ -28,6 +28,7 @@ class PaymentsCDI(object):
                     for keyField, nameField in enumerate(data):
                         nameField = funcoesUteis.treatTextField(nameField)
                         self._posionsOfHeader[nameField] = keyField
+                    continue
 
                 paymentDate = funcoesUteis.treatDateFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="Data")
 
