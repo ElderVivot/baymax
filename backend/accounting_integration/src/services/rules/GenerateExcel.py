@@ -18,12 +18,22 @@ wayToSaveFiles.close()
 
 class GenerateExcel(object):
 
-    def __init__(self, codiEmp):
+    def __init__(self, codiEmp, update=False, nameFileUpdate=''):
         self._codiEmp = codiEmp
-        self._wayBaseToSaveFiles = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados')
+
+        if update is False:
+            self._wayBaseToSaveFiles = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados')
+        else:
+            self._wayBaseToSaveFiles = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados/atualizados')
+
         if os.path.exists(self._wayBaseToSaveFiles) is False:
             os.makedirs(self._wayBaseToSaveFiles)
-        self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"integracao_contabil_{self._codiEmp} {funcoesUteis.getDateTimeNowInFormatStr()}.xlsx"))
+
+        if update is False:
+            self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"integracao_contabil_{self._codiEmp} {funcoesUteis.getDateTimeNowInFormatStr()}.xlsx"))
+        else:
+            self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"atualizado_{nameFileUpdate}"))
+        
         self._cell_format_header = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'yellow'})
         self._cell_format_money = self._workbook.add_format({'num_format': '##0.00'})
         self._cell_format_date = self._workbook.add_format({'num_format': 'dd/mm/yyyy'})
@@ -46,7 +56,7 @@ class GenerateExcel(object):
         sheet.write(0, 12, "Operacao", self._cell_format_header)
         sheet.write(0, 13, "Valor", self._cell_format_header)
         sheet.write(0, 14, "Documento", self._cell_format_header)
-        sheet.write(0, 15, "Historico", self._cell_format_header)
+        sheet.write(0, 15, "Historico Extrato", self._cell_format_header)
 
         for key, extract in enumerate(extracts):
             row = key+1
@@ -57,15 +67,11 @@ class GenerateExcel(object):
             typeTransaction = funcoesUteis.analyzeIfFieldIsValid(extract, "typeTransaction")
             operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")
             document = funcoesUteis.analyzeIfFieldIsValid(extract, "document")
+            historicCode = funcoesUteis.analyzeIfFieldIsValid(extract, "historicCode")
             historic = funcoesUteis.analyzeIfFieldIsValid(extract, "historic")
             amount = funcoesUteis.analyzeIfFieldIsValid(extract, "amount")
             accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit")
             accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit")
-
-            if operation == "+":
-                historicCode = 24
-            else:
-                historicCode = 78
 
             sheet.write(row, 0, dateExtract, self._cell_format_date)
             sheet.write(row, 1, accountCodeDebit)
@@ -101,7 +107,7 @@ class GenerateExcel(object):
         sheet.write(0, 9, "Data do Extrato", self._cell_format_header)
         sheet.write(0, 10, "Data do Lançamento na Domínio", self._cell_format_header)
         sheet.write(0, 11, "Data do Vencimento", self._cell_format_header)
-        sheet.write(0, 12, "Data do Emissão", self._cell_format_header)
+        sheet.write(0, 12, "Data da Emissão", self._cell_format_header)
         sheet.write(0, 13, "Valor Pago", self._cell_format_header)
         sheet.write(0, 14, "Valor Desconto", self._cell_format_header)
         sheet.write(0, 15, "Valor Juros", self._cell_format_header)

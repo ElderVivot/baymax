@@ -50,6 +50,11 @@ class ExtractsOFX(object):
                     amount *= -1
                 else:
                     operation = '+'
+
+                if operation == "+":
+                    historicCode = 24
+                else:
+                    historicCode = 78
                 
                 document = funcoesUteis.treatTextField(transction.checknum)
 
@@ -63,6 +68,7 @@ class ExtractsOFX(object):
                     "amount": amount,
                     "operation": operation,
                     "document": document,
+                    "historicCode": historicCode,
                     "historic": historic
                 }
 

@@ -34,7 +34,7 @@ class CompareWithSettings(object):
         self._posionsOfHeaderExtracts = {}
         self._settingsFieldComparation = {
             "FORNECEDOR": 1,
-            "CONTA CONTABIL": 2,
+            "PLANO DE CONTAS": 2,
             "CATEGORIA": 3,
             "HISTORICO": 4
         }
@@ -61,6 +61,7 @@ class CompareWithSettings(object):
                     for keyField, nameField in enumerate(data):
                         nameField = funcoesUteis.treatTextField(nameField)
                         self._posionsOfHeaderProviderOrExpense[nameField] = keyField
+                    continue
                 
                 fieldComparation = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderProviderOrExpense, "Quando no Campo")
                 fieldComparation = self._settingsFieldComparation[fieldComparation]
@@ -96,6 +97,7 @@ class CompareWithSettings(object):
                     for keyField, nameField in enumerate(data):
                         nameField = funcoesUteis.treatTextField(nameField)
                         self._posionsOfHeaderBanks[nameField] = keyField
+                    continue
                 
                 nameBank = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderBanks, "Banco")
 
@@ -127,6 +129,7 @@ class CompareWithSettings(object):
                     for keyField, nameField in enumerate(data):
                         nameField = funcoesUteis.treatTextField(nameField)
                         self._posionsOfHeaderExtracts[nameField] = keyField
+                    continue
                 
                 fieldComparation = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderExtracts, "Quando no Campo")
                 fieldComparation = self._settingsFieldComparationExtract[fieldComparation]
@@ -255,7 +258,7 @@ class CompareWithSettings(object):
             category = funcoesUteis.analyzeIfFieldIsValid(payment, "category", None)
             historic = funcoesUteis.analyzeIfFieldIsValid(payment, "historic", None)
 
-            accountCode = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode", 0)
+            accountCode = int(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode", 0))
             if accountCode == "" or accountCode == 0:
                 accountCode = self.returnDataProviderOrExpense(nameProvider, accountPlan, category, historic)
                 accountCode = 0 if accountCode is None else accountCode
@@ -303,8 +306,8 @@ class CompareWithSettings(object):
         
         return self._extractsWithNewAccountCode
 
-if __name__ == "__main__":
-    payments = [{'paymentDate': '31/10/2019', 'nameProvider': 'SANEAGO', 'cnpjProvider': '', 'amountPaid': 311.8, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '2099407921', 'historic': 'PAGAMENTO AGUA/ESGOTO REF.MES 10/2019 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 311.8, 'accountPlan': 'AGUA E ESGOTO', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': False, 'accountCode': 0, 'cgceProvider': '', 'codiEmp': '1428'}, {'paymentDate': '31/10/2019', 'nameProvider': 'SANEAGO', 'cnpjProvider': '', 'amountPaid': 311.8, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '2099407921', 'historic': 'PAGAMENTO AGUA/ESGOTO REF.MES 10/2019 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 311.8, 'accountPlan': 'AGUA E ESGOTO', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': False, 'accountCode': 0, 'cgceProvider': '', 'codiEmp': '1428'}, {'paymentDate': '03/10/2019', 'nameProvider': 'SALVARO INDUSTRIA E COMERCIO D', 'cnpjProvider': '', 'amountPaid': 5250.0, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '19142', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 19142 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 5250.0, 'accountPlan': 'COMPRA MERCADORIA', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': True, 'accountCode': 1158.0, 'cgceProvider': '80142250000103', 'codiEmp': '1428'}]
-    extracts = [{'bankId': 'ITAU', 'account': '4372443889', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 6500.0, 'operation': '-', 'document': '20191001001', 'historic': 'INT TED 759316'}]
-    compareWithSettings = CompareWithSettings(1428, payments, extracts)
-    print(compareWithSettings.processExtracts())
+# if __name__ == "__main__":
+#     payments = [{'paymentDate': '31/10/2019', 'nameProvider': 'SANEAGO', 'cnpjProvider': '', 'amountPaid': 311.8, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '2099407921', 'historic': 'PAGAMENTO AGUA/ESGOTO REF.MES 10/2019 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 311.8, 'accountPlan': 'AGUA E ESGOTO', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': False, 'accountCode': 0, 'cgceProvider': '', 'codiEmp': '1428'}, {'paymentDate': '31/10/2019', 'nameProvider': 'SANEAGO', 'cnpjProvider': '', 'amountPaid': 311.8, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '2099407921', 'historic': 'PAGAMENTO AGUA/ESGOTO REF.MES 10/2019 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 311.8, 'accountPlan': 'AGUA E ESGOTO', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': False, 'accountCode': 0, 'cgceProvider': '', 'codiEmp': '1428'}, {'paymentDate': '03/10/2019', 'nameProvider': 'SALVARO INDUSTRIA E COMERCIO D', 'cnpjProvider': '', 'amountPaid': 5250.0, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '19142', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 19142 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 5250.0, 'accountPlan': 'COMPRA MERCADORIA', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': True, 'accountCode': 1158.0, 'cgceProvider': '80142250000103', 'codiEmp': '1428'}]
+#     extracts = [{'bankId': 'ITAU', 'account': '4372443889', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 6500.0, 'operation': '-', 'document': '20191001001', 'historic': 'INT TED 759316'}]
+#     compareWithSettings = CompareWithSettings(1428, payments, extracts)
+#     print(compareWithSettings.processExtracts())
