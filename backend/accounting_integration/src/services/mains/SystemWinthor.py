@@ -132,13 +132,13 @@ class SystemWinthor(object):
 
         print(' - Etapa 9: Configurando as contas contábeis de acordo planilha de configuracoes preenchida.')
         compareWithSettings = CompareWithSettings(self._codiEmp, paymentsWithFilter, extractsWithFilter)
-        # extractsWithFilter = filterPeriod.filterExtracts()
+        extractsCompareWithSettings = compareWithSettings.processExtracts()
         paymentsCompareWithSettings = compareWithSettings.processPayments()
 
         print(' - Etapa 10: Exportando informações')
         generateExcel = GenerateExcel(self._codiEmp)
         generateExcel.sheetPayments(paymentsCompareWithSettings)
-        generateExcel.sheetExtract(extractsWithFilter)
+        generateExcel.sheetExtract(extractsCompareWithSettings)
         generateExcel.closeFile()
         
         print(' - Processo Finalizado.')

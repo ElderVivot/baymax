@@ -21,6 +21,7 @@ class CompareWithSettings(object):
         self._payments = payments
         self._paymentsWithNewAccountCode = []
         self._extracts = extracts
+        self._extractsWithNewAccountCode = []
         self._codiEmp = codiEmp
         self._valuesOfLineProviderOrExpense = {}
         self._valuesOfFileProviderOrExpense = []
@@ -28,6 +29,9 @@ class CompareWithSettings(object):
         self._valuesOfLineBanks = {}
         self._valuesOfFileBanks = []
         self._posionsOfHeaderBanks = {}
+        self._valuesOfLineExtracts = {}
+        self._valuesOfFileExtracts = []
+        self._posionsOfHeaderExtracts = {}
         self._settingsFieldComparation = {
             "FORNECEDOR": 1,
             "CONTA CONTABIL": 2,
@@ -38,7 +42,14 @@ class CompareWithSettings(object):
             "FOR IGUAL": 1,
             "CONTER AS PALAVRAS": 2
         }
-        self._wayFileSettings = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/configuracoes.xlsx')
+        self._settingsFieldComparationExtract = {
+            "HISTORICO": 1
+        }
+        self._settingsOperationComparation = {
+            "SOMA": "+",
+            "SUBTRAI": "-"
+        }
+        self._wayFileSettings = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/configuracoes_{self._codiEmp}.xlsx')
         
     def getSettingsProviderOrExpense(self):
         dataFile = leXls_Xlsx(self._wayFileSettings, 'FornecedorOuDespesa')
@@ -106,6 +117,45 @@ class CompareWithSettings(object):
 
         return self._valuesOfFileBanks
 
+    def getSettingsExtract(self):
+        dataFile = leXls_Xlsx(self._wayFileSettings, 'ExtratoBancario')
+        
+        for data in dataFile:
+            try:
+                if str(data[0]).upper().count('QUANDO NO CAMPO') > 0:
+                    self._posionsOfHeaderExtracts.clear()
+                    for keyField, nameField in enumerate(data):
+                        nameField = funcoesUteis.treatTextField(nameField)
+                        self._posionsOfHeaderExtracts[nameField] = keyField
+                
+                fieldComparation = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderExtracts, "Quando no Campo")
+                fieldComparation = self._settingsFieldComparationExtract[fieldComparation]
+
+                operationComparation = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderExtracts, "Operação for")
+                operationComparation = self._settingsOperationComparation[operationComparation]
+
+                typeComparation = funcoesUteis.treatTextFieldInVector(data, 3, self._posionsOfHeaderExtracts, "Tipo comparação")
+                typeComparation = self._settingsTypeComparation[typeComparation]
+
+                valueComparation = funcoesUteis.treatTextFieldInVector(data, 4, self._posionsOfHeaderExtracts, "Valor")
+
+                accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 5, self._posionsOfHeaderExtracts, "Conta Contábil Domínio"))
+
+                if fieldComparation != "" and valueComparation != "" and accountDominio > 0:
+                    self._valuesOfLineExtracts = {
+                        "fieldComparation": fieldComparation,
+                        "operationComparation": operationComparation,
+                        "typeComparation": typeComparation,
+                        "valueComparation": valueComparation,
+                        "accountDominio": accountDominio
+                    }
+
+                    self._valuesOfFileExtracts.append(self._valuesOfLineExtracts.copy())
+            except Exception as e:
+                pass
+
+        return self._valuesOfFileExtracts
+
     def returnDataProviderOrExpense(self, nameProvider=None, account=None, category=None, historic=None):
         # chama a função que carrega os dados das configurações
         self.getSettingsProviderOrExpense()
@@ -171,6 +221,30 @@ class CompareWithSettings(object):
             if bankComparation == nameBank and account.count(accountComparation) > 0:
                 return accountDominio
 
+    def returnDataExtract(self, historic=None, operation=None):
+        # chama a função que carrega os dados das configurações
+        self.getSettingsExtract()
+
+        if historic == "":
+            historic = None
+        if operation == "":
+            operation = None
+
+        for extractComparation in self._valuesOfFileExtracts:
+            fieldComparation = funcoesUteis.analyzeIfFieldIsValid(extractComparation, "fieldComparation")
+            operationComparation = funcoesUteis.analyzeIfFieldIsValid(extractComparation, "operationComparation")
+            typeComparation = funcoesUteis.analyzeIfFieldIsValid(extractComparation, "typeComparation")
+            valueComparation = funcoesUteis.analyzeIfFieldIsValid(extractComparation, "valueComparation")
+            accountDominio = funcoesUteis.analyzeIfFieldIsValid(extractComparation, "accountDominio")
+
+            if fieldComparation == 1: # comparação pelo fornecedor
+                if typeComparation == 1: # comparação caso o valor seja idêntico
+                    if historic == valueComparation and operationComparation == operation and historic is not None:
+                        return accountDominio
+                else:
+                    if historic.count(valueComparation) > 0 and operationComparation == operation and historic is not None: # comparação caso contenha o texto
+                        return accountDominio
+
     def processPayments(self):
         for payment in self._payments:
             nameProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "nameProvider", None)
@@ -189,7 +263,45 @@ class CompareWithSettings(object):
         
         return self._paymentsWithNewAccountCode
 
-# if __name__ == "__main__":
-#     payments = [{'paymentDate': '31/10/2019', 'nameProvider': 'SANEAGO', 'cnpjProvider': '', 'amountPaid': 311.8, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '2099407921', 'historic': 'PAGAMENTO AGUA/ESGOTO REF.MES 10/2019 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 311.8, 'accountPlan': 'AGUA E ESGOTO', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': False, 'accountCode': 0, 'cgceProvider': '', 'codiEmp': '1428'}, {'paymentDate': '31/10/2019', 'nameProvider': 'SANEAGO', 'cnpjProvider': '', 'amountPaid': 311.8, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '2099407921', 'historic': 'PAGAMENTO AGUA/ESGOTO REF.MES 10/2019 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 311.8, 'accountPlan': 'AGUA E ESGOTO', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': False, 'accountCode': 0, 'cgceProvider': '', 'codiEmp': '1428'}, {'paymentDate': '03/10/2019', 'nameProvider': 'SALVARO INDUSTRIA E COMERCIO D', 'cnpjProvider': '', 'amountPaid': 5250.0, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '19142', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 19142 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 5250.0, 'accountPlan': 'COMPRA MERCADORIA', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': True, 'accountCode': 1158.0, 'cgceProvider': '80142250000103', 'codiEmp': '1428'}]
-#     compareWithSettings = CompareWithSettings(1428, payments)
-#     print(compareWithSettings.processPayments())
+    def processExtracts(self):
+        for extract in self._extracts:
+            nameBank = funcoesUteis.analyzeIfFieldIsValid(extract, "bankId", None)
+            account = funcoesUteis.analyzeIfFieldIsValid(extract, "account", None)
+            operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation", None)
+            historic = funcoesUteis.analyzeIfFieldIsValid(extract, "historic", None)
+
+            accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit", 0)
+            accountCodeDebit = 0 if accountCodeDebit == "" else accountCodeDebit
+
+            accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit", 0)
+            accountCodeCredit = 0 if accountCodeCredit == "" else accountCodeCredit
+
+            # --- retorna a conta débito/crédito referente ao banco
+            accountCodeBank = self.returnDataBanks(nameBank, account)
+            accountCodeBank = 0 if accountCodeBank is None else accountCodeBank
+
+            if operation == "+" and accountCodeDebit == 0:
+                extract["accountCodeDebit"] = "" if accountCodeBank == 0 else accountCodeBank
+
+            if operation == "-" and accountCodeCredit == 0:
+                extract["accountCodeCredit"] = "" if accountCodeBank == 0 else accountCodeBank
+
+            # --- retorna a conta débito/crédito referente a contrapartida
+            accountCodeExtract = self.returnDataExtract(historic, operation)
+            accountCodeExtract = 0 if accountCodeExtract is None else accountCodeExtract
+
+            if operation == "+" and accountCodeCredit == 0:
+                extract["accountCodeCredit"] = "" if accountCodeExtract == 0 else accountCodeExtract
+
+            if operation == "-" and accountCodeDebit == 0:
+                extract["accountCodeDebit"] = "" if accountCodeExtract == 0 else accountCodeExtract
+
+            self._extractsWithNewAccountCode.append(extract)
+        
+        return self._extractsWithNewAccountCode
+
+if __name__ == "__main__":
+    payments = [{'paymentDate': '31/10/2019', 'nameProvider': 'SANEAGO', 'cnpjProvider': '', 'amountPaid': 311.8, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '2099407921', 'historic': 'PAGAMENTO AGUA/ESGOTO REF.MES 10/2019 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 311.8, 'accountPlan': 'AGUA E ESGOTO', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': False, 'accountCode': 0, 'cgceProvider': '', 'codiEmp': '1428'}, {'paymentDate': '31/10/2019', 'nameProvider': 'SANEAGO', 'cnpjProvider': '', 'amountPaid': 311.8, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '2099407921', 'historic': 'PAGAMENTO AGUA/ESGOTO REF.MES 10/2019 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 311.8, 'accountPlan': 'AGUA E ESGOTO', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': False, 'accountCode': 0, 'cgceProvider': '', 'codiEmp': '1428'}, {'paymentDate': '03/10/2019', 'nameProvider': 'SALVARO INDUSTRIA E COMERCIO D', 'cnpjProvider': '', 'amountPaid': 5250.0, 'bank': 'ITAU', 'account': '44388', 'foundProof': True, 'document': '19142', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 19142 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 5250.0, 'accountPlan': 'COMPRA MERCADORIA', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': '', 'findNote': True, 'accountCode': 1158.0, 'cgceProvider': '80142250000103', 'codiEmp': '1428'}]
+    extracts = [{'bankId': 'ITAU', 'account': '4372443889', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 6500.0, 'operation': '-', 'document': '20191001001', 'historic': 'INT TED 759316'}]
+    compareWithSettings = CompareWithSettings(1428, payments, extracts)
+    print(compareWithSettings.processExtracts())

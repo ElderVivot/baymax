@@ -232,4 +232,4 @@ def getOnlyNameFile(nameFileOriginal):
 
 def getDateTimeNowInFormatStr():
     dateTimeObj = datetime.datetime.now()
-    return dateTimeObj.strftime("%Y_%m_%d %H_%M_%S")
+    return dateTimeObj.strftime("%Y_%m_%d %H_%M")

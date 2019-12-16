@@ -22,9 +22,10 @@ class GenerateExcel(object):
         self._wayBaseToSaveFiles = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados')
         if os.path.exists(self._wayBaseToSaveFiles) is False:
             os.makedirs(self._wayBaseToSaveFiles)
-        self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"integracao_contabil_{funcoesUteis.getDateTimeNowInFormatStr()}.xlsx"))
+        self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"integracao_contabil_{self._codiEmp} {funcoesUteis.getDateTimeNowInFormatStr()}.xlsx"))
         self._cell_format_header = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'yellow'})
         self._cell_format_money = self._workbook.add_format({'num_format': '##0.00'})
+        self._cell_format_date = self._workbook.add_format({'num_format': 'dd/mm/yyyy'})
         
     def sheetExtract(self, extracts):
         sheet = self._workbook.add_worksheet('ExtratosBancarios')
@@ -49,7 +50,7 @@ class GenerateExcel(object):
         for key, extract in enumerate(extracts):
             row = key+1
 
-            dateExtract = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
+            dateExtract = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction"))
             bank = funcoesUteis.analyzeIfFieldIsValid(extract, "bankId")
             account = funcoesUteis.analyzeIfFieldIsValid(extract, "account")
             typeTransaction = funcoesUteis.analyzeIfFieldIsValid(extract, "typeTransaction")
@@ -57,18 +58,25 @@ class GenerateExcel(object):
             document = funcoesUteis.analyzeIfFieldIsValid(extract, "document")
             historic = funcoesUteis.analyzeIfFieldIsValid(extract, "historic")
             amount = funcoesUteis.analyzeIfFieldIsValid(extract, "amount")
+            accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit")
+            accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit")
 
-            sheet.write(row, 0, dateExtract)
-            sheet.write(row, 1, "")
-            sheet.write(row, 2, "")
+            if operation == "+":
+                historicCode = 24
+            else:
+                historicCode = 78
+
+            sheet.write(row, 0, dateExtract, self._cell_format_date)
+            sheet.write(row, 1, accountCodeDebit)
+            sheet.write(row, 2, accountCodeCredit)
             sheet.write(row, 3, amount, self._cell_format_money)
-            sheet.write(row, 4, "")
+            sheet.write(row, 4, historicCode)
             sheet.write(row, 5, historic)
             sheet.write(row, 6, "")
             sheet.write(row, 7, "")
             sheet.write(row, 8, bank)
             sheet.write(row, 9, account)
-            sheet.write(row, 10, dateExtract)
+            sheet.write(row, 10, dateExtract, self._cell_format_date)
             sheet.write(row, 11, typeTransaction)
             sheet.write(row, 12, operation)
             sheet.write(row, 13, amount, self._cell_format_money)
@@ -117,14 +125,14 @@ class GenerateExcel(object):
             bankAndAccount = f'{funcoesUteis.analyzeIfFieldIsValid(payment, "bank")}-{funcoesUteis.analyzeIfFieldIsValid(payment, "account")}'
             bankAndAccountExtract = f'{funcoesUteis.analyzeIfFieldIsValid(payment, "bankExtract")}-{funcoesUteis.analyzeIfFieldIsValid(payment, "accountExtract")}'
             foundProof = funcoesUteis.analyzeIfFieldIsValid(payment, "foundProof")
-            paymentDate = funcoesUteis.analyzeIfFieldIsValid(payment, "paymentDate", None)
-            extractDate = funcoesUteis.analyzeIfFieldIsValid(payment, "dateExtract", None)
-            if extractDate is None:
+            paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "paymentDate", None))
+            extractDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dateExtract", None))
+            if extractDate is None or extractDate == "":
                 dateOfImport = paymentDate
             else:
                 dateOfImport = extractDate
-            dueDate = funcoesUteis.analyzeIfFieldIsValid(payment, "dueDate")
-            issueDate = funcoesUteis.analyzeIfFieldIsValid(payment, "issueDate")
+            dueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dueDate"))
+            issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "issueDate"))
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(payment, "amountPaid")
             amountDiscount = funcoesUteis.analyzeIfFieldIsValid(payment, "amountDiscount")
             amountInterest = funcoesUteis.analyzeIfFieldIsValid(payment, "amountInterest")
@@ -146,11 +154,11 @@ class GenerateExcel(object):
             sheet.write(row, 5, bankAndAccount)
             sheet.write(row, 6, bankAndAccountExtract)
             sheet.write(row, 7, foundProof)
-            sheet.write(row, 8, paymentDate)
-            sheet.write(row, 9, extractDate)
-            sheet.write(row, 10, dateOfImport)
-            sheet.write(row, 11, dueDate)
-            sheet.write(row, 12, issueDate)
+            sheet.write(row, 8, paymentDate, self._cell_format_date)
+            sheet.write(row, 9, extractDate, self._cell_format_date)
+            sheet.write(row, 10, dateOfImport, self._cell_format_date)
+            sheet.write(row, 11, dueDate, self._cell_format_date)
+            sheet.write(row, 12, issueDate, self._cell_format_date)
             sheet.write(row, 13, amountPaid, self._cell_format_money)
             sheet.write(row, 14, amountDiscount, self._cell_format_money)
             sheet.write(row, 15, amountInterest, self._cell_format_money)
