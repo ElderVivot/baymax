@@ -129,6 +129,7 @@ class SystemWinthor(object):
         filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsFinal, extracts)
         extractsWithFilter = filterPeriod.filterExtracts()
         paymentsWithFilter = filterPeriod.filterPayments()
+        print(f'\t - Com o filtro aplicado de {len(paymentsFinal)} sobraram {len(paymentsWithFilter)}')
 
         print(' - Etapa 9: Configurando as contas contábeis de acordo planilha de configuracoes preenchida.')
         compareWithSettings = CompareWithSettings(self._codiEmp, paymentsWithFilter, extractsWithFilter)

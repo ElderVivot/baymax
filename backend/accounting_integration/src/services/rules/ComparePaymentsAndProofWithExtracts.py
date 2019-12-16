@@ -135,13 +135,25 @@ class ComparePaymentsAndProofWithExtracts(object):
             operation = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "operation", "-")
             bank = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "bank")
             account = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "account")
-
-            extract = self.returnDataExtract(paymentFinal["paymentDate"], paymentFinal["amountPaid"], operation, bank, account) 
+            
+            # se já tiver encontrado o comprovante de pagto não tem o porque procurar a prova nos extratos bancários, visto que o comprovante já é a prova
+            if paymentFinal["foundProof"] is False:
+                extract = self.returnDataExtract(paymentFinal["paymentDate"], paymentFinal["amountPaid"], operation, bank, account)
+            else:
+                extract = None
 
             paymentFinal["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
             paymentFinal["bankExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'bankId')}"
             paymentFinal["accountExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'account')}"
             paymentFinal["historicExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "historic")
+
+            # data da importação, importante ela pois nem sempre a data do financeiro do cliente é a certa
+            if extract is None:
+                dateOfImport = paymentFinal["paymentDate"]
+            else:
+                dateOfImport = paymentFinal["dateExtract"]
+            
+            paymentFinal["dateOfImport"] = dateOfImport
 
             self._paymentsFinal[key] = paymentFinal
 

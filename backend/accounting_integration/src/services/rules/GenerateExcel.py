@@ -7,6 +7,7 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json
 from datetime import datetime
+from operator import itemgetter
 import xlsxwriter
 import tools.funcoesUteis as funcoesUteis
 
@@ -114,6 +115,9 @@ class GenerateExcel(object):
         sheet.write(0, 23, "Tipo de Pagamento", self._cell_format_header)
         sheet.write(0, 24, "Historico Extrato Bancário", self._cell_format_header)
 
+        # ordena os payments por data
+        payments = sorted(payments, key=itemgetter('dateOfImport'))
+
         for key, payment in enumerate(payments):
             row = key+1
 
@@ -127,10 +131,7 @@ class GenerateExcel(object):
             foundProof = funcoesUteis.analyzeIfFieldIsValid(payment, "foundProof")
             paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "paymentDate", None))
             extractDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dateExtract", None))
-            if extractDate is None or extractDate == "":
-                dateOfImport = paymentDate
-            else:
-                dateOfImport = extractDate
+            dateOfImport = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dateOfImport", None))
             dueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dueDate"))
             issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "issueDate"))
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(payment, "amountPaid")

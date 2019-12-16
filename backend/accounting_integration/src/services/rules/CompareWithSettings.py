@@ -99,7 +99,7 @@ class CompareWithSettings(object):
                 
                 nameBank = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderBanks, "Banco")
 
-                account = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderBanks, "Conta Corrente")
+                account = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderBanks, "Conta Corrente (Sem o Dígito Verificador)")
                 account = account[:-1] # o -1 é pra tirar o digíto verificador caso o pessoal preencha na configuração, então pega sempre um char a menos evitando este problema
 
                 accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 3, self._posionsOfHeaderBanks, "Conta Contábil Banco na Domínio"))
@@ -175,34 +175,37 @@ class CompareWithSettings(object):
             valueComparation = funcoesUteis.analyzeIfFieldIsValid(providerOrExpense, "valueComparation")
             accountDominio = funcoesUteis.analyzeIfFieldIsValid(providerOrExpense, "accountDominio")
 
-            if fieldComparation == 1: # comparação pelo fornecedor
-                if typeComparation == 1: # comparação caso o valor seja idêntico
-                    if nameProvider == valueComparation and nameProvider is not None:
-                        return accountDominio
-                else:
-                    if nameProvider.count(valueComparation) > 0 and nameProvider is not None: # comparação caso contenha o texto
-                        return accountDominio
-            elif fieldComparation == 2: # comparação pela conta contábil
-                if typeComparation == 1: # comparação caso o valor seja idêntico
-                    if account == valueComparation and account is not None:
-                        return accountDominio
-                else:
-                    if account.count(valueComparation) > 0 and account is not None: # comparação caso contenha o texto
-                        return accountDominio
-            elif fieldComparation == 3: # comparação pela categoria
-                if typeComparation == 1: # comparação caso o valor seja idêntico
-                    if category == valueComparation and category is not None:
-                        return accountDominio
-                else:
-                    if category.count(valueComparation) > 0 and category is not None: # comparação caso contenha o texto
-                        return accountDominio
-            elif fieldComparation == 4: # comparação pelo historico
-                if typeComparation == 1: # comparação caso o valor seja idêntico
-                    if historic == valueComparation and historic is not None:
-                        return accountDominio
-                else:
-                    if historic.count(valueComparation) > 0 and historic is not None: # comparação caso contenha o texto
-                        return accountDominio
+            try:
+                if fieldComparation == 1: # comparação pelo fornecedor
+                    if typeComparation == 1: # comparação caso o valor seja idêntico
+                        if nameProvider == valueComparation and nameProvider is not None:
+                            return accountDominio
+                    else:
+                        if nameProvider.count(valueComparation) > 0 and nameProvider is not None: # comparação caso contenha o texto
+                            return accountDominio
+                elif fieldComparation == 2: # comparação pela conta contábil
+                    if typeComparation == 1: # comparação caso o valor seja idêntico
+                        if account == valueComparation and account is not None:
+                            return accountDominio
+                    else:
+                        if account.count(valueComparation) > 0 and account is not None: # comparação caso contenha o texto
+                            return accountDominio
+                elif fieldComparation == 3: # comparação pela categoria
+                    if typeComparation == 1: # comparação caso o valor seja idêntico
+                        if category == valueComparation and category is not None:
+                            return accountDominio
+                    else:
+                        if category.count(valueComparation) > 0 and category is not None: # comparação caso contenha o texto
+                            return accountDominio
+                elif fieldComparation == 4: # comparação pelo historico
+                    if typeComparation == 1: # comparação caso o valor seja idêntico
+                        if historic == valueComparation and historic is not None:
+                            return accountDominio
+                    else:
+                        if historic.count(valueComparation) > 0 and historic is not None: # comparação caso contenha o texto
+                            return accountDominio
+            except Exception:
+                pass
 
     def returnDataBanks(self, nameBank=None, account=None):
         # chama a função que carrega os dados das configurações
