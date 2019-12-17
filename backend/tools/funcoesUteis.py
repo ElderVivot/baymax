@@ -158,6 +158,8 @@ def retornaCampoComoData(valorCampo, formatoData=1):
         formatoDataStr = "%d/%m/%Y"
     elif formatoData == 2:
         formatoDataStr = "%Y-%m-%d"
+    elif formatoData == 3:
+        formatoDataStr = "%Y/%m/%d"
 
     try:
         return datetime.datetime.strptime(valorCampo[:10], formatoDataStr).date()

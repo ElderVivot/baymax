@@ -174,7 +174,7 @@ class CompareWithSettings(object):
                         self._posionsOfHeaderFromToAccounts[nameField] = keyField
                     continue
                 
-                valueComparation = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderFromToAccounts, "Valor")
+                valueComparation = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderFromToAccounts, "Código Conta Sistema Cliente")
 
                 accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 4, self._posionsOfHeaderFromToAccounts, "Conta Contábil Domínio"))
 
@@ -277,6 +277,10 @@ class CompareWithSettings(object):
                         return accountDominio
 
     def processPayments(self):
+
+        # este não lê no returnDateFromToOfAccounts porquê não precisa do returna, o valor retornar já é comparado com a chave
+        self.getSettingsFromToOfAccounts()
+
         for payment in self._payments:
             nameProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "nameProvider", None)
             accountPlan = funcoesUteis.analyzeIfFieldIsValid(payment, "accountPlan", None)
@@ -292,6 +296,9 @@ class CompareWithSettings(object):
             if accountCode == 0 and accountCodeOld != "":
                 accountCode = funcoesUteis.analyzeIfFieldIsValid(self._valuesFromToAccounts, accountCodeOld, None)
                 accountCode = 0 if accountCode is None else accountCode
+
+            if accountCode == 0:
+                payment["category"] = accountCodeOld
                 
             payment["accountCode"] = accountCode
 

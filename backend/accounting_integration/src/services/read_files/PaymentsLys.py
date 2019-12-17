@@ -115,10 +115,10 @@ class PaymentsLysPorData(object):
 
                     idAccountPaid = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeader, "idsContaPagar")
                     parcelNumber = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeader, "cdParcela")
-                    dueDate = funcoesUteis.treatDateFieldInVector(data, 4, self._posionsOfHeader, "dtVencimento", 2)
+                    dueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.treatDateFieldInVector(data, 4, self._posionsOfHeader, "dtVencimento"))
                     nameProvider = funcoesUteis.treatTextFieldInVector(data, 6, self._posionsOfHeader, "nmPessoaCredora")
                     document = funcoesUteis.treatTextFieldInVector(data, 11, self._posionsOfHeader, "nrDocFiscalOriginal")
-                    issueDate = funcoesUteis.treatDateFieldInVector(data, 12, self._posionsOfHeader, "dtEmissao", 2)
+                    issueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.treatDateFieldInVector(data, 12, self._posionsOfHeader, "dtEmissao"))
                     amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 36)
                     amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 19, self._posionsOfHeader, "valordesconto")
                     amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 20, self._posionsOfHeader, "valormulta")

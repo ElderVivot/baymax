@@ -20,12 +20,12 @@ wayToSaveFiles.close()
 
 class UpdateOrExportData(object):
     def __init__(self):
-        # self._UpdateOrExport = int(input(f'\n - Para exportar os dados no Leiaute Domínio digite 1, já se quiser atualizar a planilha Financeiro e Extratos pra conferência digite 2: '))
-        # if self._UpdateOrExport == 1:
-        #     self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a exportação dos dados: ')
-        # else:
-        #     self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a atualização da planilha Financeiro e Extratos: ')
-        self._codiEmp = 1428
+        self._UpdateOrExport = int(input(f'\n - Para exportar os dados no Leiaute Domínio digite 1, já se quiser atualizar a planilha Financeiro e Extratos pra conferência digite 2: '))
+        if self._UpdateOrExport == 1:
+            self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio: ')
+        else:
+            self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio: ')
+        # self._codiEmp = 1428
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados')
 
     def update(self):

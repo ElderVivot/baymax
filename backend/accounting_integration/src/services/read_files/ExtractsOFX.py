@@ -33,46 +33,46 @@ class ExtractsOFX(object):
             parser.parse(file)
             ofx = parser.convert()
 
-            # bankId = int(ofx.bankmsgsrsv1[0].stmtrs.bankacctfrom.bankid)
-            # bankId = self.returnNameBank(bankId)
+            bankId = int(ofx.bankmsgsrsv1[0].stmtrs.bankacctfrom.bankid)
+            bankId = self.returnNameBank(bankId)
 
-            # account = ofx.bankmsgsrsv1[0].stmtrs.bankacctfrom.acctid
+            account = ofx.bankmsgsrsv1[0].stmtrs.bankacctfrom.acctid
 
-            # transactions = ofx.bankmsgsrsv1[0].stmtrs.banktranlist
-            # for transction in transactions:
-            #     typeTransaction = funcoesUteis.treatTextField(transction.trntype)
+            transactions = ofx.bankmsgsrsv1[0].stmtrs.banktranlist
+            for transction in transactions:
+                typeTransaction = funcoesUteis.treatTextField(transction.trntype)
                 
-            #     dateTransaction = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(transction.dtposted)
+                dateTransaction = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(transction.dtposted)
                 
-            #     amount = funcoesUteis.treatDecimalField(transction.trnamt)
-            #     if amount < 0:
-            #         operation = '-'
-            #         amount *= -1
-            #     else:
-            #         operation = '+'
+                amount = funcoesUteis.treatDecimalField(transction.trnamt)
+                if amount < 0:
+                    operation = '-'
+                    amount *= -1
+                else:
+                    operation = '+'
 
-            #     if operation == "+":
-            #         historicCode = 24
-            #     else:
-            #         historicCode = 78
+                if operation == "+":
+                    historicCode = 24
+                else:
+                    historicCode = 78
                 
-            #     document = funcoesUteis.treatTextField(transction.checknum)
+                document = funcoesUteis.treatTextField(transction.checknum)
 
-            #     historic = funcoesUteis.treatTextField(transction.memo)
+                historic = funcoesUteis.treatTextField(transction.memo)
 
-            #     self._valuesOfLine = {
-            #         "bankId": bankId,
-            #         "account": account,
-            #         "typeTransaction": typeTransaction,
-            #         "dateTransaction": dateTransaction,
-            #         "amount": amount,
-            #         "operation": operation,
-            #         "document": document,
-            #         "historicCode": historicCode,
-            #         "historic": historic
-            #     }
+                self._valuesOfLine = {
+                    "bankId": bankId,
+                    "account": account,
+                    "typeTransaction": typeTransaction,
+                    "dateTransaction": dateTransaction,
+                    "amount": amount,
+                    "operation": operation,
+                    "document": document,
+                    "historicCode": historicCode,
+                    "historic": historic
+                }
 
-            #     self._valuesOfFile.append(self._valuesOfLine.copy())
+                self._valuesOfFile.append(self._valuesOfLine.copy())
         except Exception as e:
             print(e)
 
