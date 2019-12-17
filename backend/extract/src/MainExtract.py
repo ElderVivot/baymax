@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+import os
 from geral.geempre import extractGeempre
 from fiscal.efentradas import extractEfentradas
 from fiscal.efmvepro import extractEfmvepro
@@ -19,6 +20,9 @@ class MainExtract:
 
     efentradaspar = extractEfentradaspar()
     efentradaspar.exportData()
+
+    print(' - Processo Finalizado, aperte qualquer tecla pra sair.')
+    os.system('pause > nul')
 
     # efmvepro = extractEfmvepro()
     # efmvepro.exportaDados()
