@@ -6,7 +6,9 @@ fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json
+import codecs
 from ofxtools.Parser import OFXTree
+from ofxparse import OfxParser
 from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
 
@@ -28,23 +30,23 @@ class ExtractsOFX(object):
     def process(self, file):
 
         try:
-            parser = OFXTree()
+            with codecs.open(file) as fileobj:
+                ofx = OfxParser.parse(fileobj)
 
-            parser.parse(file)
-            ofx = parser.convert()
+            accountData = ofx.account
 
-            bankId = int(ofx.bankmsgsrsv1[0].stmtrs.bankacctfrom.bankid)
+            bankId = int(accountData.routing_number)
             bankId = self.returnNameBank(bankId)
 
-            account = ofx.bankmsgsrsv1[0].stmtrs.bankacctfrom.acctid
+            account = accountData.account_id
 
-            transactions = ofx.bankmsgsrsv1[0].stmtrs.banktranlist
-            for transction in transactions:
-                typeTransaction = funcoesUteis.treatTextField(transction.trntype)
+            transactions = accountData.statement.transactions
+            for transaction in transactions:
+                typeTransaction = funcoesUteis.treatTextField(transaction.type)
                 
-                dateTransaction = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(transction.dtposted)
+                dateTransaction = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(transaction.date)
                 
-                amount = funcoesUteis.treatDecimalField(transction.trnamt)
+                amount = funcoesUteis.treatDecimalField(transaction.amount)
                 if amount < 0:
                     operation = '-'
                     amount *= -1
@@ -56,9 +58,9 @@ class ExtractsOFX(object):
                 else:
                     historicCode = 78
                 
-                document = funcoesUteis.treatTextField(transction.checknum)
+                document = funcoesUteis.treatTextField(transaction.checknum)
 
-                historic = funcoesUteis.treatTextField(transction.memo)
+                historic = funcoesUteis.treatTextField(transaction.memo)
 
                 self._valuesOfLine = {
                     "bankId": bankId,
@@ -78,6 +80,6 @@ class ExtractsOFX(object):
 
         return self._valuesOfFile
 
-if __name__ == "__main__":
-    extractOFX = ExtractsOFX()
-    print(extractOFX.process("C:/_temp/integracao_diviart/OUTUBRO CX DIVIART.ofx"))
+# if __name__ == "__main__":
+#     extractOFX = ExtractsOFX()
+#     extractOFX.process("C:/_temp/integracao_diviart/OUTUBRO CX DIVIART.ofx")
