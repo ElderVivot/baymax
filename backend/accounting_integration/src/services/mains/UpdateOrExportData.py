@@ -51,6 +51,9 @@ class UpdateOrExportData(object):
                     generateExcel.sheetExtract(extractsCompareWithSettings)
                     generateExcel.closeFile()
 
+        print(' - Processo Finalizado.')
+        os.system('pause > nul')
+
     def process(self):
         pass
 

@@ -142,7 +142,7 @@ class PaymentsLysPorData(object):
                             "dueDate": dueDate,
                             "issueDate": issueDate,
                             "bank": bank,
-                            "accountBank": accountBank,
+                            "account": accountBank,
                             "amountPaid": amountPaid,
                             "amountDiscount": amountDiscount,
                             "amountInterest": amountInterest,

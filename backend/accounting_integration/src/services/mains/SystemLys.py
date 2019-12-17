@@ -35,6 +35,9 @@ class SystemLys(object):
         # self._codiEmp = 1428
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
         self._wayFilesTemp = os.path.join(fileDir, f'backend/accounting_integration/data/temp/{self._codiEmp}')
+        print(self._wayFilesTemp, os.path.exists(self._wayFilesTemp))
+        if os.path.exists(self._wayFilesTemp) is False:
+            os.makedirs(self._wayFilesTemp)
 
     def processesIntegration(self):
         try:

@@ -34,7 +34,12 @@ class ReadExcelToUpdateOrExportData(object):
             document = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderPayments, "Documento")
 
             findNote = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderPayments, "Encontrou a NF na Domínio?")
-            findNote = False if findNote == "0" else True
+            if findNote == "1":
+                findNote = True
+            elif findNote == "0":
+                findNote = False
+            else:
+                findNote = ""
 
             parcelNumber = funcoesUteis.treatTextFieldInVector(data, 3, self._posionsOfHeaderPayments, "Parcela")
             nameProvider = funcoesUteis.treatTextFieldInVector(data, 4, self._posionsOfHeaderPayments, "Nome Fornecedor")
@@ -63,7 +68,12 @@ class ReadExcelToUpdateOrExportData(object):
                 accountExtract = ""
 
             foundProof = funcoesUteis.treatTextFieldInVector(data, 8, self._posionsOfHeaderPayments, "Encontrou Comprovante Pagto?")
-            foundProof = False if findNote == "0" else True
+            if foundProof == "1":
+                foundProof = True
+            elif foundProof == "0":
+                foundProof = False
+            else:
+                foundProof = ""
 
             paymentDate = funcoesUteis.treatTextFieldInVector(data, 9, self._posionsOfHeaderPayments, "Data de Pagto")
             extractDate = funcoesUteis.treatTextFieldInVector(data, 10, self._posionsOfHeaderPayments, "Data do Extrato")

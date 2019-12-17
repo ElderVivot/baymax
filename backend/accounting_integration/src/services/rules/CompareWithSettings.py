@@ -6,6 +6,7 @@ fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json
+import shutil
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
@@ -51,7 +52,10 @@ class CompareWithSettings(object):
             "SOMA": "+",
             "SUBTRAI": "-"
         }
+        self._wayFileDefaultSettings = os.path.join(fileDir, f'backend/accounting_integration/data/configuracoes.xlsx')
         self._wayFileSettings = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/configuracoes_{self._codiEmp}.xlsx')
+        if os.path.exists(self._wayFileSettings) is False:
+            shutil.copyfile(self._wayFileDefaultSettings, self._wayFileSettings)
         
     def getSettingsProviderOrExpense(self):
         dataFile = leXls_Xlsx(self._wayFileSettings, 'FornecedorOuDespesa')
