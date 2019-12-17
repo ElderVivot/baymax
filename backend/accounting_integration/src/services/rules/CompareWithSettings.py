@@ -32,6 +32,8 @@ class CompareWithSettings(object):
         self._valuesOfLineExtracts = {}
         self._valuesOfFileExtracts = []
         self._posionsOfHeaderExtracts = {}
+        self._valuesFromToAccounts = {}
+        self._posionsOfHeaderFromToAccounts = {}
         self._settingsFieldComparation = {
             "FORNECEDOR": 1,
             "PLANO DE CONTAS": 2,
@@ -159,6 +161,29 @@ class CompareWithSettings(object):
 
         return self._valuesOfFileExtracts
 
+    def getSettingsFromToOfAccounts(self):
+        dataFile = leXls_Xlsx(self._wayFileSettings, 'DeParaPlanoContas')
+        
+        for data in dataFile:
+            try:
+                fieldHeader = funcoesUteis.treatTextFieldInVector(data, 1)
+                if fieldHeader.count('CODIGO CONTA SISTEMA CLIENTE') > 0:
+                    self._posionsOfHeaderFromToAccounts.clear()
+                    for keyField, nameField in enumerate(data):
+                        nameField = funcoesUteis.treatTextField(nameField)
+                        self._posionsOfHeaderFromToAccounts[nameField] = keyField
+                    continue
+                
+                valueComparation = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderFromToAccounts, "Valor")
+
+                accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 4, self._posionsOfHeaderFromToAccounts, "Conta Contábil Domínio"))
+
+                self._valuesFromToAccounts[valueComparation] = accountDominio
+            except Exception as e:
+                pass
+
+        return self._valuesFromToAccounts
+
     def returnDataProviderOrExpense(self, nameProvider=None, account=None, category=None, historic=None):
         # chama a função que carrega os dados das configurações
         self.getSettingsProviderOrExpense()
@@ -263,6 +288,11 @@ class CompareWithSettings(object):
                 accountCode = self.returnDataProviderOrExpense(nameProvider, accountPlan, category, historic)
                 accountCode = 0 if accountCode is None else accountCode
 
+            accountCodeOld = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeOld", None)
+            if accountCode == 0 and accountCodeOld != "":
+                accountCode = funcoesUteis.analyzeIfFieldIsValid(self._valuesFromToAccounts, accountCodeOld, None)
+                accountCode = 0 if accountCode is None else accountCode
+                
             payment["accountCode"] = accountCode
 
             self._paymentsWithNewAccountCode.append(payment)

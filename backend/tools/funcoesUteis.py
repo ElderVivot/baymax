@@ -210,6 +210,8 @@ def md5Checksum(filePath):
 def removeAnArrayFromWithinAnother(arraySet=[]):
     newArray = []
     for array in arraySet:
+        if array is None:
+            continue
         for vector in array:
             if len(vector) == 0:
                 continue
@@ -233,3 +235,28 @@ def getOnlyNameFile(nameFileOriginal):
 def getDateTimeNowInFormatStr():
     dateTimeObj = datetime.datetime.now()
     return dateTimeObj.strftime("%Y_%m_%d %H_%M")
+
+def returnBankForName(nameBank):
+    nameBank = str(nameBank)
+    if nameBank.count('BRASIL') > 0:
+        nameBank = 'BRASIL'
+    elif nameBank.count('BRADESCO') > 0:
+        nameBank = 'BRADESCO'
+    elif nameBank.count('CAIXA') > 0:
+        nameBank = 'CEF'
+    elif nameBank.count('SICOOB') > 0:
+        nameBank = 'SICOOB'
+    elif nameBank.count('SICRED') > 0:
+        nameBank = 'SICRED'
+    elif nameBank.count('SANTANDER') > 0:
+        nameBank = 'SANTANDER'
+    elif nameBank.count('ITAU') > 0:
+        nameBank = 'ITAU'
+    elif nameBank.count('SAFRA') > 0:
+        nameBank = 'SAFRA'
+    elif nameBank.count('DINHEIRO') > 0:
+        nameBank = 'DINHEIRO'
+    else:
+        nameBank = nameBank
+
+    return nameBank
