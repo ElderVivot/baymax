@@ -153,11 +153,11 @@ class ReadExcelToUpdateOrExportData(object):
             else:
                 foundProofInPayments = ""
 
-            bank = funcoesUteis.treatTextFieldInVector(data, 9, self._posionsOfHeaderExtracts, "Banco")
-            account = funcoesUteis.treatTextFieldInVector(data, 10, self._posionsOfHeaderExtracts, "Conta Corrente")
-            typeTransaction = funcoesUteis.treatTextFieldInVector(data, 12, self._posionsOfHeaderExtracts, "Tipo Transacao")
-            operation = funcoesUteis.treatTextFieldInVector(data, 13, self._posionsOfHeaderExtracts, "Operacao")
-            document = funcoesUteis.treatTextFieldInVector(data, 15, self._posionsOfHeaderExtracts, "Documento")
+            bank = funcoesUteis.treatTextFieldInVector(data, 10, self._posionsOfHeaderExtracts, "Banco")
+            account = funcoesUteis.treatTextFieldInVector(data, 11, self._posionsOfHeaderExtracts, "Conta Corrente")
+            typeTransaction = funcoesUteis.treatTextFieldInVector(data, 13, self._posionsOfHeaderExtracts, "Tipo Transacao")
+            operation = funcoesUteis.treatTextFieldInVector(data, 14, self._posionsOfHeaderExtracts, "Operacao")
+            document = funcoesUteis.treatTextFieldInVector(data, 16, self._posionsOfHeaderExtracts, "Documento")
 
             self._extractsOfLine = {
                 "dateTransaction": dateExtract,

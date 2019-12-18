@@ -11,6 +11,7 @@ sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src/servic
 import json
 from rules.ReadExcelToUpdateOrExportData import ReadExcelToUpdateOrExportData
 from rules.GenerateExcel import GenerateExcel
+from rules.GenerateExportDominio import GenerateExportDominio
 from rules.CompareWithSettings import CompareWithSettings
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
@@ -21,14 +22,11 @@ wayToSaveFiles.close()
 class UpdateOrExportData(object):
     def __init__(self):
         self._UpdateOrExport = int(input(f'\n - Para exportar os dados no Leiaute Domínio digite 1, já se quiser atualizar a planilha Financeiro e Extratos pra conferência digite 2: '))
-        if self._UpdateOrExport == 1:
-            self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio: ')
-        else:
-            self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio: ')
+        self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio: ')
         # self._codiEmp = 1428
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados')
 
-    def update(self):
+    def process(self):
         for root, dirs, files in os.walk(self._wayFilesToRead):
             if root == self._wayFilesToRead:
                 for file in files:
@@ -46,18 +44,20 @@ class UpdateOrExportData(object):
                     paymentsCompareWithSettings = compareWithSettings.processPayments()
 
                     print(f'\t - Etapa 3: Exportando informações')
-                    generateExcel = GenerateExcel(self._codiEmp, update=True, nameFileUpdate=file)
-                    generateExcel.sheetPayments(paymentsCompareWithSettings)
-                    generateExcel.sheetExtract(extractsCompareWithSettings)
-                    generateExcel.closeFile()
+                    if self._UpdateOrExport == 2:
+                        generateExcel = GenerateExcel(self._codiEmp, update=True, nameFileUpdate=file)
+                        generateExcel.sheetPayments(paymentsCompareWithSettings)
+                        generateExcel.sheetExtract(extractsCompareWithSettings)
+                        generateExcel.closeFile()
+                    else:
+                        generateExportDominio = GenerateExportDominio(self._codiEmp, file, paymentsCompareWithSettings, extractsCompareWithSettings)
+                        generateExportDominio.exportExtracts()
+                        generateExportDominio.closeFile()
 
-        print(' - Processo Finalizado.')
+        print('\n - Processo Finalizado.')
         os.system('pause > nul')
-
-    def process(self):
-        pass
 
 
 if __name__ == "__main__":
     updateOrExportData = UpdateOrExportData()
-    updateOrExportData.update()
+    updateOrExportData.process()
