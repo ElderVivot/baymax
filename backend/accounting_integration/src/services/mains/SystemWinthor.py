@@ -113,9 +113,10 @@ class SystemWinthor(object):
         proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
         # print(payments)
 
-        print(' - Etapa 6: Unindo o Financeiro com os Comprovantes de Pagamentos.')
+        print(' - Etapa 6: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
         paymentsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
+        extractsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.analyseIfExtractIsInPayment()
         # print(paymentsCompareWithProofAndExtracts)
 
         print(' - Etapa 7: Buscando a conta do fornecedor/despesa dentro do sistema.')
@@ -126,7 +127,7 @@ class SystemWinthor(object):
         paymentsFinal = comparePaymentsFinalWithDataBase.process()
         
         print(' - Etapa 8: Filtrando os pagamentos do período informado.')
-        filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsFinal, extracts)
+        filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsFinal, extractsCompareWithProofAndExtracts)
         extractsWithFilter = filterPeriod.filterExtracts()
         paymentsWithFilter = filterPeriod.filterPayments()
         print(f'\t - Com o filtro aplicado de {len(paymentsFinal)} sobraram {len(paymentsWithFilter)}')

@@ -78,6 +78,7 @@ class SystemLys(object):
         print(' - Etapa 4: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
         paymentsFinal = comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
+        extractsFinal = comparePaymentsAndProofWithExtracts.analyseIfExtractIsInPayment()
         # print(paymentsCompareWithProofAndExtracts)
 
         # retirado as linhas de baixo por enquanto pois na planilha do cliente já tem a conta contábil, além disso, tenho que implementar pra ler as notas das filiais
@@ -89,7 +90,7 @@ class SystemLys(object):
         # paymentsFinal = comparePaymentsFinalWithDataBase.process()
         
         print(' - Etapa 5: Filtrando os pagamentos do período informado.')
-        filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsFinal, extracts)
+        filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsFinal, extractsFinal)
         extractsWithFilter = filterPeriod.filterExtracts()
         paymentsWithFilter = filterPeriod.filterPayments()
         # print(f'\t - Com o filtro aplicado de {len(paymentsFinal)} sobraram {len(paymentsWithFilter)}')

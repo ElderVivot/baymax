@@ -24,6 +24,8 @@ class ComparePaymentsAndProofWithExtracts(object):
         self._proofOfPayments = proofOfPayments
         self._paymentsFinal = []
         self._paymentsAlreadyRead = []
+        self._extractsExistsInPayments = [] # este daqui são para os extratos que encontrou correlação nos pagamentos, na planilha de extratos conterá um campo com esta informação
+        self._extractsFinal = []
         self._numberOfDaysInterval = { "daysAfter": 3, "daysBefore": 3 }
 
     def returnDataPayment(self, paymentDate, amountPaid):
@@ -136,11 +138,9 @@ class ComparePaymentsAndProofWithExtracts(object):
             bank = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "bank")
             account = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "account")
             
-            # se já tiver encontrado o comprovante de pagto não tem o porque procurar a prova nos extratos bancários, visto que o comprovante já é a prova
-            if paymentFinal["foundProof"] is False:
-                extract = self.returnDataExtract(paymentFinal["paymentDate"], paymentFinal["amountPaid"], operation, bank, account)
-            else:
-                extract = None
+            extract = self.returnDataExtract(paymentFinal["paymentDate"], paymentFinal["amountPaid"], operation, bank, account)
+            if extract is not None:
+                self._extractsExistsInPayments.append(extract)
 
             paymentFinal["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
             paymentFinal["bankExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'bankId')}"
@@ -158,6 +158,19 @@ class ComparePaymentsAndProofWithExtracts(object):
             self._paymentsFinal[key] = paymentFinal
 
         return self._paymentsFinal
+
+    def analyseIfExtractIsInPayment(self):
+        for extract in self._extracts:
+            existProofInPayments = list(filter(lambda x: x == extract, self._extractsExistsInPayments))
+            
+            if len(existProofInPayments) > 0:
+                extract["foundProofInPayments"] = True
+            else:
+                extract["foundProofInPayments"] = False
+
+            self._extractsFinal.append(extract)
+        
+        return self._extractsFinal
 
 # if __name__ == "__main__":
 #     extracts = []

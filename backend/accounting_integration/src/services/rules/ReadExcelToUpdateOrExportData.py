@@ -144,6 +144,15 @@ class ReadExcelToUpdateOrExportData(object):
             amount = funcoesUteis.treatDecimalFieldInVector(data, 4, self._posionsOfHeaderExtracts, "Valor")
             historicCode = funcoesUteis.treatNumberFieldInVector(data, 5, self._posionsOfHeaderExtracts, "Cod. Hist")
             historic = funcoesUteis.treatTextFieldInVector(data, 6, self._posionsOfHeaderExtracts, "Historico")
+
+            foundProofInPayments = funcoesUteis.treatTextFieldInVector(data, 7, self._posionsOfHeaderExtracts, "Encontrou no Financeiro?")
+            if foundProofInPayments == "1":
+                foundProofInPayments = True
+            elif foundProofInPayments == "0":
+                foundProofInPayments = False
+            else:
+                foundProofInPayments = ""
+
             bank = funcoesUteis.treatTextFieldInVector(data, 9, self._posionsOfHeaderExtracts, "Banco")
             account = funcoesUteis.treatTextFieldInVector(data, 10, self._posionsOfHeaderExtracts, "Conta Corrente")
             typeTransaction = funcoesUteis.treatTextFieldInVector(data, 12, self._posionsOfHeaderExtracts, "Tipo Transacao")
@@ -157,6 +166,7 @@ class ReadExcelToUpdateOrExportData(object):
                 "amount": amount,
                 "historicCode": historicCode,
                 "historic": historic,
+                "foundProofInPayments": foundProofInPayments,
                 "bankId": bank,
                 "account": account,
                 "typeTransaction": typeTransaction,
