@@ -45,40 +45,116 @@ class GenerateExportDominio(object):
         localizador = ''
         rttFcont = ''
 
-        return f"{idRecord}|{typeEntry}|{codeDefaultEntry}|{localizador}|{rttFcont}|"
+        return f"{idRecord}|{typeEntry}|{codeDefaultEntry}|{localizador}|{rttFcont}|\n"
 
-    def entry6100(self, data, typeEntry):
+    def entry6100(self, data, typeData, typeEntry='N'):
+        # o typeData é pra identificar se é débito ou crédito
+        # o typeEntry é pra identificar se é um lançamento de juros (J), multa (M), desconto (D) ou normal (N)
         paymentOrExtract = self.isPaymentOrExtract(data)
+        accountCodeDebit =  ""
+        accountCodeCredit = ""
 
         if paymentOrExtract == "E":
             exportDate = funcoesUteis.analyzeIfFieldIsValid(data, "dateTransaction", None)
-            if typeEntry == 'D':
+            if typeData == 'D':
                 accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeDebit", "")
-                accountCodeCredit = ""
             else:
-                accountCodeDebit = ""
                 accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeCredit", "")
             amount = funcoesUteis.analyzeIfFieldIsValid(data, "amount", 0.0)
+            amountFloat = amount
+            amount = str(amount).replace('.', ',')
             historicCode = funcoesUteis.analyzeIfFieldIsValid(data, "historicCode", "")
             historic = funcoesUteis.analyzeIfFieldIsValid(data, "historic", "")
+
+        elif paymentOrExtract == "P":
+            exportDate = funcoesUteis.analyzeIfFieldIsValid(data, "dateOfImport", None)
+            amountPaid = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaid", 0.0)
+            amountDiscount = funcoesUteis.analyzeIfFieldIsValid(data, "amountDiscount", 0.0)
+            amountInterest = funcoesUteis.analyzeIfFieldIsValid(data, "amountInterest", 0.0)
+            amountFine = funcoesUteis.analyzeIfFieldIsValid(data, "amountFine", 0.0)
+            amountLiquid = amountPaid - amountInterest - amountFine + amountDiscount
+
+            if typeEntry == 'N':
+                if typeData == 'D':
+                    accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCode", "")
+                    amount = amountLiquid
+                else:
+                    accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeBank", "")
+                    amount = amountPaid
+                historicCode = 15
+            elif typeEntry == 'J':
+                accountCodeDebit = 372
+                historicCode = 26
+                amount = funcoesUteis.analyzeIfFieldIsValid(data, "amountInterest", 0.0)
+            elif typeEntry == 'M':
+                accountCodeDebit = 352
+                historicCode = 25
+                amount = funcoesUteis.analyzeIfFieldIsValid(data, "amountFine", 0.0)
+            elif typeEntry == 'D':
+                accountCodeCredit = 474
+                historicCode = 28
+                amount = funcoesUteis.analyzeIfFieldIsValid(data, "amountDiscount", 0.0)
+
+            amountFloat = amount
+            amount = str(amount).replace('.', ',')
+
+            document = funcoesUteis.analyzeIfFieldIsValid(data, "document")
+            nameProvider = funcoesUteis.analyzeIfFieldIsValid(data, "nameProvider")
+
+            accountPlan = funcoesUteis.analyzeIfFieldIsValid(data, "accountPlan")
+            accountPlan = f" / {accountPlan}" if accountPlan != "" else ""
+
+            historicTemp = funcoesUteis.analyzeIfFieldIsValid(data, "historic")
+            historicTemp = f" / {historicTemp}" if historicTemp != "" else accountPlan
+
+            if document != "" and document != "0":
+                historic = f"CFE. DUP {document} DO FORNECEDOR {nameProvider}{historicTemp}"
+            else:
+                historic = f"DO FORNECEDOR {nameProvider}{historicTemp}"
 
         idRecord = '6100'
         user = ""
         branch = ""
         scp = ""
 
-        return f"\n{idRecord}|{exportDate}|{accountCodeDebit}|{accountCodeCredit}|{amount}|{historicCode}|{historic}|{user}|{branch}|{scp}|"
+        if amountFloat > 0:
+            return f"{idRecord}|{exportDate}|{accountCodeDebit}|{accountCodeCredit}|{amount}|{historicCode}|{historic}|{user}|{branch}|{scp}|\n"
+        else:
+            return ""
 
     def exportExtracts(self):
-        for extract in self._extracts:
-            accountCodeDebit = funcoesUteis.treatNumberFieldInVector(extract, "accountCodeDebit")
-            accountCodeCredit = funcoesUteis.treatNumberFieldInVector(extract, "accountCodeCredit")
-            if int(accountCodeDebit) > 0 and int(accountCodeCredit) > 0:
+        for key, extract in enumerate(self._extracts):
+            accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit")
+            accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit")
+            
+            if accountCodeDebit != "" and accountCodeCredit != "":
                 self._file.write(self.header6000())
                 self._file.write(self.entry6100(extract, 'D'))
                 self._file.write(self.entry6100(extract, 'C'))
-            else:
-                print(extract)
+            
+            foundProofInPayments = funcoesUteis.analyzeIfFieldIsValid(extract, "foundProofInPayments", False)
+            if foundProofInPayments is True and accountCodeDebit != "" and accountCodeCredit != "":
+                print(f"\t\t - Na planilha do ExtratoBancario na linha {key+1} existe a informação que é uma transação que tem no financeiro do cliente, todavia foi inserido pra importá-la também no extrato.")
+
+            operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")
+            if operation == "+" and ( accountCodeDebit == "" or accountCodeCredit == "" ):
+                print(f"\t\t - Na planilha do ExtratoBancario na linha {key+1} a operação é SOMA mas não foi configurado a conta do débito ou crédito.")
+
+    def exportPayments(self):
+        for key, payment in enumerate(self._payments):
+            accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode")
+            accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeBank")
+            if accountCodeDebit != "" and accountCodeCredit != "":
+                self._file.write(self.header6000())
+                self._file.write(self.entry6100(payment, 'D', 'N'))
+                self._file.write(self.entry6100(payment, 'C', 'N'))
+                self._file.write(self.entry6100(payment, 'D', 'J'))
+                self._file.write(self.entry6100(payment, 'D', 'M'))
+                self._file.write(self.entry6100(payment, 'C', 'D'))
+            elif accountCodeDebit == "" or accountCodeDebit == "0":
+                print(f"\t\t - Na planilha de Pagamentos na linha {key+1} não foi configurado a conta do fornecedor/despesa.")
+            elif accountCodeCredit == "" or accountCodeCredit == "0":
+                print(f"\t\t - Na planilha de Pagamentos na linha {key+1} não foi configurado a conta do banco.")
 
     def closeFile(self):
         self._file.close()

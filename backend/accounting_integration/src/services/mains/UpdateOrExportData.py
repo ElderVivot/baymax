@@ -52,6 +52,7 @@ class UpdateOrExportData(object):
                     else:
                         generateExportDominio = GenerateExportDominio(self._codiEmp, file, paymentsCompareWithSettings, extractsCompareWithSettings)
                         generateExportDominio.exportExtracts()
+                        generateExportDominio.exportPayments()
                         generateExportDominio.closeFile()
 
         print('\n - Processo Finalizado.')

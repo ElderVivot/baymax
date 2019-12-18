@@ -82,9 +82,15 @@ def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
         except Exception:
             return ""
 
-def treatNumberField(value):
+def treatNumberField(value, isInt=False):
     try:
-        return re.sub("[^0-9]", '', value)
+        value = re.sub("[^0-9]", '', value)
+        if isInt is True:
+            try:
+                value = int(value)
+            except Exception as e:
+                value = 0
+        return value
     except Exception:
         return 0
 

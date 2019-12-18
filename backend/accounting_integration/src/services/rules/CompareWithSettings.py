@@ -112,7 +112,7 @@ class CompareWithSettings(object):
 
                 accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 3, self._posionsOfHeaderBanks, "Conta Contábil Banco na Domínio"))
 
-                if nameBank != "" and account != "" and accountDominio > 0:
+                if nameBank != "" and accountDominio > 0:
                     self._valuesOfLineBanks = {
                         "nameBankComparation": nameBank,
                         "accountComparation": account,
@@ -245,15 +245,13 @@ class CompareWithSettings(object):
 
         if nameBank == "":
             nameBank = None
-        if account == "":
-            account = None
 
         for bank in self._valuesOfFileBanks:
             bankComparation = funcoesUteis.analyzeIfFieldIsValid(bank, "nameBankComparation")
             accountComparation = funcoesUteis.analyzeIfFieldIsValid(bank, "accountComparation")
             accountDominio = funcoesUteis.analyzeIfFieldIsValid(bank, "accountDominio")
 
-            if bankComparation == nameBank and account.count(accountComparation) > 0:
+            if bankComparation == nameBank and (account.count(accountComparation) > 0 or account == accountComparation):
                 return accountDominio
 
     def returnDataExtract(self, historic=None, operation=None):
@@ -290,21 +288,29 @@ class CompareWithSettings(object):
             accountPlan = funcoesUteis.analyzeIfFieldIsValid(payment, "accountPlan", None)
             category = funcoesUteis.analyzeIfFieldIsValid(payment, "category", None)
             historic = funcoesUteis.analyzeIfFieldIsValid(payment, "historic", None)
+            bank = funcoesUteis.analyzeIfFieldIsValid(payment, "bank", None)
+            account = funcoesUteis.analyzeIfFieldIsValid(payment, "account", None)
 
-            accountCode = int(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode", 0))
+            # busca a conta da despesa/fornecedor
+            accountCode = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode", 0), isInt=True)
             if accountCode == "" or accountCode == 0:
                 accountCode = self.returnDataProviderOrExpense(nameProvider, accountPlan, category, historic)
                 accountCode = 0 if accountCode is None else accountCode
-
+            
+            # pra empresas que tem plano de contas no sistema deles e o plano não bate, tem que fazer um de-para
             accountCodeOld = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeOld", None)
-            if accountCode == 0 and accountCodeOld != "":
+            if accountCode == 0 and accountCodeOld != "" and accountCodeOld is not None:
                 accountCode = funcoesUteis.analyzeIfFieldIsValid(self._valuesFromToAccounts, accountCodeOld, None)
                 accountCode = 0 if accountCode is None else accountCode
 
-            if accountCode == 0:
+            # se não encontrar uma conta no de-para (falto fazer a relação), então pra não perder o "histórico" de qual conta era vai jogar pro campo category
+            if accountCode == 0 and accountCodeOld != "" and accountCodeOld is not None:
                 payment["category"] = accountCodeOld
+
+            accountCodeBank = self.returnDataBanks(bank, account)
                 
             payment["accountCode"] = accountCode
+            payment["accountCodeBank"] = accountCodeBank
 
             self._paymentsWithNewAccountCode.append(payment)
         
