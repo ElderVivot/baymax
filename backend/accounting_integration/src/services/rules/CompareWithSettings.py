@@ -370,20 +370,20 @@ class CompareWithSettings(object):
             accountCodeBank = self.returnDataBanks(nameBank, account)
             accountCodeBank = 0 if accountCodeBank is None else accountCodeBank
 
-            if operation == "+" and accountCodeDebit == 0:
+            if operation == "+" and ( accountCodeDebit == "0" or accountCodeDebit == "" ):
                 extract["accountCodeDebit"] = "" if accountCodeBank == 0 else accountCodeBank
 
-            if operation == "-" and accountCodeCredit == 0:
+            if operation == "-" and ( accountCodeCredit == "0" or accountCodeCredit == "" ):
                 extract["accountCodeCredit"] = "" if accountCodeBank == 0 else accountCodeBank
 
             # --- retorna a conta débito/crédito referente a contrapartida
             accountCodeExtract = self.returnDataExtract(historic, operation)
             accountCodeExtract = 0 if accountCodeExtract is None else accountCodeExtract
 
-            if operation == "+" and accountCodeCredit == 0:
+            if operation == "+" and ( accountCodeCredit == "0" or accountCodeCredit == "" ):
                 extract["accountCodeCredit"] = "" if accountCodeExtract == 0 else accountCodeExtract
 
-            if operation == "-" and accountCodeDebit == 0:
+            if operation == "-" and ( accountCodeDebit == "0" or accountCodeDebit == "" ):
                 extract["accountCodeDebit"] = "" if accountCodeExtract == 0 else accountCodeExtract
 
             self._extractsWithNewAccountCode.append(extract)

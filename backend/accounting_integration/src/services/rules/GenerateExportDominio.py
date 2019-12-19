@@ -135,6 +135,7 @@ class GenerateExportDominio(object):
             foundProofInPayments = funcoesUteis.analyzeIfFieldIsValid(extract, "foundProofInPayments", False)
             if foundProofInPayments is True and accountCodeDebit != "0" and accountCodeDebit != "" and accountCodeCredit != "0" and accountCodeCredit != "":
                 print(f"\t\t - Na planilha do ExtratoBancario na linha {key+2} existe a informação que é uma transação que tem no financeiro do cliente, todavia foi inserido pra importá-la também no extrato.")
+                print(accountCodeDebit, accountCodeCredit)
 
             operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")
             if operation == "+" and ( accountCodeDebit == "0" or accountCodeDebit == "" or accountCodeCredit == "0" or accountCodeCredit == "" ):
