@@ -337,10 +337,6 @@ class CompareWithSettings(object):
                 accountCode = funcoesUteis.analyzeIfFieldIsValid(self._valuesFromToAccounts, accountCodeOld, None)
                 accountCode = 0 if accountCode is None else accountCode
 
-            # se não encontrar uma conta no de-para (falto fazer a relação), então pra não perder o "histórico" de qual conta era vai jogar pro campo category
-            if accountCode == 0 and accountCodeOld != "" and accountCodeOld is not None:
-                payment["category"] = accountCodeOld
-
             accountCodeBank = self.returnDataBanks(bank, account)
                 
             payment["accountCode"] = accountCode

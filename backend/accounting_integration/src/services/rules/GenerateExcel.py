@@ -123,6 +123,7 @@ class GenerateExcel(object):
         sheet.write(0, 22, "Plano de Contas", self._cell_format_header)
         sheet.write(0, 23, "Tipo de Pagamento", self._cell_format_header)
         sheet.write(0, 24, "Historico Extrato Bancário", self._cell_format_header)
+        sheet.write(0, 25, "Conta Contabil Sistema Cliente", self._cell_format_header)
 
         # ordena os payments por data
         payments = sorted(payments, key=itemgetter('dateOfImport'))
@@ -157,6 +158,7 @@ class GenerateExcel(object):
             accountPlan = funcoesUteis.analyzeIfFieldIsValid(payment, "accountPlan")
             paymentType = funcoesUteis.analyzeIfFieldIsValid(payment, "paymentType")
             historicExtract = funcoesUteis.analyzeIfFieldIsValid(payment, "historicExtract")
+            accountCodeOld = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeOld")
 
             sheet.write(row, 0, document)
             sheet.write(row, 1, findNote)
@@ -183,6 +185,7 @@ class GenerateExcel(object):
             sheet.write(row, 22, accountPlan)
             sheet.write(row, 23, paymentType)
             sheet.write(row, 24, historicExtract)
+            sheet.write(row, 25, accountCodeOld)
 
     def closeFile(self):
         self._workbook.close()
