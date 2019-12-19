@@ -83,16 +83,16 @@ class GenerateExportDominio(object):
                     amount = amountPaid
                 historicCode = 15
             elif typeEntry == 'J':
-                accountCodeDebit = 372
-                historicCode = 26
+                accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeInterest", 372)
+                historicCode = funcoesUteis.analyzeIfFieldIsValid(data, "historicCodeInterest", 26)
                 amount = funcoesUteis.analyzeIfFieldIsValid(data, "amountInterest", 0.0)
             elif typeEntry == 'M':
-                accountCodeDebit = 352
-                historicCode = 25
+                accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeFine", 352)
+                historicCode = funcoesUteis.analyzeIfFieldIsValid(data, "historicCodeFine", 25)
                 amount = funcoesUteis.analyzeIfFieldIsValid(data, "amountFine", 0.0)
             elif typeEntry == 'D':
-                accountCodeCredit = 474
-                historicCode = 28
+                accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeDiscount", 434)
+                historicCode = funcoesUteis.analyzeIfFieldIsValid(data, "historicCodeDiscount", 28)
                 amount = funcoesUteis.analyzeIfFieldIsValid(data, "amountDiscount", 0.0)
 
             amountFloat = amount

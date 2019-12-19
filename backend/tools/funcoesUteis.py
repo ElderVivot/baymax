@@ -48,9 +48,12 @@ def searchPositionFieldForName(header, nameField=''):
 
     return positionOfField
 
-def analyzeIfFieldIsValid(data, name, returnDefault=""):
+def analyzeIfFieldIsValid(data, name, returnDefault="", otherComparationName=""):
     try:
-        return data[name]
+        if otherComparationName == "":
+            return data[name]
+        else:
+            return data[name, otherComparationName]
     except Exception:
         return returnDefault
 

@@ -35,6 +35,8 @@ class CompareWithSettings(object):
         self._posionsOfHeaderExtracts = {}
         self._valuesFromToAccounts = {}
         self._posionsOfHeaderFromToAccounts = {}
+        self._valuesAccountAndHistoricOthers = {}
+        self._posionsOfHeaderAccountAndHistoricOthers = {}
         self._settingsFieldComparation = {
             "FORNECEDOR": 1,
             "PLANO DE CONTAS": 2,
@@ -182,11 +184,40 @@ class CompareWithSettings(object):
 
                 accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 4, self._posionsOfHeaderFromToAccounts, "Conta Contábil Domínio"))
 
-                self._valuesFromToAccounts[valueComparation] = accountDominio
+                if valueComparation != "" and accountDominio != "":
+                    self._valuesFromToAccounts[valueComparation] = accountDominio
             except Exception as e:
                 pass
 
         return self._valuesFromToAccounts
+
+    def getSettingsAccountAndHistoricOthers(self):
+        dataFile = leXls_Xlsx(self._wayFileSettings, 'ContasEHistoricoOutros')
+        
+        for data in dataFile:
+            try:
+                fieldHeader = funcoesUteis.treatTextFieldInVector(data, 1)
+                if fieldHeader.count('QUANDO HOUVER') > 0:
+                    self._posionsOfHeaderAccountAndHistoricOthers.clear()
+                    for keyField, nameField in enumerate(data):
+                        nameField = funcoesUteis.treatTextField(nameField)
+                        self._posionsOfHeaderAccountAndHistoricOthers[nameField] = keyField
+                    continue
+                
+                # juros, multa, desconto
+                fieldComparation = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderAccountAndHistoricOthers, "Quando houver")
+
+                # historico ou conta contabil
+                fieldOthers = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderAccountAndHistoricOthers, "na Domínio o código do(a)")
+
+                valueDominio = funcoesUteis.treatNumberFieldInVector(data, 3, self._posionsOfHeaderAccountAndHistoricOthers, "Será o")
+
+                if fieldComparation != "" and fieldOthers != "" and valueDominio != "":
+                    self._valuesAccountAndHistoricOthers[fieldComparation, fieldOthers] = valueDominio
+            except Exception as e:
+                pass
+
+        return self._valuesAccountAndHistoricOthers
 
     def returnDataProviderOrExpense(self, nameProvider=None, account=None, category=None, historic=None):
         # chama a função que carrega os dados das configurações
@@ -282,6 +313,7 @@ class CompareWithSettings(object):
 
         # este não lê no returnDateFromToOfAccounts porquê não precisa do returna, o valor retornar já é comparado com a chave
         self.getSettingsFromToOfAccounts()
+        self.getSettingsAccountAndHistoricOthers()
 
         for payment in self._payments:
             nameProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "nameProvider", None)
@@ -311,6 +343,13 @@ class CompareWithSettings(object):
                 
             payment["accountCode"] = accountCode
             payment["accountCodeBank"] = accountCodeBank
+
+            payment["historicCodeDiscount"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "DESCONTO", 28, "HISTORICO")
+            payment["historicCodeInterest"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "JUROS", 25, "HISTORICO")
+            payment["historicCodeFine"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "MULTA", 26, "HISTORICO")
+            payment["accountCodeDiscount"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "DESCONTO", 434, "CONTA CONTABIL")
+            payment["accountCodeInterest"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "JUROS", 372, "CONTA CONTABIL")
+            payment["accountCodeFine"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "MULTA", 352, "CONTA CONTABIL")
 
             self._paymentsWithNewAccountCode.append(payment)
         
