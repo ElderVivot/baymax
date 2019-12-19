@@ -206,6 +206,8 @@ class CompareWithSettings(object):
                 
                 # juros, multa, desconto
                 fieldComparation = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderAccountAndHistoricOthers, "Quando houver")
+                if fieldComparation == "":
+                    continue
 
                 # historico ou conta contabil
                 fieldOthers = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderAccountAndHistoricOthers, "na Domínio o código do(a)")
