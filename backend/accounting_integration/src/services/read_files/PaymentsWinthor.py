@@ -99,7 +99,7 @@ class PaymentsWinthorExcel(object):
 
                 parcelNumber = funcoesUteis.treatNumberFieldInVector(data, 13)
 
-                amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 15)
+                amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 21)
 
                 amountDevolution = funcoesUteis.treatDecimalFieldInVector(data, 17)
 
@@ -107,7 +107,7 @@ class PaymentsWinthorExcel(object):
 
                 amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 19)
 
-                amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 21)
+                amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 15)
 
                 paymentType = funcoesUteis.treatTextFieldInVector(data, 22)
 
