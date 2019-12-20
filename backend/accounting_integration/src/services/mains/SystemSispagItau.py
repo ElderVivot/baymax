@@ -35,20 +35,32 @@ class SystemWinthor(object):
         # self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: ')
         # self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
         # self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
-        self._codiEmp = 1428
+        self._codiEmp = 890
+        self._inicialDate = '01/11/2019'
+        self._finalDate = '30/11/2019'
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
         self._wayFilesTemp = os.path.join(fileDir, f'backend/accounting_integration/data/temp/{self._codiEmp}')
-
-    def processesIntegration(self):
+        if os.path.exists(self._wayFilesTemp) is False:
+            os.makedirs(self._wayFilesTemp)
+            
         try:
             shutil.rmtree(self._wayFilesTemp)
         except OSError as e:
             print (f"Error: {e.filename}, {e.strerror}")
 
+        if os.path.exists(self._wayFilesTemp) is False:
+            os.makedirs(self._wayFilesTemp)
+
+        self._wayFilesRead = os.path.join(self._wayFilesTemp, 'FilesReads.json')
+        if os.path.exists(self._wayFilesRead) is False:
+            with open(self._wayFilesRead, 'w') as fileRead:
+                json.dump({}, fileRead)
+
+    def processesIntegration(self):
         sequential = 0 # este sequencial serve pra caso tenha 2 pdfs com mesmo nome em pasta diferentes ele não sobrescreva um ao outro, portanto vai salvar com o nome - sequencial
             
         # read files originals
-        print('\n - Etapa 1: Lendo os arquivos originais tais como extratos, planilhas do Excel.')
+        print('\n - Etapa 1: Lendo os arquivos originais tais como extratos e PDFs.')
         for root, dirs, files in os.walk(self._wayFilesToRead):
             for file in files:
 
@@ -70,8 +82,10 @@ class SystemWinthor(object):
                 if dir_ == "pdfs":
                     wayDir = os.path.join(root, dir_)
                     for rootDir, dirsDir, filesDir in os.walk(wayDir):
-                        nameFile = rootDir.split('\\')[-1]
-                        print(f' \t - Transformando o arquivo "{nameFile}"')
+                        nameFileSplit = rootDir.split('\\')[-1].split('-')
+                        nameFile = '.'.join(nameFileSplit[:-1])
+                        if nameFile != "":
+                            print(f' \t - Transformando o arquivo "{nameFile}.pdf"')
                         for file in filesDir:
                             if file.lower().endswith(('.pdf')):
                                 wayFile = os.path.join(rootDir, file)
@@ -80,27 +94,19 @@ class SystemWinthor(object):
                     
         # reads the txts
         print(' - Etapa 3: Lendo os TXTs e analisando a estrutura deles.')
-        for root, dirs, files in os.walk(self._wayFilesTemp):
-            for dir_ in dirs:
-                if dir_ == "pdfs":
-                    wayDir = os.path.join(root, dir_)
-                    for rootDir, dirsDir, filesDir in os.walk(wayDir):
-                        for file in filesDir:
-                            if file.lower().endswith(('.txt')):
-                                wayFile = os.path.join(rootDir, file)
-                                wayDirFile = os.path.dirname(wayFile)
-
+        proofsPaymentsItau = ProofsPaymentsItau(self._wayFilesTemp)
+        self._proofsOfPayments.append(proofsPaymentsItau.processAll())
+        
         print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')
         extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
         payments = funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
         proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
-        # print(payments)
 
         print(' - Etapa 6: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
         paymentsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
         extractsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.analyseIfExtractIsInPayment()
-        # print(paymentsCompareWithProofAndExtracts)
+        # # print(paymentsCompareWithProofAndExtracts)
 
         print(' - Etapa 7: Buscando a conta do fornecedor/despesa dentro do sistema.')
         providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
@@ -113,7 +119,7 @@ class SystemWinthor(object):
         filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsFinal, extractsCompareWithProofAndExtracts)
         extractsWithFilter = filterPeriod.filterExtracts()
         paymentsWithFilter = filterPeriod.filterPayments()
-        print(f'\t - Com o filtro aplicado de {len(paymentsFinal)} sobraram {len(paymentsWithFilter)}')
+        # print(f'\t - Com o filtro aplicado de {len(paymentsFinal)} sobraram {len(paymentsWithFilter)}')
 
         print(' - Etapa 9: Configurando as contas contábeis de acordo planilha de configuracoes preenchida.')
         compareWithSettings = CompareWithSettings(self._codiEmp, paymentsWithFilter, extractsWithFilter)

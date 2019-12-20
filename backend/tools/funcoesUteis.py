@@ -10,6 +10,7 @@ import re
 import datetime
 import hashlib
 import json
+from leArquivos import readJson
 
 def removerAcentosECaracteresEspeciais(palavra):
     # Unicode normalize transforma um caracter em seu equivalente em latin.
@@ -54,6 +55,12 @@ def analyzeIfFieldIsValid(data, name, returnDefault="", otherComparationName="")
             return data[name]
         else:
             return data[name, otherComparationName]
+    except Exception:
+        return returnDefault
+
+def analyzeIfFieldIsValidMatrix(data, position, returnDefault=""):
+    try:
+        return data[position-1]
     except Exception:
         return returnDefault
 
@@ -271,3 +278,14 @@ def returnBankForName(nameBank):
         nameBank = nameBank
 
     return nameBank
+
+def updateFilesRead(wayTempFileRead, file):
+        filesRead = readJson(wayTempFileRead)
+
+        filesWrite = open(wayTempFileRead, 'w')
+
+        filesRead[file] = True
+
+        json.dump(filesRead, filesWrite)
+
+        filesWrite.close()

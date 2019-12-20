@@ -271,8 +271,6 @@ class ComparePaymentsFinalWithDataBase(object):
             ddoc_ent = None
         if dent_ent == "":
             dent_ent = None
-        if nameProvider == "":
-            nameProvider = None
 
         # se o vencimento for nulo já nem percorre os dados
         if dueDate is None:
@@ -356,6 +354,7 @@ class ComparePaymentsFinalWithDataBase(object):
     # payments = [{'paymentDate': '30/10/2019', 'nameProvider': 'WALSYWA INDUSTRIA E COMERCIO D', 'cnpjProvider': '', 'amountPaid': 2340.5, 'bank': 'ITAU', 'account': '44388', 'document': '135610', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 135610 -', 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 2340.5, 'accountPlan': 'COMPRA MERCADORIA', 'bankCheck': '', 'dateExtract': '', 'bankExtract': '', 'accountExtract': '', 'historicExtract': ''}]
 # #     # print(entryNotes)
     # comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase()
+    # print(comparePaymentsFinalWithDataBase.returnDataProvider())
     # print(comparePaymentsFinalWithDataBase.compareTwoNames('ELDER VIVOT DIAS', 'ELDER VIVOT'))
 #     # print(comparePaymentsFinalWithDataBase.returnDataProvider(name="WALSYWA INDUSTRIA E COMERCIO D", degreeOfReliability=1))
 #     print(comparePaymentsFinalWithDataBase.returnDataEntryNote("135610", None, None, None, 2340.5, "WALSYWA INDUSTRIA E COMERCIO"))

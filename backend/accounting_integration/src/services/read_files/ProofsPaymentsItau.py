@@ -6,22 +6,46 @@ fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json
-from tools.leArquivos import leXls_Xlsx, leTxt
+from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
 
 
 class ProofsPaymentsItau(object):
 
-    def __init__(self, file):
+    def __init__(self, wayTemp):
         self._valuesOfLine = {}
         self._valuesOfFile = []
+        self._proofs = []
         # possíveis textos que a linha de pagamento começa, exemplo: TRANSFERENCIA REALIZADA EM 19.09.2019
         self._valuesOfLinePayments = ["PAGAMENTO EFETUADO EM", "TRANSFERENCIA REALIZADA EM", "TRANSFERENCIA EFETUADA EM", "PAGAMENTO REALIZADO EM", \
             "OPERACAO EFETUADA EM", "TED SOLICITADA EM"]
-        self._file = file
-        self._dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
+        self._wayTemp = wayTemp
+        self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
+        self._accountDebitOrCredit = ''
 
-    def process(self):
+    def isProofOfItau(self, file):
+        dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
+        countProofOfItau = 0
+        for data in dataFile:
+            data = str(data)
+            dataSplit = data.split(':')
+
+            fieldOne = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplit, 1))
+            if fieldOne.count('COMPROVANTE DE OPERACAO') > 0:
+                countProofOfItau += 1
+            if fieldOne.count('CONTA A SER DEBITADA') > 0:
+                countProofOfItau += 1
+            if countProofOfItau == 2:
+                return True
+
+    def process(self, file):
+        self._valuesOfFile = []
+
+        dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
+        
+        # se não for do Itaú nem segue pra frente
+        if self.isProofOfItau(file) is None:
+            return []
 
         nameProvider = ""
         namePayee = ""
@@ -30,53 +54,64 @@ class ProofsPaymentsItau(object):
         company = ""
         cnpjProvider = ""
         amountPaid = float(0)
+        category = ""
+        bank = "ITAU"
+        account = ""
 
-        for key, data in enumerate(self._dataFile):
+        for data in dataFile:
 
             data = str(data)
             dataSplit = data.split(':')
 
-            try:
-                fieldOne = dataSplit[0]
-            except Exception:
-                fieldOne = ""
+            fieldOne = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplit, 1))
 
-            try:
-                fieldTwo = dataSplit[1].strip()
-            except Exception:
-                fieldTwo = ""
+            fieldTwo = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplit, 2))
 
-            if fieldOne == "NOME":
-                nameProvider = funcoesUteis.treatTextField(fieldTwo)
+            if fieldOne.count('COMPROVANTE DE OPERACAO') > 0:
+                category = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(data.split('-'), 2))
 
-            if fieldOne == "NOME DO FAVORECIDO":
-                nameProvider = funcoesUteis.treatTextField(fieldTwo)
-                namePayee = nameProvider
-            
-            if fieldOne.count("GUIA DE RECOLHIMENTO") > 0:
-                historic = funcoesUteis.treatTextField(data)
+            if fieldOne.count('CONTA A SER DEBITADA') > 0:
+                self._accountDebitOrCredit = 'DEBIT'
+            elif fieldOne.count('CONTA A SER CREDITADA') > 0 or fieldOne.count('DADOS DO PAGAMENTO') > 0:
+                self._accountDebitOrCredit = 'CREDIT'
+
+            if self._accountDebitOrCredit == 'DEBIT':
+                if fieldOne.count('AGENCIA') > 0:
+                    account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplit, 3))
+                    account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1))
+            elif self._accountDebitOrCredit == 'CREDIT':
+                if fieldOne == "NOME":
+                    nameProvider = fieldTwo
+
+                if fieldOne == "NOME DO FAVORECIDO":
+                    nameProvider = fieldTwo
+                    namePayee = nameProvider
                 
-            if fieldOne == "INFORMACOES FORNECIDAS PELO PAGADOR":
-                historic = funcoesUteis.treatTextField(fieldTwo)
-			
-            if fieldOne == "DATA DE VENCIMENTO":
-                dueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.retornaCampoComoData(fieldTwo))
+                if fieldOne.count("GUIA DE RECOLHIMENTO") > 0:
+                    historic = funcoesUteis.treatTextField(data)
+                    
+                if fieldOne == "INFORMACOES FORNECIDAS PELO PAGADOR":
+                    historic = fieldTwo
+                
+                if fieldOne == "DATA DE VENCIMENTO":
+                    dueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.retornaCampoComoData(fieldTwo))
 
-            if ( fieldOne.count("CPF") > 0 or fieldOne.count("CNPJ") > 0 ) and fieldOne.count("PAGADOR") > 0:
-                company = funcoesUteis.treatNumberField(fieldTwo)
+                if ( fieldOne.count("CPF") > 0 or fieldOne.count("CNPJ") > 0 ) and fieldOne.count("PAGADOR") > 0:
+                    company = fieldTwo
 
-            if ( fieldOne.count("CPF") > 0 or fieldOne.count("CNPJ") > 0 ) and fieldOne.count("PAGADOR") == 0:
-                cnpjProvider = funcoesUteis.treatNumberField(fieldTwo)
+                if ( fieldOne.count("CPF") > 0 or fieldOne.count("CNPJ") > 0 ) and fieldOne.count("PAGADOR") == 0:
+                    cnpjProvider = fieldTwo
 
-            if fieldOne.count("VALOR") > 0:
-                amountPaid = funcoesUteis.treatDecimalField(fieldTwo)
-
-            if fieldOne.count("CONTA") > 0 and fieldOne.count("DEBITADA") > 0:
-                bank = f"ITAU - {self._dataFile[key+1]}"
+                if fieldOne.count("VALOR") > 0:
+                    amountPaid = funcoesUteis.treatDecimalField(fieldTwo)
 
 			# quando é pagamento de imposto não tem o nome do fornecedor, o dados vem na informação complementar
             if historic != "" and dueDate == "" and namePayee == "":
                 nameProvider = historic
+
+            # se o nome do fornecedor ainda for vazio, então considero a categoria como fornecedor
+            if nameProvider == "" and category != "":
+                nameProvider = category
 
             for valueOfLinePayment in self._valuesOfLinePayments:
                 if data[0 : len(valueOfLinePayment) ] == valueOfLinePayment:
@@ -90,16 +125,20 @@ class ProofsPaymentsItau(object):
                             "cnpjProvider": cnpjProvider,
                             "dueDate": dueDate,
                             "bank": bank,
+                            "account": account,
                             "amountPaid": amountPaid,
                             "amountDiscount": float(0),
                             "amountInterest": float(0),
                             "amountOriginal": float(0),
                             "historic": historic,
+                            "category": category,
                             "company": company,
                             "foundProof": True
                         }
 
                         self._valuesOfFile.append(self._valuesOfLine.copy())
+
+                        funcoesUteis.updateFilesRead(self._wayTempFilesRead, file)
                     
                     nameProvider = ""
                     namePayee = ""
@@ -112,6 +151,15 @@ class ProofsPaymentsItau(object):
                     break
 
         return self._valuesOfFile
+
+    def processAll(self):
+        for root, dirs, files in os.walk(self._wayTemp):
+            for file in files:
+                if file.lower().endswith(('.txt')):
+                    wayFile = os.path.join(root, file)
+                    self._proofs.append(self.process(wayFile))
+
+        return funcoesUteis.removeAnArrayFromWithinAnother(self._proofs)
 
 class SispagItauExcel(object):
 
@@ -179,10 +227,10 @@ class SispagItauExcel(object):
 
         return self._valuesOfFile
 
-if __name__ == "__main__":
-    # proofsPaymentsItau = ProofsPaymentsItau("C:/_temp/integracao_diviart/CONTASANGIOTOMO092019-PAGINA 14-PAGINA 1.tmp")
-    # print(proofsPaymentsItau.process())
+# if __name__ == "__main__":
+#     proofsPaymentsItau = ProofsPaymentsItau("C:/programming/baymax/backend/accounting_integration/data/temp/890")
+#     print(len(proofsPaymentsItau.processAll()))
 
-    sispagItauExcel = SispagItauExcel("C:/integracao_contabil/1428/arquivos_originais/Sispag detalhada.xlsx")
-    print(sispagItauExcel.process())
+    # sispagItauExcel = SispagItauExcel("C:/integracao_contabil/1428/arquivos_originais/Sispag detalhada.xlsx")
+    # print(sispagItauExcel.process())
             
