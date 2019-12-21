@@ -13,8 +13,6 @@ import tools.funcoesUteis as funcoesUteis
 class ProofsPaymentsItau(object):
 
     def __init__(self, wayTemp):
-        self._valuesOfLine = {}
-        self._valuesOfFile = []
         self._proofs = []
         # possíveis textos que a linha de pagamento começa, exemplo: TRANSFERENCIA REALIZADA EM 19.09.2019
         self._valuesOfLinePayments = ["PAGAMENTO EFETUADO EM", "TRANSFERENCIA REALIZADA EM", "TRANSFERENCIA EFETUADA EM", "PAGAMENTO REALIZADO EM", \
@@ -39,13 +37,14 @@ class ProofsPaymentsItau(object):
                 return True
 
     def process(self, file):
-        self._valuesOfFile = []
-
-        dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
-        
-        # se não for do Itaú nem segue pra frente
+        # se não for desta classe nem segue pra frente
         if self.isProofOfItau(file) is None:
             return []
+        
+        valuesOfLine = {}
+        valuesOfFile = []
+
+        dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
 
         nameProvider = ""
         namePayee = ""
@@ -119,7 +118,7 @@ class ProofsPaymentsItau(object):
                     paymentDate = funcoesUteis.retornaCampoComoData(paymentDate.replace('.', '/'))
 
                     if paymentDate is not None and amountPaid > 0:
-                        self._valuesOfLine = {
+                        valuesOfLine = {
                             "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
                             "nameProvider": nameProvider,
                             "cnpjProvider": cnpjProvider,
@@ -136,7 +135,7 @@ class ProofsPaymentsItau(object):
                             "foundProof": True
                         }
 
-                        self._valuesOfFile.append(self._valuesOfLine.copy())
+                        valuesOfFile.append(valuesOfLine.copy())
 
                         funcoesUteis.updateFilesRead(self._wayTempFilesRead, file)
                     
@@ -150,7 +149,7 @@ class ProofsPaymentsItau(object):
 
                     break
 
-        return self._valuesOfFile
+        return valuesOfFile
 
     def processAll(self):
         for root, dirs, files in os.walk(self._wayTemp):

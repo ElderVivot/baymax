@@ -328,19 +328,28 @@ class ComparePaymentsFinalWithDataBase(object):
             else:
                 codi_for = funcoesUteis.analyzeIfFieldIsValid(entryNote, "codi_for", 0)
 
-            provider = self.returnDataProvider(codi_for)
-
             if entryNote is not None:
                 payment["findNote"] = True
             else:
                 payment["findNote"] = False
 
+            provider = self.returnDataProvider(codi_for)
+            
             if provider is None:
                 provider = self.returnDataProvider(cgce=cgceProvider, name=nameProvider)
+            # print(provider)
 
-            payment["accountCode"] = funcoesUteis.analyzeIfFieldIsValid(provider, "codi_cta", 0)
+            accountCode = funcoesUteis.analyzeIfFieldIsValid(provider, "codi_cta", 0)
+            accountCode = 0 if accountCode is None else int(accountCode)
+            payment["accountCode"] = accountCode
             payment["cgceProvider"] = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for")
             payment["codiEmp"] = self._codiEmp
+
+            if document == "":
+                payment["document"] = int(funcoesUteis.analyzeIfFieldIsValid(entryNote, "nume_ent", 0))
+            
+            if cgceProvider is None:
+                payment["cgceProvider"] = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for")
 
             print(f' \t - Processamento pagamento {key+1} de {countTotal}')
             

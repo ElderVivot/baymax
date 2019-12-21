@@ -11,15 +11,14 @@ import tools.funcoesUteis as funcoesUteis
 
 
 class PaymentsWinthorPDF(object):
-    def __init__(self, file):
-        self._valuesPaymentDates = {}
-        self._paymentDate = None
-        self._valuesOfLine = []
-        self._file = file
-        self._dataFile = leTxt(self._file)
+    def __init__(self, wayTemp):
+        self._wayTemp = wayTemp
+        self._paymentsDate = []
 
-    def isPaymentWinthorPDF(self):
-        for data in self._dataFile:
+    def isPaymentWinthorPDF(self, file):
+        dataFile = leTxt(file)
+
+        for data in dataFile:
             data = str(data).strip()
             data = funcoesUteis.treatTextField(data)
 
@@ -30,42 +29,64 @@ class PaymentsWinthorPDF(object):
                 if valueOfField in ("718", "CONTAS", "PAGAS"):
                     count += 1
             
-            if count >= 3:
+            if count == 3:
                 return True
 
-    def returnPaymentsDates(self):
+    def process(self, file):
+        # se não for desta classe nem segue pra frente
+        if self.isPaymentWinthorPDF(file) is None:
+            return {}
+
+        valuesPaymentDates = {}
+        valuesOfLine = []
+        paymentDate = None
+
+        dataFile = leTxt(file)
+
         # primeiro percorre e divide cada campo separando por um espaço
-        for data in self._dataFile:
+        for data in dataFile:
             data = str(data).strip()
             data = funcoesUteis.treatTextField(data)
 
             fieldsSeparatedBySpace = data.split(' ')
 
-            self._valuesOfLine.append(fieldsSeparatedBySpace)
+            valuesOfLine.append(fieldsSeparatedBySpace)
 
         # percorre os campos ajustados e faz o tratamento
-        for key, valueOfLine in enumerate(self._valuesOfLine):
+        for key, valueOfLine in enumerate(valuesOfLine):
             try:
                 if valueOfLine[0] == "DT.PAGAMENTO:":
-                    self._paymentDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(\
+                    paymentDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(\
                         funcoesUteis.retornaCampoComoData(valueOfLine[1]))
                     
                 # identifica se é uma linha de lançamento com o idLanc devidamente preenchido
-                if funcoesUteis.treatNumberField(valueOfLine[0]).isnumeric() and ( self._valuesOfLine[key+1][0] == "HISTORICO" \
+                if funcoesUteis.treatNumberField(valueOfLine[0]).isnumeric() and ( valuesOfLine[key+1][0] == "HISTORICO" \
                      or ( valueOfLine[1].isnumeric() and valueOfLine[2].isnumeric() ) ):
-                    self._valuesPaymentDates[valueOfLine[0]] = self._paymentDate
+                    valuesPaymentDates[valueOfLine[0]] = paymentDate
             except Exception as e:
                 pass
         
-        return self._valuesPaymentDates
+        return valuesPaymentDates
+
+    def processAll(self):
+        for root, dirs, files in os.walk(self._wayTemp):
+            for file in files:
+                if file.lower().endswith(('.txt')):
+                    wayFile = os.path.join(root, file)
+                    self._paymentsDate.append(self.process(wayFile))
+
+        return funcoesUteis.removeAnDictionaryFromWithinArray(self._paymentsDate)
 
 
 class PaymentsWinthorExcel(object):
 
-    def __init__(self, codiEmp):
+    def __init__(self, codiEmp, wayTemp):
         self._valuesOfLine = {}
         self._valuesOfFile = []
         self._codiEmp = codiEmp
+        self._wayTemp = wayTemp
+        paymentsWinthorPDF = PaymentsWinthorPDF
+        self._paymentsDate = paymentsWinthorPDF.processAll(wayTemp)
         
     # backend/accounting_integration/data
     def returnBank(self, numberBank):
