@@ -18,7 +18,8 @@ from tools.leArquivos import leXls_Xlsx
 
 class CompareWithSettings(object):
 
-    def __init__(self, codiEmp, payments=[], extracts=[]):
+    def __init__(self, codiEmp, payments=[], extracts=[], updateOrExtract=False):
+        self._updateOrExtract = updateOrExtract
         self._payments = payments
         self._paymentsWithNewAccountCode = []
         self._extracts = extracts
@@ -58,6 +59,13 @@ class CompareWithSettings(object):
         self._wayFileSettings = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/configuracoes_{self._codiEmp}.xlsx')
         if os.path.exists(self._wayFileSettings) is False:
             shutil.copyfile(self._wayFileDefaultSettings, self._wayFileSettings)
+
+        # chama as funções que carregam os dados
+        self.getSettingsProviderOrExpense()
+        self.getSettingsBanks()
+        self.getSettingsExtract()
+        self.getSettingsFromToOfAccounts()
+        self.getSettingsAccountAndHistoricOthers()
         
     def getSettingsProviderOrExpense(self):
         dataFile = leXls_Xlsx(self._wayFileSettings, 'FornecedorOuDespesa')
@@ -110,7 +118,7 @@ class CompareWithSettings(object):
                 nameBank = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderBanks, "Banco")
 
                 account = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderBanks, "Conta Corrente (Sem o Dígito Verificador)")
-                account = account[:-1] # o -1 é pra tirar o digíto verificador caso o pessoal preencha na configuração, então pega sempre um char a menos evitando este problema
+                # account = account[:-1] # o -1 é pra tirar o digíto verificador caso o pessoal preencha na configuração, então pega sempre um char a menos evitando este problema
 
                 accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 3, self._posionsOfHeaderBanks, "Conta Contábil Banco na Domínio"))
 
@@ -222,8 +230,6 @@ class CompareWithSettings(object):
         return self._valuesAccountAndHistoricOthers
 
     def returnDataProviderOrExpense(self, nameProvider=None, account=None, category=None, historic=None):
-        # chama a função que carrega os dados das configurações
-        self.getSettingsProviderOrExpense()
 
         if nameProvider == "":
             nameProvider = None
@@ -273,8 +279,6 @@ class CompareWithSettings(object):
                 pass
 
     def returnDataBanks(self, nameBank=None, account=None):
-        # chama a função que carrega os dados das configurações
-        self.getSettingsBanks()
 
         if nameBank == "":
             nameBank = None
@@ -288,8 +292,6 @@ class CompareWithSettings(object):
                 return accountDominio
 
     def returnDataExtract(self, historic=None, operation=None):
-        # chama a função que carrega os dados das configurações
-        self.getSettingsExtract()
 
         if historic == "":
             historic = None
@@ -311,13 +313,29 @@ class CompareWithSettings(object):
                     if historic.count(valueComparation) > 0 and operationComparation == operation and historic is not None: # comparação caso contenha o texto
                         return accountDominio
 
+    def showWarningsPayments(self, payment, key):
+        accountCodeDebit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode"), isInt=True)
+        accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeBank", 0), isInt=True)
+        if accountCodeDebit == 0:
+            print(f"\t\t - Na planilha de Pagamentos na linha {key+2} não foi configurado a conta do fornecedor/despesa.")
+        if accountCodeCredit == 0:
+            print(f"\t\t - Na planilha de Pagamentos na linha {key+2} não foi configurado a conta do banco.")
+
+    def showWarningsExtracts(self, extract, key):
+        accountCodeDebit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit"), isInt=True)
+        accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit"), isInt=True)
+        
+        foundProofInPayments = funcoesUteis.analyzeIfFieldIsValid(extract, "foundProofInPayments", False)
+        if foundProofInPayments is True and accountCodeDebit > 0 and accountCodeCredit > 0:
+            print(f"\t\t - Na planilha do ExtratoBancario na linha {key+2} existe a informação que é uma transação que tem no financeiro do cliente, todavia foi inserido pra importá-la também no extrato.")
+            
+        operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")
+        if operation == "+" and ( accountCodeDebit == 0 or accountCodeCredit == 0 ):
+            print(f"\t\t - Na planilha do ExtratoBancario na linha {key+2} a operação é SOMA mas não foi configurado a conta do débito ou crédito.")
+
     def processPayments(self):
 
-        # este não lê no returnDateFromToOfAccounts porquê não precisa do returna, o valor retornar já é comparado com a chave
-        self.getSettingsFromToOfAccounts()
-        self.getSettingsAccountAndHistoricOthers()
-
-        for payment in self._payments:
+        for key, payment in enumerate(self._payments):
             nameProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "nameProvider", None)
             accountPlan = funcoesUteis.analyzeIfFieldIsValid(payment, "accountPlan", None)
             category = funcoesUteis.analyzeIfFieldIsValid(payment, "category", None)
@@ -327,14 +345,14 @@ class CompareWithSettings(object):
 
             # busca a conta da despesa/fornecedor
             accountCode = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode", 0), isInt=True)
-            if accountCode == "" or accountCode == 0:
+            if accountCode == 0:
                 accountCode = self.returnDataProviderOrExpense(nameProvider, accountPlan, category, historic)
                 accountCode = 0 if accountCode is None else accountCode
             
             # pra empresas que tem plano de contas no sistema deles e o plano não bate, tem que fazer um de-para
             accountCodeOld = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeOld", None)
             if accountCode == 0 and accountCodeOld != "" and accountCodeOld is not None:
-                accountCode = funcoesUteis.analyzeIfFieldIsValid(self._valuesFromToAccounts, accountCodeOld, None)
+                accountCode = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(self._valuesFromToAccounts, accountCodeOld, None), isInt=True)
                 accountCode = 0 if accountCode is None else accountCode
 
             accountCodeBank = self.returnDataBanks(bank, account)
@@ -350,43 +368,49 @@ class CompareWithSettings(object):
             payment["accountCodeFine"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "MULTA", 352, "CONTA CONTABIL")
 
             self._paymentsWithNewAccountCode.append(payment)
+
+            # show de warnings
+            if self._updateOrExtract is True:
+                self.showWarningsPayments(payment, key)
         
         return self._paymentsWithNewAccountCode
 
     def processExtracts(self):
-        for extract in self._extracts:
+        for key, extract in enumerate(self._extracts):
             nameBank = funcoesUteis.analyzeIfFieldIsValid(extract, "bankId", None)
             account = funcoesUteis.analyzeIfFieldIsValid(extract, "account", None)
             operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation", None)
             historic = funcoesUteis.analyzeIfFieldIsValid(extract, "historic", None)
 
-            accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit", 0)
-            accountCodeDebit = 0 if accountCodeDebit == "" else accountCodeDebit
+            accountCodeDebit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit", 0), isInt=True)
 
-            accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit", 0)
-            accountCodeCredit = 0 if accountCodeCredit == "" else accountCodeCredit
+            accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit", 0), isInt=True)
 
             # --- retorna a conta débito/crédito referente ao banco
             accountCodeBank = self.returnDataBanks(nameBank, account)
             accountCodeBank = 0 if accountCodeBank is None else accountCodeBank
 
-            if operation == "+" and ( accountCodeDebit == "0" or accountCodeDebit == "" ):
+            if operation == "+" and accountCodeDebit == 0:
                 extract["accountCodeDebit"] = "" if accountCodeBank == 0 else accountCodeBank
 
-            if operation == "-" and ( accountCodeCredit == "0" or accountCodeCredit == "" ):
+            if operation == "-" and accountCodeCredit == 0:
                 extract["accountCodeCredit"] = "" if accountCodeBank == 0 else accountCodeBank
 
             # --- retorna a conta débito/crédito referente a contrapartida
             accountCodeExtract = self.returnDataExtract(historic, operation)
             accountCodeExtract = 0 if accountCodeExtract is None else accountCodeExtract
 
-            if operation == "+" and ( accountCodeCredit == "0" or accountCodeCredit == "" ):
+            if operation == "+" and accountCodeCredit == 0:
                 extract["accountCodeCredit"] = "" if accountCodeExtract == 0 else accountCodeExtract
 
-            if operation == "-" and ( accountCodeDebit == "0" or accountCodeDebit == "" ):
+            if operation == "-" and accountCodeDebit == 0:
                 extract["accountCodeDebit"] = "" if accountCodeExtract == 0 else accountCodeExtract
 
             self._extractsWithNewAccountCode.append(extract)
+
+            # show de warnings
+            if self._updateOrExtract is True:
+                self.showWarningsExtracts(extract, key)
         
         return self._extractsWithNewAccountCode
 

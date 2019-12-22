@@ -125,7 +125,6 @@ class SystemWinthor(object):
         compareWithSettings = CompareWithSettings(self._codiEmp, paymentsWithFilter, extractsWithFilter)
         extractsCompareWithSettings = compareWithSettings.processExtracts()
         paymentsCompareWithSettings = compareWithSettings.processPayments()
-        print(paymentsCompareWithSettings)
 
         print(' - Etapa 9: Exportando informações')
         generateExcel = GenerateExcel(self._codiEmp)

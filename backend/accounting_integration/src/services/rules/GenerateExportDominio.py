@@ -124,38 +124,25 @@ class GenerateExportDominio(object):
 
     def exportExtracts(self):
         for key, extract in enumerate(self._extracts):
-            accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit")
-            accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit")
+            accountCodeDebit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit"), isInt=True)
+            accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit"), isInt=True)
             
-            if accountCodeDebit != "0" and accountCodeDebit != "" and accountCodeCredit != "0" and accountCodeCredit != "":
+            if accountCodeDebit > 0 and accountCodeCredit > 0:
                 self._file.write(self.header6000())
                 self._file.write(self.entry6100(extract, 'D'))
                 self._file.write(self.entry6100(extract, 'C'))
-            
-            foundProofInPayments = funcoesUteis.analyzeIfFieldIsValid(extract, "foundProofInPayments", False)
-            if foundProofInPayments is True and accountCodeDebit != "0" and accountCodeDebit != "" and accountCodeCredit != "0" and accountCodeCredit != "":
-                print(f"\t\t - Na planilha do ExtratoBancario na linha {key+2} existe a informação que é uma transação que tem no financeiro do cliente, todavia foi inserido pra importá-la também no extrato.")
-                print(accountCodeDebit, accountCodeCredit)
-
-            operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")
-            if operation == "+" and ( accountCodeDebit == "0" or accountCodeDebit == "" or accountCodeCredit == "0" or accountCodeCredit == "" ):
-                print(f"\t\t - Na planilha do ExtratoBancario na linha {key+2} a operação é SOMA mas não foi configurado a conta do débito ou crédito.")
-
+                
     def exportPayments(self):
         for key, payment in enumerate(self._payments):
-            accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode")
-            accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeBank")
-            if accountCodeDebit != "0" and accountCodeDebit != "" and accountCodeCredit != "0" and accountCodeCredit != "":
+            accountCodeDebit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode"), isInt=True)
+            accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeBank", 0), isInt=True)
+            if accountCodeDebit > 0 and accountCodeCredit > 0:
                 self._file.write(self.header6000())
                 self._file.write(self.entry6100(payment, 'D', 'N'))
                 self._file.write(self.entry6100(payment, 'C', 'N'))
                 self._file.write(self.entry6100(payment, 'D', 'J'))
                 self._file.write(self.entry6100(payment, 'D', 'M'))
                 self._file.write(self.entry6100(payment, 'C', 'D'))
-            elif accountCodeDebit == "0" or accountCodeDebit == "":
-                print(f"\t\t - Na planilha de Pagamentos na linha {key+2} não foi configurado a conta do fornecedor/despesa.")
-            elif accountCodeCredit == "0" or accountCodeCredit == "" or accountCodeCredit is None:
-                print(f"\t\t - Na planilha de Pagamentos na linha {key+2} não foi configurado a conta do banco.")
 
     def closeFile(self):
         self._file.close()

@@ -4,13 +4,15 @@ import sys
 absPath = os.path.dirname(os.path.abspath(__file__))
 fileDir = absPath[:absPath.find('backend')]
 sys.path.append(fileDir)
+sys.path.append(os.path.join(fileDir, 'backend'))
+sys.path.append(os.path.dirname(__file__))
 
 import unicodedata
 import re
 import datetime
 import hashlib
 import json
-from leArquivos import readJson
+import leArquivos
 
 def removerAcentosECaracteresEspeciais(palavra):
     # Unicode normalize transforma um caracter em seu equivalente em latin.
@@ -93,14 +95,19 @@ def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
             return ""
 
 def treatNumberField(value, isInt=False):
+    if type(value) == int:
+        return value
     try:
         value = re.sub("[^0-9]", '', value)
-        if isInt is True:
-            try:
-                value = int(value)
-            except Exception as e:
-                value = 0
-        return value
+        if value == "":
+            return 0
+        else:
+            if isInt is True:
+                try:
+                    return int(value)
+                except Exception as e:
+                    return 0
+            return value
     except Exception:
         return 0
 
@@ -127,6 +134,8 @@ def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldH
             return 0     
 
 def treatDecimalField(value, numberOfDecimalPlaces=2):
+    if type(value) == float:
+        return value
     try:
         value = str(value)
         value = re.sub('[^0-9.,-]', '', value)
@@ -280,12 +289,12 @@ def returnBankForName(nameBank):
     return nameBank
 
 def updateFilesRead(wayTempFileRead, file):
-        filesRead = readJson(wayTempFileRead)
+    filesRead = leArquivos.readJson(wayTempFileRead)
 
-        filesWrite = open(wayTempFileRead, 'w')
+    filesWrite = open(wayTempFileRead, 'w')
 
-        filesRead[file] = True
+    filesRead[file] = True
 
-        json.dump(filesRead, filesWrite)
+    json.dump(filesRead, filesWrite)
 
-        filesWrite.close()
+    filesWrite.close()

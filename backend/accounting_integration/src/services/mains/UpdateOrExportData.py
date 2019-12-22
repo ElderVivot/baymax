@@ -39,10 +39,10 @@ class UpdateOrExportData(object):
                     extracts = readExcelToUpdateOrExportData.getExtracts()
 
                     print(f'\t - Etapa 2: Comparando com a planilha de configurações')
-                    compareWithSettings = CompareWithSettings(self._codiEmp, payments, extracts)
-                    extractsCompareWithSettings = compareWithSettings.processExtracts()
+                    compareWithSettings = CompareWithSettings(self._codiEmp, payments, extracts, updateOrExtract=True)
                     paymentsCompareWithSettings = compareWithSettings.processPayments()
-
+                    extractsCompareWithSettings = compareWithSettings.processExtracts()
+                    
                     print(f'\t - Etapa 3: Exportando informações')
                     if self._UpdateOrExport == 2:
                         generateExcel = GenerateExcel(self._codiEmp, update=True, nameFileUpdate=file)
