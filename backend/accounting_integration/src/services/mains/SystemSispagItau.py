@@ -67,12 +67,7 @@ class SystemWinthor(object):
 
                 wayFile = os.path.join(root, file)
 
-                # extracts
-                if file.lower().endswith(('.ofx', '.ofc')):
-                    extractOFX = ExtractsOFX()
-                    self._extracts.append(extractOFX.process(wayFile))
-                # split pdfs em one page each
-                elif file.lower().endswith(('.pdf')):
+                if file.lower().endswith(('.pdf')):
                     sequential += 1
                     leArquivos.splitPdfOnePageEach(wayFile, self._wayFilesTemp, sequential)
 
@@ -92,14 +87,19 @@ class SystemWinthor(object):
                                 wayFile = os.path.join(rootDir, file)
                                 wayDirFile = os.path.dirname(wayFile)
                                 leArquivos.PDFToText(wayFile, wayDirFile)
-                    
+
+        # reads the txts
+        print(' - Etapa 3: Lendo os OFXs ')
+        extractsOFX = ExtractsOFX(self._wayFilesToRead)
+        extracts = extractsOFX.processAll()
+
         # reads the txts
         print(' - Etapa 3: Lendo os TXTs e analisando a estrutura deles.')
         proofsPaymentsItau = ProofsPaymentsItau(self._wayFilesTemp)
         self._proofsOfPayments.append(proofsPaymentsItau.processAll())
         
         print(' - Etapa 4: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')
-        extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
+        # extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
         payments = funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
         proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
 

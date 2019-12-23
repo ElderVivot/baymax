@@ -15,9 +15,9 @@ import tools.funcoesUteis as funcoesUteis
 
 class ExtractsOFX(object):
 
-    def __init__(self):
-        self._valuesOfLine = {}
-        self._valuesOfFile = []
+    def __init__(self, wayOriginal):
+        self._extracts = []
+        self._wayOriginal = wayOriginal
         self._banks = readJson(os.path.join(fileDir, f'backend/accounting_integration/data/banks.json'))
         # print(self._banks["BanksNamePerNumber"])
 
@@ -28,6 +28,9 @@ class ExtractsOFX(object):
             return ""
     
     def process(self, file):
+
+        valuesOfLine = {}
+        valuesOfFile = []
 
         try:
             with codecs.open(file) as fileobj:
@@ -62,7 +65,7 @@ class ExtractsOFX(object):
 
                 historic = funcoesUteis.treatTextField(transaction.memo)
 
-                self._valuesOfLine = {
+                valuesOfLine = {
                     "bankId": bankId,
                     "account": account,
                     "typeTransaction": typeTransaction,
@@ -74,12 +77,21 @@ class ExtractsOFX(object):
                     "historic": historic
                 }
 
-                self._valuesOfFile.append(self._valuesOfLine.copy())
+                valuesOfFile.append(valuesOfLine.copy())
         except Exception as e:
             print(e)
 
-        return self._valuesOfFile
+        return valuesOfFile
 
-# if __name__ == "__main__":
-#     extractOFX = ExtractsOFX()
-#     extractOFX.process("C:/_temp/integracao_diviart/OUTUBRO CX DIVIART.ofx")
+    def processAll(self):
+        for root, dirs, files in os.walk(self._wayOriginal):
+            for file in files:
+                if file.lower().endswith(('.ofx')):
+                    wayFile = os.path.join(root, file)
+                    self._extracts.append(self.process(wayFile))
+
+        return funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
+
+if __name__ == "__main__":
+    extractOFX = ExtractsOFX("C:/integracao_contabil/890/arquivos_originais")
+    extractOFX.processAll()
