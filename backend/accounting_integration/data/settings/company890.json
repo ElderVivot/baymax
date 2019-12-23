@@ -1,7 +1,8 @@
 {
     "financy": {
-        "has": "False",
-        "system": "NoFinancy"
+        "has": "False"
     },
-    "banks": [341]
+    "banks": {
+        "listNumbers": [341]
+    }
 }

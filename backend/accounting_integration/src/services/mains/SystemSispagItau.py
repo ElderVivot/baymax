@@ -40,6 +40,9 @@ class SystemWinthor(object):
         # self._codiEmp = 890
         # self._inicialDate = '01/11/2019'
         # self._finalDate = '30/11/2019'
+        self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}')
+        self._settings = leArquivos.readJson(self._waySettings)
+
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
         self._wayFilesTemp = os.path.join(fileDir, f'backend/accounting_integration/data/temp/{self._codiEmp}')
         if os.path.exists(self._wayFilesTemp) is False:
@@ -70,52 +73,55 @@ class SystemWinthor(object):
         extractsOFX = ExtractsOFX(self._wayFilesToRead)
         extracts = extractsOFX.processAll()
 
+        # reads the financy
+        print(' - Etapa 3: Lendo o financeiro do cliente')
+
         # reads the txts
-        print(' - Etapa 3: Lendo os TXTs e analisando a estrutura deles.')
+        print(' - Etapa 4: Lendo os TXTs e analisando a estrutura deles.')
         proofsPaymentsItau = ProofsPaymentsItau(self._wayFilesTemp)
         self._proofsOfPayments.append(proofsPaymentsItau.processAll())
         
-        print(' - Etapa 4: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')
+        print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')
         # extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
         payments = funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
         proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
 
-        print(' - Etapa 5: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
+        print(' - Etapa 6: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
         paymentsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
         extractsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.analyseIfExtractIsInPayment()
         # # print(paymentsCompareWithProofAndExtracts)
 
-        print(' - Etapa 6: Buscando a conta do fornecedor/despesa dentro do sistema.')
+        print(' - Etapa 7: Buscando a conta do fornecedor/despesa dentro do sistema.')
         providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
         entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
         installmentsEntryNote = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas_parcelas/{self._codiEmp}-efentradaspar.json'))
         comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, installmentsEntryNote, paymentsCompareWithProofAndExtracts, self._codiEmp)
         paymentsFinal = comparePaymentsFinalWithDataBase.process()
         
-        print(' - Etapa 7: Filtrando os pagamentos do período informado.')
+        print(' - Etapa 8: Filtrando os pagamentos do período informado.')
         filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsFinal, extractsCompareWithProofAndExtracts)
         extractsWithFilter = filterPeriod.filterExtracts()
         paymentsWithFilter = filterPeriod.filterPayments()
         # print(f'\t - Com o filtro aplicado de {len(paymentsFinal)} sobraram {len(paymentsWithFilter)}')
 
-        print(' - Etapa 8: Configurando as contas contábeis de acordo planilha de configuracoes preenchida.')
+        print(' - Etapa 9: Configurando as contas contábeis de acordo planilha de configuracoes preenchida.')
         compareWithSettings = CompareWithSettings(self._codiEmp, paymentsWithFilter, extractsWithFilter)
         extractsCompareWithSettings = compareWithSettings.processExtracts()
         paymentsCompareWithSettings = compareWithSettings.processPayments()
 
-        print(' - Etapa 9: Exportando informações')
+        print(' - Etapa 10: Exportando informações')
         generateExcel = GenerateExcel(self._codiEmp)
         generateExcel.sheetPayments(paymentsCompareWithSettings)
         generateExcel.sheetExtract(extractsCompareWithSettings)
         generateExcel.closeFile()
 
-        print(' - Etapa 10: Salvando arquivos que não foram lidos')
+        print(' - Etapa 11: Salvando arquivos que não foram lidos')
         returnFilesDontFindForm = ReturnFilesDontFindForm(self._codiEmp, self._wayFilesTemp)
         returnFilesDontFindForm.processAll()
         
         print(' - Processo Finalizado.')
-        # os.system('pause > nul')
+        os.system('pause > nul')
 
 
 if __name__ == "__main__":
