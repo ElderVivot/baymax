@@ -34,12 +34,12 @@ class SystemWinthor(object):
         self._paymentsDates = []
         self._proofsOfPayments = []
         self._extracts = []
-        # self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: ')
-        # self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
-        # self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
-        self._codiEmp = 890
-        self._inicialDate = '01/11/2019'
-        self._finalDate = '30/11/2019'
+        self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: ')
+        self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
+        self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
+        # self._codiEmp = 890
+        # self._inicialDate = '01/11/2019'
+        # self._finalDate = '30/11/2019'
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
         self._wayFilesTemp = os.path.join(fileDir, f'backend/accounting_integration/data/temp/{self._codiEmp}')
         if os.path.exists(self._wayFilesTemp) is False:
