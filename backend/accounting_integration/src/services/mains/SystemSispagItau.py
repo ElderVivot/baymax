@@ -15,6 +15,7 @@ import tools.funcoesUteis as funcoesUteis
 from read_files.PaymentsWinthor import PaymentsWinthorPDF, PaymentsWinthorExcel
 from read_files.ProofsPaymentsItau import ProofsPaymentsItau, SispagItauExcel
 from read_files.ExtractsOFX import ExtractsOFX
+from read_files.ReadPDFs import ReadPDFs
 from rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWithExtracts
 from rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
 from rules.GenerateExcel import GenerateExcel
@@ -52,44 +53,20 @@ class SystemWinthor(object):
         if os.path.exists(self._wayFilesTemp) is False:
             os.makedirs(self._wayFilesTemp)
 
-        self._wayFilesRead = os.path.join(self._wayFilesTemp, 'FilesReads.json')
-        if os.path.exists(self._wayFilesRead) is False:
-            with open(self._wayFilesRead, 'w') as fileRead:
+        self._wayReadFiles = os.path.join(self._wayFilesTemp, 'FilesReads.json')
+        if os.path.exists(self._wayReadFiles) is False:
+            with open(self._wayReadFiles, 'w') as fileRead:
                 json.dump({}, fileRead)
 
     def processesIntegration(self):
-        sequential = 0 # este sequencial serve pra caso tenha 2 pdfs com mesmo nome em pasta diferentes ele não sobrescreva um ao outro, portanto vai salvar com o nome - sequencial
             
-        # read files originals
-        print('\n - Etapa 1: Lendo os arquivos originais tais como extratos e PDFs.')
-        for root, dirs, files in os.walk(self._wayFilesToRead):
-            for file in files:
-
-                wayFile = os.path.join(root, file)
-
-                if file.lower().endswith(('.pdf')):
-                    sequential += 1
-                    leArquivos.splitPdfOnePageEach(wayFile, self._wayFilesTemp, sequential)
-
-        # transform pdfs to text
-        print(' - Etapa 2: Transformando pra TXTs os PDFs encontrados.')
-        for root, dirs, files in os.walk(self._wayFilesTemp):
-            for dir_ in dirs:
-                if dir_ == "pdfs":
-                    wayDir = os.path.join(root, dir_)
-                    for rootDir, dirsDir, filesDir in os.walk(wayDir):
-                        nameFileSplit = rootDir.split('\\')[-1].split('-')
-                        nameFile = '.'.join(nameFileSplit[:-1])
-                        if nameFile != "":
-                            print(f' \t - Transformando o arquivo "{nameFile}.pdf"')
-                        for file in filesDir:
-                            if file.lower().endswith(('.pdf')):
-                                wayFile = os.path.join(rootDir, file)
-                                wayDirFile = os.path.dirname(wayFile)
-                                leArquivos.PDFToText(wayFile, wayDirFile)
+        print(' - Etapa 1: Lendo os PDFs')
+        readPDFs = ReadPDFs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead)
+        readPDFs.processSplitPdfOnePageEach()
+        readPDFs.transformPDFToText()
 
         # reads the txts
-        print(' - Etapa 3: Lendo os OFXs ')
+        print(' - Etapa 2: Lendo os OFXs ')
         extractsOFX = ExtractsOFX(self._wayFilesToRead)
         extracts = extractsOFX.processAll()
 
