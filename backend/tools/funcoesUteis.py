@@ -288,12 +288,13 @@ def returnBankForName(nameBank):
 
     return nameBank
 
-def updateFilesRead(wayTempFileRead, file):
+def updateFilesRead(wayTempFileRead, file, layoutModel):
     filesRead = leArquivos.readJson(wayTempFileRead)
 
     filesWrite = open(wayTempFileRead, 'w')
 
-    filesRead[file] = True
+    wayFile = file.replace('/', '\\')
+    filesRead[wayFile] = layoutModel
 
     json.dump(filesRead, filesWrite)
 

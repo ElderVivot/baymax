@@ -20,6 +20,7 @@ from rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataB
 from rules.GenerateExcel import GenerateExcel
 from rules.FilterPeriod import FilterPeriod
 from rules.CompareWithSettings import CompareWithSettings
+from rules.ReturnFilesDontFindForm import ReturnFilesDontFindForm
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
@@ -131,6 +132,10 @@ class SystemWinthor(object):
         generateExcel.sheetPayments(paymentsCompareWithSettings)
         generateExcel.sheetExtract(extractsCompareWithSettings)
         generateExcel.closeFile()
+
+        print(' - Etapa 10: Salvando arquivos que não foram lidos')
+        returnFilesDontFindForm = ReturnFilesDontFindForm(self._codiEmp, self._wayFilesTemp)
+        returnFilesDontFindForm.processAll()
         
         print(' - Processo Finalizado.')
         # os.system('pause > nul')

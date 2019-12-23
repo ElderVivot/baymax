@@ -137,7 +137,7 @@ class ProofsPaymentsItau(object):
 
                         valuesOfFile.append(valuesOfLine.copy())
 
-                        funcoesUteis.updateFilesRead(self._wayTempFilesRead, file)
+                        funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau')
                     
                     nameProvider = ""
                     namePayee = ""
