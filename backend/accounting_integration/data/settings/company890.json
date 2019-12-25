@@ -1,6 +1,6 @@
 {
     "financy": {
-        "has": "False"
+        "has": false
     },
     "banks": {
         "listNumbers": [341]

@@ -40,7 +40,7 @@ class SystemWinthor(object):
         # self._codiEmp = 890
         # self._inicialDate = '01/11/2019'
         # self._finalDate = '30/11/2019'
-        self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}')
+        self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}.json')
         self._settings = leArquivos.readJson(self._waySettings)
 
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
@@ -63,7 +63,7 @@ class SystemWinthor(object):
 
     def processesIntegration(self):
             
-        print(' - Etapa 1: Lendo os PDFs')
+        print('\n - Etapa 1: Lendo os PDFs')
         readPDFs = ReadPDFs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead)
         readPDFs.processSplitPdfOnePageEach()
         readPDFs.transformPDFToText()
@@ -75,6 +75,10 @@ class SystemWinthor(object):
 
         # reads the financy
         print(' - Etapa 3: Lendo o financeiro do cliente')
+        if self._settings["financy"]["has"] is True:
+            systemFinancy = self._settings["financy"]["system"]
+        else:
+            print('\t - Cliente sem a configuração do sistema financeiro realizada (provavelmente esta empresa não possui)')
 
         # reads the txts
         print(' - Etapa 4: Lendo os TXTs e analisando a estrutura deles.')

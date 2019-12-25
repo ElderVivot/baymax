@@ -1,0 +1,9 @@
+{
+    "financy": {
+        "has": true,
+        "system": "winthor"
+    },
+    "banks": {
+        "listNumbers": [33,104,341,637]
+    }
+}
