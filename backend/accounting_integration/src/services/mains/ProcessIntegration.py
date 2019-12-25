@@ -68,6 +68,7 @@ class SystemWinthor(object):
         readPDFs = ReadPDFs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead)
         readPDFs.processSplitPdfOnePageEach()
         readPDFs.transformPDFToText()
+        readPDFs.doBackupFolderPDF() # faz o bkp pra não perder os dados quando apagar as informações
 
         # reads the txts
         print(' - Etapa 2: Lendo os OFXs ')

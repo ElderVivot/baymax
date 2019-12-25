@@ -21,6 +21,7 @@ class ReadPDFs(object):
         self._codiEmp = codiEmp
         self._wayTemp = wayTemp
         self._wayToRead = wayToRead
+        self._pastePDF = os.path.join(self._wayTemp, "pdfs")
         
     def processSplitPdfOnePageEach(self):
         print('\t - 1.1: Dividindo o PDF em uma página cada pra avaliar se é um PDF scaneado (imagens).')
@@ -51,3 +52,8 @@ class ReadPDFs(object):
                                 wayFile = os.path.join(rootDir, file)
                                 wayDirFile = os.path.dirname(wayFile)
                                 PDFToText(wayFile, wayDirFile)
+
+    def doBackupFolderPDF(self):
+        print(self._pastePDF, os.path.exists(self._pastePDF))
+        if os.path.exists(self._pastePDF) is True:
+            shutil.make_archive(self._pastePDF, "zip", self._pastePDF, )
