@@ -1,7 +1,14 @@
 {
     "financy": {
         "has": true,
-        "system": "winthor"
+        "system": "winthor",
+        "banksConfiguration": {
+            "3415": "ITAU 17039",
+            "1042": "CAIXA 3388",
+            "30": "DINHEIRO",
+            "333": "SANTANDER 13007369",
+            "637": "SOFISA"
+        }
     },
     "banks": {
         "listNumbers": [33,104,341,637]

@@ -16,6 +16,7 @@ from read_files.PaymentsWinthor import PaymentsWinthorPDF, PaymentsWinthorExcel
 from read_files.ProofsPaymentsItau import ProofsPaymentsItau, SispagItauExcel
 from read_files.ExtractsOFX import ExtractsOFX
 from read_files.ReadPDFs import ReadPDFs
+from read_files.CallReadFilePayments import CallReadFilePayments
 from rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWithExtracts
 from rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
 from rules.GenerateExcel import GenerateExcel
@@ -34,12 +35,12 @@ class SystemWinthor(object):
         self._paymentsDates = []
         self._proofsOfPayments = []
         self._extracts = []
-        self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: ')
-        self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
-        self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
-        # self._codiEmp = 890
-        # self._inicialDate = '01/11/2019'
-        # self._finalDate = '30/11/2019'
+        # self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: ')
+        # self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
+        # self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
+        self._codiEmp = 1751
+        self._inicialDate = '01/10/2019'
+        self._finalDate = '31/10/2019'
         self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}.json')
         self._settings = leArquivos.readJson(self._waySettings)
 
@@ -71,12 +72,14 @@ class SystemWinthor(object):
         # reads the txts
         print(' - Etapa 2: Lendo os OFXs ')
         extractsOFX = ExtractsOFX(self._wayFilesToRead)
-        extracts = extractsOFX.processAll()
+        self._extracts = extractsOFX.processAll()
 
         # reads the financy
         print(' - Etapa 3: Lendo o financeiro do cliente')
         if self._settings["financy"]["has"] is True:
             systemFinancy = self._settings["financy"]["system"]
+            callReadFilePayments = CallReadFilePayments(systemFinancy, self._codiEmp, self._wayFilesToRead, self._wayFilesTemp)
+            self._payments = callReadFilePayments.process()
         else:
             print('\t - Cliente sem a configuração do sistema financeiro realizada (provavelmente esta empresa não possui)')
 
@@ -86,8 +89,8 @@ class SystemWinthor(object):
         self._proofsOfPayments.append(proofsPaymentsItau.processAll())
         
         print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')
-        # extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
-        payments = funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
+        extracts = self._extracts # funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
+        payments = self._payments # funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
         proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
 
         print(' - Etapa 6: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')

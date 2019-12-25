@@ -40,6 +40,8 @@ class ProofsPaymentsItau(object):
         # se não for desta classe nem segue pra frente
         if self.isProofOfItau(file) is None:
             return []
+
+        funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau')
         
         valuesOfLine = {}
         valuesOfFile = []
@@ -136,8 +138,6 @@ class ProofsPaymentsItau(object):
                         }
 
                         valuesOfFile.append(valuesOfLine.copy())
-
-                        funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau')
                     
                     nameProvider = ""
                     namePayee = ""

@@ -14,6 +14,7 @@ class PaymentsWinthorPDF(object):
     def __init__(self, wayTemp):
         self._wayTemp = wayTemp
         self._paymentsDate = []
+        self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
 
     def isPaymentWinthorPDF(self, file):
         dataFile = leTxt(file)
@@ -37,6 +38,8 @@ class PaymentsWinthorPDF(object):
         if self.isPaymentWinthorPDF(file) is None:
             return {}
 
+        funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'PaymentsWinthorPDF')
+
         valuesPaymentDates = {}
         valuesOfLine = []
         paymentDate = None
@@ -58,11 +61,15 @@ class PaymentsWinthorPDF(object):
                 if valueOfLine[0] == "DT.PAGAMENTO:":
                     paymentDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(\
                         funcoesUteis.retornaCampoComoData(valueOfLine[1]))
+
+                if valueOfLine[0] == "DT." and valueOfLine[1] == "PAGAMENTO:":
+                    paymentDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(\
+                        funcoesUteis.retornaCampoComoData(valueOfLine[2]))
                     
                 # identifica se é uma linha de lançamento com o idLanc devidamente preenchido
-                if funcoesUteis.treatNumberField(valueOfLine[0]).isnumeric() and ( valuesOfLine[key+1][0] == "HISTORICO" \
-                     or ( valueOfLine[1].isnumeric() and valueOfLine[2].isnumeric() ) ):
+                if funcoesUteis.treatNumberField(valueOfLine[0]).isnumeric() and ( valuesOfLine[key+1][0] == "HISTORICO" or ( valueOfLine[1].isnumeric() and valueOfLine[2].isnumeric() ) ):
                     valuesPaymentDates[valueOfLine[0]] = paymentDate
+
             except Exception as e:
                 pass
         
@@ -80,32 +87,56 @@ class PaymentsWinthorPDF(object):
 
 class PaymentsWinthorExcel(object):
 
-    def __init__(self, codiEmp, wayTemp):
-        self._valuesOfLine = {}
-        self._valuesOfFile = []
+    def __init__(self, codiEmp, wayOriginalToRead, wayTemp, settings):
         self._codiEmp = codiEmp
+        self._wayOriginalToRead = wayOriginalToRead
         self._wayTemp = wayTemp
-        paymentsWinthorPDF = PaymentsWinthorPDF
-        self._paymentsDate = paymentsWinthorPDF.processAll(wayTemp)
+        self._payments = []
+        self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
+        self._settings = settings
+
+        # decla a leitura dos PaymentsWinthor PDF
+        paymentsWinthorPDF = PaymentsWinthorPDF(self._wayTemp)
+        self._paymentsDate = paymentsWinthorPDF.processAll()
+
+    def isPaymentWinthorExcel(self, file):
+        dataFile = leXls_Xlsx(file)
+
+        for data in dataFile:
+            textHistoric = funcoesUteis.treatTextFieldInVector(data, 2)
+
+            textUser = funcoesUteis.treatTextFieldInVector(data, 8)
+
+            if textHistoric == "HISTORICO" and ( textUser == "USU.LANC." or textUser == "USU. LANC." ):
+                return True
         
     # backend/accounting_integration/data
     def returnBank(self, numberBank):
         try:
-            self._banks = readJson(os.path.join(fileDir, f'backend/accounting_integration/data/{self._codiEmp}_banks.json'))
+            self._banks = self._settings["financy"]["banksConfiguration"]
             bank = self._banks[str(numberBank)].split(' ')
             return bank
         except Exception:
             return ""
 
-    def processPayments(self, file, paymentDatesByIdLanc):
+    def process(self, file):
+        # se não for desta classe nem segue pra frente
+        if self.isPaymentWinthorExcel(file) is None:
+            return []
+
+        funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'PaymentsWinthorExcel')
+
         dataFile = leXls_Xlsx(file)
+
+        valuesOfLine = {}
+        valuesOfFile = []
 
         for key, data in enumerate(dataFile):
 
             try:
                 idLanc = funcoesUteis.treatNumberFieldInVector(data, 1)
 
-                paymentDate = paymentDatesByIdLanc[idLanc]
+                paymentDate = self._paymentsDate[idLanc]
                 paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
 
                 nameProvider = funcoesUteis.treatTextFieldInVector(data, 9)
@@ -134,19 +165,16 @@ class PaymentsWinthorExcel(object):
 
                 bank = funcoesUteis.treatTextFieldInVector(data, 24)
                 bankVector = self.returnBank(bank)
-                bank = bankVector[0]
+                bank = funcoesUteis.treatTextFieldInVector(bankVector, 1)
 
-                try:
-                    account = bankVector[1]
-                except Exception:
-                    account = ""
+                account = funcoesUteis.treatTextFieldInVector(bankVector, 2)
 
                 bankCheck = funcoesUteis.treatTextFieldInVector(data, 25)
 
                 companyBranch = funcoesUteis.treatTextFieldInVector(data, 28)
 
                 if paymentDate is not None and amountPaid > 0:
-                    self._valuesOfLine = {
+                    valuesOfLine = {
                         "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
                         "nameProvider": nameProvider,
                         "document": document,
@@ -165,12 +193,22 @@ class PaymentsWinthorExcel(object):
                         "companyBranch": companyBranch
                     }
 
-                    self._valuesOfFile.append(self._valuesOfLine.copy())
+                    valuesOfFile.append(valuesOfLine.copy())
 
             except Exception as e:
                 pass
 
-        return self._valuesOfFile
+        return valuesOfFile
+
+    def processAll(self):
+        for root, dirs, files in os.walk(self._wayOriginalToRead):
+            for file in files:
+                wayFile = os.path.join(root, file)
+
+                if file.lower().endswith(('.xls', '.xlsx')):
+                    self._payments.append(self.process(wayFile))
+
+        return funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
 
 # if __name__ == "__main__":
 #     paymentsWinthorPDF = PaymentsWinthorPDF("C:/_temp/integracao_diviart/teste.txt")
