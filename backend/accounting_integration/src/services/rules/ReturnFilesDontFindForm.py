@@ -4,6 +4,7 @@ import os
 absPath = os.path.dirname(os.path.abspath(__file__))
 fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
+sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src/services'))
 
 import json
 import shutil
@@ -40,6 +41,16 @@ class ReturnFilesDontFindForm(object):
                             os.makedirs(wayToSave)
                             
                         shutil.copy(wayFile, os.path.join(wayToSave, file))
+
+    def removeAlreadyProcessed(self):
+        for root, dirs, files in os.walk(self._wayTemp):
+            for file in files:
+                if file.lower().endswith(('.pdf')):
+                    wayFile = os.path.join(root, file)
+                    wayFileName = wayFile.replace('/', '\\')
+                    if funcoesUteis.analyzeIfFieldIsValid(self._filesRead, wayFileName) != "":
+                        os.remove(wayFile)
+                        os.remove(wayFile.replace('.pdf', '.txt'))
 
 # if __name__ == "__main__":
 #     returnFilesDontFindForm = ReturnFilesDontFindForm(890, 'C:/Programming/baymax/backend/accounting_integration/data/temp/890')

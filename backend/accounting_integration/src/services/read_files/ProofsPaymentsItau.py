@@ -8,6 +8,7 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import json
 from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
+from rules.ReturnFilesDontFindForm import ReturnFilesDontFindForm
 
 
 class ProofsPaymentsItau(object):
@@ -20,6 +21,10 @@ class ProofsPaymentsItau(object):
         self._wayTemp = wayTemp
         self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
         self._accountDebitOrCredit = ''
+
+        # deleta os arquivos da pasta temp que já tenham sido processados, pra não processar duas vezes
+        returnFilesDontFindForm = ReturnFilesDontFindForm(0, self._wayTemp)
+        returnFilesDontFindForm.removeAlreadyProcessed()
 
     def isProofOfItau(self, file):
         dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)

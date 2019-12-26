@@ -85,7 +85,7 @@ class SystemWinthor(object):
             print('\t - Cliente sem a configuração do sistema financeiro realizada (provavelmente esta empresa não possui)')
 
         # reads the txts
-        print(' - Etapa 4: Lendo os TXTs e analisando a estrutura deles.')
+        print(' - Etapa 4: Lendo os comprovantes de pagamentos e analisando as estruturas deles.')
         proofsPaymentsItau = ProofsPaymentsItau(self._wayFilesTemp)
         self._proofsOfPayments.append(proofsPaymentsItau.processAll())
         
