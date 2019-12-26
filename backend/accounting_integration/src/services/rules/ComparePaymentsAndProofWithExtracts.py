@@ -134,6 +134,11 @@ class ComparePaymentsAndProofWithExtracts(object):
 
         for key, paymentFinal in enumerate(self._paymentsFinal):
 
+            foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "foundProof", False)
+            if foundProof is True:
+                paymentFinal["dateOfImport"] = paymentFinal["paymentDate"]
+                continue
+
             operation = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "operation", "-")
             bank = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "bank")
             account = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "account")

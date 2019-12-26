@@ -54,6 +54,5 @@ class ReadPDFs(object):
                                 PDFToText(wayFile, wayDirFile)
 
     def doBackupFolderPDF(self):
-        print(self._pastePDF, os.path.exists(self._pastePDF))
         if os.path.exists(self._pastePDF) is True:
             shutil.make_archive(self._pastePDF, "zip", self._pastePDF, )

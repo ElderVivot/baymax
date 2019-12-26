@@ -12,8 +12,8 @@ import shutil
 import json
 import tools.leArquivos as leArquivos
 import tools.funcoesUteis as funcoesUteis
-from read_files.PaymentsWinthor import PaymentsWinthorPDF, PaymentsWinthorExcel
 from read_files.ProofsPaymentsItau import ProofsPaymentsItau, SispagItauExcel
+from read_files.ProofsPaymentsSantander import ProofsPaymentsSantander
 from read_files.ExtractsOFX import ExtractsOFX
 from read_files.ReadPDFs import ReadPDFs
 from read_files.CallReadFilePayments import CallReadFilePayments
@@ -88,6 +88,9 @@ class ProcessIntegration(object):
         print(' - Etapa 4: Lendo os comprovantes de pagamentos e analisando as estruturas deles.')
         proofsPaymentsItau = ProofsPaymentsItau(self._wayFilesTemp)
         self._proofsOfPayments.append(proofsPaymentsItau.processAll())
+        
+        proofsPaymentsSantander = ProofsPaymentsSantander(self._wayFilesTemp)
+        self._proofsOfPayments.append(proofsPaymentsSantander.processAll())
         
         print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')
         extracts = self._extracts # funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
