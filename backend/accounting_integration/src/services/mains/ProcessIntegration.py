@@ -29,7 +29,7 @@ wayDefault = json.load(wayToSaveFiles)
 wayToSaveFiles.close()
 
 
-class SystemWinthor(object):
+class ProcessIntegration(object):
     def __init__(self):
         self._payments = []
         self._paymentsDates = []
@@ -62,7 +62,7 @@ class SystemWinthor(object):
             with open(self._wayReadFiles, 'w') as fileRead:
                 json.dump({}, fileRead)
 
-    def processesIntegration(self):
+    def process(self):
             
         print('\n - Etapa 1: Lendo os PDFs')
         readPDFs = ReadPDFs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead)
@@ -133,5 +133,5 @@ class SystemWinthor(object):
 
 
 if __name__ == "__main__":
-    systemWinthor = SystemWinthor()
-    systemWinthor.processesIntegration()
+    processIntegration = ProcessIntegration()
+    processIntegration.process()
