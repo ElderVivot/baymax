@@ -1,0 +1,15 @@
+{
+    "financy": {
+        "has": true,
+        "system": "winthor",
+        "banksConfiguration": {
+            "3": "ITAU 44388",
+            "5": "BRASIL 41449",
+            "4": "CEF 51493",
+            "1": "DINHEIRO"
+        }
+    },
+    "banks": {
+        "listNumbers": [104,341]
+    }
+}
