@@ -43,36 +43,42 @@ class ComparePaymentsFinalWithDataBase(object):
         }
 
     def changeAbbreviatedWord(self, name):
-        nameChanged = ""
-        for wordName in name.split():
-            def chechWordIsInTheList():
-                for abbreviate, wordToChange in self._listWordsAbbreviatedToChange.items():
-                    if wordName == abbreviate:
-                        return wordToChange
-            
-            wordNew = chechWordIsInTheList()
-            if wordNew is not None:
-                nameChanged = f"{nameChanged} {wordNew}"
-            else:
-                nameChanged = f"{nameChanged} {wordName}"
-        nameChanged = funcoesUteis.minimalizeSpaces(nameChanged)
+        try:
+            nameChanged = ""
+            for wordName in name.split():
+                def chechWordIsInTheList():
+                    for abbreviate, wordToChange in self._listWordsAbbreviatedToChange.items():
+                        if wordName == abbreviate:
+                            return wordToChange
+                
+                wordNew = chechWordIsInTheList()
+                if wordNew is not None:
+                    nameChanged = f"{nameChanged} {wordNew}"
+                else:
+                    nameChanged = f"{nameChanged} {wordName}"
+            nameChanged = funcoesUteis.minimalizeSpaces(nameChanged)
 
-        return nameChanged
+            return nameChanged
+        except Exception:
+            return ""
     
     def removeWordsThatAreNotNames(self, name):
-        nameChanged = ""
-        for wordName in name.split():
-            def chechWordIsInTheList():
-                for listWordNotConsider in self._listWordsNotConsiderInTheName:
-                    if wordName == listWordNotConsider:
-                        return True
-            
-            # adiciona apenas as palavras que não estão na lista
-            if chechWordIsInTheList() is None:
-                nameChanged = f"{nameChanged} {wordName}"
-        nameChanged = funcoesUteis.minimalizeSpaces(nameChanged)
+        try:
+            nameChanged = ""
+            for wordName in name.split():
+                def chechWordIsInTheList():
+                    for listWordNotConsider in self._listWordsNotConsiderInTheName:
+                        if wordName == listWordNotConsider:
+                            return True
+                
+                # adiciona apenas as palavras que não estão na lista
+                if chechWordIsInTheList() is None:
+                    nameChanged = f"{nameChanged} {wordName}"
+            nameChanged = funcoesUteis.minimalizeSpaces(nameChanged)
 
-        return nameChanged
+            return nameChanged
+        except Exception:
+            return ""
 
     def compareTwoNames(self, nameOne, nameTwo):
         nameOne = self.changeAbbreviatedWord(self.removeWordsThatAreNotNames(nameOne))
