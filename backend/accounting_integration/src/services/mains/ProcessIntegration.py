@@ -12,11 +12,10 @@ import shutil
 import json
 import tools.leArquivos as leArquivos
 import tools.funcoesUteis as funcoesUteis
-from read_files.ProofsPaymentsItau import ProofsPaymentsItau, SispagItauExcel
-from read_files.ProofsPaymentsSantander import ProofsPaymentsSantander
 from read_files.ExtractsOFX import ExtractsOFX
 from read_files.ReadPDFs import ReadPDFs
 from read_files.CallReadFilePayments import CallReadFilePayments
+from read_files.CallReadFileProofs import CallReadFileProofs
 from rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWithExtracts
 from rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
 from rules.GenerateExcel import GenerateExcel
@@ -86,16 +85,13 @@ class ProcessIntegration(object):
 
         # reads the txts
         print(' - Etapa 4: Lendo os comprovantes de pagamentos e analisando as estruturas deles.')
-        proofsPaymentsItau = ProofsPaymentsItau(self._wayFilesTemp)
-        self._proofsOfPayments.append(proofsPaymentsItau.processAll())
-        
-        proofsPaymentsSantander = ProofsPaymentsSantander(self._wayFilesTemp)
-        self._proofsOfPayments.append(proofsPaymentsSantander.processAll())
+        callReadFileProofs = CallReadFileProofs(self._codiEmp, self._wayFilesTemp)
+        self._proofsOfPayments = callReadFileProofs.process()
         
         print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')
         extracts = self._extracts # funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
         payments = self._payments # funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
-        proofOfPayments = funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
+        proofOfPayments = self._proofsOfPayments # funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
 
         print(' - Etapa 6: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
