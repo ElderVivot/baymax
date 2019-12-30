@@ -85,7 +85,7 @@ class ProcessIntegration(object):
 
         # reads the txts
         print(' - Etapa 4: Lendo os comprovantes de pagamentos e analisando as estruturas deles.')
-        callReadFileProofs = CallReadFileProofs(self._codiEmp, self._wayFilesTemp)
+        callReadFileProofs = CallReadFileProofs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead, self._settings)
         self._proofsOfPayments = callReadFileProofs.process()
         
         print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')

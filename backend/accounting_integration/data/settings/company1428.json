@@ -11,5 +11,10 @@
     },
     "banks": {
         "listNumbers": [104,341]
+    },
+    "proofsPayments": {
+        "341": {
+            "model": "sispagExcel"
+        }
     }
 }

@@ -8,17 +8,15 @@ sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src/servic
 
 import tools.leArquivos as leArquivos
 import tools.funcoesUteis as funcoesUteis
-from read_files.ProofsPaymentsItau import ProofsPaymentsItau, SispagItauExcel
-from read_files.ProofsPaymentsSantander import ProofsPaymentsSantander
 
 
 class CallReadFileProofs(object):
-    def __init__(self, codiEmp, wayTemp):
+    def __init__(self, codiEmp, wayTemp, wayOriginal, settings):
         self._proofs = []
         self._codiEmp = codiEmp
         self._wayTemp = wayTemp
-        self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}.json')
-        self._settings = leArquivos.readJson(self._waySettings)
+        self._wayOriginal = wayOriginal
+        self._settings = settings
 
     def process(self):
         try:
@@ -28,11 +26,23 @@ class CallReadFileProofs(object):
 
         if banksList.count(341) > 0:
             print(f'\t - Processando comprovantes de pagamento do Itaú')
-            proofsPaymentsItau = ProofsPaymentsItau(self._wayTemp)
+            from read_files.ProofsPaymentsItau import ProofsPaymentsItau, SispagItauExcel
+
+            try:
+                isSispagExcel = self._settings["proofsPayments"]["341"]["model"]
+            except Exception:
+                isSispagExcel = None
+
+            if isSispagExcel is not None:
+                proofsPaymentsItau = SispagItauExcel(self._wayOriginal)
+            else: 
+                proofsPaymentsItau = ProofsPaymentsItau(self._wayTemp)
+                
             self._proofs.append(proofsPaymentsItau.processAll())
         
         if banksList.count(33) > 0:
             print(f'\t - Processando comprovantes de pagamento do Santander')
+            from read_files.ProofsPaymentsSantander import ProofsPaymentsSantander
             proofsPaymentsSantander = ProofsPaymentsSantander(self._wayTemp)
             self._proofs.append(proofsPaymentsSantander.processAll())
 

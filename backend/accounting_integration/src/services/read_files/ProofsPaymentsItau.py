@@ -167,15 +167,14 @@ class ProofsPaymentsItau(object):
 
 class SispagItauExcel(object):
 
-    def __init__(self, file):
-        self._file = file
-        self._dataFile = leXls_Xlsx(self._file)
-        self._valuesOfLine = {}
-        self._valuesOfFile = []
-        self._posionsOfHeader = {}
+    def __init__(self, wayOriginal):
+        self._wayOriginal = wayOriginal
+        self._proofs = []
 
-    def isSispagItauExcel(self):
-        for data in self._dataFile:
+    def isProof(self, file):
+        dataFile = leXls_Xlsx(file)
+
+        for data in dataFile:
             fieldOne = funcoesUteis.treatTextFieldInVector(data, 1)
             fieldTwo = funcoesUteis.treatTextFieldInVector(data, 2)
             fieldThree = funcoesUteis.treatTextFieldInVector(data, 3)
@@ -183,17 +182,27 @@ class SispagItauExcel(object):
             if fieldOne == "NOME DO FAVORECIDO" and fieldTwo == "CPF/CNPJ" and fieldThree == "TIPO DE PAGAMENTO":
                 return True
 
-    def process(self):
+    def process(self, file):
+        # se não for desta classe nem segue pra frente
+        if self.isProof(file) is None:
+            return []
+
+        dataFile = leXls_Xlsx(file)
+
+        valuesOfLine = {}
+        valuesOfFile = []
+        posionsOfHeader = {}
+
         bank = ""
-        for data in self._dataFile:
+        for data in dataFile:
             try:
                 fieldOne = funcoesUteis.treatTextFieldInVector(data, 1)
 
                 if fieldOne.count('NOME DO FAVORECIDO') > 0:
-                    self._posionsOfHeader.clear()
+                    posionsOfHeader.clear()
                     for keyField, nameField in enumerate(data):
                         nameField = funcoesUteis.treatTextField(nameField)
-                        self._posionsOfHeader[nameField] = keyField
+                        posionsOfHeader[nameField] = keyField
 
                 if fieldOne == "AGENCIA/CONTA:":
                     agencyAndAccount = funcoesUteis.treatTextFieldInVector(data, 2)
@@ -205,16 +214,16 @@ class SispagItauExcel(object):
                     
                     bank = "ITAU" 
 
-                paymentDate = funcoesUteis.treatDateFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="Data de pagamento")
+                paymentDate = funcoesUteis.treatDateFieldInVector(data, fieldsHeader=posionsOfHeader, nameFieldHeader="Data de pagamento")
 
-                nameProvider = funcoesUteis.treatTextFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="Nome do favorecido")
+                nameProvider = funcoesUteis.treatTextFieldInVector(data, fieldsHeader=posionsOfHeader, nameFieldHeader="Nome do favorecido")
 
-                amountPaid = funcoesUteis.treatDecimalFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="Valor do Pagamento (R$)")
+                amountPaid = funcoesUteis.treatDecimalFieldInVector(data, fieldsHeader=posionsOfHeader, nameFieldHeader="Valor do Pagamento (R$)")
 
-                cnpjProvider = funcoesUteis.treatNumberFieldInVector(data, fieldsHeader=self._posionsOfHeader, nameFieldHeader="CPF/CNPJ")
+                cnpjProvider = funcoesUteis.treatNumberFieldInVector(data, fieldsHeader=posionsOfHeader, nameFieldHeader="CPF/CNPJ")
 
                 if paymentDate is not None and amountPaid > 0:
-                    self._valuesOfLine = {
+                    valuesOfLine = {
                         "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
                         "nameProvider": nameProvider,
                         "cnpjProvider": cnpjProvider,
@@ -224,12 +233,21 @@ class SispagItauExcel(object):
                         "foundProof": True
                     }
 
-                    self._valuesOfFile.append(self._valuesOfLine.copy())
+                    valuesOfFile.append(valuesOfLine.copy())
 
             except Exception as e:
                 print(e)
 
-        return self._valuesOfFile
+        return valuesOfFile
+
+    def processAll(self):
+        for root, dirs, files in os.walk(self._wayOriginal):
+            for file in files:
+                if file.lower().endswith(('.xls', '.xlsx')):
+                    wayFile = os.path.join(root, file)
+                    self._proofs.append(self.process(wayFile))
+
+        return funcoesUteis.removeAnArrayFromWithinAnother(self._proofs)
 
 # if __name__ == "__main__":
 #     proofsPaymentsItau = ProofsPaymentsItau("C:/programming/baymax/backend/accounting_integration/data/temp/890")
