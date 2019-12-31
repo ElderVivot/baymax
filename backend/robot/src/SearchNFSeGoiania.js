@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs')
 
-const buscaNFSeGoiania = async() => {
+const searchNFSeGoiania = async() => {
     const browser = await puppeteer.launch({headless: false, args: ['--start-maximized']})
 
     const page = await browser.newPage()
@@ -123,4 +123,4 @@ const buscaNFSeGoiania = async() => {
     browser.close()
 }
 
-buscaNFSeGoiania()
+searchNFSeGoiania()
