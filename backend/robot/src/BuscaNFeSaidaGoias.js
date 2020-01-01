@@ -4,32 +4,21 @@ const puppeteer = require('puppeteer')
 const fs = require('fs')
 const request = require('request');
 
-const buscaNFeSaidaGoias = async() => {
-    const browser = await puppeteer.launch({
-        headless: false, 
-        args: 
-            [
-            '--start-maximized']
-    })
+(async() => {
+    const browser = await puppeteer.launch()
 
-    const page = await browser.newPage()
+    let page = await browser.newPage()
 
     await page.setViewport({ width:0, height:0 })
-
-    // 1 - Acessa página de Goiânia
+    
     await page.goto('http://nfe.sefaz.go.gov.br/nfeweb/sites/nfe/consulta-publica/principal')
 
-    await page.waitFor(3000)
-
-    // Enable Request Interception
     await page.setRequestInterception(true);
 
+    const pfx = fs.readFileSync('C:/temp/agf_cert.pfx');
+    const password = 'soma1234'
+    
     await page.waitFor(3000)
-
-    // Client cert files
-    const cert = fs.readFileSync('C:\\temp\\1\\17ac5ea3218f001e0ab18262308117b5.crt');
-    const key = fs.readFileSync('C:\\temp\\1\\17ac5ea3218f001e0ab18262308117b5.key');
-    console.log(cert)
 
     page.on('request', interceptedRequest => {
         // Intercept Request, pull out request options, add in client cert
@@ -38,8 +27,8 @@ const buscaNFeSaidaGoias = async() => {
             method: interceptedRequest.method(),
             headers: interceptedRequest.headers(),
             body: interceptedRequest.postData(),
-            cert: cert,
-            key: key
+            pfx: pfx,
+            passphrase: password,
         };
 
         // Fire off the request manually (example is using using 'request' lib)
@@ -65,7 +54,5 @@ const buscaNFeSaidaGoias = async() => {
     
     await page.waitFor(2000)
     
-    // browser.close()
-}
-
-buscaNFeSaidaGoias()
+    browser.close()
+})()

@@ -2,7 +2,7 @@
   "name": "robot",
   "version": "1.0.0",
   "description": "Search datas automatically",
-  "main": "src\\BuscaNFSeGoiania.js",
+  "main": "src\\SearchNFSeGoiania.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +12,7 @@
     "expect-puppeteer": "^4.3.0",
     "i": "^0.3.6",
     "puppeteer": "^1.20.0",
+    "puppeteer-core": "^2.0.0",
     "request": "^2.88.0",
     "uuid": "^3.3.3"
   }
