@@ -12,11 +12,12 @@ import tools.funcoesUteis as funcoesUteis
 
 class PaymentsFaaftech(object):
 
-    def __init__(self, codiEmp, wayOriginalToRead, settings):
+    def __init__(self, codiEmp, wayOriginalToRead, wayTemp, settings):
         self._codiEmp = codiEmp
         self._wayOriginalToRead = wayOriginalToRead
+        self._wayTemp = wayTemp
         self._payments = []
-        self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
+        # self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
         self._settings = settings
 
     # def isPayment(self, file):
@@ -29,6 +30,15 @@ class PaymentsFaaftech(object):
 
     #         if textHistoric == "HISTORICO" and ( textUser == "USU.LANC." or textUser == "USU. LANC." ):
     #             return True
+
+    # backend/accounting_integration/data
+    def returnBank(self, numberBank):
+        try:
+            self._banks = self._settings["financy"]["banksConfiguration"]
+            bank = self._banks[str(numberBank)].split(' ')
+            return bank
+        except Exception:
+            return ""
         
     def process(self, file):
         # se não for desta classe nem segue pra frente
@@ -50,11 +60,13 @@ class PaymentsFaaftech(object):
                             posionsOfHeader[nameField] = keyField
                         continue
 
-                paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.treatTextFieldInVector(data, 4, posionsOfHeader, "Data Baixa"))
+                paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.treatTextFieldInVector(data, 11, posionsOfHeader, "Data Baixa"))
                 nameProvider = funcoesUteis.treatTextFieldInVector(data, 4, posionsOfHeader, "Nome Parceiro")
+                cgceProvider = funcoesUteis.treatTextFieldInVector(data, 114, posionsOfHeader, "CNPJ / CPF (Parceiro)")
                 document = funcoesUteis.treatTextFieldInVector(data, 3, posionsOfHeader, "Nro Nota")
                 accountPlan = funcoesUteis.treatTextFieldInVector(data, 7, posionsOfHeader, "Descricao (Natureza)")
                 dueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.treatTextFieldInVector(data, 5, posionsOfHeader, "Dt. Vencimento"))
+                issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.treatTextFieldInVector(data, 59, posionsOfHeader, "Dt. Entrada e Saída"))
                 historic = ""
                 parcelNumber = ""
                 amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 19, posionsOfHeader, "Vlr Baixa")
@@ -62,31 +74,34 @@ class PaymentsFaaftech(object):
                 amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 41, posionsOfHeader, "Vlr Desconto")
                 amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 44, posionsOfHeader, "Vlr Juros")
                 amountFine = funcoesUteis.treatDecimalFieldInVector(data, 45, posionsOfHeader, "Vlr Multa")
-                amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 45, posionsOfHeader, "Valor Liquido")
+                amountOriginal = float(0)
                 paymentType = ""
-
-                bank = funcoesUteis.treatTextFieldInVector(data, 24)
-                bankVector = self.returnBank(bank)
-                bank = funcoesUteis.treatTextFieldInVector(bankVector, 1)
-
+                bank = funcoesUteis.treatTextFieldInVector(data, 54, posionsOfHeader, "Conta Bancaria")
                 account = ""
+                companyBranch = ""
 
-                companyBranch = funcoesUteis.treatTextFieldInVector(data, 28)
+                # bankVector = self.returnBank(bank)
+                # bank = funcoesUteis.treatTextFieldInVector(bankVector, 1)
+
+                # account = funcoesUteis.treatTextFieldInVector(bankVector, 2)
 
                 if paymentDate is not None and amountPaid > 0:
                     valuesOfLine = {
                         "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
                         "nameProvider": nameProvider,
+                        "cgceProvider": cgceProvider,
                         "document": document,
                         "parcelNumber": parcelNumber,
                         "bank": bank,
                         "account": account,
+                        "dueDate": dueDate,
+                        "issueDate": issueDate,
                         "amountPaid": amountPaid,
                         "amountDiscount": amountDiscount,
                         "amountInterest": amountInterest,
                         "amountOriginal": amountOriginal,
+                        "amountFine": amountFine,
                         "amountDevolution": amountDevolution,
-                        "bankCheck": bankCheck,
                         "paymentType": paymentType,
                         "accountPlan": accountPlan,
                         "historic": historic,

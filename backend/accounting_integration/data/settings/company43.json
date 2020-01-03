@@ -1,0 +1,15 @@
+{
+    "financy": {
+        "has": true,
+        "system": "faaftech",
+        "banksConfiguration": {
+            "4": "ITAU 6757",
+            "3": "BB 69000",
+            "35": "SANTANDER 13001120",
+            "17": "DINHEIRO"
+        }
+    },
+    "banks": {
+        "listNumbers": [1,33,341,756]
+    }
+}
