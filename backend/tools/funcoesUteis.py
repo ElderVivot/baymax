@@ -331,7 +331,7 @@ def copyXmlToFolderCompanieAndCompetence(wayBase, codiEmp, issueDate, wayXml, ty
     if os.path.exists(wayToSaveXml) is False:
         os.makedirs(wayToSaveXml)
 
-    shutil.copy(wayXml, os.path.join(wayToSaveXml, keyNF, '.xml'))
+    shutil.copy(wayXml, os.path.join(wayToSaveXml, f'{keyNF}.xml'))
     print(f'\t- É uma nota de {typeNF[:len(typeNF)]} da empresa {codiEmp}.')
 
     
