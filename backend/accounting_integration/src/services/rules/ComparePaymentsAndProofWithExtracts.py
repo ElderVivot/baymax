@@ -28,14 +28,49 @@ class ComparePaymentsAndProofWithExtracts(object):
         self._extractsFinal = []
         self._numberOfDaysInterval = { "daysAfter": 3, "daysBefore": 3 }
 
+    def returnDayFoundInPayment(self, payment, paymentDate, amountPaid):
+        paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
+        dayAfter = None
+        dayBefore = None
+
+        # olha até 10 dias a mais
+        for day in range(0, 11):
+            paymentDateComparison = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate + timedelta(days=day))
+            if payment['paymentDate'] == paymentDateComparison and payment['amountPaid'] == amountPaid:
+                dayAfter = day
+                break
+        
+        # se dayAfter é igual a zero quer dizer que o pagamento está no mesmo dia
+        if dayAfter == 0:
+            return dayAfter
+
+        # olha até 10 dias a menos
+        for day in range(1, 11):
+            paymentDateComparison = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate + timedelta(days=-day))
+            if payment['paymentDate'] == paymentDateComparison and payment['amountPaid'] == amountPaid:
+                dayBefore = day
+                break
+
+        # senão encontrar nenhum dia retorna nulo
+        if dayAfter is None and dayBefore is None:
+            return None
+        else:
+            if dayAfter is None and dayBefore is not None:
+                return dayBefore
+            if dayAfter is not None and dayBefore is None:
+                return dayAfter
+                
+            if dayAfter < dayBefore:
+                return dayAfter
+            else:
+                return dayBefore
+
     def returnDataPayment(self, paymentDate, amountPaid):
-        paymentDatePlusFive = funcoesUteis.retornaCampoComoData(paymentDate) + timedelta(days=5)
-        paymentDateMinusFive = funcoesUteis.retornaCampoComoData(paymentDate) + timedelta(days=-5)
         for key, payment in enumerate(self._payments):
-            paymentDateRead = funcoesUteis.retornaCampoComoData(payment['paymentDate'])
-            # pesquisa num intervalo de 2 dias a mais e 2 dias a menos, pois nem sempre o financeiro do cliente é certo
-            if paymentDateMinusFive <= paymentDateRead and paymentDateRead <= paymentDatePlusFive and payment['amountPaid'] == amountPaid:
+            day = self.returnDayFoundInPayment(payment, paymentDate, amountPaid)
+            if day is not None:
                 return [payment, key] # o key eu retorno pra depois identificar quais pagamentos já foram processados nas provas de pagamentos e não imprimi-los novamente
+
 
     def returnDayFoundInExtract(self, extract, paymentDate, amountPaid, operation, bank, account):
         paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
@@ -134,10 +169,6 @@ class ComparePaymentsAndProofWithExtracts(object):
 
         for key, paymentFinal in enumerate(self._paymentsFinal):
 
-            foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "foundProof", False)
-            if foundProof is True:
-                paymentFinal["dateOfImport"] = paymentFinal["paymentDate"]
-
             operation = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "operation", "-")
             bank = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "bank")
             account = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "account")
@@ -158,6 +189,10 @@ class ComparePaymentsAndProofWithExtracts(object):
                 dateOfImport = paymentFinal["dateExtract"]
             
             paymentFinal["dateOfImport"] = dateOfImport
+
+            foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "foundProof", False)
+            if foundProof is True:
+                paymentFinal["dateOfImport"] = paymentFinal["paymentDate"]
 
             self._paymentsFinal[key] = paymentFinal
 
