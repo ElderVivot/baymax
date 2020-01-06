@@ -25,3 +25,9 @@ class CallReadFilePayments(object):
             from PaymentsWinthor import PaymentsWinthorExcel
             paymentsWinthorExcel = PaymentsWinthorExcel(self._codiEmp, self._wayOriginalToRead, self._wayTemp, self._settings)
             return paymentsWinthorExcel.processAll()
+
+        if self._system == 'faaftech':
+            print('\t - Identificado que o sistema é o mesmo da empresa faaftech, processando leitura dos arquivos')
+            from PaymentsFaaftech import PaymentsFaaftech
+            paymentsFaaftech = PaymentsFaaftech(self._codiEmp, self._wayOriginalToRead, self._wayTemp, self._settings)
+            return paymentsFaaftech.processAll()
