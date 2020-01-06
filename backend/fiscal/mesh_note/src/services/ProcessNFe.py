@@ -34,7 +34,10 @@ class ProcessNFe(object):
         keyNF = keyNF[3:]
         
         numberNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'nNF'])
+        
         issueDateNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'dhEmi'])
+        issueDateNF2 = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'dEmi'])
+        issueDateNF = issueDateNF2 if ( issueDateNF == "" or issueDateNF is None ) else issueDateNF
         issueDateNF = funcoesUteis.retornaCampoComoData(issueDateNF, 2)
 
         modelNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'mod'])
@@ -54,7 +57,11 @@ class ProcessNFe(object):
         keyNF = keyNF[3:]
         
         issueDateNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'dhEmi'])
+        issueDateNF2 = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'dEmi'])
+        issueDateNF = issueDateNF2 if ( issueDateNF == "" or issueDateNF is None ) else issueDateNF
         issueDateNF = funcoesUteis.retornaCampoComoData(issueDateNF, 2)
+        if issueDateNF is None:
+            return ""
 
         if issueDateNF < self._filterDate:
             return ""
@@ -89,7 +96,7 @@ class ProcessNFe(object):
             for key, file in enumerate(files):
                 wayFile = os.path.join(root, file)
                 if file.lower().endswith(('.xml')):
-                    print(f'- Processando XML {file} / {key+1} de {countFiles}')
+                    print(f'- Processando XML {wayFile} / {key+1} de {countFiles}')
                     if processingType == 2:
                         self.rearrangeWayToSaveXML(wayFile)
                 # if file.lower().endswith(('.zip')):
@@ -99,6 +106,6 @@ class ProcessNFe(object):
                 #                 print(fileCompressed)
 
 if __name__ == "__main__":
-    processNFe = ProcessNFe("Y:/6-PASTA PUBLICA/XMLs")
+    processNFe = ProcessNFe("Y:/7-DEPTO FISCAL/5- PASTA PUBLICA FISCAL/1 ARQUIVOS CLIENTES  SOMA")
     # processNFe.rearrangeWayToSaveXML("C:/_temp/notas-fiscais/52191206217735000158550010000822341551822348.xml")
     processNFe.processAll(2)
