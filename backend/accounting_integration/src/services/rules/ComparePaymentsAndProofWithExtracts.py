@@ -137,7 +137,6 @@ class ComparePaymentsAndProofWithExtracts(object):
             foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "foundProof", False)
             if foundProof is True:
                 paymentFinal["dateOfImport"] = paymentFinal["paymentDate"]
-                continue
 
             operation = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "operation", "-")
             bank = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "bank")
