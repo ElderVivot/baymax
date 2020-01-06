@@ -16,6 +16,7 @@ import warnings
 import slate3k as slate
 import logging
 from PIL import Image
+import xmltodict as xmldict
 
 # pra ignorar erros que dá no momento de ler um PDF por exemplo
 warnings.filterwarnings("ignore")
@@ -239,3 +240,10 @@ def readJson(caminho):
             return json.load(file)
     except Exception as e:
         print(e)
+
+def readXml(way):
+    try:
+        with open(way) as file:
+            return xmldict.parse(file.read())
+    except Exception as e:
+        return {}

@@ -12,6 +12,7 @@ import re
 import datetime
 import hashlib
 import json
+import shutil
 import leArquivos
 
 def removerAcentosECaracteresEspeciais(palavra):
@@ -59,6 +60,28 @@ def analyzeIfFieldIsValid(data, name, returnDefault="", otherComparationName="")
             return data[name, otherComparationName]
     except Exception:
         return returnDefault
+
+def returnDataFieldInDict(data, valuesList):
+    lenList = len(valuesList)
+
+    try:
+        if lenList == 1:
+            return data[valuesList[0]]
+        elif lenList == 2:
+            return data[valuesList[0]][valuesList[1]]
+        elif lenList == 3:
+            return data[valuesList[0]][valuesList[1]][valuesList[2]]
+        elif lenList == 4:
+            return data[valuesList[0]][valuesList[1]][valuesList[2]][valuesList[3]]
+        elif lenList == 5:
+            return data[valuesList[0]][valuesList[1]][valuesList[2]][valuesList[3]][valuesList[4]]
+        elif lenList == 6:
+            return data[valuesList[0]][valuesList[1]][valuesList[2]][valuesList[3]][valuesList[4]][valuesList[5]]
+        else:
+            return ""
+    except Exception:
+        return ""
+
 
 def analyzeIfFieldIsValidMatrix(data, position, returnDefault=""):
     try:
@@ -299,3 +322,16 @@ def updateFilesRead(wayTempFileRead, file, layoutModel):
     json.dump(filesRead, filesWrite)
 
     filesWrite.close()
+
+def copyXmlToFolderCompanieAndCompetence(wayBase, codiEmp, issueDate, wayXml, typeNF, keyNF):
+    if codiEmp is None:
+        return None
+
+    wayToSaveXml = os.path.join(wayBase, f'{str(codiEmp)} -', f'{issueDate.year}-{issueDate.month}', typeNF)
+    if os.path.exists(wayToSaveXml) is False:
+        os.makedirs(wayToSaveXml)
+
+    shutil.copy(wayXml, os.path.join(wayToSaveXml, keyNF))
+    print(f'\t- É uma nota de {typeNF[:len(typeNF)]} da empresa {codiEmp}.')
+
+    
