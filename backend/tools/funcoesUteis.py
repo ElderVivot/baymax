@@ -327,7 +327,7 @@ def copyXmlToFolderCompanieAndCompetence(wayBase, codiEmp, issueDate, wayXml, ty
     if codiEmp is None:
         return None
 
-    wayToSaveXml = os.path.join(wayBase, f'{str(codiEmp)} -', f'{issueDate.year}-{issueDate.month}', typeNF)
+    wayToSaveXml = os.path.join(wayBase, f'{str(codiEmp)} -', f'{issueDate.year}-{issueDate.month:0>2}', typeNF)
     if os.path.exists(wayToSaveXml) is False:
         os.makedirs(wayToSaveXml)
 
