@@ -17,8 +17,9 @@ from rarfile import RarFile
 from py7zr import SevenZipFile
 
 class ProcessNFe(object):
-    def __init__(self, wayToRead):
+    def __init__(self, wayToRead, filterDate="01/01/2019"):
         self._wayToRead = wayToRead
+        self._filterDate = funcoesUteis.retornaCampoComoData(filterDate)
         self._companies = readJson(os.path.join(fileDir, 'backend/extract/data/empresas.json'))
 
     def returnDataEmp(self, cgce):
@@ -54,6 +55,9 @@ class ProcessNFe(object):
         
         issueDateNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'dhEmi'])
         issueDateNF = funcoesUteis.retornaCampoComoData(issueDateNF, 2)
+
+        if issueDateNF < self._filterDate:
+            return ""
 
         typeNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'tpNF'])
         
