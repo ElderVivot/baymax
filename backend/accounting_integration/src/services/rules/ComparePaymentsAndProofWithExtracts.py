@@ -71,7 +71,6 @@ class ComparePaymentsAndProofWithExtracts(object):
             if day is not None:
                 return [payment, key] # o key eu retorno pra depois identificar quais pagamentos já foram processados nas provas de pagamentos e não imprimi-los novamente
 
-
     def returnDayFoundInExtract(self, extract, paymentDate, amountPaid, operation, bank, account):
         paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
         dayAfter = None

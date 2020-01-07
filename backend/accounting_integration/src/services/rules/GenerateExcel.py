@@ -121,7 +121,7 @@ class GenerateExcel(object):
         sheet.write(0, 20, "Historico Planilha", self._cell_format_header)
         sheet.write(0, 21, "Categoria", self._cell_format_header)
         sheet.write(0, 22, "Plano de Contas", self._cell_format_header)
-        sheet.write(0, 23, "Tipo de Pagamento", self._cell_format_header)
+        sheet.write(0, 23, "CNPJ Pagador", self._cell_format_header)
         sheet.write(0, 24, "Historico Extrato Bancário", self._cell_format_header)
         sheet.write(0, 25, "Conta Contabil Sistema Cliente", self._cell_format_header)
 
@@ -156,7 +156,7 @@ class GenerateExcel(object):
             historic = funcoesUteis.analyzeIfFieldIsValid(payment, "historic")
             category = funcoesUteis.analyzeIfFieldIsValid(payment, "category")
             accountPlan = funcoesUteis.analyzeIfFieldIsValid(payment, "accountPlan")
-            paymentType = funcoesUteis.analyzeIfFieldIsValid(payment, "paymentType")
+            cgcePaying = funcoesUteis.analyzeIfFieldIsValid(payment, "cgcePaying")
             historicExtract = funcoesUteis.analyzeIfFieldIsValid(payment, "historicExtract")
             accountCodeOld = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeOld")
 
@@ -183,7 +183,7 @@ class GenerateExcel(object):
             sheet.write(row, 20, historic)
             sheet.write(row, 21, category)
             sheet.write(row, 22, accountPlan)
-            sheet.write(row, 23, paymentType)
+            sheet.write(row, 23, cgcePaying)
             sheet.write(row, 24, historicExtract)
             sheet.write(row, 25, accountCodeOld)
 

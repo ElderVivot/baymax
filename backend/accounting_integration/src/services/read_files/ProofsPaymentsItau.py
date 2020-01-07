@@ -57,7 +57,7 @@ class ProofsPaymentsItau(object):
         namePayee = ""
         historic = ""
         dueDate = None
-        company = ""
+        cgcePaying = ""
         cnpjProvider = ""
         amountPaid = float(0)
         category = ""
@@ -103,7 +103,7 @@ class ProofsPaymentsItau(object):
                     dueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.retornaCampoComoData(fieldTwo))
 
                 if ( fieldOne.count("CPF") > 0 or fieldOne.count("CNPJ") > 0 ) and fieldOne.count("PAGADOR") > 0:
-                    company = fieldTwo
+                    cgcePaying = str(funcoesUteis.treatNumberField(fieldTwo))
 
                 if ( fieldOne.count("CPF") > 0 or fieldOne.count("CNPJ") > 0 ) and fieldOne.count("PAGADOR") == 0:
                     cnpjProvider = fieldTwo
@@ -138,7 +138,7 @@ class ProofsPaymentsItau(object):
                             "amountOriginal": float(0),
                             "historic": historic,
                             "category": category,
-                            "company": company,
+                            "cgcePaying": cgcePaying,
                             "foundProof": True
                         }
 

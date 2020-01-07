@@ -90,7 +90,7 @@ class ReadExcelToUpdateOrExportData(object):
             historic = funcoesUteis.treatTextFieldInVector(data, 21, self._posionsOfHeaderPayments, "Historico Planilha")
             category = funcoesUteis.treatTextFieldInVector(data, 22, self._posionsOfHeaderPayments, "Categoria")
             accountPlan = funcoesUteis.treatTextFieldInVector(data, 23, self._posionsOfHeaderPayments, "Plano de Contas")
-            paymentType = funcoesUteis.treatTextFieldInVector(data, 24, self._posionsOfHeaderPayments, "Tipo de Pagamento")
+            cgcePaying = funcoesUteis.treatTextFieldInVector(data, 24, self._posionsOfHeaderPayments, "CNPJ Pagador")
             historicExtract = funcoesUteis.treatTextFieldInVector(data, 25, self._posionsOfHeaderPayments, "Historico Extrato Bancário")
             accountCodeOld = funcoesUteis.treatNumberFieldInVector(data, 26, self._posionsOfHeaderPayments, "Conta Contabil Sistema Cliente")
 
@@ -120,7 +120,7 @@ class ReadExcelToUpdateOrExportData(object):
                 "historic": historic,
                 "category": category,
                 "accountPlan": accountPlan,
-                "paymentType": paymentType,
+                "cgcePaying": cgcePaying,
                 "historicExtract": historicExtract,
                 "accountCodeOld": accountCodeOld
             }
