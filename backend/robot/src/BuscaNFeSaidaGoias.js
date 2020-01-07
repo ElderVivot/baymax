@@ -15,8 +15,8 @@ const request = require('request');
 
     // await page.setRequestInterception(true);
 
-    const pfx = fs.readFileSync('C:/_temp/agf_cert.pfx');
-    const password = 'soma1234'
+    // const pfx = fs.readFileSync('C:/_temp/agf_cert.pfx');
+    // const password = 'soma1234'
     
     await page.waitFor(3000)
 
@@ -51,8 +51,12 @@ const request = require('request');
     // });
 
     await page.click("a[href*='nfe/consulta-publica'] button")
-    
-    await page.waitFor(2000)
+
+    await page.waitFor(10000)
+
+    await page.screenshot({
+        path: 'C:/programming/baymax/backend/robot/data/temp/teste1.png'
+    });
     
     // browser.close()
 })()
