@@ -53,7 +53,7 @@ class PaymentsFaaftech(object):
         for key, data in enumerate(dataFile):
 
             try:
-                if str(data[4]).upper().count('NRO NOTA') > 0:
+                if str(data[2]).upper().count('NRO NOTA') > 0:
                         posionsOfHeader.clear()
                         for keyField, nameField in enumerate(data):
                             nameField = funcoesUteis.treatTextField(nameField)
@@ -76,14 +76,15 @@ class PaymentsFaaftech(object):
                 amountFine = funcoesUteis.treatDecimalFieldInVector(data, 45, posionsOfHeader, "Vlr Multa")
                 amountOriginal = float(0)
                 paymentType = ""
-                bank = funcoesUteis.treatTextFieldInVector(data, 54, posionsOfHeader, "Conta Bancaria")
+                bank = funcoesUteis.treatTextFieldInVector(data, 53, posionsOfHeader, "Conta Bancaria")
+                print(posionsOfHeader)
                 account = ""
                 companyBranch = ""
 
-                # bankVector = self.returnBank(bank)
-                # bank = funcoesUteis.treatTextFieldInVector(bankVector, 1)
+                bankVector = self.returnBank(bank)
+                bank = funcoesUteis.treatTextFieldInVector(bankVector, 1)
 
-                # account = funcoesUteis.treatTextFieldInVector(bankVector, 2)
+                account = funcoesUteis.treatTextFieldInVector(bankVector, 2)
 
                 if paymentDate is not None and amountPaid > 0:
                     valuesOfLine = {

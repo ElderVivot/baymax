@@ -148,7 +148,7 @@ class ProofsPaymentsItau(object):
                     namePayee = ""
                     historic = ""
                     dueDate = None
-                    company = ""
+                    cgcePaying = ""
                     cnpjProvider = ""
                     amountPaid = float(0)
 
