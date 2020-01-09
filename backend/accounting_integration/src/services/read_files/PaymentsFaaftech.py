@@ -77,7 +77,6 @@ class PaymentsFaaftech(object):
                 amountOriginal = float(0)
                 paymentType = ""
                 bank = funcoesUteis.treatTextFieldInVector(data, 53, posionsOfHeader, "Conta Bancaria")
-                print(posionsOfHeader)
                 account = ""
                 companyBranch = ""
 

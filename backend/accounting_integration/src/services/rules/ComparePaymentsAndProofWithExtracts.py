@@ -10,10 +10,6 @@ import json
 from datetime import datetime, timedelta
 from tools.leArquivos import leXls_Xlsx, leTxt
 import tools.funcoesUteis as funcoesUteis
-from read_files.PaymentsCDI import PaymentsCDI
-from read_files.ProofsPaymentsItau import ProofsPaymentsItau
-from read_files.ExtractsOFX import ExtractsOFX
-from read_files.PaymentsWinthor import PaymentsWinthorPDF, PaymentsWinthorExcel
 
 
 class ComparePaymentsAndProofWithExtracts(object):
@@ -79,6 +75,7 @@ class ComparePaymentsAndProofWithExtracts(object):
         # procura nos dias positivos (da data atual até mais 3 dias pra frente)
         for day in range(0, self._numberOfDaysInterval["daysAfter"]+1):
             paymentDateComparison = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate + timedelta(days=day))
+            print(extract['amount'], extract['dateTransaction'], paymentDateComparison, day)
             if extract['dateTransaction'] == paymentDateComparison and extract['amount'] == amountPaid and extract['operation'] == operation \
                     and extract['bankId'] == bank and extract['account'].find(account) > 0:
                 dayAfter = day
@@ -96,7 +93,7 @@ class ComparePaymentsAndProofWithExtracts(object):
             return dayAfter
 
         # procura nos dias negativo (da data atual até menos 3 dias pra trás)
-        for day in range(0, self._numberOfDaysInterval["daysBefore"]+1):
+        for day in range(1, self._numberOfDaysInterval["daysBefore"]+1):
             paymentDateComparison = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate + timedelta(days=-day)) # - (menos) day pois estou voltando data
             if extract['dateTransaction'] == paymentDateComparison and extract['amount'] == amountPaid and extract['operation'] == operation \
                     and extract['bankId'] == bank and extract['account'].find(account) > 0:
@@ -210,10 +207,10 @@ class ComparePaymentsAndProofWithExtracts(object):
         
         return self._extractsFinal
 
-# if __name__ == "__main__":
-#     extracts = []
-#     payments = [{'paymentDate': '04/10/2019', 'nameProvider': 'ALTENBURG TEXTIL LTDA', 'document': '622608', 'parcelNumber': '1', 'bank': 'ITAU', 'account': '44388', 'amountPaid': 5487.45, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 5487.45, 'amountDevolution': 0.0, 'bankCheck': '', 'paymentType': 'DIN', 'accountPlan': 'COMPRA MERCADORIA', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 622608 -', 'companyBranch': '01'}, {'paymentDate': '03/10/2019', 'nameProvider': 'ALTENBURG TEXTIL LTDA', 'document': '622608', 'parcelNumber': '1', 'bank': 'ITAU', 'account': '44388', 'amountPaid': 5487.45, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 5487.45, 'amountDevolution': 0.0, 'bankCheck': '', 'paymentType': 'DIN', 'accountPlan': 'COMPRA MERCADORIA', 'historic': 'VLR. REF. COMPRAS CF. NF. NUM. 622608 -', 'companyBranch': '01'}]
-#     proofOfPayments = [{'paymentDate': '03/10/2019', 'nameProvider': 'ALTENBURG TEXTIL LTDA', 'cnpjProvider': '', 'amountPaid': 5487.45, 'bank': 'ITAU', 'account': ''}]
+if __name__ == "__main__":
+    payments = [{'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 15.0, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS BANCARIAS / MANUTENCAO DE CONTA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 11390.03, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'APLICACAO AUT', 'historic': '', 'companyBranch': ''}, {'paymentDate': '02/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '2102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '02/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '2102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 2.78, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}]
+    extracts = [{'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEP', 'dateTransaction': '01/10/2019', 'amount': 11407.81, 'operation': '+', 'document': '00004146', 'historicCode': 24, 'historic': 'COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 1.39, 'operation': '-', 'document': '00004941', 'historicCode': 78, 'historic': 'DEBITO SERVICO COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 1.39, 'operation': '-', 'document': '00043083', 'historicCode': 78, 'historic': 'DEBITO SERVICO COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 15.0, 'operation': '-', 'document': '00153797', 'historicCode': 78, 'historic': 'TARIFA CHEQUE OURO MANUT'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 11390.03, 'operation': '-', 'document': '5', 'historicCode': 78, 'historic': 'BB CP AUTOMATICO EMPRESA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEP', 'dateTransaction': '02/10/2019', 'amount': 5650.69, 'operation': '+', 'document': '00009808', 'historicCode': 24, 'historic': 'COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '02/10/2019', 'amount': 65000.0, 'operation': '-', 'document': '100201', 'historicCode': 78, 'historic': 'TED'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '02/10/2019', 'amount': 1.39, 'operation': '-', 'document': '00004680', 'historicCode': 78, 'historic': 'DEBITO SERVICO COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '02/10/2019', 'amount': 2.78, 'operation': '-', 'document': '00040320', 'historicCode': 78, 'historic': 'DEBITO SERVICO COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEP', 'dateTransaction': '02/10/2019', 'amount': 55823.46, 'operation': '+', 'document': '5', 'historicCode': 24, 'historic': 'BB CP AUTOMATICO EMPRESA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEP', 'dateTransaction': '02/10/2019', 'amount': 3530.02, 'operation': '+', 'document': '1100', 'historicCode': 24, 'historic': 'FUNDO BB RF SIMPLES'}]
+    proofOfPayments = []
     # paymentsCDI = PaymentsCDI()
     # payments = paymentsCDI.processPayments("C:/_temp/integracao_diviart/angio.xlsx")
 
@@ -223,5 +220,5 @@ class ComparePaymentsAndProofWithExtracts(object):
     # extractOFX = ExtractsOFX()
     # extracts = extractOFX.process("C:/_temp/integracao_diviart/extratoangio082019.ofx")
 
-    # comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
-    # print(comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract())
+    comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
+    print(comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract())

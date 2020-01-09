@@ -92,6 +92,7 @@ class ProcessIntegration(object):
         extracts = self._extracts # funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
         payments = self._payments # funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
         proofOfPayments = self._proofsOfPayments # funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
+        # print(payments)
 
         print(' - Etapa 6: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
