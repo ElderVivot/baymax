@@ -22,7 +22,7 @@ class ComparePaymentsAndProofWithExtracts(object):
         self._paymentsAlreadyRead = []
         self._extractsExistsInPayments = [] # este daqui são para os extratos que encontrou correlação nos pagamentos, na planilha de extratos conterá um campo com esta informação
         self._extractsFinal = []
-        self._numberOfDaysInterval = { "daysAfter": 3, "daysBefore": 3 }
+        self._numberOfDaysInterval = 3
 
     def returnDayFoundInPayment(self, payment, paymentDate, amountPaid):
         paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
@@ -67,65 +67,93 @@ class ComparePaymentsAndProofWithExtracts(object):
             if day is not None:
                 return [payment, key] # o key eu retorno pra depois identificar quais pagamentos já foram processados nas provas de pagamentos e não imprimi-los novamente
 
-    def returnDayFoundInExtract(self, extract, paymentDate, amountPaid, operation, bank, account):
+    def returnDayFoundInExtract(self, extract, paymentDate, amountPaid, operation, bank, account, typeComparation):
+        # :typeComparation --> 1 = completa (banco e conta corrente); 2 = média (banco); 3 = fraca (apenas valores, data e operação)
         paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
-        dayAfter = None
-        dayBefore = None
+        extractDate = funcoesUteis.retornaCampoComoData(extract['dateTransaction'])
+        extractAmount = extract['amount']
+        extractOperation = extract['operation']
+        extractBank = extract['bankId']
+        extractAccount = extract['account']
+        search = False
 
-        # procura nos dias positivos (da data atual até mais 3 dias pra frente)
-        for day in range(0, self._numberOfDaysInterval["daysAfter"]+1):
-            paymentDateComparison = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate + timedelta(days=day))
-            print(extract['amount'], extract['dateTransaction'], paymentDateComparison, day)
-            if extract['dateTransaction'] == paymentDateComparison and extract['amount'] == amountPaid and extract['operation'] == operation \
-                    and extract['bankId'] == bank and extract['account'].find(account) > 0:
-                dayAfter = day
-                break
-            if extract['dateTransaction'] == paymentDateComparison and extract['amount'] == amountPaid and extract['operation'] == operation \
-                    and extract['bankId'] == bank:
-                dayAfter = day
-                break
-            if extract['dateTransaction'] == paymentDateComparison and extract['amount'] == amountPaid and extract['operation'] == operation:
-                dayAfter = day
-                break
-        
-        # se dayAfter é igual a zero quer dizer que o pagamento está no mesmo dia
-        if dayAfter == 0:
-            return dayAfter
+        # caso o valor seja diferente nem processa os dias
+        if extractAmount != amountPaid:
+            return search
 
-        # procura nos dias negativo (da data atual até menos 3 dias pra trás)
-        for day in range(1, self._numberOfDaysInterval["daysBefore"]+1):
-            paymentDateComparison = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate + timedelta(days=-day)) # - (menos) day pois estou voltando data
-            if extract['dateTransaction'] == paymentDateComparison and extract['amount'] == amountPaid and extract['operation'] == operation \
-                    and extract['bankId'] == bank and extract['account'].find(account) > 0:
-                dayBefore = day
-                break
-            if extract['dateTransaction'] == paymentDateComparison and extract['amount'] == amountPaid and extract['operation'] == operation \
-                    and extract['bankId'] == bank:
-                dayBefore = day
-                break
-            if extract['dateTransaction'] == paymentDateComparison and extract['amount'] == amountPaid and extract['operation'] == operation:
-                dayBefore = day
-                break
+        # caso a diferença entre as datas seja maior que o intervalo definido já retorna falso
+        differenceBetweenDates = abs((paymentDate - extractDate).days)
+        if differenceBetweenDates > self._numberOfDaysInterval:
+            return search
 
-        # senão encontrar nenhum dia retorna nulo
-        if dayAfter is None and dayBefore is None:
-            return None
-        else:
-            if dayAfter is None and dayBefore is not None:
-                return dayBefore
-            if dayAfter is not None and dayBefore is None:
-                return dayAfter
-                
-            if dayAfter < dayBefore:
-                return dayAfter
-            else:
-                return dayBefore
+        # procura nos dias positivos e negativos (da data atual até mais 3 dias pra frente/atrás)
+        for day in range(0, self._numberOfDaysInterval+1):
+            paymentDateComparison = paymentDate + timedelta(days=day)
+            paymentDateComparisonLess = paymentDate + timedelta(days=-day)
+            if typeComparation == 1:
+                if ( extractDate == paymentDateComparison or extractDate == paymentDateComparisonLess ) and extractAmount == amountPaid and extractOperation == operation and extractBank == bank and extractAccount.find(account) >= 0:
+                    search = True
+                    break
+            elif typeComparation == 2:
+                if ( extractDate == paymentDateComparison or extractDate == paymentDateComparisonLess ) and extractAmount == amountPaid and extractOperation == operation and extractBank == bank:
+                    search = True
+                    break
+            elif typeComparation == 3:
+                if ( extractDate == paymentDateComparison or extractDate == paymentDateComparisonLess ) and extractAmount == amountPaid and extractOperation == operation:
+                    search = True
+                    break
+
+        return search        
 
     def returnDataExtract(self, paymentDate, amountPaid, operation, bank='', account=''):
+        extractsFoundComplete = []
+        extractsFoundMedium = []
+        extractsFoundWeak = []
+        extractsFound = []
+
         for extract in self._extracts:
-            day = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account)
-            if day is not None:
-                return extract
+            searchComplete = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account, typeComparation=1)
+            if searchComplete is True:
+                extractsFoundComplete.append(extract)
+
+            searchMedium = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account, typeComparation=2)
+            if searchMedium is True:
+                extractsFoundMedium.append(extract)
+
+            searchWeak = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account, typeComparation=3)
+            if searchWeak is True:
+                extractsFoundWeak.append(extract)
+
+        if len(extractsFoundWeak) > 0:
+            extractsFound = extractsFoundWeak
+        if len(extractsFoundMedium) > 0:
+            extractsFound = extractsFoundMedium
+        if len(extractsFoundComplete) > 0:
+            extractsFound = extractsFoundComplete
+
+        paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
+        smallerDifferenceBetweenDates = None
+        extractReturn = []
+        
+        for extract in extractsFound:
+            extractDate = funcoesUteis.retornaCampoComoData(extract['dateTransaction'])
+
+            differenceBetweenDates = abs((paymentDate - extractDate).days)
+
+            # se a diferença entre datas for zero, nem segue a pesquisa, pois já retorno a data correta
+            if differenceBetweenDates == 0:
+                extractReturn = extract
+                break
+
+            if smallerDifferenceBetweenDates is None:
+                smallerDifferenceBetweenDates = differenceBetweenDates
+                extractReturn = extract
+
+            if differenceBetweenDates < smallerDifferenceBetweenDates:
+                smallerDifferenceBetweenDates = differenceBetweenDates
+                extractReturn = extract
+
+        return extractReturn
 
     def compareProofWithPayments(self):
         for proof in self._proofOfPayments:
@@ -208,7 +236,8 @@ class ComparePaymentsAndProofWithExtracts(object):
         return self._extractsFinal
 
 if __name__ == "__main__":
-    payments = [{'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 15.0, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS BANCARIAS / MANUTENCAO DE CONTA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 11390.03, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'APLICACAO AUT', 'historic': '', 'companyBranch': ''}, {'paymentDate': '02/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '2102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '02/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '2102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 2.78, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}]
+    # payments = [{'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 15.0, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS BANCARIAS / MANUTENCAO DE CONTA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '01/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '1102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 11390.03, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'APLICACAO AUT', 'historic': '', 'companyBranch': ''}, {'paymentDate': '02/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '2102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}, {'paymentDate': '02/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '2102019', 'parcelNumber': '', 'bank': 'BB', 'account': '69000',     'amountPaid': 2.78, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}]
+    payments = [{'paymentDate': '02/10/2019', 'nameProvider': 'BANCO DO BRASIL', 'cgceProvider': '00000000000191', 'document': '2102019', 'parcelNumber': '', 'bank': 'BRASIL', 'account': '69000',     'amountPaid': 1.39, 'amountDiscount': 0.0, 'amountInterest': 0.0, 'amountOriginal': 0.0, 'amountFine': 0.0, 'amountDevolution': 0.0, 'paymentType': '', 'accountPlan': 'TARIFAS DE COBRANCA', 'historic': '', 'companyBranch': ''}]
     extracts = [{'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEP', 'dateTransaction': '01/10/2019', 'amount': 11407.81, 'operation': '+', 'document': '00004146', 'historicCode': 24, 'historic': 'COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 1.39, 'operation': '-', 'document': '00004941', 'historicCode': 78, 'historic': 'DEBITO SERVICO COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 1.39, 'operation': '-', 'document': '00043083', 'historicCode': 78, 'historic': 'DEBITO SERVICO COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 15.0, 'operation': '-', 'document': '00153797', 'historicCode': 78, 'historic': 'TARIFA CHEQUE OURO MANUT'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '01/10/2019', 'amount': 11390.03, 'operation': '-', 'document': '5', 'historicCode': 78, 'historic': 'BB CP AUTOMATICO EMPRESA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEP', 'dateTransaction': '02/10/2019', 'amount': 5650.69, 'operation': '+', 'document': '00009808', 'historicCode': 24, 'historic': 'COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '02/10/2019', 'amount': 65000.0, 'operation': '-', 'document': '100201', 'historicCode': 78, 'historic': 'TED'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '02/10/2019', 'amount': 1.39, 'operation': '-', 'document': '00004680', 'historicCode': 78, 'historic': 'DEBITO SERVICO COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEBIT', 'dateTransaction': '02/10/2019', 'amount': 2.78, 'operation': '-', 'document': '00040320', 'historicCode': 78, 'historic': 'DEBITO SERVICO COBRANCA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEP', 'dateTransaction': '02/10/2019', 'amount': 55823.46, 'operation': '+', 'document': '5', 'historicCode': 24, 'historic': 'BB CP AUTOMATICO EMPRESA'}, {'bankId': 'BRASIL', 'account': '69000-7', 'typeTransaction': 'DEP', 'dateTransaction': '02/10/2019', 'amount': 3530.02, 'operation': '+', 'document': '1100', 'historicCode': 24, 'historic': 'FUNDO BB RF SIMPLES'}]
     proofOfPayments = []
     # paymentsCDI = PaymentsCDI()
