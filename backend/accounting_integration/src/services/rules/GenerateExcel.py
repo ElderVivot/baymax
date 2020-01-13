@@ -97,8 +97,6 @@ class GenerateExcel(object):
             sheet.write(row, 15, document)
             sheet.write(row, 16, historic)
 
-        self._workbook.close()
-
     def sheetPayments(self, payments):
         sheet = self._workbook.add_worksheet('Pagamentos')
 
