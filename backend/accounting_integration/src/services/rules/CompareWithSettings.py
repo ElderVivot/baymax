@@ -383,7 +383,6 @@ class CompareWithSettings(object):
             historic = funcoesUteis.analyzeIfFieldIsValid(extract, "historic", None)
 
             accountCodeDebit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit", 0), isInt=True)
-
             accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit", 0), isInt=True)
 
             # --- retorna a conta débito/crédito referente ao banco
@@ -400,10 +399,12 @@ class CompareWithSettings(object):
             accountCodeExtract = self.returnDataExtract(historic, operation)
             accountCodeExtract = 0 if accountCodeExtract is None else accountCodeExtract
 
+            foundProofInPayments = funcoesUteis.analyzeIfFieldIsValid(extract, "foundProofInPayments", False)
+
             if operation == "+" and accountCodeCredit == 0:
                 extract["accountCodeCredit"] = "" if accountCodeExtract == 0 else accountCodeExtract
 
-            if operation == "-" and accountCodeDebit == 0:
+            if operation == "-" and accountCodeDebit == 0 and foundProofInPayments is False:
                 extract["accountCodeDebit"] = "" if accountCodeExtract == 0 else accountCodeExtract
 
             self._extractsWithNewAccountCode.append(extract)
