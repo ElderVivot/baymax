@@ -209,7 +209,17 @@ class ComparePaymentsAndProofWithExtracts(object):
             paymentFinal["accountExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'account')}"
             paymentFinal["historicExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "historic")
 
+            # data da importação, importante ela pois nem sempre a data do financeiro do cliente é a certa
+            if extract is not None and bank == paymentFinal["bankExtract"]:
+                dateOfImport = paymentFinal["dateExtract"]
+            else:
+                dateOfImport = paymentFinal["paymentDate"]
+
+            paymentFinal["dateOfImport"] = dateOfImport
+
             foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "foundProof", False)
+            if foundProof is True:
+                paymentFinal["dateOfImport"] = paymentFinal["paymentDate"]
 
             self._paymentsFinal[key] = paymentFinal
 

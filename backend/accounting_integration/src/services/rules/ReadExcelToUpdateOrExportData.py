@@ -25,11 +25,11 @@ class ReadExcelToUpdateOrExportData(object):
 
         for data in dataFile:
             if str(data[0]).upper().count('DOCUMENTO') > 0:
-                    self._posionsOfHeaderPayments.clear()
-                    for keyField, nameField in enumerate(data):
-                        nameField = funcoesUteis.treatTextField(nameField)
-                        self._posionsOfHeaderPayments[nameField] = keyField
-                    continue
+                self._posionsOfHeaderPayments.clear()
+                for keyField, nameField in enumerate(data):
+                    nameField = funcoesUteis.treatTextField(nameField)
+                    self._posionsOfHeaderPayments[nameField] = keyField
+                continue
 
             document = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderPayments, "Documento")
 
@@ -77,53 +77,56 @@ class ReadExcelToUpdateOrExportData(object):
 
             paymentDate = funcoesUteis.treatTextFieldInVector(data, 9, self._posionsOfHeaderPayments, "Data Financeiro")
             extractDate = funcoesUteis.treatTextFieldInVector(data, 10, self._posionsOfHeaderPayments, "Data Extrato")
-            dueDate = funcoesUteis.treatTextFieldInVector(data, 11, self._posionsOfHeaderPayments, "Vencimento")
-            issueDate = funcoesUteis.treatTextFieldInVector(data, 12, self._posionsOfHeaderPayments, "Emissão")
-            amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 13, self._posionsOfHeaderPayments, "Valor Pago")
-            amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 14, self._posionsOfHeaderPayments, "Desconto")
-            amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 15, self._posionsOfHeaderPayments, "Juros")
-            amountFine = funcoesUteis.treatDecimalFieldInVector(data, 16, self._posionsOfHeaderPayments, "Multa")
-            amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 17, self._posionsOfHeaderPayments, "Valor Original")
-            accountCode = funcoesUteis.treatNumberFieldInVector(data, 18, self._posionsOfHeaderPayments, "Conta Contabil Domínio")
-            codiEmp = funcoesUteis.treatTextFieldInVector(data, 19, self._posionsOfHeaderPayments, "Codigo Empresa")
-            historic = funcoesUteis.treatTextFieldInVector(data, 20, self._posionsOfHeaderPayments, "Historico Planilha")
-            category = funcoesUteis.treatTextFieldInVector(data, 21, self._posionsOfHeaderPayments, "Categoria")
-            accountPlan = funcoesUteis.treatTextFieldInVector(data, 22, self._posionsOfHeaderPayments, "Plano de Contas")
-            cgcePaying = funcoesUteis.treatTextFieldInVector(data, 23, self._posionsOfHeaderPayments, "CNPJ Pagador")
-            historicExtract = funcoesUteis.treatTextFieldInVector(data, 24, self._posionsOfHeaderPayments, "Historico Extrato Bancário")
-            accountCodeOld = funcoesUteis.treatNumberFieldInVector(data, 25, self._posionsOfHeaderPayments, "Conta Contabil Sistema Cliente")
+            dateOfImport = funcoesUteis.treatTextFieldInVector(data, 11, self._posionsOfHeaderPayments, "Importação Domínio")
+            dueDate = funcoesUteis.treatTextFieldInVector(data, 12, self._posionsOfHeaderPayments, "Vencimento")
+            issueDate = funcoesUteis.treatTextFieldInVector(data, 13, self._posionsOfHeaderPayments, "Emissão")
+            amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 14, self._posionsOfHeaderPayments, "Valor Pago")
+            amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 15, self._posionsOfHeaderPayments, "Desconto")
+            amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 16, self._posionsOfHeaderPayments, "Juros")
+            amountFine = funcoesUteis.treatDecimalFieldInVector(data, 17, self._posionsOfHeaderPayments, "Multa")
+            amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 18, self._posionsOfHeaderPayments, "Valor Original")
+            accountCode = funcoesUteis.treatNumberFieldInVector(data, 19, self._posionsOfHeaderPayments, "Conta Contabil Domínio")
+            codiEmp = funcoesUteis.treatTextFieldInVector(data, 20, self._posionsOfHeaderPayments, "Codigo Empresa")
+            historic = funcoesUteis.treatTextFieldInVector(data, 21, self._posionsOfHeaderPayments, "Historico Planilha")
+            category = funcoesUteis.treatTextFieldInVector(data, 22, self._posionsOfHeaderPayments, "Categoria")
+            accountPlan = funcoesUteis.treatTextFieldInVector(data, 23, self._posionsOfHeaderPayments, "Plano de Contas")
+            cgcePaying = funcoesUteis.treatTextFieldInVector(data, 24, self._posionsOfHeaderPayments, "CNPJ Pagador")
+            historicExtract = funcoesUteis.treatTextFieldInVector(data, 25, self._posionsOfHeaderPayments, "Historico Extrato Bancário")
+            accountCodeOld = funcoesUteis.treatNumberFieldInVector(data, 26, self._posionsOfHeaderPayments, "Conta Contabil Sistema Cliente")
 
-            self._paymentsOfLine = {
-                "document": document,
-                "findNote": findNote,
-                "parcelNumber": parcelNumber,
-                "nameProvider": nameProvider,
-                "cgceProvider": cgceProvider,
-                "bank": bank,
-                "account": account,
-                "bankExtract": bankExtract,
-                "accountExtract": accountExtract,
-                "foundProof": foundProof,
-                "paymentDate": paymentDate,
-                "dateExtract": extractDate,
-                "dueDate": dueDate,
-                "issueDate": issueDate,
-                "amountPaid": amountPaid,
-                "amountDiscount": amountDiscount,
-                "amountInterest": amountInterest,
-                "amountFine": amountFine,
-                "amountOriginal": amountOriginal,
-                "accountCode": accountCode,
-                "codiEmp": codiEmp,
-                "historic": historic,
-                "category": category,
-                "accountPlan": accountPlan,
-                "cgcePaying": cgcePaying,
-                "historicExtract": historicExtract,
-                "accountCodeOld": accountCodeOld
-            }
+            if amountPaid > 0:
+                self._paymentsOfLine = {
+                    "document": document,
+                    "findNote": findNote,
+                    "parcelNumber": parcelNumber,
+                    "nameProvider": nameProvider,
+                    "cgceProvider": cgceProvider,
+                    "bank": bank,
+                    "account": account,
+                    "bankExtract": bankExtract,
+                    "accountExtract": accountExtract,
+                    "foundProof": foundProof,
+                    "paymentDate": paymentDate,
+                    "dateExtract": extractDate,
+                    "dateOfImport": dateOfImport,
+                    "dueDate": dueDate,
+                    "issueDate": issueDate,
+                    "amountPaid": amountPaid,
+                    "amountDiscount": amountDiscount,
+                    "amountInterest": amountInterest,
+                    "amountFine": amountFine,
+                    "amountOriginal": amountOriginal,
+                    "accountCode": accountCode,
+                    "codiEmp": codiEmp,
+                    "historic": historic,
+                    "category": category,
+                    "accountPlan": accountPlan,
+                    "cgcePaying": cgcePaying,
+                    "historicExtract": historicExtract,
+                    "accountCodeOld": accountCodeOld
+                }
 
-            self._paymentsOfFile.append(self._paymentsOfLine.copy())
+                self._paymentsOfFile.append(self._paymentsOfLine.copy())
 
         return self._paymentsOfFile
 
@@ -132,11 +135,11 @@ class ReadExcelToUpdateOrExportData(object):
 
         for data in dataFile:
             if str(data[0]).upper().count('DATA') > 0:
-                    self._posionsOfHeaderExtracts.clear()
-                    for keyField, nameField in enumerate(data):
-                        nameField = funcoesUteis.treatTextField(nameField)
-                        self._posionsOfHeaderExtracts[nameField] = keyField
-                    continue
+                self._posionsOfHeaderExtracts.clear()
+                for keyField, nameField in enumerate(data):
+                    nameField = funcoesUteis.treatTextField(nameField)
+                    self._posionsOfHeaderExtracts[nameField] = keyField
+                continue
 
             dateExtract = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderExtracts, "Data")
             accountCodeDebit = funcoesUteis.treatNumberFieldInVector(data, 2, self._posionsOfHeaderExtracts, "Debito")

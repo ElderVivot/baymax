@@ -146,36 +146,10 @@ class ComparePaymentsFinalWithDataBase(object):
             nameProvider = self.changeAbbreviatedWord(self.removeWordsThatAreNotNames(provider["nome_for"]))
             nameArgument = self.changeAbbreviatedWord(self.removeWordsThatAreNotNames(name))
 
-            countNameProvider = len(nameProvider.split())
-            nameProviderSplit = nameProvider.split(' ')
-
             def findProviderForName():
-                countEqualWords = 0
-                nameArgumentSplit = nameArgument.split(' ')
-                for wordName in nameArgumentSplit:
-                    if nameProviderSplit.count(wordName) > 0: # conta somente as palavras em comuns
-                        countEqualWords += 1
-                
-                # se a quantidade de palavras em comuns for igual então já retorna o provider
-                if countNameProvider == countEqualWords:
+                compareTwoNames = self.compareTwoNames(nameProvider, nameArgument)
+                if compareTwoNames['percentWordsEqualsAboutNameOne'] > 0.75 and compareTwoNames['percentWordsEqualsAboutNameTwo'] > 0.75:
                     return provider
-                
-                # se a quantidade for maior ou igual a 3, no mínimo 70% tem que ser igual
-                if countNameProvider >= 3:
-                    if floor(countNameProvider * 0.7) <= countEqualWords:
-                        return provider
-                else: # caso contrário no mínimo 75% do nome precisa ser igual
-                    if nameProvider.count(nameArgument[0:floor(len(nameArgument)*0.75)]) > 0:
-                        return provider
-
-                # grau de confibilidade mais baixo, só deve ser usado junto com outra confirmação, como número da nota por exemplo
-                # if degreeOfReliability == 1:
-                #     if len(nameArgument) >= 10:
-                #         if nameProvider.count(nameArgument[0:floor(len(nameArgument)*0.30)]) > 0:
-                #             return provider
-                #     else:
-                #         if nameProvider.count(nameArgument[0:floor(len(nameArgument)*0.60)]) > 0:
-                #             return provider
 
             if findProviderForName() is not None:
                 return provider
