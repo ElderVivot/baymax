@@ -31,3 +31,10 @@ class CallReadFilePayments(object):
             from PaymentsFaaftech import PaymentsFaaftech
             paymentsFaaftech = PaymentsFaaftech(self._codiEmp, self._wayOriginalToRead, self._wayTemp, self._settings)
             return paymentsFaaftech.processAll()
+
+        if self._system == 'lys':
+            print('\t - Identificado que o sistema é o Lys, processando leitura dos arquivos')
+            from PaymentsLys import PaymentsLysPorData, PaymentsLysPorMoeda
+            paymentsPorMoeda = PaymentsLysPorMoeda(self._wayOriginalToRead)
+            paymentsPorData = PaymentsLysPorData(self._wayOriginalToRead, paymentsPorMoeda.processAll() )
+            return paymentsPorData.processAll()

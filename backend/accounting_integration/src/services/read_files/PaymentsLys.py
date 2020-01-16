@@ -12,150 +12,176 @@ import tools.funcoesUteis as funcoesUteis
 
 # este 'por moeda' é a forma que o cliente gera o relatório no sistema da Lys
 class PaymentsLysPorMoeda(object):
-    def __init__(self, file):
-        self._valuesOfLine = {}
-        self._valuesOfFile = []
-        self._posionsOfHeader = {}
-        self._file = file
+    def __init__(self, wayOriginalToRead):
+        self._payments = []
+        self._wayOriginalToRead = wayOriginalToRead
 
-    def isPaymentsLysPorMoeda(self):
-        dataFile = leXls_Xlsx(self._file)
+    def isPaymentsLysPorMoeda(self, file):
+        dataFile = leXls_Xlsx(file)
+
+        for data in dataFile:
+            identificationField = funcoesUteis.treatTextFieldInVector(data, 5)
+            if identificationField.count('NMPESSOACREDORA') > 0:
+                return True
+
+    def process(self, file):
+
+        if self.isPaymentsLysPorMoeda(file) is not True:
+            return []
+
+        valuesOfLine = {}
+        valuesOfFile = []
+        posionsOfHeader = {}
+
+        dataFile = leXls_Xlsx(file)
 
         for data in dataFile:
             try:
-                if str(data[4]).upper().count('NMPESSOACREDORA') > 0:
-                    return True
+                headerField = funcoesUteis.treatTextFieldInVector(data, 5)
+                if headerField.count('NMPESSOACREDORA') > 0:
+                    posionsOfHeader.clear()
+                    for keyField, nameField in enumerate(data):
+                        nameField = funcoesUteis.treatTextField(nameField)
+                        posionsOfHeader[nameField] = keyField
+                    continue
+
+                idAccountPaid = funcoesUteis.treatTextFieldInVector(data, 1, posionsOfHeader, "idsContaPagar")
+                paymentDate = funcoesUteis.treatDateFieldInVector(data, 14, posionsOfHeader, "dtPagamento")
+                accountCode = funcoesUteis.treatNumberFieldInVector(data, 23, posionsOfHeader, "nrContaContabil")
+
+                bankAndAccount = funcoesUteis.treatTextFieldInVector(data, 20, posionsOfHeader, "idFonte")
+
+                positionWordBank = bankAndAccount.find('BANCO')
+                if positionWordBank >= 0:
+                    positionPlusSign = bankAndAccount[positionWordBank:].find('>') + positionWordBank
+                    bank = funcoesUteis.returnBankForName(funcoesUteis.treatTextField(bankAndAccount[ positionWordBank+6 : positionPlusSign ]))
+
+                    positionWordAccount = bankAndAccount.find('CONTA')
+                    positionSplitSign = bankAndAccount[positionWordAccount:].find('/') + positionWordAccount + 1
+                    accountBank = funcoesUteis.treatTextField(bankAndAccount[ positionSplitSign: ])
+                else:
+                    bank = "DINHEIRO"
+                    accountBank = ""
+
+                if paymentDate is not None:
+                    valuesOfLine = {
+                        "idAccountPaid": idAccountPaid,
+                        "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
+                        "bank": bank,
+                        "accountBank": accountBank,
+                        "accountCode": accountCode
+                    }
+
+                    valuesOfFile.append(valuesOfLine.copy())
             except Exception:
                 pass
+        return valuesOfFile
 
-    def process(self):
+    def processAll(self):
+        for root, dirs, files in os.walk(self._wayOriginalToRead):
+            for file in files:
+                wayFile = os.path.join(root, file)
 
-        if self.isPaymentsLysPorMoeda() is True:
-            dataFile = leXls_Xlsx(self._file)
+                if file.lower().endswith(('.xls', '.xlsx')):
+                    self._payments.append(self.process(wayFile))
 
-            for data in dataFile:
-                try:
-                    if str(data[4]).upper().count('NMPESSOACREDORA') > 0:
-                        self._posionsOfHeader.clear()
-                        for keyField, nameField in enumerate(data):
-                            nameField = funcoesUteis.treatTextField(nameField)
-                            self._posionsOfHeader[nameField] = keyField
-                        continue
-
-                    idAccountPaid = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeader, "idsContaPagar")
-                    paymentDate = funcoesUteis.treatDateFieldInVector(data, 14, self._posionsOfHeader, "dtPagamento")
-                    accountCode = funcoesUteis.treatNumberFieldInVector(data, 23, self._posionsOfHeader, "nrContaContabil")
-
-                    bankAndAccount = funcoesUteis.treatTextFieldInVector(data, 20, self._posionsOfHeader, "idFonte")
-
-                    positionWordBank = bankAndAccount.find('BANCO')
-                    if positionWordBank >= 0:
-                        positionPlusSign = bankAndAccount[positionWordBank:].find('>') + positionWordBank
-                        bank = funcoesUteis.returnBankForName(funcoesUteis.treatTextField(bankAndAccount[ positionWordBank+6 : positionPlusSign ]))
-
-                        positionWordAccount = bankAndAccount.find('CONTA')
-                        positionSplitSign = bankAndAccount[positionWordAccount:].find('/') + positionWordAccount + 1
-                        accountBank = funcoesUteis.treatTextField(bankAndAccount[ positionSplitSign: ])
-                    else:
-                        bank = "DINHEIRO"
-                        accountBank = ""
-
-                    if paymentDate is not None:
-                        self._valuesOfLine = {
-                            "idAccountPaid": idAccountPaid,
-                            "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
-                            "bank": bank,
-                            "accountBank": accountBank,
-                            "accountCode": accountCode
-                        }
-
-                        self._valuesOfFile.append(self._valuesOfLine.copy())
-                except Exception:
-                    pass
-            return self._valuesOfFile
+        return funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
 
 
 # este 'por data' é a forma que o cliente gera o relatório no sistema da Lys
 class PaymentsLysPorData(object):
-    def __init__(self, file, paymentsPorMoeda=[]):
-        self._valuesOfLine = {}
-        self._valuesOfFile = []
-        self._posionsOfHeader = {}
-        self._file = file
+    def __init__(self, wayOriginalToRead, paymentsPorMoeda=[]):
         self._paymentsPorMoeda = paymentsPorMoeda
+        self._payments = []
+        self._wayOriginalToRead = wayOriginalToRead
 
-    def isPaymentsLysPorData(self):
-        dataFile = leXls_Xlsx(self._file)
+    def isPaymentsLysPorData(self, file):
+        dataFile = leXls_Xlsx(file)
 
         for data in dataFile:
-            try:
-                if str(data[4]).upper().count('IDPESSOACREDORA') > 0:
-                    return True
-            except Exception:
-                pass
+            identificationField = funcoesUteis.treatTextFieldInVector(data, 5)
+            if identificationField.count('IDPESSOACREDORA') > 0:
+                return True
 
     def returnDataPaymentsPorMoeda(self, idAccountPaid):
         for paymentMoeda in self._paymentsPorMoeda:
             if paymentMoeda["idAccountPaid"] == idAccountPaid:
                 return paymentMoeda
 
-    def process(self):
+    def process(self, file):
 
-        if self.isPaymentsLysPorData() is True:
-            dataFile = leXls_Xlsx(self._file)
+        if self.isPaymentsLysPorData(file) is not True:
+            return []
+            
+        dataFile = leXls_Xlsx(file)
 
-            for data in dataFile:
-                try:
-                    if str(data[4]).upper().count('IDPESSOACREDORA') > 0:
-                        self._posionsOfHeader.clear()
-                        for keyField, nameField in enumerate(data):
-                            nameField = funcoesUteis.treatTextField(nameField)
-                            self._posionsOfHeader[nameField] = keyField
-                        continue
+        valuesOfLine = {}
+        valuesOfFile = []
+        posionsOfHeader = {}
 
-                    idAccountPaid = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeader, "idsContaPagar")
-                    parcelNumber = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeader, "cdParcela")
-                    dueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.treatDateFieldInVector(data, 4, self._posionsOfHeader, "dtVencimento"))
-                    nameProvider = funcoesUteis.treatTextFieldInVector(data, 6, self._posionsOfHeader, "nmPessoaCredora")
-                    document = funcoesUteis.treatTextFieldInVector(data, 11, self._posionsOfHeader, "nrDocFiscalOriginal")
-                    issueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.treatDateFieldInVector(data, 12, self._posionsOfHeader, "dtEmissao"))
-                    amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 36)
-                    amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 19, self._posionsOfHeader, "valordesconto")
-                    amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 20, self._posionsOfHeader, "valormulta")
-                    amountFine = funcoesUteis.treatDecimalFieldInVector(data, 30, self._posionsOfHeader, "valorjuro")
-                    amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 10)
-                    historic = funcoesUteis.treatTextFieldInVector(data, 34, self._posionsOfHeader, "justificaticaDaConta")
+        for data in dataFile:
+            try:
+                headerField = funcoesUteis.treatTextFieldInVector(data, 5)
+                if headerField.count('IDPESSOACREDORA') > 0:
+                    posionsOfHeader.clear()
+                    for keyField, nameField in enumerate(data):
+                        nameField = funcoesUteis.treatTextField(nameField)
+                        posionsOfHeader[nameField] = keyField
+                    continue
 
-                    paymentsMoeda = self.returnDataPaymentsPorMoeda(idAccountPaid)
+                idAccountPaid = funcoesUteis.treatTextFieldInVector(data, 1, posionsOfHeader, "idsContaPagar")
+                parcelNumber = funcoesUteis.treatTextFieldInVector(data, 2, posionsOfHeader, "cdParcela")
+                dueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.treatDateFieldInVector(data, 4, posionsOfHeader, "dtVencimento"))
+                nameProvider = funcoesUteis.treatTextFieldInVector(data, 6, posionsOfHeader, "nmPessoaCredora")
+                document = funcoesUteis.treatTextFieldInVector(data, 11, posionsOfHeader, "nrDocFiscalOriginal")
+                issueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.treatDateFieldInVector(data, 12, posionsOfHeader, "dtEmissao"))
+                amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 36, posionsOfHeader, "valorLiquido")
+                amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 19, posionsOfHeader, "valordesconto")
+                amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 20, posionsOfHeader, "valormulta")
+                amountFine = funcoesUteis.treatDecimalFieldInVector(data, 30, posionsOfHeader, "valorjuro")
+                amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 10)
+                historic = funcoesUteis.treatTextFieldInVector(data, 34, posionsOfHeader, "justificaticaDaConta")
 
-                    paymentDate = funcoesUteis.analyzeIfFieldIsValid(paymentsMoeda, "paymentDate", None)
-                    bank = funcoesUteis.analyzeIfFieldIsValid(paymentsMoeda, "bank")
-                    accountBank = funcoesUteis.analyzeIfFieldIsValid(paymentsMoeda, "accountBank")
-                    accountCode = funcoesUteis.analyzeIfFieldIsValid(paymentsMoeda, "accountCode")
-                    
-                    if paymentDate is not None:
-                        self._valuesOfLine = {
-                            "document": document,
-                            "parcelNumber": parcelNumber,
-                            "nameProvider": nameProvider,
-                            "paymentDate": paymentDate,
-                            "dueDate": dueDate,
-                            "issueDate": issueDate,
-                            "bank": bank,
-                            "account": accountBank,
-                            "amountPaid": amountPaid,
-                            "amountDiscount": amountDiscount,
-                            "amountInterest": amountInterest,
-                            "amountFine": amountFine,
-                            "amountOriginal": amountOriginal,
-                            "accountCodeOld": accountCode,
-                            "historic": historic
-                        }
+                paymentsMoeda = self.returnDataPaymentsPorMoeda(idAccountPaid)
 
-                        self._valuesOfFile.append(self._valuesOfLine.copy())
-                except Exception:
-                    pass
-            return self._valuesOfFile
+                paymentDate = funcoesUteis.analyzeIfFieldIsValid(paymentsMoeda, "paymentDate", None)
+                bank = funcoesUteis.analyzeIfFieldIsValid(paymentsMoeda, "bank")
+                accountBank = funcoesUteis.analyzeIfFieldIsValid(paymentsMoeda, "accountBank")
+                accountCode = funcoesUteis.analyzeIfFieldIsValid(paymentsMoeda, "accountCode")
+                
+                if paymentDate is not None and amountPaid > 0:
+                    valuesOfLine = {
+                        "document": document,
+                        "parcelNumber": parcelNumber,
+                        "nameProvider": nameProvider,
+                        "paymentDate": paymentDate,
+                        "dueDate": dueDate,
+                        "issueDate": issueDate,
+                        "bank": bank,
+                        "account": accountBank,
+                        "amountPaid": amountPaid,
+                        "amountDiscount": amountDiscount,
+                        "amountInterest": amountInterest,
+                        "amountFine": amountFine,
+                        "amountOriginal": amountOriginal,
+                        "accountCodeOld": accountCode,
+                        "historic": historic
+                    }
+
+                    valuesOfFile.append(valuesOfLine.copy())
+            except Exception:
+                pass
+        return valuesOfFile
+
+    def processAll(self):
+        for root, dirs, files in os.walk(self._wayOriginalToRead):
+            for file in files:
+                wayFile = os.path.join(root, file)
+
+                if file.lower().endswith(('.xls', '.xlsx')):
+                    self._payments.append(self.process(wayFile))
+
+        return funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
 
 # if __name__ == "__main__":
 #     paymentsLysPorMoeda = PaymentsLysPorMoeda("C:/integracao_contabil/1777/arquivos_originais/LD POR MOEDA.XLS")

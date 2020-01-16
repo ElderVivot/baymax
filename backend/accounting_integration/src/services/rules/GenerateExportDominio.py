@@ -67,7 +67,7 @@ class GenerateExportDominio(object):
             historic = funcoesUteis.analyzeIfFieldIsValid(data, "historic", "")
 
         elif paymentOrExtract == "P":
-            exportDate = funcoesUteis.analyzeIfFieldIsValid(data, "paymentDate", None)
+            exportDate = funcoesUteis.analyzeIfFieldIsValid(data, "dateOfImport", None)
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaid", 0.0)
             amountDiscount = funcoesUteis.analyzeIfFieldIsValid(data, "amountDiscount", 0.0)
             amountInterest = funcoesUteis.analyzeIfFieldIsValid(data, "amountInterest", 0.0)

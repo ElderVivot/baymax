@@ -88,43 +88,45 @@ class ProcessIntegration(object):
         callReadFileProofs = CallReadFileProofs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead, self._settings)
         self._proofsOfPayments = callReadFileProofs.process()
         
-        print(' - Etapa 5: Separando o Financeiro, Extratos e Comprovantes de Pagamentos.')
-        extracts = self._extracts # funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
-        payments = self._payments # funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
-        proofOfPayments = self._proofsOfPayments # funcoesUteis.removeAnArrayFromWithinAnother(self._proofsOfPayments)
-        # print(payments)
-
-        print(' - Etapa 6: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
-        comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(extracts, payments, proofOfPayments)
+        print(' - Etapa 5: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
+        comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(self._extracts, self._payments, self._proofsOfPayments)
         paymentsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
         extractsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.analyseIfExtractIsInPayment()
         # # print(paymentsCompareWithProofAndExtracts)
 
-        print(' - Etapa 7: Buscando a conta do fornecedor/despesa dentro do sistema.')
-        providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
-        entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
-        installmentsEntryNote = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas_parcelas/{self._codiEmp}-efentradaspar.json'))
-        comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, installmentsEntryNote, paymentsCompareWithProofAndExtracts, self._codiEmp)
-        paymentsFinal = comparePaymentsFinalWithDataBase.process()
-        
-        print(' - Etapa 8: Filtrando os pagamentos do período informado.')
-        filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsFinal, extractsCompareWithProofAndExtracts)
+        print(' - Etapa 6: Filtrando os pagamentos do período informado.')
+        filterPeriod = FilterPeriod(self._inicialDate, self._finalDate, paymentsCompareWithProofAndExtracts, extractsCompareWithProofAndExtracts)
         extractsWithFilter = filterPeriod.filterExtracts()
         paymentsWithFilter = filterPeriod.filterPayments()
-        # print(f'\t - Com o filtro aplicado de {len(paymentsFinal)} sobraram {len(paymentsWithFilter)}')
 
-        print(' - Etapa 9: Configurando as contas contábeis de acordo planilha de configuracoes preenchida.')
-        compareWithSettings = CompareWithSettings(self._codiEmp, paymentsWithFilter, extractsWithFilter)
+        sequentialStep = 7
+
+        hasOwnAccountPlan = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "hasOwnAccountPlan"])
+        if hasOwnAccountPlan is False or hasOwnAccountPlan == "":
+            print(f' - Etapa {sequentialStep}: Buscando a conta do fornecedor/despesa dentro do sistema.')
+            providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
+            entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
+            installmentsEntryNote = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas_parcelas/{self._codiEmp}-efentradaspar.json'))
+            comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, installmentsEntryNote, paymentsWithFilter, self._codiEmp)
+            paymentsFinal = comparePaymentsFinalWithDataBase.process()
+            sequentialStep += 1
+        else:
+            paymentsFinal = paymentsWithFilter
+
+        print(f' - Etapa {sequentialStep}: Configurando as contas contábeis de acordo planilha de configuracoes preenchida.')
+        compareWithSettings = CompareWithSettings(self._codiEmp, paymentsFinal, extractsWithFilter)
         extractsCompareWithSettings = compareWithSettings.processExtracts()
         paymentsCompareWithSettings = compareWithSettings.processPayments()
+        sequentialStep += 1
 
-        print(' - Etapa 10: Exportando informações')
+        print(f' - Etapa {sequentialStep}: Exportando informações')
         generateExcel = GenerateExcel(self._codiEmp)
         generateExcel.sheetPayments(paymentsCompareWithSettings)
         generateExcel.sheetExtract(extractsCompareWithSettings)
         generateExcel.closeFile()
+        sequentialStep += 1
 
-        print(' - Etapa 11: Salvando arquivos que não foram lidos')
+        print(f' - Etapa {sequentialStep}: Salvando arquivos que não foram lidos')
         returnFilesDontFindForm = ReturnFilesDontFindForm(self._codiEmp, self._wayFilesTemp)
         returnFilesDontFindForm.processAll()
         
