@@ -19,12 +19,12 @@ wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.
 wayDefault = json.load(wayToSaveFiles)
 wayToSaveFiles.close()
 
-class extractEfentradas():
+class extractEfsaidas():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
         self._cursor = None
-        self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
+        self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json')
         self._dataCompanies = readJson(self._wayCompanies)
         self._baseWayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'])
         if os.path.exists(self._baseWayToSave) is False:
@@ -33,8 +33,8 @@ class extractEfentradas():
     def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013):
         try:
             for companie in self._dataCompanies:
-                self._wayToSave = os.path.join(self._wayToSave, f"entradas/{companie['codi_emp']}-efentradas.json")
-                    
+                self._wayToSave = os.path.join(self._baseWayToSave, f"entradas/{companie['codi_emp']}-efentradas.json")
+                
                 # only companies actives
                 if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:
                     if companie['codi_emp'] == filterCompanie or filterCompanie == 0:

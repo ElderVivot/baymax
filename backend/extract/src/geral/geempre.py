@@ -16,6 +16,8 @@ from db.ConexaoBanco import DB
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
 wayToSaveFiles.close()
+if os.path.exists(wayDefault) is False:
+    os.makedirs(wayDefault)
 
 class extractGeempre():
     def __init__(self):

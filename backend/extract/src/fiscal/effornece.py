@@ -28,12 +28,15 @@ class extractEffornece():
             data = json.load(companies)
             try:
                 for companie in data:
-                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], f"fornecedores/{companie['codi_emp']}-effornece.json")
+                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'])
+                    if os.path.exists(self._wayToSave) is False:
+                        os.makedirs(self._wayToSave)
+                    self._wayToSave = os.path.join(self._wayToSave, f"fornecedores/{companie['codi_emp']}-effornece.json")
                     
                     # only companies actives
                     if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:
                         if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
-                            print(f"- Exportando effornece da empresa {companie['codi_emp']} - {companie['nome_emp']}")
+                            print(f"- Exportando fornecedores da empresa {companie['codi_emp']} - {companie['nome_emp']}")
                             self._cursor = self._connection.cursor()
                             sql = ( f"SELECT forn.codi_for, forn.nome_for, forn.nomr_for, forn.cgce_for, forn.codi_cta, forn.insc_for, forn.imun_for, "
                                     f"       forn.codigo_municipio, forn.sigl_est, forn.conta_cliente_for, forn.conta_compensacao_for "

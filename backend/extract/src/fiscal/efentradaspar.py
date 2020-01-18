@@ -28,12 +28,15 @@ class extractEfentradaspar():
             data = json.load(companies)
             try:
                 for companie in data:
-                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], f"entradas_parcelas/{companie['codi_emp']}-efentradaspar.json")
+                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'])
+                    if os.path.exists(self._wayToSave) is False:
+                        os.makedirs(self._wayToSave)
+                    self._wayToSave = os.path.join(self._wayToSave, f"entradas_parcelas/{companie['codi_emp']}-efentradaspar.json")
                     
                     # only companies actives
                     if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:
                         if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
-                            print(f"- Exportando effornece da empresa {companie['codi_emp']} - {companie['nome_emp']}")
+                            print(f"- Exportando parcelas das NFs de entrada da empresa {companie['codi_emp']} - {companie['nome_emp']}")
                             self._cursor = self._connection.cursor()
                             sql = ( f"SELECT par.codi_emp, par.codi_ent, par.parc_entp, ent.nume_ent, forn.codi_for, ent.ddoc_ent, ent.dent_ent, par.vcto_entp, par.vlor_entp "
                                     f"  FROM bethadba.efentradaspar AS par "

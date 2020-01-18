@@ -26,12 +26,15 @@ class extractEfmvepro():
             data = json.load(companies)
             try:
                 for companie in data:
-                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], f"entradas_produtos/{companie['codi_emp']}-efmvepro.json")
+                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'])
+                    if os.path.exists(self._wayToSave) is False:
+                        os.makedirs(self._wayToSave)
+                    self._wayToSave = os.path.join(self._wayToSave, f"entradas_produtos/{companie['codi_emp']}-efmvepro.json")
                     
                     # only companies actives
                     if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:
                         if companie['codi_emp'] == filterCompanie or filterCompanie == 0:
-                            print(f"- Exportando efmvepro da empresa {companie['codi_emp']} - {companie['nome_emp']}")
+                            print(f"- Exportando produtos das NFs de entradas da empresa {companie['codi_emp']} - {companie['nome_emp']}")
                         
                             self._cursor = self._connection.cursor()
                             sql = ( f"SELECT pro.codi_emp, pro.codi_ent, pro.nume_mep, pro.codi_pdi, procad.desc_pdi, pro.cfop_mep, pro.qtde_mep, pro.valor_unit_mep, pro.vlor_mep, pro.vipi_mep, pro.bcal_mep, "
