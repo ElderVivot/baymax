@@ -36,15 +36,11 @@ class extractEfsaidas():
         self._currentYear = self._today.year
 
     def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013, filterMonthEnd=0, filterYearEnd=0):
-
-        if filterMonthEnd == 0:
-            filterMonthEnd = self._currentMonth
-        if filterYearEnd == 0:
-            filterYearEnd = self._currentYear
-
+        filterMonthEnd = self._currentMonth if filterMonthEnd == 0 else filterMonthEnd
+        filterYearEnd = self._currentYear if filterYearEnd == 0 else filterYearEnd
+        
         try:
             for companie in self._dataCompanies:
-
                 codi_emp = companie['codi_emp']
 
                 if filterCompanie != 0 and filterCompanie != codi_emp:
@@ -57,16 +53,16 @@ class extractEfsaidas():
                     os.makedirs(wayToSaveCompanie)
                         
                 competenceStartEnd = extractFunctions.returnCompetenceStartEnd(companie, filterMonthStart, filterYearStart, filterMonthEnd, filterYearEnd)
-                filterMonthStart = competenceStartEnd['filterMonthStart']
-                filterYearStart = competenceStartEnd['filterYearStart']
-                filterMonthEnd = competenceStartEnd['filterMonthEnd']
-                filterYearEnd = competenceStartEnd['filterYearEnd']
+                startMonth = competenceStartEnd['filterMonthStart']
+                startYear = competenceStartEnd['filterYearStart']
+                endMonth = competenceStartEnd['filterMonthEnd']
+                endYear = competenceStartEnd['filterYearEnd']
 
-                year = filterYearStart
+                year = startYear
 
-                while year <= filterYearEnd:
+                while year <= endYear:
 
-                    months = extractFunctions.returnMonthsOfYear(year, filterMonthStart, filterYearStart, filterMonthEnd, filterYearEnd)
+                    months = extractFunctions.returnMonthsOfYear(year, startMonth, startYear, endMonth, endYear)
 
                     print('\t - Competências: ', end='')
                     for month in months:
