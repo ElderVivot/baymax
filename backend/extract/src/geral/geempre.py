@@ -15,22 +15,23 @@ from db.ConexaoBanco import DB
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
+wayDefaultToSave = wayDefault['wayDefaultToSaveFiles']
 wayToSaveFiles.close()
-if os.path.exists(wayDefault) is False:
-    os.makedirs(wayDefault)
+if os.path.exists(wayDefaultToSave) is False:
+    os.makedirs(wayDefaultToSave)
 
 class extractGeempre():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
         self._cursor = None
-        self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
+        self._wayToSave = os.path.join(wayDefaultToSave, 'empresas.json') 
         self._columns = []
 
     def exportData(self):
         try:
             self._cursor = self._connection.cursor()
-            sql = ("SELECT * FROM bethadba.geempre WHERE stat_emp NOT IN ('I') AND dina_emp IS NULL ORDER BY codi_emp")
+            sql = ("SELECT * FROM bethadba.geempre ORDER BY codi_emp")
             self._cursor.execute(sql)
 
             row = self._cursor.fetchone()

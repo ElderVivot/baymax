@@ -6,7 +6,7 @@ import sys
 absPath = os.path.dirname(os.path.abspath(__file__))
 fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend/extract/src'))
-sys.path.append(os.path.join(fileDir, 'backend/tools'))
+sys.path.append(os.path.join(fileDir, 'backend'))
 
 import pandas as pd
 import pyodbc
@@ -26,14 +26,14 @@ class extractEfentradas():
         self._cursor = None
         self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
         self._dataCompanies = readJson(self._wayCompanies)
-        self._baseWayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'])
+        self._baseWayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'entradas')
         if os.path.exists(self._baseWayToSave) is False:
             os.makedirs(self._baseWayToSave)
 
     def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013):
         try:
             for companie in self._dataCompanies:
-                self._wayToSave = os.path.join(self._wayToSave, f"entradas/{companie['codi_emp']}-efentradas.json")
+                self._wayToSave = os.path.join(self._baseWayToSave, f"{companie['codi_emp']}-efentradas.json")
                     
                 # only companies actives
                 if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:
