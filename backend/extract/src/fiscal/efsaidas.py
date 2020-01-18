@@ -72,7 +72,7 @@ class extractEfsaidas():
 
                         self._cursor = self._connection.cursor()
                         sql = ( f"SELECT nf.codi_emp, nf.codi_sai, nf.nume_sai, nf.codi_cli, nf.codi_esp, nf.codi_acu, nf.codi_nat, nf.segi_sai, "
-                                f"       nf.seri_sai, nf.dsai_sai, nf.ddoc_sai, nf.vcon_sai, nf.situacao_sai "
+                                f"       nf.seri_sai, nf.dsai_sai, nf.ddoc_sai, nf.vcon_sai, nf.situacao_sai, nf.chave_nfe_sai "
                                 f"  FROM bethadba.efsaidas AS nf "
                                 f" WHERE nf.codi_emp = {codi_emp}"
                                 f"   AND year(nf.ddoc_sai) = {year}"

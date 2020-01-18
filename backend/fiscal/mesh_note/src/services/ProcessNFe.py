@@ -16,18 +16,30 @@ from zipfile import ZipFile
 from rarfile import RarFile
 from py7zr import SevenZipFile
 
+wayDefault = readJson(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
+wayToSaveFile = wayDefault['wayDefaultToSaveFiles']
+
 class ProcessNFe(object):
     def __init__(self, wayToRead, filterDate="01/01/2019"):
         self._wayToRead = wayToRead
         self._filterDate = funcoesUteis.retornaCampoComoData(filterDate)
-        self._companies = readJson(os.path.join(fileDir, 'backend/extract/data/empresas.json'))
+        self._companies = readJson(os.path.join(wayToSaveFile, 'empresas.json'))
 
     def returnDataEmp(self, cgce):
         for companie in self._companies:
             if companie["cgce_emp"] == cgce and companie["stat_emp"] == "A" and companie["dina_emp"] is None:
                 return companie["codi_emp"]
 
-    def process(self, xml):
+    def returnDataEntryNote(self, codi_emp, month, year, keyNF):
+        try:
+            dataNfs = readJson(os.path.join(wayToSaveFile, 'entradas', str(codi_emp), f'{str(year)}/{str(month)}.json'))
+
+            for nf in dataNfs:
+                pass
+        except Exception:
+            pass
+
+    def process(self, xml, processingType=1):
         dataXml = readXml(xml)
 
         keyNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', '@Id'])
@@ -44,11 +56,28 @@ class ProcessNFe(object):
         serieNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'serie'])
         valueNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'total', 'ICMSTot', 'vNF'])
         valueICMS = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'total', 'ICMSTot', 'vICMS'])
-        cnpjIssuer = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'emit', 'CNPJ'])
         nameIssuer = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'emit', 'xNome'])
+        nameReceiver = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'dest', 'xNome'])
+
+        typeNF = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'ide', 'tpNF'])
+        
+        cnpjIssuer = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'emit', 'CNPJ'])
+        cpfIssuer = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'emit', 'CPF'])
+        cnpjIssuer = cpfIssuer if cnpjIssuer == "" else cnpjIssuer
+        
         cnpjReceiver = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'dest', 'CNPJ'])
         cpfReceiver = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'dest', 'CPF'])
-        nameReceiver = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'dest', 'xNome'])
+        cnpjReceiver = cpfReceiver if cnpjReceiver == "" else cnpjReceiver
+
+        if typeNF == "0": # quem emitiu foi quem comprou a nota, então o dest vira o emit (nota própria)
+            cnpjIssuerCorrect = cnpjReceiver
+            cnpjReceiverCorrect = cnpjIssuer
+        else:
+            cnpjIssuerCorrect = cnpjIssuer
+            cnpjReceiverCorrect = cnpjReceiver
+
+        codiEmpIssuer = self.returnDataEmp(cnpjIssuerCorrect)
+        codiEmpReceiver = self.returnDataEmp(cnpjReceiverCorrect)
 
     def rearrangeWayToSaveXML(self, xml):
         dataXml = readXml(xml)
@@ -76,7 +105,7 @@ class ProcessNFe(object):
         cpfReceiver = funcoesUteis.returnDataFieldInDict(dataXml, ['nfeProc', 'NFe', 'infNFe', 'dest', 'CPF'])
         cnpjReceiver = cpfReceiver if cnpjReceiver == "" else cnpjReceiver
 
-        if typeNF == "0": # quem emitiu foi quem comprou a nota, então o dest vira o emit
+        if typeNF == "0": # quem emitiu foi quem comprou a nota, então o dest vira o emit (nota própria)
             cnpjIssuerCorrect = cnpjReceiver
             cnpjReceiverCorrect = cnpjIssuer
         else:
