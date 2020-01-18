@@ -38,7 +38,7 @@ class extractEfsaidas():
     def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013, filterMonthEnd=0, filterYearEnd=0):
         filterMonthEnd = self._currentMonth if filterMonthEnd == 0 else filterMonthEnd
         filterYearEnd = self._currentYear if filterYearEnd == 0 else filterYearEnd
-        
+
         try:
             for companie in self._dataCompanies:
                 codi_emp = companie['codi_emp']
@@ -64,7 +64,7 @@ class extractEfsaidas():
 
                     months = extractFunctions.returnMonthsOfYear(year, startMonth, startYear, endMonth, endYear)
 
-                    print('\t - Competências: ', end='')
+                    print('\t - ', end='')
                     for month in months:
                         print(f'{month:0>2}/{year}, ', end='')
 

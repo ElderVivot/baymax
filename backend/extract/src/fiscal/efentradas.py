@@ -76,9 +76,9 @@ class extractEfentradas():
                                 f"            ON    forn.codi_emp = ent.codi_emp "
                                 f"              AND forn.codi_for = ent.codi_for "
                                 f" WHERE ent.codi_emp = {codi_emp}"
-                                f"   AND year(ent.dent_ent) = {year}"
-                                f"   AND month(ent.dent_ent) = {month}"
-                                f"ORDER BY ent.codi_emp, ent.dent_ent DESC, ent.codi_ent")
+                                f"   AND year(ent.ddoc_ent) = {year}"
+                                f"   AND month(ent.ddoc_ent) = {month}"
+                                f"ORDER BY ent.codi_emp, ent.ddoc_ent DESC, ent.codi_ent")
                         self._cursor.execute(sql)
 
                         df = pd.read_sql_query(sql, self._connection)
