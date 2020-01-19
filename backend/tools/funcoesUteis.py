@@ -247,6 +247,20 @@ def transformaCampoDataParaFormatoBrasileiro(valorCampo):
     except AttributeError:
         return None
 
+def transformDateFieldToString(valueField, formatDate=2):
+    """
+    :param valueField: informe o campo como 'data'
+    :param formatDate: o 1 é pra retornar no formato brasileiro, o 2 no formato amaricano
+    :return: traz a data no formato brasileiro (dd/mm/yyyy) ou americano (yyyy-mm-dd)
+    """
+    try:
+        if formatDate == 1:
+            return valueField.strftime("%d/%m/%Y")
+        else:
+            return valueField.strftime("%Y-%m-%d")
+    except AttributeError:
+        return None
+
 def md5Checksum(filePath):
     with open(filePath, 'rb') as fh:
         m = hashlib.md5()
@@ -284,7 +298,7 @@ def getOnlyNameFile(nameFileOriginal):
 
 def getDateTimeNowInFormatStr():
     dateTimeObj = datetime.datetime.now()
-    return dateTimeObj.strftime("%Y_%m_%d %H_%M")
+    return dateTimeObj.strftime("%Y_%m_%d_%H_%M")
 
 def returnBankForName(nameBank):
     nameBank = str(nameBank)
@@ -322,16 +336,3 @@ def updateFilesRead(wayTempFileRead, file, layoutModel):
     json.dump(filesRead, filesWrite)
 
     filesWrite.close()
-
-def copyXmlToFolderCompanieAndCompetence(wayBase, codiEmp, issueDate, wayXml, typeNF, keyNF):
-    if codiEmp is None:
-        return None
-
-    wayToSaveXml = os.path.join(wayBase, f'{str(codiEmp)} -', f'{issueDate.year}-{issueDate.month:0>2}', typeNF)
-    if os.path.exists(wayToSaveXml) is False:
-        os.makedirs(wayToSaveXml)
-
-    shutil.copy(wayXml, os.path.join(wayToSaveXml, f'{keyNF}.xml'))
-    print(f'\t- É uma nota de {typeNF[:len(typeNF)]} da empresa {codiEmp}.')
-
-    

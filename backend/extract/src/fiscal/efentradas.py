@@ -70,7 +70,7 @@ class extractEfentradas():
                         self._wayToSave = os.path.join(wayToSaveCompanie, f'{str(year)}{month:0>2}.json')
                         self._cursor = self._connection.cursor()
                         sql = ( f"SELECT ent.codi_emp, ent.codi_ent, ent.nume_ent, ent.codi_for, forn.nome_for, ent.codi_esp, ent.codi_acu, ent.codi_nat, ent.segi_ent, "
-                                f"       ent.seri_ent, ent.dent_ent, ent.ddoc_ent, ent.vcon_ent, ent.chave_nfe_ent "
+                                f"       ent.seri_ent, ent.dent_ent, ent.ddoc_ent, ent.vcon_ent, ent.situacao_ent, ent.chave_nfe_ent "
                                 f"  FROM bethadba.efentradas AS ent "
                                 f"       INNER JOIN bethadba.effornece AS forn "
                                 f"            ON    forn.codi_emp = ent.codi_emp "
