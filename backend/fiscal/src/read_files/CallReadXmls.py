@@ -33,3 +33,9 @@ class CallReadXmls(object):
             nf = nfeCanceled.readNFeCanceled()
 
         return nf
+
+
+# if __name__ == "__main__":
+#     callReadXmls = CallReadXmls('C:/_temp/notas-fiscais/1033 - OLIVEIRA MALTA COMERCIO DE BOLSAS E ARTI/2019-10/Entradas/NFe32191091681973000865550000000578841003314896.xml')
+#     nf = callReadXmls.process()
+#     print(nf)
