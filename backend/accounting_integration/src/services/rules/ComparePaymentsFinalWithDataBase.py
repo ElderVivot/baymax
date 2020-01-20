@@ -17,12 +17,13 @@ import tools.funcoesUteis as funcoesUteis
 
 class ComparePaymentsFinalWithDataBase(object):
     
-    def __init__(self, providers=[], entryNotes=[], installments=[], payments=[], codiEmp=0):
+    def __init__(self, codiEmp, finalDate, providers=[], entryNotes=[], installments=[], payments=[]):
         self._providers = providers
         self._entryNotes = entryNotes
         self._payments = payments
         self._installments = installments
         self._codiEmp = codiEmp
+        self._finalDate = funcoesUteis.retornaCampoComoData(finalDate)
         self._paymentsFinal = []
         self._listWordsNotConsiderInTheName = ['LTDA', 'LTDA.', '-', 'ME', 'ME.', 'EPP', 'EPP.', 'EIRELI', 'EIRELI.', \
             'MEI', 'MEI.', 'EI', 'EI.', 'S.A.', 'SA', 'S.A', 'S/A']
@@ -173,71 +174,83 @@ class ComparePaymentsFinalWithDataBase(object):
         if note == 0 and ddoc_ent is None and dent_ent is None and cgceProvider is None and nameProvider is None:
             return None
 
-        for entryNote in self._entryNotes:
-            provider = self.returnDataProvider(entryNote["codi_for"])
+        print(note)
 
-            cgceProviderEntryNote = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for", None)
-            nameProviderEntryNote = funcoesUteis.analyzeIfFieldIsValid(provider, "nome_for", None)
-            noteEntryNote = int(funcoesUteis.analyzeIfFieldIsValid(entryNote, "nume_ent", 0))
-            issueEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
-                funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "ddoc_ent"), 2) )
-            entryEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
-                funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "dent_ent"), 2) )
-            amountAccountEntryNote = float(funcoesUteis.analyzeIfFieldIsValid(entryNote, "vcon_ent", 0.0))
+        for root, dirs, files in os.walk(os.path.join(fileDir, 'backend/extract/data/', str(self._codiEmp))):
+            for file in sorted(files, reverse=True):
+                if file.lower().endswith(('.json')):
+                    competenceFile = funcoesUteis.retornaCampoComoData(f'{file[0:4]}-{file[4:6]}-01', 2)
+                    if competenceFile > self._finalDate:
+                        continue
 
-            if noteEntryNote == note and cgceProviderEntryNote == cgceProvider:
-                return entryNote
+                    wayFile = os.path.join(root, file)
+                    entryNotes = readJson(wayFile)
 
-            if noteEntryNote == note and issueEntryNote == ddoc_ent and ddoc_ent is not None:
-                return entryNote
+                    for entryNote in entryNotes:
+                        provider = self.returnDataProvider(entryNote["codi_for"])
 
-            if noteEntryNote == note and entryEntryNote == dent_ent and dent_ent is not None:
-                return entryNote
+                        cgceProviderEntryNote = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for", None)
+                        nameProviderEntryNote = funcoesUteis.analyzeIfFieldIsValid(provider, "nome_for", None)
+                        noteEntryNote = int(funcoesUteis.analyzeIfFieldIsValid(entryNote, "nume_ent", 0))
+                        issueEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
+                            funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "ddoc_ent"), 2) )
+                        entryEntryNote = funcoesUteis.transformaCampoDataParaFormatoBrasileiro( \
+                            funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "dent_ent"), 2) )
+                        amountAccountEntryNote = float(funcoesUteis.analyzeIfFieldIsValid(entryNote, "vcon_ent", 0.0))
 
-            if noteEntryNote == note and issueEntryNote == dueDate and dueDate is not None: # a comparação por vencimento e emissão é pq algumas vezes a data de vencimento é a própria emissão
-                return entryNote
+                        if noteEntryNote == note and cgceProviderEntryNote == cgceProvider:
+                            return entryNote
 
-            if noteEntryNote == note and amountAccountEntryNote == amountOriginal and amountOriginal > 0:
-                return entryNote
+                        if noteEntryNote == note and issueEntryNote == ddoc_ent and ddoc_ent is not None:
+                            return entryNote
 
-            if noteEntryNote == note and amountAccountEntryNote == amountPayment and amountPayment > 0:
-                return entryNote
+                        if noteEntryNote == note and entryEntryNote == dent_ent and dent_ent is not None:
+                            return entryNote
 
-            if issueEntryNote == ddoc_ent and cgceProviderEntryNote == cgceProvider and ddoc_ent is not None:
-                return entryNote
+                        if noteEntryNote == note and issueEntryNote == dueDate and dueDate is not None: # a comparação por vencimento e emissão é pq algumas vezes a data de vencimento é a própria emissão
+                            return entryNote
 
-            if entryEntryNote == dent_ent and cgceProviderEntryNote == cgceProvider and dent_ent is not None:
-                return entryNote
+                        if noteEntryNote == note and amountAccountEntryNote == amountOriginal and amountOriginal > 0:
+                            return entryNote
 
-            if issueEntryNote == dueDate and cgceProviderEntryNote == cgceProvider and dueDate is not None:
-                return entryNote
-            
-            if amountAccountEntryNote == amountOriginal and cgceProviderEntryNote == cgceProvider and amountOriginal > 0:
-                return entryNote
+                        if noteEntryNote == note and amountAccountEntryNote == amountPayment and amountPayment > 0:
+                            return entryNote
 
-            if amountAccountEntryNote == amountPayment and cgceProviderEntryNote == cgceProvider and amountPayment > 0:
-                return entryNote
+                        if issueEntryNote == ddoc_ent and cgceProviderEntryNote == cgceProvider and ddoc_ent is not None:
+                            return entryNote
 
-            # comparação pelo nome, caso as hipóteses acima não retorne nada
-            compareTwoWords = self.compareTwoNames(nameProviderEntryNote, nameProvider)
-            if compareTwoWords["first7LettersEquals"] is True or compareTwoWords["percentWordsEqualsAboutNameTwo"] >= 0.25:
-                if noteEntryNote == note:
-                    return entryNote
+                        if entryEntryNote == dent_ent and cgceProviderEntryNote == cgceProvider and dent_ent is not None:
+                            return entryNote
 
-                if issueEntryNote == ddoc_ent and ddoc_ent is not None:
-                    return entryNote
+                        if issueEntryNote == dueDate and cgceProviderEntryNote == cgceProvider and dueDate is not None:
+                            return entryNote
+                        
+                        if amountAccountEntryNote == amountOriginal and cgceProviderEntryNote == cgceProvider and amountOriginal > 0:
+                            return entryNote
 
-                if entryEntryNote == dent_ent and dent_ent is not None:
-                    return entryNote
+                        if amountAccountEntryNote == amountPayment and cgceProviderEntryNote == cgceProvider and amountPayment > 0:
+                            return entryNote
 
-                if issueEntryNote == dueDate and dueDate is not None:
-                    return entryNote
-                
-                if amountAccountEntryNote == amountOriginal and amountOriginal > 0:
-                    return entryNote
+                        # comparação pelo nome, caso as hipóteses acima não retorne nada
+                        compareTwoWords = self.compareTwoNames(nameProviderEntryNote, nameProvider)
+                        if compareTwoWords["first7LettersEquals"] is True or compareTwoWords["percentWordsEqualsAboutNameTwo"] >= 0.25:
+                            if noteEntryNote == note:
+                                return entryNote
 
-                if amountAccountEntryNote == amountPayment and amountPayment > 0:
-                    return entryNote
+                            if issueEntryNote == ddoc_ent and ddoc_ent is not None:
+                                return entryNote
+
+                            if entryEntryNote == dent_ent and dent_ent is not None:
+                                return entryNote
+
+                            if issueEntryNote == dueDate and dueDate is not None:
+                                return entryNote
+                            
+                            if amountAccountEntryNote == amountOriginal and amountOriginal > 0:
+                                return entryNote
+
+                            if amountAccountEntryNote == amountPayment and amountPayment > 0:
+                                return entryNote
 
     def returnDataInstallmentsEntryNote(self, dueDate=None, note=0, cgceProvider=None, ddoc_ent = None, dent_ent = None, amountPayment = 0.0, amountOriginal=0.0):
         if dueDate is None:

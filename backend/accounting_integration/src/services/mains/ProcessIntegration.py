@@ -105,9 +105,9 @@ class ProcessIntegration(object):
         if hasOwnAccountPlan is False or hasOwnAccountPlan == "":
             print(f' - Etapa {sequentialStep}: Buscando a conta do fornecedor/despesa dentro do sistema.')
             providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
-            entryNotes = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
+            entryNotes = [] #leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
             installmentsEntryNote = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas_parcelas/{self._codiEmp}-efentradaspar.json'))
-            comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(providers, entryNotes, installmentsEntryNote, paymentsWithFilter, self._codiEmp)
+            comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(self._codiEmp, self._finalDate, providers, entryNotes, installmentsEntryNote, paymentsWithFilter)
             paymentsFinal = comparePaymentsFinalWithDataBase.process()
             sequentialStep += 1
         else:
