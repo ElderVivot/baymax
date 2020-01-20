@@ -70,8 +70,8 @@ class MeshNote(object):
             "wayXml": dataProcess['wayXml']
         })
 
-        with open(wayFileProcessing, 'w', encoding='utf8') as outfile:
-            json.dump( dataFileProcessing, outfile, indent=4, ensure_ascii=False )
+        with open(wayFileProcessing, 'w') as outfile:
+            json.dump( dataFileProcessing, outfile, indent=4 )
 
     def saveResultProcessOutputNote(self, dataProcess, hourProcessing):
         codi_emp = dataProcess['codiEmpIssuer']
@@ -94,8 +94,8 @@ class MeshNote(object):
             "wayXml": dataProcess['wayXml']
         })
 
-        with open(wayFileProcessing, 'w', encoding='utf8') as outfile:
-            json.dump( dataFileProcessing, outfile, indent=4, ensure_ascii=False )
+        with open(wayFileProcessing, 'w') as outfile:
+            json.dump( dataFileProcessing, outfile, indent=4 )
 
     def process(self, xml, hourProcessing):
         callReadXmls = CallReadXmls(xml)
