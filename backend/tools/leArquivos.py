@@ -219,7 +219,6 @@ def leTxt(caminho, encoding='utf-8', treatAsText=False, removeBlankLines=False):
                     if linha.strip() == "":
                         continue
                 lista_linha.append(linha)
-        txtfile.close()
     except Exception as e:
         with open(caminho, 'rt', encoding='Windows-1252') as txtfile:
             for linha in txtfile:
@@ -230,7 +229,6 @@ def leTxt(caminho, encoding='utf-8', treatAsText=False, removeBlankLines=False):
                     if linha.strip() == "":
                         continue
                 lista_linha.append(linha)
-        txtfile.close()
 
     return lista_linha
 

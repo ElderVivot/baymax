@@ -174,9 +174,9 @@ class ComparePaymentsFinalWithDataBase(object):
         if note == 0 and ddoc_ent is None and dent_ent is None and cgceProvider is None and nameProvider is None:
             return None
 
-        print(note)
+        wayFiles = os.path.join(fileDir, 'backend/extract/data/entradas/', str(self._codiEmp))
 
-        for root, dirs, files in os.walk(os.path.join(fileDir, 'backend/extract/data/', str(self._codiEmp))):
+        for root, dirs, files in os.walk(wayFiles):
             for file in sorted(files, reverse=True):
                 if file.lower().endswith(('.json')):
                     competenceFile = funcoesUteis.retornaCampoComoData(f'{file[0:4]}-{file[4:6]}-01', 2)
