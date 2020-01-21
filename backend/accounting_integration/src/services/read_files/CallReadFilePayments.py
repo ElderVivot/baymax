@@ -38,3 +38,9 @@ class CallReadFilePayments(object):
             paymentsPorMoeda = PaymentsLysPorMoeda(self._wayOriginalToRead)
             paymentsPorData = PaymentsLysPorData(self._wayOriginalToRead, paymentsPorMoeda.processAll() )
             return paymentsPorData.processAll()
+
+        if self._system == 'serrathermas':
+            print('\t - Identificado que o sistema é o mesmo da empresa Serra das Thermas, processando leitura dos arquivos')
+            from PaymentsSerraThermas import PaymentsSerraThermas
+            payments = PaymentsSerraThermas(self._codiEmp, self._wayOriginalToRead, self._wayTemp, self._settings)
+            return payments.processAll()

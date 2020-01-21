@@ -54,11 +54,11 @@ class PaymentsFaaftech(object):
 
             try:
                 if str(data[2]).upper().count('NRO NOTA') > 0:
-                        posionsOfHeader.clear()
-                        for keyField, nameField in enumerate(data):
-                            nameField = funcoesUteis.treatTextField(nameField)
-                            posionsOfHeader[nameField] = keyField
-                        continue
+                    posionsOfHeader.clear()
+                    for keyField, nameField in enumerate(data):
+                        nameField = funcoesUteis.treatTextField(nameField)
+                        posionsOfHeader[nameField] = keyField
+                    continue
 
                 paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.treatTextFieldInVector(data, 11, posionsOfHeader, "Data Baixa"))
                 nameProvider = funcoesUteis.treatTextFieldInVector(data, 4, posionsOfHeader, "Nome Parceiro")

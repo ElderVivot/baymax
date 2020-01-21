@@ -215,7 +215,7 @@ class ComparePaymentsAndProofWithExtracts(object):
             else:
                 dateOfImport = paymentFinal["paymentDate"]
 
-            paymentFinal["dateOfImport"] = dateOfImport
+            paymentFinal["dateOfImport"] = funcoesUteis.retornaCampoComoData(dateOfImport)
 
             foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "foundProof", False)
             if foundProof is True:

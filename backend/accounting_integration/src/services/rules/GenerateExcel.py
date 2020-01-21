@@ -149,7 +149,7 @@ class GenerateExcel(object):
             foundProof = funcoesUteis.analyzeIfFieldIsValid(payment, "foundProof")
             paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "paymentDate", None))
             extractDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dateExtract", None))
-            dateOfImport = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dateOfImport", None))
+            dateOfImport = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.analyzeIfFieldIsValid(payment, "dateOfImport", None))
             dueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dueDate"))
             issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "issueDate"))
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(payment, "amountPaid")
