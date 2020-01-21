@@ -99,7 +99,7 @@ class PaymentsWinthorExcel(object):
         paymentsWinthorPDF = PaymentsWinthorPDF(self._wayTemp)
         self._paymentsDate = paymentsWinthorPDF.processAll()
 
-    def isPaymentWinthorExcel(self, file):
+    def isPayment(self, file):
         dataFile = leXls_Xlsx(file)
 
         for data in dataFile:
@@ -121,8 +121,8 @@ class PaymentsWinthorExcel(object):
 
     def process(self, file):
         # se não for desta classe nem segue pra frente
-        if self.isPaymentWinthorExcel(file) is None:
-            return []
+        # if self.isPayment(file) is None:
+        #     return []
 
         funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'PaymentsWinthorExcel')
 
@@ -132,48 +132,50 @@ class PaymentsWinthorExcel(object):
         valuesOfFile = []
 
         for key, data in enumerate(dataFile):
-
             try:
                 idLanc = funcoesUteis.treatNumberFieldInVector(data, 1)
 
-                paymentDate = self._paymentsDate[idLanc]
-                paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
+                # paymentDate = self._paymentsDate[idLanc]
+                paymentDate = funcoesUteis.treatDateFieldInVector(data, 19)
 
-                nameProvider = funcoesUteis.treatTextFieldInVector(data, 9)
+                nameProvider = funcoesUteis.treatTextFieldInVector(data, 4)
 
-                document = funcoesUteis.treatTextFieldInVector(data, 11)
+                document = funcoesUteis.treatTextFieldInVector(data, 5)
 
-                accountPlan = funcoesUteis.treatTextFieldInVector(data, 6)
+                accountPlan = funcoesUteis.treatTextFieldInVector(data, 2)
+                # juros e desconto sai repetido no relatório do cliente, pois já vem na coluna de juros e multa, então ignoro
+                if accountPlan == "MULTA E JUROS DE MORA" or accountPlan == "DESCONTOS OBTIDOS":
+                    continue
 
-                historic = funcoesUteis.treatTextFieldInVector(data, 4)
-                if paymentDate is not None and historic == "":
-                    historic = funcoesUteis.treatTextFieldInVector(dataFile[key+1], 4)
+                historic = "" # funcoesUteis.treatTextFieldInVector(data, 4)
+                # if paymentDate is not None and historic == "":
+                #     historic = funcoesUteis.treatTextFieldInVector(dataFile[key+1], 4)
 
-                parcelNumber = funcoesUteis.treatNumberFieldInVector(data, 13)
+                parcelNumber = funcoesUteis.treatNumberFieldInVector(data, 7)
 
-                amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 21)
+                amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 12)
 
-                amountDevolution = funcoesUteis.treatDecimalFieldInVector(data, 17)
+                amountDevolution = funcoesUteis.treatDecimalFieldInVector(data, 9)
 
-                amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 18)
+                amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 10)
 
-                amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 19)
+                amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 11)
 
-                amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 15)
+                amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 8)
 
-                paymentType = funcoesUteis.treatTextFieldInVector(data, 22)
+                paymentType = funcoesUteis.treatTextFieldInVector(data, 13)
 
-                bank = funcoesUteis.treatTextFieldInVector(data, 24)
+                bank = funcoesUteis.treatTextFieldInVector(data, 14)
                 bankVector = self.returnBank(bank)
                 bank = funcoesUteis.treatTextFieldInVector(bankVector, 1)
 
                 account = funcoesUteis.treatTextFieldInVector(bankVector, 2)
+                
+                bankCheck = funcoesUteis.treatTextFieldInVector(data, 15)
 
-                bankCheck = funcoesUteis.treatTextFieldInVector(data, 25)
+                companyBranch = funcoesUteis.treatTextFieldInVector(data, 18)
 
-                companyBranch = funcoesUteis.treatTextFieldInVector(data, 28)
-
-                if paymentDate is not None and amountPaid > 0:
+                if paymentDate is not None and amountPaid != 0:
                     valuesOfLine = {
                         "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
                         "nameProvider": nameProvider,
@@ -214,6 +216,6 @@ class PaymentsWinthorExcel(object):
 #     paymentsWinthorPDF = PaymentsWinthorPDF("C:/_temp/integracao_diviart/teste.txt")
 #     paymentDates = paymentsWinthorPDF.returnPaymentsDates()
 
-#     paymentsWinthorExcel = PaymentsWinthorExcel("1428")
-#     print(paymentsWinthorExcel.processPayments("C:/_temp/integracao_diviart/Contas Pagas.xls", paymentDates))
+    # paymentsWinthorExcel = PaymentsWinthorExcel()
+    # print(paymentsWinthorExcel.processPayments("C:/_temp/integracao_diviart/Contas Pagas.xls", paymentDates))
 
