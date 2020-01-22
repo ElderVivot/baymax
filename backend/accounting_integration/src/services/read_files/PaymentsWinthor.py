@@ -163,6 +163,9 @@ class PaymentsWinthorExcel(object):
 
                 amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 8)
 
+                if amountOriginal == amountPaid and amountOriginal > 0:
+                    amountPaid = amountPaid + amountInterest - amountDiscount
+
                 paymentType = funcoesUteis.treatTextFieldInVector(data, 13)
 
                 bank = funcoesUteis.treatTextFieldInVector(data, 14)
