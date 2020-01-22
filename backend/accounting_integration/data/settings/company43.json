@@ -7,7 +7,8 @@
             "3": "BRASIL 69000",
             "35": "SANTANDER 13001120",
             "17": "DINHEIRO"
-        }
+        },
+        "isReliable": true
     },
     "banks": {
         "listNumbers": [1,33,341,756]

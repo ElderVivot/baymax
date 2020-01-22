@@ -14,7 +14,8 @@ import tools.funcoesUteis as funcoesUteis
 
 class ComparePaymentsAndProofWithExtracts(object):
 
-    def __init__(self, extracts=[], payments=[], proofOfPayments=[]):
+    def __init__(self, settings, extracts=[], payments=[], proofOfPayments=[]):
+        self._settings = settings
         self._extracts = extracts
         self._payments = payments
         self._proofOfPayments = proofOfPayments
@@ -24,6 +25,7 @@ class ComparePaymentsAndProofWithExtracts(object):
         self._extractsToSearch = self._extracts.copy() # este daqui é que vai ser utilizado pra procurar se o pagamento existe correspondente no extrato, conforme for encontrando vai excluindo pra não procurar novamente num que já tinha retornado
         self._extractsFinal = []
         self._numberOfDaysInterval = 3
+        self._financyIsReliable = funcoesUteis.returnDataFieldInDict(self._settings, ['financy', 'isReliable'])
 
     def returnDayFoundInPayment(self, payment, paymentDate, amountPaid):
         paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
@@ -207,13 +209,16 @@ class ComparePaymentsAndProofWithExtracts(object):
             paymentFinal["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
             paymentFinal["bankExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'bankId')}"
             paymentFinal["accountExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'account')}"
-            paymentFinal["historicExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "historic")
+            paymentFinal["historicExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "historic")            
 
             # data da importação, importante ela pois nem sempre a data do financeiro do cliente é a certa
-            if extract is not None and bank == paymentFinal["bankExtract"]:
-                dateOfImport = paymentFinal["dateExtract"]
-            else:
+            if self._financyIsReliable is True:
                 dateOfImport = paymentFinal["paymentDate"]
+            else:
+                if extract is not None and bank == paymentFinal["bankExtract"]:
+                    dateOfImport = paymentFinal["dateExtract"]
+                else:
+                    dateOfImport = paymentFinal["paymentDate"]
 
             paymentFinal["dateOfImport"] = funcoesUteis.retornaCampoComoData(dateOfImport)
 

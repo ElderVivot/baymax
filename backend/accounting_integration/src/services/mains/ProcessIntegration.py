@@ -89,7 +89,7 @@ class ProcessIntegration(object):
         self._proofsOfPayments = callReadFileProofs.process()
         
         print(' - Etapa 5: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
-        comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(self._extracts, self._payments, self._proofsOfPayments)
+        comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(self._settings, self._extracts, self._payments, self._proofsOfPayments)
         paymentsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.comparePaymentsFinalWithExtract()
         extractsCompareWithProofAndExtracts = comparePaymentsAndProofWithExtracts.analyseIfExtractIsInPayment()
         # # print(paymentsCompareWithProofAndExtracts)
