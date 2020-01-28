@@ -53,7 +53,9 @@ class PaymentsFaaftech(object):
         for key, data in enumerate(dataFile):
 
             try:
-                if str(data[2]).upper().count('NRO NOTA') > 0:
+                fieldTwo = funcoesUteis.treatTextFieldInVector(data, 2)
+                fieldThree = funcoesUteis.treatTextFieldInVector(data, 3)
+                if fieldTwo.count('NRO NOTA') > 0 or fieldThree.count('NRO NOTA') > 0:
                     posionsOfHeader.clear()
                     for keyField, nameField in enumerate(data):
                         nameField = funcoesUteis.treatTextField(nameField)
@@ -80,8 +82,13 @@ class PaymentsFaaftech(object):
                 account = ""
                 companyBranch = ""
 
+                generateDataOnlyIfBankIsInTheConfiguration = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "generateDataOnlyIfBankIsInTheConfiguration"])
+
                 bankVector = self.returnBank(bank)
                 bank = funcoesUteis.treatTextFieldInVector(bankVector, 1)
+
+                if generateDataOnlyIfBankIsInTheConfiguration is True and bankVector == "":
+                    continue
 
                 account = funcoesUteis.treatTextFieldInVector(bankVector, 2)
 

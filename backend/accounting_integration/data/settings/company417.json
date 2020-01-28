@@ -1,0 +1,14 @@
+{
+    "financy": {
+        "has": true,
+        "system": "faaftech",
+        "banksConfiguration": {
+            "47": "SICOOB"
+        },
+        "isReliable": true,
+        "generateDataOnlyIfBankIsInTheConfiguration": true
+    },
+    "banks": {
+        "listNumbers": [1,33,341,756]
+    }
+}
