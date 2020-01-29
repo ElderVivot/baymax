@@ -8,6 +8,7 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import datetime
 import json
 import codecs
+from pymongo import MongoClient
 from fiscal.src.read_files.CallReadXmls import CallReadXmls
 from tools.leArquivos import readXml, readJson
 import tools.funcoesUteis as funcoesUteis
@@ -23,6 +24,11 @@ class MeshNote(object):
         self._wayToRead = wayToRead
         self._filterDate = funcoesUteis.retornaCampoComoData(filterDate)
         self._companies = readJson(os.path.join(wayToSaveFile, 'empresas.json'))
+
+        self._hourProcessing = funcoesUteis.getDateTimeNowInFormatStr()
+        self._client = MongoClient() # conecta num cliente do MongoDB rodando na sua máquina
+        self._db = self._client.baymax
+        self._collection = self._db[f'MeshNote_{self._hourProcessing}']        
 
     def returnDataEmp(self, cgce):
         for companie in self._companies:
@@ -49,55 +55,41 @@ class MeshNote(object):
         except Exception:
             pass
 
-    def saveResultProcessEntryNote(self, dataProcess, hourProcessing):
+    def saveResultProcessEntryNote(self, dataProcess):
         codi_emp = dataProcess['codiEmpReceiver']
         if codi_emp is None:
             return None
 
-        wayFileProcessing = os.path.join(fileDir, 'backend/fiscal/data', str(codi_emp), 'entradas')
-        if os.path.exists(wayFileProcessing) is False:
-            os.makedirs(wayFileProcessing)
-        wayFileProcessing = os.path.join(wayFileProcessing, f'{hourProcessing}.json')
+        existsProcessNF = self._collection.find_one( { "$and": [ {"codiEmp": codi_emp}, {"keyNF": dataProcess['keyNF'] } ] } )
+        if existsProcessNF is None:
+            self._collection.insert_one(
+                {
+                    "codiEmp": codi_emp,
+                    "keyNF": dataProcess['keyNF'],
+                    "nfXml": dataProcess['nfXml'],
+                    "nfDominio": dataProcess['nfEntryNoteDominio'],
+                    "wayXml": dataProcess['wayXml']
+                }
+            )
 
-        dataFileProcessing = readJson(wayFileProcessing)
-        if dataFileProcessing == "" or dataFileProcessing is None:
-            dataFileProcessing = []
-        
-        dataFileProcessing.append({
-            "codiEmp": codi_emp,
-            "nfXml": dataProcess['nfXml'],
-            "nfDominio": dataProcess['nfEntryNoteDominio'],
-            "wayXml": dataProcess['wayXml']
-        })
-
-        with open(wayFileProcessing, 'w') as outfile:
-            json.dump( dataFileProcessing, outfile, indent=4 )
-
-    def saveResultProcessOutputNote(self, dataProcess, hourProcessing):
+    def saveResultProcessOutputNote(self, dataProcess):
         codi_emp = dataProcess['codiEmpIssuer']
         if codi_emp is None:
             return None
 
-        wayFileProcessing = os.path.join(fileDir, 'backend/fiscal/data', str(codi_emp), 'saidas')
-        if os.path.exists(wayFileProcessing) is False:
-            os.makedirs(wayFileProcessing)
-        wayFileProcessing = os.path.join(wayFileProcessing, f'{hourProcessing}.json')
+        existsProcessNF = self._collection.find_one( { "$and": [ {"codiEmp": codi_emp}, {"keyNF": dataProcess['keyNF'] } ] } )
+        if existsProcessNF is None:
+            self._collection.insert_one(
+                {
+                    "codiEmp": codi_emp,
+                    "keyNF": dataProcess['keyNF'],
+                    "nfXml": dataProcess['nfXml'],
+                    "nfDominio": dataProcess['nfOutputNoteDominio'],
+                    "wayXml": dataProcess['wayXml']
+                }
+            )
 
-        dataFileProcessing = readJson(wayFileProcessing)
-        if dataFileProcessing == "" or dataFileProcessing is None:
-            dataFileProcessing = []
-        
-        dataFileProcessing.append({
-            "codiEmp": codi_emp,
-            "nfXml": dataProcess['nfXml'],
-            "nfDominio": dataProcess['nfOutputNoteDominio'],
-            "wayXml": dataProcess['wayXml']
-        })
-
-        with open(wayFileProcessing, 'w') as outfile:
-            json.dump( dataFileProcessing, outfile, indent=4 )
-
-    def process(self, xml, hourProcessing):
+    def process(self, xml):
         callReadXmls = CallReadXmls(xml)
         nf = callReadXmls.process()
 
@@ -127,24 +119,24 @@ class MeshNote(object):
         dataProcessNF = {
             "codiEmpIssuer": codiEmpIssuer,
             "codiEmpReceiver": codiEmpReceiver,
+            "keyNF": keyNF,
             "nfXml": nf,
             "nfEntryNoteDominio": entryNoteDominio,
             "nfOutputNoteDominio": outputNoteDominio,
             "wayXml": xml.replace('\\', '/')
         }
 
-        self.saveResultProcessEntryNote(dataProcessNF, hourProcessing)
-        self.saveResultProcessOutputNote(dataProcessNF, hourProcessing)
+        self.saveResultProcessEntryNote(dataProcessNF)
+        self.saveResultProcessOutputNote(dataProcessNF)
     
     def processAll(self):
-        hourProcessing = funcoesUteis.getDateTimeNowInFormatStr()
         for root, dirs, files in os.walk(self._wayToRead):
             countFiles = len(files)
             for key, file in enumerate(files):
                 wayFile = os.path.join(root, file)
                 if file.lower().endswith(('.xml')):
                     print(f'- Processando XML {wayFile} / {key+1} de {countFiles}')
-                    self.process(wayFile, hourProcessing)
+                    self.process(wayFile)
                 # if file.lower().endswith(('.zip')):
                 #     with ZipFile(wayFile, 'r') as compressed:
                 #         for fileCompressed in compressed.namelist():
