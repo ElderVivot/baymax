@@ -6,11 +6,14 @@ import sys
 absPath = os.path.dirname(os.path.abspath(__file__))
 fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend/extract/src'))
+sys.path.append(os.path.join(fileDir, 'backend'))
 
 import pandas as pd
 import pyodbc
 import json
+from datetime import datetime
 from db.ConexaoBanco import DB
+from dao.src.ConnectMongo import ConnectMongo
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
@@ -28,22 +31,26 @@ class extractGeempre():
         self._wayToSave = os.path.join(wayDefaultToSave, 'empresas.json') 
         self._columns = []
 
+        self._connectionMongo = ConnectMongo()
+        self._dbMongo = self._connectionMongo.getConnetion()
+        self._collection = self._dbMongo['ExtractCompanies']
+
     def exportData(self):
         try:
             self._cursor = self._connection.cursor()
             sql = ("SELECT * FROM bethadba.geempre ORDER BY codi_emp")
             self._cursor.execute(sql)
 
-            row = self._cursor.fetchone()
-            for header in row.cursor_description:
-                self._columns.append(header[0])
-
             df = pd.read_sql_query(sql, self._connection)
 
-            # df = parseTypeFiedValueCorrect(df, self._columns)
+            data = df.to_dict(orient='records')
+            # print(data)
+            for companie in data:
+                existsCompanie = self._collection.find_one( { "$and": [ {"codi_emp": companie['codi_emp']}] } )
+                if existsCompanie is None:
+                    self._collection.insert_one(companie)
 
-            # df.to_csv(self._caminhoSalvarCSV, header=True, sep='|',float_format='%g',decimal='.', encoding='Windows-1252', na_rep='(null)', index=None)
-            df.to_json(self._wayToSave, orient='records', date_format='iso' ) 
+            df.to_json(self._wayToSave, orient='records', date_format='iso' )
         except Exception as e:
             print(f"Erro ao executar a consulta. O erro é: {e}")
         finally:

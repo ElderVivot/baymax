@@ -25,10 +25,10 @@ class MeshNote(object):
         self._filterDate = funcoesUteis.retornaCampoComoData(filterDate)
         self._companies = readJson(os.path.join(wayToSaveFile, 'empresas.json'))
 
-        self._hourProcessing = funcoesUteis.getDateTimeNowInFormatStr()
+        self._hourProcessing = datetime.datetime.now()
         self._client = MongoClient() # conecta num cliente do MongoDB rodando na sua máquina
         self._db = self._client.baymax
-        self._collection = self._db[f'MeshNote_{self._hourProcessing}']        
+        self._collection = self._db[f'MeshNote']        
 
     def returnDataEmp(self, cgce):
         for companie in self._companies:
@@ -60,12 +60,14 @@ class MeshNote(object):
         if codi_emp is None:
             return None
 
-        existsProcessNF = self._collection.find_one( { "$and": [ {"codiEmp": codi_emp}, {"keyNF": dataProcess['keyNF'] } ] } )
+        existsProcessNF = self._collection.find_one( { "$and": [ {"codiEmp": codi_emp}, {"hourProcessing": self._hourProcessing }, {"typeNF": "ENT" }, {"keyNF": dataProcess['keyNF'] } ] } )
         if existsProcessNF is None:
             self._collection.insert_one(
                 {
                     "codiEmp": codi_emp,
                     "keyNF": dataProcess['keyNF'],
+                    "hourProcessing": self._hourProcessing,
+                    "typeNF": "ENT",
                     "nfXml": dataProcess['nfXml'],
                     "nfDominio": dataProcess['nfEntryNoteDominio'],
                     "wayXml": dataProcess['wayXml']
@@ -77,12 +79,14 @@ class MeshNote(object):
         if codi_emp is None:
             return None
 
-        existsProcessNF = self._collection.find_one( { "$and": [ {"codiEmp": codi_emp}, {"keyNF": dataProcess['keyNF'] } ] } )
+        existsProcessNF = self._collection.find_one( { "$and": [ {"codiEmp": codi_emp}, {"hourProcessing": self._hourProcessing }, {"typeNF": "SAI" }, {"keyNF": dataProcess['keyNF'] } ] } )
         if existsProcessNF is None:
             self._collection.insert_one(
                 {
                     "codiEmp": codi_emp,
                     "keyNF": dataProcess['keyNF'],
+                    "hourProcessing": self._hourProcessing,
+                    "typeNF": "SAI",
                     "nfXml": dataProcess['nfXml'],
                     "nfDominio": dataProcess['nfOutputNoteDominio'],
                     "wayXml": dataProcess['wayXml']
