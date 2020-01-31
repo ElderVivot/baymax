@@ -43,12 +43,13 @@ class extractGeempre():
 
             df = pd.read_sql_query(sql, self._connection)
 
-            data = df.to_dict(orient='records')
-            # print(data)
+            data = json.loads(df.to_json(orient='records', date_format='iso'))
             for companie in data:
-                existsCompanie = self._collection.find_one( { "$and": [ {"codi_emp": companie['codi_emp']}] } )
+                existsCompanie = self._collection.find_one( { "codi_emp": companie['codi_emp'] } )
                 if existsCompanie is None:
                     self._collection.insert_one(companie)
+                else:
+                    self._collection.update_one( { "codi_emp": companie['codi_emp'] }, { "$set": companie} )
 
             df.to_json(self._wayToSave, orient='records', date_format='iso' )
         except Exception as e:
@@ -57,6 +58,7 @@ class extractGeempre():
             if self._cursor is not None:
                 self._cursor.close()
             self._DB.closeConnection()
+            self._connectionMongo.closeConnection()
 
 
 if __name__ == "__main__":
