@@ -28,10 +28,10 @@ class extractEffornece():
             data = json.load(companies)
             try:
                 for companie in data:
-                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'])
+                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'fornecedores')
                     if os.path.exists(self._wayToSave) is False:
                         os.makedirs(self._wayToSave)
-                    self._wayToSave = os.path.join(self._wayToSave, f"fornecedores/{companie['codi_emp']}-effornece.json")
+                    self._wayToSave = os.path.join(self._wayToSave, f"{companie['codi_emp']}-effornece.json")
                     
                     # only companies actives
                     if companie['stat_emp'] not in ('I') and companie['dina_emp'] is None:

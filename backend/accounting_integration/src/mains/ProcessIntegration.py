@@ -6,22 +6,22 @@ import os
 absPath = os.path.dirname(os.path.abspath(__file__))
 fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
-sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src/services'))
+sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src'))
 
 import shutil
 import json
 import tools.leArquivos as leArquivos
 import tools.funcoesUteis as funcoesUteis
-from read_files.ExtractsOFX import ExtractsOFX
-from read_files.ReadPDFs import ReadPDFs
-from read_files.CallReadFilePayments import CallReadFilePayments
-from read_files.CallReadFileProofs import CallReadFileProofs
-from rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWithExtracts
-from rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
-from rules.GenerateExcel import GenerateExcel
-from rules.FilterPeriod import FilterPeriod
-from rules.CompareWithSettings import CompareWithSettings
-from rules.ReturnFilesDontFindForm import ReturnFilesDontFindForm
+from services.read_files.ExtractsOFX import ExtractsOFX
+from services.read_files.ReadPDFs import ReadPDFs
+from services.read_files.CallReadFilePayments import CallReadFilePayments
+from services.read_files.CallReadFileProofs import CallReadFileProofs
+from services.rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWithExtracts
+from services.rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
+from services.rules.GenerateExcel import GenerateExcel
+from services.rules.FilterPeriod import FilterPeriod
+from services.rules.CompareWithSettings import CompareWithSettings
+from services.rules.ReturnFilesDontFindForm import ReturnFilesDontFindForm
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)

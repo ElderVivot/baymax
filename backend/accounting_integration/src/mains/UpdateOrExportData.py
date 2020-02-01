@@ -6,13 +6,13 @@ import os
 absPath = os.path.dirname(os.path.abspath(__file__))
 fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
-sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src/services'))
+sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src'))
 
 import json
-from rules.ReadExcelToUpdateOrExportData import ReadExcelToUpdateOrExportData
-from rules.GenerateExcel import GenerateExcel
-from rules.GenerateExportDominio import GenerateExportDominio
-from rules.CompareWithSettings import CompareWithSettings
+from services.rules.ReadExcelToUpdateOrExportData import ReadExcelToUpdateOrExportData
+from services.rules.GenerateExcel import GenerateExcel
+from services.rules.GenerateExportDominio import GenerateExportDominio
+from services.rules.CompareWithSettings import CompareWithSettings
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)

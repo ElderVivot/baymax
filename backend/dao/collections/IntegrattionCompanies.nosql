@@ -1,0 +1,8 @@
+db.IntegrattionCompanies.insert({
+    layouts: [
+        {
+            _id: ObjectId(),
+            idLayout: ObjectId("5e342f2d1d02ea1f18429a7e")            
+        }
+    ]
+})
