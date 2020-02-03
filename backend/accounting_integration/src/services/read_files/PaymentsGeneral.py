@@ -33,8 +33,12 @@ class PaymentsGeneral(object):
 
     #         if textHistoric == "HISTORICO" and ( textUser == "USU.LANC." or textUser == "USU. LANC." ):
     #             return True
+
+    def settingsLayout(self):
+        try:
+            settings = self.
     
-    def settingsLayouts(self):
+    def settingsFinancy(self):
         try:
             settings = self._collection.aggregate([
                 { "$match": {"codi_emp": 1752} },
@@ -50,14 +54,7 @@ class PaymentsGeneral(object):
 
             settings = self._collection.aggregate([
                 { "$match": {"codi_emp": 1752} },
-                { "$project": {"financy": 1, "_id": 0} },
-                { "$unwind": "$financy.layouts"},
-                { "$lookup": {
-                    "from": "IntegrattionLayouts",
-                    "localField": "idLayout",
-                    "foreignField": "IntegrattionLayouts._id",
-                    "as": "layoutSettings"
-                }}
+                { "$project": {"financy": 1, "_id": 0} }
             ]).pretty()
         except Exception:
             settings = None
