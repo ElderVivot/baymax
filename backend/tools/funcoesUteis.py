@@ -281,13 +281,16 @@ def md5Checksum(filePath):
 
 def removeAnArrayFromWithinAnother(arraySet=[]):
     newArray = []
-    for array in arraySet:
-        if array is None:
-            continue
-        for vector in array:
-            if len(vector) == 0:
+    try:
+        for array in arraySet:
+            if array is None:
                 continue
-            newArray.append(vector)
+            for vector in array:
+                if len(vector) == 0:
+                    continue
+                newArray.append(vector)
+    except Exception:
+        pass
     return newArray
 
 def removeAnDictionaryFromWithinArray(arraySet=[]):

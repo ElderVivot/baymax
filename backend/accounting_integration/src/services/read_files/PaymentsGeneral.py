@@ -35,107 +35,130 @@ class PaymentsGeneral(object):
     #             return True
     
     def settingsLayouts(self):
-        settings = self._collection.aggregate([
-            { "$match": {"codi_emp": self._codiEmp} },
-            { "$lookup": {
-                "from": "IntegrattionLayouts",
-                "localField": "idLayout",
-                "foreignField": "IntegrattionLayouts._id",
-                "as": "layoutSettings"
-            }},
-            { "$project": { "layoutSettings": 1, "_id": 0 }}
-        ])
+        try:
+            settings = self._collection.aggregate([
+                { "$match": {"codi_emp": self._codiEmp} },
+                { "$lookup": {
+                    "from": "IntegrattionLayouts",
+                    "localField": "idLayout",
+                    "foreignField": "IntegrattionLayouts._id",
+                    "as": "layoutSettings"
+                }},
+                { "$project": { "layoutSettings": 1, "_id": 0 }}
+            ])
+        except Exception:
+            settings = None
+        finally:
+            self._connectionMongo.closeConnection()
 
         return settings
 
-    def process(self, file):
-        settingsLayouts = self.settingsLayouts()
+    def identifiesTheHeader(self, data, settingLayout):
+        posionsOfHeader = {}
+        header = funcoesUteis.analyzeIfFieldIsValid(settingLayout, 'header')
+        dataManipulate = []
 
-        if settingsLayouts is None:
+        if len(header) == 0:
             return None
 
-        for setting in settingsLayouts:
-            print(setting)
+        for field in data:
+            dataManipulate.append(funcoesUteis.treatTextField(field))
+        
+        countNumberHeader = 0
+        for field in header:
+            numberField = field['numberField']
+            nameField = funcoesUteis.treatTextField(field['nameField'])
 
-        # dataFile = leXls_Xlsx(file)
+            if dataManipulate.count(nameField) > 0:
+                countNumberHeader += 1
 
-        # valuesOfLine = {}
-        # valuesOfFile = []
-        # posionsOfHeader = {}
+        if countNumberHeader == len(header):
+            for keyField, nameField in enumerate(dataManipulate):
+                if nameField != "":
+                    posionsOfHeader[nameField] = keyField
 
-        # for key, data in enumerate(dataFile):
+        return posionsOfHeader
 
-        #     try:
-        #         for field in data:
-        #             if funcoesUteis.treatTextField(field)
-        #         fieldTwo = funcoesUteis.treatTextFieldInVector(data, 2)
-        #         fieldThree = funcoesUteis.treatTextFieldInVector(data, 3)
-        #         if fieldTwo.count('NRO NOTA') > 0 or fieldThree.count('NRO NOTA') > 0:
-        #             posionsOfHeader.clear()
-        #             for keyField, nameField in enumerate(data):
-        #                 nameField = funcoesUteis.treatTextField(nameField)
-        #                 posionsOfHeader[nameField] = keyField
-        #             continue
+    def treatDataLayout(self, data, settingFields, positionsOfHeader):
+        valuesOfLine = {}
 
-        #         paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.treatTextFieldInVector(data, 11, posionsOfHeader, "Data Baixa"))
-        #         nameProvider = funcoesUteis.treatTextFieldInVector(data, 4, posionsOfHeader, "Nome Parceiro")
-        #         cgceProvider = funcoesUteis.treatTextFieldInVector(data, 114, posionsOfHeader, "CNPJ / CPF (Parceiro)")
-        #         document = funcoesUteis.treatTextFieldInVector(data, 3, posionsOfHeader, "Nro Nota")
-        #         accountPlan = funcoesUteis.treatTextFieldInVector(data, 7, posionsOfHeader, "Descricao (Natureza)")
-        #         dueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.treatTextFieldInVector(data, 5, posionsOfHeader, "Dt. Vencimento"))
-        #         issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.treatTextFieldInVector(data, 59, posionsOfHeader, "Dt. Entrada e Saída"))
-        #         historic = ""
-        #         parcelNumber = ""
-        #         amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 19, posionsOfHeader, "Vlr Baixa")
-        #         amountDevolution = funcoesUteis.treatDecimalFieldInVector(0.0)
-        #         amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 41, posionsOfHeader, "Vlr Desconto")
-        #         amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 44, posionsOfHeader, "Vlr Juros")
-        #         amountFine = funcoesUteis.treatDecimalFieldInVector(data, 45, posionsOfHeader, "Vlr Multa")
-        #         amountOriginal = float(0)
-        #         paymentType = ""
-        #         bank = funcoesUteis.treatTextFieldInVector(data, 53, posionsOfHeader, "Conta Bancaria")
-        #         account = ""
-        #         companyBranch = ""
+        for key, settingField in settingFields.items():
+            numberField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'numberField')
+            nameField = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField'))
+            
+            if key.find('date') >= 0:
+                formatDate = funcoesUteis.analyzeIfFieldIsValid(settingField, 'formatDate')
+                if formatDate == 'dd/mm/aaaa':
+                    formatDate = 1
+                elif formatDate == 'aaaa-mm-dd':
+                    formatDate = 2
+                else:
+                    formatDate = 1
+                
+                valuesOfLine[key] = funcoesUteis.treatDateFieldInVector(data, numberField, positionsOfHeader, nameField, formatDate)
+            elif key.find('amount') >= 0:
+                valuesOfLine[key] = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeader, nameField)
+            else:
+                splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
 
-        #         generateDataOnlyIfBankIsInTheConfiguration = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "generateDataOnlyIfBankIsInTheConfiguration"])
+                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameField)
 
-        #         bankVector = self.returnBank(bank)
-        #         bank = funcoesUteis.treatTextFieldInVector(bankVector, 1)
+                if splitField != "":
+                    valueField = valueField.split(splitField)
+                    if len(valueField) > 1:
+                        valueField = ''.join(valueField[1:])
+                    else:
+                        valueField = ''.join(valueField[0:])
+                    valueField = funcoesUteis.minimalizeSpaces(valueField)
 
-        #         if generateDataOnlyIfBankIsInTheConfiguration is True and bankVector == "":
-        #             continue
+                valuesOfLine[key] = valueField
 
-        #         account = funcoesUteis.treatTextFieldInVector(bankVector, 2)
+        return valuesOfLine
 
-        #         if paymentDate is not None and amountPaid > 0:
-        #             valuesOfLine = {
-        #                 "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
-        #                 "nameProvider": nameProvider,
-        #                 "cgceProvider": cgceProvider,
-        #                 "document": document,
-        #                 "parcelNumber": parcelNumber,
-        #                 "bank": bank,
-        #                 "account": account,
-        #                 "dueDate": dueDate,
-        #                 "issueDate": issueDate,
-        #                 "amountPaid": amountPaid,
-        #                 "amountDiscount": amountDiscount,
-        #                 "amountInterest": amountInterest,
-        #                 "amountOriginal": amountOriginal,
-        #                 "amountFine": amountFine,
-        #                 "amountDevolution": amountDevolution,
-        #                 "paymentType": paymentType,
-        #                 "accountPlan": accountPlan,
-        #                 "historic": historic,
-        #                 "companyBranch": companyBranch
-        #             }
+    def process(self, file):
+        settingsLayouts = list(self.settingsLayouts())
 
-        #             valuesOfFile.append(valuesOfLine.copy())
+        if len(settingsLayouts) == 0:
+            return None
 
-            # except Exception as e:
-            #     pass
+        settingsLayouts = settingsLayouts[0]
 
-        return 0 #valuesOfFile
+        valuesOfLine = {}
+        valuesOfFile = []
+        posionsOfHeader = {}
+
+        for setting in settingsLayouts['layoutSettings']:
+            
+            if setting['layoutType'] != "Financy":
+                return None
+            
+            if setting['fileType'] == 'Excel':
+                dataFile = leXls_Xlsx(file)
+            else:
+                dataFile = []
+
+            fields = setting['fields']
+
+            for key, data in enumerate(dataFile):
+
+                try:
+                    posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)
+                    if len(posionsOfHeaderTemp.items()) > 0:
+                        posionsOfHeader = posionsOfHeaderTemp
+                        continue
+
+                    valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
+                    
+                    paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None))
+                    amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
+                    
+                    if paymentDate is not None and amountPaid > 0:
+                        valuesOfFile.append(valuesOfLine.copy())
+
+                except Exception as e:
+                    pass
+
+        return valuesOfFile
 
     def processAll(self):
         for root, dirs, files in os.walk(self._wayOriginalToRead):
@@ -150,5 +173,5 @@ class PaymentsGeneral(object):
 if __name__ == "__main__":
 
     payments = PaymentsGeneral(1117, "C:/integracao_contabil/1117/arquivos_originais", "")
-    payments.processAll()
+    print(payments.processAll())
 
