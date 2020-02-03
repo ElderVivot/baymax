@@ -37,7 +37,8 @@ class PaymentsGeneral(object):
     def settingsLayouts(self):
         try:
             settings = self._collection.aggregate([
-                { "$match": {"codi_emp": self._codiEmp} },
+                { "$match": {"codi_emp": 1752} },
+                { "$project": {"financy": 1, "_id": 0} },
                 { "$lookup": {
                     "from": "IntegrattionLayouts",
                     "localField": "idLayout",
@@ -46,6 +47,18 @@ class PaymentsGeneral(object):
                 }},
                 { "$project": { "layoutSettings": 1, "_id": 0 }}
             ])
+
+            settings = self._collection.aggregate([
+                { "$match": {"codi_emp": 1752} },
+                { "$project": {"financy": 1, "_id": 0} },
+                { "$unwind": "$financy.layouts"},
+                { "$lookup": {
+                    "from": "IntegrattionLayouts",
+                    "localField": "idLayout",
+                    "foreignField": "IntegrattionLayouts._id",
+                    "as": "layoutSettings"
+                }}
+            ]).pretty()
         except Exception:
             settings = None
         finally:

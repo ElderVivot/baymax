@@ -169,7 +169,10 @@ class ComparePaymentsFinalWithDataBase(object):
         if nameProvider == "":
             nameProvider = None
 
-        note = int(note)
+        try:
+            note = int(note)
+        except Exception:
+            note = 0
 
         if note == 0 and ddoc_ent is None and dent_ent is None and cgceProvider is None and nameProvider is None:
             return None

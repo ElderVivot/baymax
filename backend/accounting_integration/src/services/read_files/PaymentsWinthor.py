@@ -136,7 +136,7 @@ class PaymentsWinthorExcel(object):
                 idLanc = funcoesUteis.treatNumberFieldInVector(data, 1)
 
                 # paymentDate = self._paymentsDate[idLanc]
-                paymentDate = funcoesUteis.treatDateFieldInVector(data, 19)
+                paymentDate = funcoesUteis.treatDateFieldInVector(data, 18)
 
                 nameProvider = funcoesUteis.treatTextFieldInVector(data, 4)
 
