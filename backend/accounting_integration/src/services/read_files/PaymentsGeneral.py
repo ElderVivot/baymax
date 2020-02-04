@@ -9,6 +9,7 @@ import json
 from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
 from dao.src.ConnectMongo import ConnectMongo
+from bson.objectid import ObjectId
 
 
 class PaymentsGeneral(object):
@@ -34,28 +35,26 @@ class PaymentsGeneral(object):
     #         if textHistoric == "HISTORICO" and ( textUser == "USU.LANC." or textUser == "USU. LANC." ):
     #             return True
 
-    def settingsLayout(self):
+    def settingsLayout(self, layouts):
         try:
-            settings = self.
+            collectionLayouts = self._dbMongo.IntegrattionLayouts
+
+            for layout in layouts:
+                idLayout = funcoesUteis.analyzeIfFieldIsValid(layout, 'idLayout', None)
+
+                settings = collectionLayouts.find_one( { "_id": ObjectId(idLayout) } )
+
+                print(settings)
+        except Exception:
+            pass
     
     def settingsFinancy(self):
         try:
-            settings = self._collection.aggregate([
-                { "$match": {"codi_emp": 1752} },
-                { "$project": {"financy": 1, "_id": 0} },
-                { "$lookup": {
-                    "from": "IntegrattionLayouts",
-                    "localField": "idLayout",
-                    "foreignField": "IntegrattionLayouts._id",
-                    "as": "layoutSettings"
-                }},
-                { "$project": { "layoutSettings": 1, "_id": 0 }}
-            ])
+            settings = self._collection.find_one( { "codi_emp": self._codiEmp } )
 
-            settings = self._collection.aggregate([
-                { "$match": {"codi_emp": 1752} },
-                { "$project": {"financy": 1, "_id": 0} }
-            ]).pretty()
+            layouts = funcoesUteis.returnDataFieldInDict(settings, ['financy', 'layouts'])
+
+            self.settingsLayout(layouts)
         except Exception:
             settings = None
         finally:
@@ -126,47 +125,48 @@ class PaymentsGeneral(object):
         return valuesOfLine
 
     def process(self, file):
-        settingsLayouts = list(self.settingsLayouts())
+        self.settingsFinancy()
+        # settingsLayouts = list(self.settingsFinancy())
 
-        if len(settingsLayouts) == 0:
-            return None
+        # if len(settingsLayouts) == 0:
+        #     return None
 
-        settingsLayouts = settingsLayouts[0]
+        # settingsLayouts = settingsLayouts[0]
 
-        valuesOfLine = {}
+        # valuesOfLine = {}
         valuesOfFile = []
-        posionsOfHeader = {}
+        # posionsOfHeader = {}
 
-        for setting in settingsLayouts['layoutSettings']:
+        # for setting in settingsLayouts['layoutSettings']:
             
-            if setting['layoutType'] != "Financy":
-                return None
+        #     if setting['layoutType'] != "Financy":
+        #         return None
             
-            if setting['fileType'] == 'Excel':
-                dataFile = leXls_Xlsx(file)
-            else:
-                dataFile = []
+        #     if setting['fileType'] == 'Excel':
+        #         dataFile = leXls_Xlsx(file)
+        #     else:
+        #         dataFile = []
 
-            fields = setting['fields']
+        #     fields = setting['fields']
 
-            for key, data in enumerate(dataFile):
+        #     for key, data in enumerate(dataFile):
 
-                try:
-                    posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)
-                    if len(posionsOfHeaderTemp.items()) > 0:
-                        posionsOfHeader = posionsOfHeaderTemp
-                        continue
+        #         try:
+        #             posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)
+        #             if len(posionsOfHeaderTemp.items()) > 0:
+        #                 posionsOfHeader = posionsOfHeaderTemp
+        #                 continue
 
-                    valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
+        #             valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     
-                    paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None))
-                    amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
+        #             paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None))
+        #             amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
                     
-                    if paymentDate is not None and amountPaid > 0:
-                        valuesOfFile.append(valuesOfLine.copy())
+        #             if paymentDate is not None and amountPaid > 0:
+        #                 valuesOfFile.append(valuesOfLine.copy())
 
-                except Exception as e:
-                    pass
+        #         except Exception as e:
+        #             pass
 
         return valuesOfFile
 
@@ -183,5 +183,5 @@ class PaymentsGeneral(object):
 if __name__ == "__main__":
 
     payments = PaymentsGeneral(1117, "C:/integracao_contabil/1117/arquivos_originais", "")
-    print(payments.processAll())
+    payments.processAll()
 
