@@ -35,7 +35,8 @@ class PaymentsGeneral(object):
     #         if textHistoric == "HISTORICO" and ( textUser == "USU.LANC." or textUser == "USU. LANC." ):
     #             return True
 
-    def settingsLayout(self, layouts):
+    def getSettingsLayout(self, layouts):
+        settingsLayouts = []
         try:
             collectionLayouts = self._dbMongo.IntegrattionLayouts
 
@@ -44,17 +45,22 @@ class PaymentsGeneral(object):
 
                 settings = collectionLayouts.find_one( { "_id": ObjectId(idLayout) } )
 
-                print(settings)
+                if settings is not None:
+                    settingsLayouts.append(settings)
         except Exception:
             pass
+
+        return settingsLayouts
     
-    def settingsFinancy(self):
+    def getSettingsFinancy(self):
         try:
             settings = self._collection.find_one( { "codi_emp": self._codiEmp } )
 
             layouts = funcoesUteis.returnDataFieldInDict(settings, ['financy', 'layouts'])
 
-            self.settingsLayout(layouts)
+            settingsLayouts = self.getSettingsLayout(layouts)
+
+            settings['settingsLayouts'] = settingsLayouts
         except Exception:
             settings = None
         finally:
@@ -69,13 +75,12 @@ class PaymentsGeneral(object):
 
         if len(header) == 0:
             return None
-
+        
         for field in data:
             dataManipulate.append(funcoesUteis.treatTextField(field))
         
         countNumberHeader = 0
         for field in header:
-            numberField = field['numberField']
             nameField = funcoesUteis.treatTextField(field['nameField'])
 
             if dataManipulate.count(nameField) > 0:
@@ -125,48 +130,47 @@ class PaymentsGeneral(object):
         return valuesOfLine
 
     def process(self, file):
-        self.settingsFinancy()
-        # settingsLayouts = list(self.settingsFinancy())
+        settingsFinancy = self.getSettingsFinancy()
+        
+        settingsLayouts = settingsFinancy['settingsLayouts']
 
-        # if len(settingsLayouts) == 0:
-        #     return None
+        if len(settingsLayouts) == 0:
+            return None
 
-        # settingsLayouts = settingsLayouts[0]
-
-        # valuesOfLine = {}
+        valuesOfLine = {}
         valuesOfFile = []
-        # posionsOfHeader = {}
+        posionsOfHeader = {}
 
-        # for setting in settingsLayouts['layoutSettings']:
+        for setting in settingsLayouts:
             
-        #     if setting['layoutType'] != "Financy":
-        #         return None
+            if setting['layoutType'] != "Financy":
+                return None
             
-        #     if setting['fileType'] == 'Excel':
-        #         dataFile = leXls_Xlsx(file)
-        #     else:
-        #         dataFile = []
+            if setting['fileType'] == 'Excel':
+                dataFile = leXls_Xlsx(file)
+            else:
+                dataFile = []
 
-        #     fields = setting['fields']
+            fields = setting['fields']
 
-        #     for key, data in enumerate(dataFile):
+            for key, data in enumerate(dataFile):
 
-        #         try:
-        #             posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)
-        #             if len(posionsOfHeaderTemp.items()) > 0:
-        #                 posionsOfHeader = posionsOfHeaderTemp
-        #                 continue
+                try:
+                    posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)
+                    if len(posionsOfHeaderTemp.items()) > 0:
+                        posionsOfHeader = posionsOfHeaderTemp
+                        continue
 
-        #             valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
+                    valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     
-        #             paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None))
-        #             amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
+                    paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None))
+                    amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
                     
-        #             if paymentDate is not None and amountPaid > 0:
-        #                 valuesOfFile.append(valuesOfLine.copy())
+                    if paymentDate is not None and amountPaid > 0:
+                        valuesOfFile.append(valuesOfLine.copy())
 
-        #         except Exception as e:
-        #             pass
+                except Exception as e:
+                    pass
 
         return valuesOfFile
 
@@ -182,6 +186,6 @@ class PaymentsGeneral(object):
 
 if __name__ == "__main__":
 
-    payments = PaymentsGeneral(1117, "C:/integracao_contabil/1117/arquivos_originais", "")
-    payments.processAll()
+    payments = PaymentsGeneral(1342, "C:/integracao_contabil/1342/arquivos_originais", "")
+    print(payments.processAll())
 

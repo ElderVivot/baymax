@@ -41,7 +41,10 @@ class ProcessIntegration(object):
         # self._inicialDate = '01/11/2019'
         # self._finalDate = '30/11/2019'
         self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}.json')
-        self._settings = leArquivos.readJson(self._waySettings)
+        if os.path.exists(self._waySettings) is False:
+            self._settings = []
+        else:
+            self._settings = leArquivos.readJson(self._waySettings)
 
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
         self._wayFilesTemp = os.path.join(fileDir, f'backend/accounting_integration/data/temp/{self._codiEmp}')
