@@ -136,7 +136,7 @@ class ComparePaymentsAndProofWithExtracts(object):
 
         paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)
         smallerDifferenceBetweenDates = None
-        extractReturn = []
+        extractReturn = {}
         
         for extract in extractsFound:
             extractDate = funcoesUteis.retornaCampoComoData(extract['dateTransaction'])
@@ -215,7 +215,7 @@ class ComparePaymentsAndProofWithExtracts(object):
             if self._financyIsReliable is True:
                 dateOfImport = paymentFinal["paymentDate"]
             else:
-                if extract is not None and bank == paymentFinal["bankExtract"]:
+                if len(extract) > 0 and ( bank == paymentFinal["bankExtract"] or bank == "" ):
                     dateOfImport = paymentFinal["dateExtract"]
                 else:
                     dateOfImport = paymentFinal["paymentDate"]

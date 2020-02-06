@@ -16,12 +16,14 @@ from services.read_files.ExtractsOFX import ExtractsOFX
 from services.read_files.ReadPDFs import ReadPDFs
 from services.read_files.CallReadFilePayments import CallReadFilePayments
 from services.read_files.CallReadFileProofs import CallReadFileProofs
+from services.read_files.PaymentsGeneral import PaymentsGeneral
 from services.rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWithExtracts
 from services.rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
 from services.rules.GenerateExcel import GenerateExcel
 from services.rules.FilterPeriod import FilterPeriod
 from services.rules.CompareWithSettings import CompareWithSettings
 from services.rules.ReturnFilesDontFindForm import ReturnFilesDontFindForm
+from dao.src.GetSettingsCompany import GetSettingsCompany
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
 wayDefault = json.load(wayToSaveFiles)
@@ -34,15 +36,16 @@ class ProcessIntegration(object):
         self._paymentsDates = []
         self._proofsOfPayments = []
         self._extracts = []
-        self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: ')
+        self._codiEmp = int(input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: '))
         self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
         self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
-        # self._codiEmp = 1428
-        # self._inicialDate = '01/11/2019'
-        # self._finalDate = '30/11/2019'
+        # self._codiEmp = 1342
+        # self._inicialDate = '01/01/2019'
+        # self._finalDate = '31/01/2019'
         self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}.json')
         if os.path.exists(self._waySettings) is False:
-            self._settings = []
+            getSettingsCompany = GetSettingsCompany(self._codiEmp)
+            self._settings = getSettingsCompany.getSettingsFinancy()
         else:
             self._settings = leArquivos.readJson(self._waySettings)
 
@@ -79,10 +82,15 @@ class ProcessIntegration(object):
 
         # reads the financy
         print(' - Etapa 3: Lendo o financeiro do cliente')
-        if self._settings["financy"]["has"] is True:
-            systemFinancy = self._settings["financy"]["system"]
-            callReadFilePayments = CallReadFilePayments(systemFinancy, self._codiEmp, self._wayFilesToRead, self._wayFilesTemp)
-            self._payments = callReadFilePayments.process()
+        hasFinancy = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "has"])
+        if hasFinancy is True:
+            systemFinancy = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "system"])
+            if systemFinancy == "":
+                paymentsGeneral = PaymentsGeneral(self._codiEmp, self._wayFilesToRead, self._settings)
+                self._payments = paymentsGeneral.processAll()
+            else:
+                callReadFilePayments = CallReadFilePayments(systemFinancy, self._codiEmp, self._wayFilesToRead, self._wayFilesTemp)
+                self._payments = callReadFilePayments.process()
         else:
             print('\t - Cliente sem a configuração do sistema financeiro realizada (provavelmente esta empresa não possui)')
 

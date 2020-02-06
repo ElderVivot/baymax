@@ -8,21 +8,15 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import json
 from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
-from dao.src.ConnectMongo import ConnectMongo
-from bson.objectid import ObjectId
 
 
 class PaymentsGeneral(object):
 
-    def __init__(self, codiEmp, wayOriginalToRead, wayTemp):
+    def __init__(self, codiEmp, wayOriginalToRead, settings):
         self._codiEmp = codiEmp
         self._wayOriginalToRead = wayOriginalToRead
-        self._wayTemp = wayTemp
+        self._settings = settings
         self._payments = []
-
-        self._connectionMongo = ConnectMongo()
-        self._dbMongo = self._connectionMongo.getConnetion()
-        self._collection = self._dbMongo.IntegrattionCompanies
 
     # def isPayment(self, file):
     #     dataFile = leXls_Xlsx(file)
@@ -34,39 +28,6 @@ class PaymentsGeneral(object):
 
     #         if textHistoric == "HISTORICO" and ( textUser == "USU.LANC." or textUser == "USU. LANC." ):
     #             return True
-
-    def getSettingsLayout(self, layouts):
-        settingsLayouts = []
-        try:
-            collectionLayouts = self._dbMongo.IntegrattionLayouts
-
-            for layout in layouts:
-                idLayout = funcoesUteis.analyzeIfFieldIsValid(layout, 'idLayout', None)
-
-                settings = collectionLayouts.find_one( { "_id": ObjectId(idLayout) } )
-
-                if settings is not None:
-                    settingsLayouts.append(settings)
-        except Exception:
-            pass
-
-        return settingsLayouts
-    
-    def getSettingsFinancy(self):
-        try:
-            settings = self._collection.find_one( { "codi_emp": self._codiEmp } )
-
-            layouts = funcoesUteis.returnDataFieldInDict(settings, ['financy', 'layouts'])
-
-            settingsLayouts = self.getSettingsLayout(layouts)
-
-            settings['settingsLayouts'] = settingsLayouts
-        except Exception:
-            settings = None
-        finally:
-            self._connectionMongo.closeConnection()
-
-        return settings
 
     def identifiesTheHeader(self, data, settingLayout):
         posionsOfHeader = {}
@@ -130,9 +91,7 @@ class PaymentsGeneral(object):
         return valuesOfLine
 
     def process(self, file):
-        settingsFinancy = self.getSettingsFinancy()
-        
-        settingsLayouts = settingsFinancy['settingsLayouts']
+        settingsLayouts = funcoesUteis.analyzeIfFieldIsValid( self._settings, 'settingsLayouts')
 
         if len(settingsLayouts) == 0:
             return None
@@ -165,6 +124,7 @@ class PaymentsGeneral(object):
                     
                     paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None))
                     amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
+                    valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
                     if paymentDate is not None and amountPaid > 0:
                         valuesOfFile.append(valuesOfLine.copy())
