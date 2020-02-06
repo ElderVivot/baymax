@@ -119,9 +119,12 @@ def leXls_Xlsx(arquivo, nameSheetToFilter='filterAll'):
                         if tipo_valor == 2:
                             valor_casas_decimais = valor_celula.split('.')
                             valor_casas_decimais = valor_casas_decimais[1]
-                            if int(valor_casas_decimais) == 0:
-                                valor_celula = valor_celula.split('.')
-                                valor_celula = valor_celula[0]
+                            try:
+                                if int(valor_casas_decimais) == 0:
+                                    valor_celula = valor_celula.split('.')
+                                    valor_celula = valor_celula[0]
+                            except Exception:
+                                valor_celula = valor_celula
                         elif tipo_valor == 3:
                             valor_celula = float(planilha.cell_value(rowx=i, colx=j))
                             valor_celula = xlrd.xldate.xldate_as_datetime(valor_celula, datemode=0)
