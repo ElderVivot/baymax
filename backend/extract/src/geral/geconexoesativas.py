@@ -18,6 +18,7 @@ from dao.src.ConnectMongo import ConnectMongo
 from apscheduler.schedulers.blocking import BlockingScheduler
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
 
+
 class extractGeConexoesAtivas():
     def __init__(self):
         self._DB = DB()
@@ -46,6 +47,8 @@ class extractGeConexoesAtivas():
                 connectionActive['hourProcess'] = self._hourProcessing
                 self._collection.insert_one(connectionActive)
 
+            print(f'Dados exportados - {self._hourProcessing}')
+
         except Exception as e:
             print(f"Erro ao executar a consulta. O erro é: {e}")
         finally:
@@ -60,7 +63,6 @@ if __name__ == "__main__":
     def instantiateObject():
         geconexoesativas = extractGeConexoesAtivas()
         geconexoesativas.exportData()
-        print('Dados exportados')
 
     scheduler = BlockingScheduler(timezone=utc)
     scheduler.add_job(instantiateObject, 'interval', minutes=1)
