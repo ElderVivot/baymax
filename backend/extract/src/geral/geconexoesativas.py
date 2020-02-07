@@ -8,6 +8,7 @@ fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend/extract/src'))
 sys.path.append(os.path.join(fileDir, 'backend'))
 
+from pytz import utc
 import pandas as pd
 import pyodbc
 import json
@@ -27,12 +28,15 @@ class extractGeConexoesAtivas():
         self._hourProcessing = datetime.now()
         self._connectionMongo = ConnectMongo()
         self._dbMongo = self._connectionMongo.getConnetion()
-        self._collection = self._dbMongo['ExtractConnectionsDominioActive']
+        self._collection = self._dbMongo['ExtractConnectionsDominioActiveTotal']
 
     def exportData(self):
         try:
             self._cursor = self._connection.cursor()
-            sql = ("SELECT * FROM bethadba.geconexoesativas ORDER BY usuario")
+            # sql = ("SELECT * FROM bethadba.geconexoesativas ORDER BY usuario")
+            sql = ("SELECT count(usuarios.usuario) AS qtd"
+                   "  FROM ( SELECT DISTINCT usuario, estacao"
+                             " FROM bethadba.geconexoesativas ) AS usuarios")
             self._cursor.execute(sql)
 
             df = pd.read_sql_query(sql, self._connection)
@@ -58,7 +62,7 @@ if __name__ == "__main__":
         geconexoesativas.exportData()
         print('Dados exportados')
 
-    scheduler = BlockingScheduler()
-    scheduler.add_job(instantiateObject, 'interval', seconds=30)
+    scheduler = BlockingScheduler(timezone=utc)
+    scheduler.add_job(instantiateObject, 'interval', minutes=1)
     scheduler.start()
 
