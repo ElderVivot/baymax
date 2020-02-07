@@ -133,7 +133,7 @@ class ReadExcelToUpdateOrExportData(object):
     def getExtracts(self):
         dataFile = leXls_Xlsx(self._file, 'ExtratosBancarios')
 
-        for data in dataFile:
+        for key, data in enumerate(dataFile):
             if str(data[0]).upper().count('DATA') > 0:
                 self._posionsOfHeaderExtracts.clear()
                 for keyField, nameField in enumerate(data):
