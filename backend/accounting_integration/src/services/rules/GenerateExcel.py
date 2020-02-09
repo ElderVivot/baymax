@@ -59,7 +59,7 @@ class GenerateExcel(object):
         sheet.write(0, 11, "Data Extrato", self._cell_format_header)
         sheet.write(0, 12, "Tipo Transacao", self._cell_format_header)
         sheet.write(0, 13, "Operacao", self._cell_format_header)
-        sheet.write(0, 14, "Valor", self._cell_format_header)
+        sheet.write(0, 14, "Valor Extrato", self._cell_format_header)
         sheet.write(0, 15, "Documento", self._cell_format_header)
         sheet.write(0, 16, "Historico Extrato", self._cell_format_header)
 

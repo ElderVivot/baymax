@@ -170,14 +170,17 @@ def treatDecimalField(value, numberOfDecimalPlaces=2):
     try:
         value = str(value)
         value = re.sub('[^0-9.,-]', '', value)
-        if value.find(',') > 0 and value.find('.') > 0:
+        if value.find(',') >= 0 and value.find('.') >= 0:
             value = value.replace('.','')
 
-        if value.find(','):
+        if value.find(',') >= 0:
             value = value.replace(',','.')
+
+        if value.find('.') < 0:
+            value = int(value)
         
         return float(value)
-    except Exception:
+    except Exception as e:
         return float(0)
 
 def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):

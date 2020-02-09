@@ -8,6 +8,7 @@ fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend/extract/src'))
 sys.path.append(os.path.join(fileDir, 'backend'))
 
+from pytz import utc
 import pandas as pd
 import pyodbc
 import json
@@ -16,6 +17,7 @@ from db.ConexaoBanco import DB
 from dao.src.ConnectMongo import ConnectMongo
 from apscheduler.schedulers.blocking import BlockingScheduler
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
+
 
 class extractGeConexoesAtivas():
     def __init__(self):
@@ -27,12 +29,15 @@ class extractGeConexoesAtivas():
         self._hourProcessing = datetime.now()
         self._connectionMongo = ConnectMongo()
         self._dbMongo = self._connectionMongo.getConnetion()
-        self._collection = self._dbMongo['ExtractConnectionsDominioActive']
+        self._collection = self._dbMongo['ExtractConnectionsDominioActiveTotal']
 
     def exportData(self):
         try:
             self._cursor = self._connection.cursor()
-            sql = ("SELECT * FROM bethadba.geconexoesativas ORDER BY usuario")
+            # sql = ("SELECT * FROM bethadba.geconexoesativas ORDER BY usuario")
+            sql = ("SELECT count(usuarios.usuario) AS qtd"
+                   "  FROM ( SELECT DISTINCT usuario, estacao"
+                             " FROM bethadba.geconexoesativas ) AS usuarios")
             self._cursor.execute(sql)
 
             df = pd.read_sql_query(sql, self._connection)
@@ -41,6 +46,8 @@ class extractGeConexoesAtivas():
             for connectionActive in data:
                 connectionActive['hourProcess'] = self._hourProcessing
                 self._collection.insert_one(connectionActive)
+
+            print(f'Dados exportados - {self._hourProcessing}')
 
         except Exception as e:
             print(f"Erro ao executar a consulta. O erro é: {e}")
@@ -56,9 +63,8 @@ if __name__ == "__main__":
     def instantiateObject():
         geconexoesativas = extractGeConexoesAtivas()
         geconexoesativas.exportData()
-        print('Dados exportados')
 
-    scheduler = BlockingScheduler()
-    scheduler.add_job(instantiateObject, 'interval', seconds=30)
+    scheduler = BlockingScheduler(timezone=utc)
+    scheduler.add_job(instantiateObject, 'interval', minutes=1)
     scheduler.start()
 
