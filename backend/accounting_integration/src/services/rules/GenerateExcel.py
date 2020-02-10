@@ -30,16 +30,17 @@ class GenerateExcel(object):
             os.makedirs(self._wayBaseToSaveFiles)
 
         if update is False:
-            self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"integracao_contabil_{self._codiEmp} {funcoesUteis.getDateTimeNowInFormatStr()}.xlsx"))
+            self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"integracao_contabil_{self._codiEmp}_{funcoesUteis.getDateTimeNowInFormatStr()}.xlsx"))
         else:
             self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"atualizado_{nameFileUpdate}"))
         
-        self._cell_format_header = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'yellow'})
+        self._cell_format_header = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'yellow', 'text_wrap': True})
         self._cell_format_money = self._workbook.add_format({'num_format': '##0.00'})
         self._cell_format_date = self._workbook.add_format({'num_format': 'dd/mm/yyyy'})
         
     def sheetExtract(self, extracts):
         sheet = self._workbook.add_worksheet('ExtratosBancarios')
+        sheet.freeze_panes(1, 0)
 
         sheet.set_column(11,11,options={'hidden':True})
         sheet.set_column(12,12,options={'hidden':True})
@@ -99,9 +100,11 @@ class GenerateExcel(object):
 
     def sheetPayments(self, payments):
         sheet = self._workbook.add_worksheet('Pagamentos')
+        sheet.freeze_panes(1, 0)
 
         sheet.set_column(2,2,options={'hidden':True}) # parcela
         sheet.set_column(4,4,options={'hidden':True}) # cnpj fornecedor
+        sheet.set_column(7,7,options={'hidden':True}) # comprovante pagto
         sheet.set_column(9,9,options={'hidden':True}) # data extrato
         sheet.set_column(11,11,options={'hidden':True}) # data vencimento
         sheet.set_column(12,12,options={'hidden':True}) # data emissão
