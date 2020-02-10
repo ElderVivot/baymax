@@ -15,9 +15,39 @@ class LivroCaixaRural(object):
         self._codiEmp = codiEmp
         self._wayOriginalToRead = wayOriginalToRead
         self._livroCaixaRural = []
+        self._accountPlan = {}
+
+    def processAccountPlan(self, dataFile):
+        for key, data in enumerate(dataFile):
+
+            try:
+                recordType = data[0:2]
+                account = data[2:10]
+                nameAccount = funcoesUteis.treatTextField(data[246:356])
+
+                if recordType == '05':
+                    self._accountPlan[account] = nameAccount
+
+            except Exception as e:
+                pass
+
+    def searchIfANote(self, historic):
+        positionNote = -1
+
+        if historic.find(' NUMERO') >= 0:
+            positionNote = historic.find(' NUMERO') + len(' NUMERO')
+
+        if historic.find(' NF') >= 0:
+            positionNote = historic.find(' NF') + len(' NF')
+
+        if positionNote >= 0:
+            note = historic[positionNote:]
+            print(note)            
 
     def process(self, file):
         dataFile = leTxt(file)
+
+        self.processAccountPlan(dataFile)
 
         valuesOfLine = {}
         valuesOfFile = []
@@ -26,19 +56,28 @@ class LivroCaixaRural(object):
 
             try:
                 recordType = data[0:2]
-                dateLivro = data[3:11]
+                dateLivro = funcoesUteis.retornaCampoComoData(data[3:11], 4)
                 account = data[11:19]
-                historic = data[19:274]
-                amount = data[274:287]
+                nameAccount = funcoesUteis.analyzeIfFieldIsValid(self._accountPlan, account)
+                historic = funcoesUteis.treatTextField(data[19:274])
+                amount = funcoesUteis.treatDecimalField(f'{data[274:285]},{data[285:287]}')
+
+                self.searchIfANote(historic)
 
                 if account[0] == "1":
-                    amountEntry = amount
+                    movementType = 'Receitas'
                 else:
-                    amountOutput = amount
+                    movementType = 'Despesas'
 
-                # valuesOfLine = {
-
-                # }            
+                if recordType == "03":
+                    valuesOfLine = {
+                        'dateLivro': funcoesUteis.transformaCampoDataParaFormatoBrasileiro(dateLivro),
+                        'movementType':movementType,
+                        'account': account,
+                        'nameAccount': nameAccount,
+                        'amount': amount,
+                        'historic': historic
+                    }            
 
                 valuesOfFile.append(valuesOfLine.copy())
 
@@ -52,15 +91,13 @@ class LivroCaixaRural(object):
             for file in files:
                 wayFile = os.path.join(root, file)
 
-                if file.lower().endswith(('.xls', '.xlsx')):
+                if file.lower().endswith(('.dbk', '.txt')):
                     self._livroCaixaRural.append(self.process(wayFile))
 
         return funcoesUteis.removeAnArrayFromWithinAnother(self._livroCaixaRural)
 
-# if __name__ == "__main__":
-#     paymentsWinthorPDF = PaymentsWinthorPDF("C:/_temp/integracao_diviart/teste.txt")
-#     paymentDates = paymentsWinthorPDF.returnPaymentsDates()
+if __name__ == "__main__":
 
-#     paymentsWinthorExcel = PaymentsWinthorExcel("1428")
-#     print(paymentsWinthorExcel.processPayments("C:/_temp/integracao_diviart/Contas Pagas.xls", paymentDates))
+    livroCaixaRural = LivroCaixaRural(1428, 'C:/integracao_contabil/1593/arquivos_originais')
+    livroCaixaRural.processAll()
 
