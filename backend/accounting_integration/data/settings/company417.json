@@ -3,7 +3,7 @@
         "has": true,
         "system": "faaftech",
         "banksConfiguration": {
-            "47": "SICOOB"
+            "47": "SICOOB 9398"
         },
         "isReliable": true,
         "generateDataOnlyIfBankIsInTheConfiguration": true

@@ -46,7 +46,7 @@ class extractGeConexoesAtivas():
             for connectionActive in data:
                 connectionActive['hourProcess'] = self._hourProcessing
                 self._collection.insert_one(connectionActive)
-
+            
             print(f'Dados exportados - {self._hourProcessing}')
 
         except Exception as e:
