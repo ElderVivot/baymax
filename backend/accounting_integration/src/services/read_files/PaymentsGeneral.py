@@ -17,6 +17,7 @@ class PaymentsGeneral(object):
         self._wayOriginalToRead = wayOriginalToRead
         self._settings = settings
         self._payments = []
+        self._valuesOfLineGroup = {}
 
     # def isPayment(self, file):
     #     dataFile = leXls_Xlsx(file)
@@ -54,14 +55,31 @@ class PaymentsGeneral(object):
 
         return posionsOfHeader
 
+    def identifiesIfTheRowCorrect(self, row, data):
+        if row == "":
+            return None
+
+        numberField = funcoesUteis.analyzeIfFieldIsValid(row, 'numberField')
+        validation = funcoesUteis.analyzeIfFieldIsValid(row, 'validation')
+
+        if validation == "isDate":
+            valueField = funcoesUteis.treatDateFieldInVector(data, numberField)
+            if valueField is not None:
+                return True
+
     def treatDataLayout(self, data, settingFields, positionsOfHeader):
         valuesOfLine = {}
 
         for key, settingField in settingFields.items():
             numberField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'numberField')
             nameField = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField'))
+            validField = False
+
+            row = funcoesUteis.analyzeIfFieldIsValid(settingField, 'row')
+            isRowCorrect = self.identifiesIfTheRowCorrect(row, data)
+            rowIsMain = 'not_main' if isRowCorrect is True else 'main'
             
-            if key.find('date') >= 0:
+            if key.lower().find('date') >= 0:
                 formatDate = funcoesUteis.analyzeIfFieldIsValid(settingField, 'formatDate')
                 if formatDate == 'dd/mm/aaaa':
                     formatDate = 1
@@ -70,9 +88,15 @@ class PaymentsGeneral(object):
                 else:
                     formatDate = 1
                 
-                valuesOfLine[key] = funcoesUteis.treatDateFieldInVector(data, numberField, positionsOfHeader, nameField, formatDate)
-            elif key.find('amount') >= 0:
-                valuesOfLine[key] = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeader, nameField)
+                valueField = funcoesUteis.treatDateFieldInVector(data, numberField, positionsOfHeader, nameField, formatDate, rowIsMain)
+
+                if valueField is not None:
+                    validField = True
+            elif key.lower().find('amount') >= 0:
+                valueField = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeader, nameField)
+
+                if valueField != 0:
+                    validField = True
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
 
@@ -86,9 +110,25 @@ class PaymentsGeneral(object):
                         valueField = ''.join(valueField[0:])
                     valueField = funcoesUteis.minimalizeSpaces(valueField)
 
-                valuesOfLine[key] = valueField
+                if valueField != "":
+                    validField = True
 
+            if validField is True:
+                valuesOfLine['row'] = rowIsMain
+                valuesOfLine[key] = valueField                    
+        print(valuesOfLine)
         return valuesOfLine
+
+    def groupsRowData(self, data):
+        row = funcoesUteis.analyzeIfFieldIsValid(data, 'row')
+
+        if row == 'main':
+            self._valuesOfLineGroup.clear()
+
+        for nameField, valueField in data.items():
+            self._valuesOfLineGroup[nameField] = valueField
+
+        return self._valuesOfLineGroup
 
     def process(self, file):
         settingsLayouts = funcoesUteis.analyzeIfFieldIsValid( self._settings, 'settingsLayouts')
@@ -116,21 +156,23 @@ class PaymentsGeneral(object):
 
                 try:
                     posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)
-                    if len(posionsOfHeaderTemp.items()) > 0:
-                        posionsOfHeader = posionsOfHeaderTemp
-                        continue
+                    if posionsOfHeaderTemp is not None:
+                        if len(posionsOfHeaderTemp.items()) > 0:
+                            posionsOfHeader = posionsOfHeaderTemp
+                            continue
 
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
+                    valuesOfLine = self.groupsRowData(valuesOfLine)
                     
                     paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None))
                     amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
-                    if paymentDate is not None and amountPaid > 0:
+                    if paymentDate is not None and amountPaid != 0:
                         valuesOfFile.append(valuesOfLine.copy())
 
                 except Exception as e:
-                    pass
+                    print(e)
 
         return valuesOfFile
 
@@ -144,8 +186,15 @@ class PaymentsGeneral(object):
 
         return funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
 
+
+
 if __name__ == "__main__":
 
-    payments = PaymentsGeneral(1342, "C:/integracao_contabil/1342/arquivos_originais", "")
+    from dao.src.GetSettingsCompany import GetSettingsCompany
+
+    getSettingsCompany = GetSettingsCompany(1498)
+    settings = getSettingsCompany.getSettingsFinancy()
+
+    payments = PaymentsGeneral(1498, "C:/integracao_contabil/1498/arquivos_originais", settings)
     print(payments.processAll())
 

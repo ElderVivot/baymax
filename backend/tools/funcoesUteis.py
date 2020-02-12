@@ -183,17 +183,21 @@ def treatDecimalField(value, numberOfDecimalPlaces=2):
     except Exception as e:
         return float(0)
 
-def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
+def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', row='main'):
     """
     :param data: Informar o array de dados que quer ler
     :param numberOfField: numero do campo na planilha (opcional)
     :param fieldsHeader: linha do cabeçalho armazenado num vetor (opcional)
     :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
+    :param row: este serve pra caso não seja um pagamento que esteja na linha principal (que não tem cabeçalho, então pegar apenas pelo número do campo). O valor 'main' quer dizer que tá numa linha que pode ter cabeçalho
     :return: retorna um campo como decimal
     """
     if len(fieldsHeader) > 0:
         try:
-            return treatDecimalField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
+            if row == 'main':
+                return treatDecimalField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
+            else:
+                return treatDecimalField(data[numberOfField-1])
         except Exception:
             try:
                 return treatDecimalField(data[numberOfField-1])
@@ -230,18 +234,22 @@ def retornaCampoComoData(valorCampo, formatoData=1):
     except ValueError:
         return None
 
-def treatDateFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', formatoData=1):
+def treatDateFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', formatoData=1, row='main'):
     """
     :param data: Informar o array de dados que quer ler
     :param numberOfField: numero do campo na planilha (opcional)
     :param fieldsHeader: linha do cabeçalho armazenado num vetor (opcional)
     :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
     :param formatoData: 1 = 'DD/MM/YYYY' ; 2 = 'YYYY-MM-DD (opcional)
+    :param row: este serve pra caso não seja um pagamento que esteja na linha principal (que não tem cabeçalho, então pegar apenas pelo número do campo). O valor 'main' quer dizer que tá numa linha que pode ter cabeçalho
     :return: retorna um campo como decimal
     """
     if len(fieldsHeader) > 0:
         try:
-            return retornaCampoComoData(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)], formatoData)
+            if row == 'main':
+                return retornaCampoComoData(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)], formatoData)
+            else:
+                return retornaCampoComoData(data[numberOfField-1], formatoData)
         except Exception:
             try:
                 return retornaCampoComoData(data[numberOfField-1], formatoData)
