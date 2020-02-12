@@ -94,7 +94,7 @@ class ReadExcelToUpdateOrExportData(object):
             historicExtract = funcoesUteis.treatTextFieldInVector(data, 25, self._posionsOfHeaderPayments, "Historico Extrato Bancário")
             accountCodeOld = funcoesUteis.treatNumberFieldInVector(data, 26, self._posionsOfHeaderPayments, "Conta Contabil Sistema Cliente")
 
-            if amountPaid > 0:
+            if amountPaid != 0:
                 self._paymentsOfLine = {
                     "document": document,
                     "findNote": findNote,
