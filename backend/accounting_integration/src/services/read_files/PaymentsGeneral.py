@@ -17,7 +17,7 @@ class PaymentsGeneral(object):
         self._wayOriginalToRead = wayOriginalToRead
         self._settings = settings
         self._payments = []
-        self._valuesOfLineGroup = {}
+        self._fieldsRowNotMain = {}
 
     # def isPayment(self, file):
     #     dataFile = leXls_Xlsx(file)
@@ -77,7 +77,10 @@ class PaymentsGeneral(object):
 
             row = funcoesUteis.analyzeIfFieldIsValid(settingField, 'row')
             isRowCorrect = self.identifiesIfTheRowCorrect(row, data)
-            rowIsMain = 'not_main' if isRowCorrect is True else 'main'
+            
+            rowIsMain = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'row')
+            if rowIsMain == "" or rowIsMain == "main":
+                rowIsMain = 'not_main' if isRowCorrect is True else 'main'
             
             if key.lower().find('date') >= 0:
                 formatDate = funcoesUteis.analyzeIfFieldIsValid(settingField, 'formatDate')
@@ -116,19 +119,32 @@ class PaymentsGeneral(object):
             if validField is True:
                 valuesOfLine['row'] = rowIsMain
                 valuesOfLine[key] = valueField                    
-        print(valuesOfLine)
+        
         return valuesOfLine
 
-    def groupsRowData(self, data):
+    def updateFieldsNotMain(self, data, settingFields):
         row = funcoesUteis.analyzeIfFieldIsValid(data, 'row')
 
-        if row == 'main':
-            self._valuesOfLineGroup.clear()
+        if row == 'not_main':
+            for nameField, valueField in data.items():
 
-        for nameField, valueField in data.items():
-            self._valuesOfLineGroup[nameField] = valueField
+                fieldIsAnotherRow = funcoesUteis.returnDataFieldInDict(settingFields, [nameField, 'row'])
+                if fieldIsAnotherRow != "":
+                    if nameField.lower().find('date') >= 0:
+                        if valueField is not None:
+                            self._fieldsRowNotMain[nameField] = valueField
+                    elif nameField.lower().find('amount') >= 0:
+                        if valueField != 0:
+                            self._fieldsRowNotMain[nameField] = valueField
+                    else:
+                        if valueField != "":
+                            self._fieldsRowNotMain[nameField] = valueField
 
-        return self._valuesOfLineGroup
+    def groupsRowData(self, valuesOfLine):
+        for nameField, valueField in self._fieldsRowNotMain.items():
+            valuesOfLine[nameField] = valueField
+        
+        return valuesOfLine
 
     def process(self, file):
         settingsLayouts = funcoesUteis.analyzeIfFieldIsValid( self._settings, 'settingsLayouts')
@@ -162,9 +178,11 @@ class PaymentsGeneral(object):
                             continue
 
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
+                    self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
+                    # print(valuesOfLine)
                     
-                    paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None))
+                    paymentDate = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None)
                     amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
@@ -173,7 +191,7 @@ class PaymentsGeneral(object):
 
                 except Exception as e:
                     print(e)
-
+                    
         return valuesOfFile
 
     def processAll(self):
