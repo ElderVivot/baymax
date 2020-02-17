@@ -66,7 +66,7 @@ class PaymentsLysPorMoeda(object):
                 if paymentDate is not None:
                     valuesOfLine = {
                         "idAccountPaid": idAccountPaid,
-                        "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
+                        "paymentDate": paymentDate,
                         "bank": bank,
                         "accountBank": accountBank,
                         "accountCode": accountCode

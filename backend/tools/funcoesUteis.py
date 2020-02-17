@@ -215,6 +215,9 @@ def retornaCampoComoData(valorCampo, formatoData=1):
     :param formatoData: 1 = 'DD/MM/YYYY' ; 2 = 'YYYY-MM-DD' ; 3 = 'YYYY/MM/DD' ; 4 = 'DDMMYYYY'
     :return: retorna como uma data. Caso não seja uma data válida irá retornar None
     """
+    if type(valorCampo) == 'datetime.date':
+        return valorCampo
+
     valorCampo = str(valorCampo).strip()
 
     lengthField = 10 # tamanho padrão da data são 10 caracteres, só muda se não tiver os separados de dia, mês e ano
@@ -363,3 +366,11 @@ def updateFilesRead(wayTempFileRead, file, layoutModel):
     json.dump(filesRead, filesWrite)
 
     filesWrite.close()
+
+def handleNote(nota, lista_char=["-","/"]):
+    for char in lista_char:
+        if nota.count(char) > 0:
+            nota = nota.split(char)
+            nota = nota[0]
+            break
+    return treatNumberField(nota)

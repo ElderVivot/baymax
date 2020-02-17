@@ -75,9 +75,9 @@ class ReadExcelToUpdateOrExportData(object):
             else:
                 foundProof = ""
 
-            paymentDate = funcoesUteis.treatTextFieldInVector(data, 9, self._posionsOfHeaderPayments, "Data Financeiro")
-            extractDate = funcoesUteis.treatTextFieldInVector(data, 10, self._posionsOfHeaderPayments, "Data Extrato")
-            dateOfImport = funcoesUteis.treatTextFieldInVector(data, 11, self._posionsOfHeaderPayments, "Importação Domínio")
+            paymentDate = funcoesUteis.treatDateFieldInVector(data, 9, self._posionsOfHeaderPayments, "Data Financeiro")
+            extractDate = funcoesUteis.treatDateFieldInVector(data, 10, self._posionsOfHeaderPayments, "Data Extrato")
+            dateOfImport = funcoesUteis.treatDateFieldInVector(data, 11, self._posionsOfHeaderPayments, "Importação Domínio")
             dueDate = funcoesUteis.treatTextFieldInVector(data, 12, self._posionsOfHeaderPayments, "Vencimento")
             issueDate = funcoesUteis.treatTextFieldInVector(data, 13, self._posionsOfHeaderPayments, "Emissão")
             amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 14, self._posionsOfHeaderPayments, "Valor Pago")
@@ -170,7 +170,7 @@ class ReadExcelToUpdateOrExportData(object):
                 "historicCode": historicCode,
                 "historic": historic,
                 "foundProofInPayments": foundProofInPayments,
-                "bankId": bank,
+                "bank": bank,
                 "account": account,
                 "typeTransaction": typeTransaction,
                 "operation": operation,

@@ -67,8 +67,8 @@ class GenerateExcel(object):
         for key, extract in enumerate(extracts):
             row = key+1
 
-            dateExtract = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction"))
-            bank = funcoesUteis.analyzeIfFieldIsValid(extract, "bankId")
+            dateExtract = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
+            bank = funcoesUteis.analyzeIfFieldIsValid(extract, "bank")
             account = funcoesUteis.analyzeIfFieldIsValid(extract, "account")
             typeTransaction = funcoesUteis.analyzeIfFieldIsValid(extract, "typeTransaction")
             operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")
@@ -150,8 +150,8 @@ class GenerateExcel(object):
             bankAndAccount = f'{funcoesUteis.analyzeIfFieldIsValid(payment, "bank")}-{funcoesUteis.analyzeIfFieldIsValid(payment, "account")}'
             bankAndAccountExtract = f'{funcoesUteis.analyzeIfFieldIsValid(payment, "bankExtract")}-{funcoesUteis.analyzeIfFieldIsValid(payment, "accountExtract")}'
             foundProof = funcoesUteis.analyzeIfFieldIsValid(payment, "foundProof")
-            paymentDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "paymentDate", None))
-            extractDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dateExtract", None))
+            paymentDate = funcoesUteis.analyzeIfFieldIsValid(payment, "paymentDate", None)
+            extractDate = funcoesUteis.analyzeIfFieldIsValid(payment, "dateExtract", None)
             dateOfImport = funcoesUteis.analyzeIfFieldIsValid(payment, "dateOfImport", None)
             dueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "dueDate"))
             issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(payment, "issueDate"))

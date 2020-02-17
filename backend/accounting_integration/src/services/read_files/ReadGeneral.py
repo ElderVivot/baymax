@@ -10,25 +10,15 @@ from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
 
 
-class PaymentsGeneral(object):
+class ReadGeneral(object):
 
     def __init__(self, codiEmp, wayOriginalToRead, settings):
         self._codiEmp = codiEmp
         self._wayOriginalToRead = wayOriginalToRead
         self._settings = settings
         self._payments = []
+        self._extracts = []
         self._fieldsRowNotMain = {}
-
-    # def isPayment(self, file):
-    #     dataFile = leXls_Xlsx(file)
-
-    #     for data in dataFile:
-    #         textComparateOne = funcoesUteis.treatTextFieldInVector(data, 2)
-
-    #         textCompara = funcoesUteis.treatTextFieldInVector(data, 8)
-
-    #         if textHistoric == "HISTORICO" and ( textUser == "USU.LANC." or textUser == "USU. LANC." ):
-    #             return True
 
     def identifiesTheHeader(self, data, settingLayout):
         posionsOfHeader = {}
@@ -56,16 +46,28 @@ class PaymentsGeneral(object):
         return posionsOfHeader
 
     def identifiesIfTheRowCorrect(self, row, data):
-        if row == "":
+        if len(row) == 0:
             return None
 
-        numberField = funcoesUteis.analyzeIfFieldIsValid(row, 'numberField')
-        validation = funcoesUteis.analyzeIfFieldIsValid(row, 'validation')
+        countHeaderEquals = 0
 
-        if validation == "isDate":
-            valueField = funcoesUteis.treatDateFieldInVector(data, numberField)
-            if valueField is not None:
-                return True
+        for rowValidation in row:
+            numberField = funcoesUteis.analyzeIfFieldIsValid(rowValidation, 'numberField')
+            validation = funcoesUteis.analyzeIfFieldIsValid(rowValidation, 'validation')
+            value = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(rowValidation, 'value'))
+
+            if validation == "isDate":
+                valueField = funcoesUteis.treatTextFieldInVector(data, numberField)
+                valueFieldDate = funcoesUteis.retornaCampoComoData(valueField) if len(valueField) <= 10 else None # este campo é pra caso tenha algum valor que seja data + horário ele não cai na verificação do isDate
+                if valueFieldDate is not None:
+                    countHeaderEquals += 1
+            elif validation == "isEqual":
+                valueField = funcoesUteis.treatTextFieldInVector(data, numberField)
+                if valueField == value:
+                    countHeaderEquals += 1
+        
+        if countHeaderEquals == len(row):
+            return True
 
     def treatDataLayout(self, data, settingFields, positionsOfHeader):
         valuesOfLine = {}
@@ -73,6 +75,7 @@ class PaymentsGeneral(object):
         for key, settingField in settingFields.items():
             numberField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'numberField')
             nameField = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField'))
+            valueDefault = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'valueDefault'))
             validField = False
 
             row = funcoesUteis.analyzeIfFieldIsValid(settingField, 'row')
@@ -115,6 +118,10 @@ class PaymentsGeneral(object):
 
                 if valueField != "":
                     validField = True
+            
+            if validField is False and valueDefault != "":
+                validField = True
+                valueField = valueDefault
 
             if validField is True:
                 valuesOfLine['row'] = rowIsMain
@@ -146,22 +153,46 @@ class PaymentsGeneral(object):
         
         return valuesOfLine
 
+    def handleExtracts(self, valuesOfLine):
+        amount = funcoesUteis.treatDecimalField(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amount'))
+        if amount < 0:
+            operation = '-'
+            amount *= -1
+        else:
+            operation = '+'
+
+        valuesOfLine['amount'] = amount
+        valuesOfLine['operation'] = operation
+
+        if operation == "+":
+            historicCode = 24
+        else:
+            historicCode = 78
+
+        valuesOfLine['historicCode'] = historicCode
+
+        return valuesOfLine
+
     def process(self, file):
+        self._fieldsRowNotMain.clear() # a cada processamento de um novo arquivo limpa os dados que ficam armazenados
+
         settingsLayouts = funcoesUteis.analyzeIfFieldIsValid( self._settings, 'settingsLayouts')
 
         if len(settingsLayouts) == 0:
             return None
 
         valuesOfLine = {}
-        valuesOfFile = []
+        valuesOfFilePayments = []
+        valuesOfFileExtracts = []
         posionsOfHeader = {}
 
         for setting in settingsLayouts:
             
-            if setting['layoutType'] != "Financy":
+            layoutType = setting['layoutType']
+            if layoutType != "account_paid" and layoutType != "extract_bank":
                 return None
             
-            if setting['fileType'] == 'Excel':
+            if setting['fileType'] == 'excel':
                 dataFile = leXls_Xlsx(file)
             else:
                 dataFile = []
@@ -180,19 +211,31 @@ class PaymentsGeneral(object):
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
-                    # print(valuesOfLine)
                     
-                    paymentDate = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None)
-                    amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
+                    if layoutType == 'account_paid':
+                        validationDate = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None)
+                        validationAmount = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
+                        valuesOfLine['document'] = funcoesUteis.handleNote(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'document'))
+                    elif layoutType == 'extract_bank':
+                        valuesOfLine = self.handleExtracts(valuesOfLine)
+                        validationDate = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'dateTransaction', None)
+                        validationAmount = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amount', 0)
+                    else:
+                        validationDate = None
+                        validationAmount = 0
+                    
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
-                    if paymentDate is not None and amountPaid != 0:
-                        valuesOfFile.append(valuesOfLine.copy())
+                    if validationDate is not None and validationAmount != 0:
+                        if layoutType == 'account_paid':
+                            valuesOfFilePayments.append(valuesOfLine.copy())
+                        elif layoutType == 'extract_bank':
+                            valuesOfFileExtracts.append(valuesOfLine.copy())
 
                 except Exception as e:
                     print(e)
                     
-        return valuesOfFile
+        return [valuesOfFilePayments, valuesOfFileExtracts]
 
     def processAll(self):
         for root, dirs, files in os.walk(self._wayOriginalToRead):
@@ -200,19 +243,20 @@ class PaymentsGeneral(object):
                 wayFile = os.path.join(root, file)
 
                 if file.lower().endswith(('.xls', '.xlsx')):
-                    self._payments.append(self.process(wayFile))
+                    self._payments.append(self.process(wayFile)[0])
+                    self._extracts.append(self.process(wayFile)[1])
 
-        return funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
+        return [funcoesUteis.removeAnArrayFromWithinAnother(self._payments), funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)]
 
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    from dao.src.GetSettingsCompany import GetSettingsCompany
+#     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    getSettingsCompany = GetSettingsCompany(1498)
-    settings = getSettingsCompany.getSettingsFinancy()
+#     getSettingsCompany = GetSettingsCompany(1498)
+#     settings = getSettingsCompany.getSettingsFinancy()
 
-    payments = PaymentsGeneral(1498, "C:/integracao_contabil/1498/arquivos_originais", settings)
-    print(payments.processAll())
+#     readFiles = ReadGeneral(1498, "C:/integracao_contabil/1498/arquivos_originais", settings)
+#     print(readFiles.processAll()[1])
 

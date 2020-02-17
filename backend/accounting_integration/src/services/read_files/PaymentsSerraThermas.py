@@ -72,7 +72,7 @@ class PaymentsSerraThermas(object):
 
                 if amountPaid > 0:
                     valuesOfLine = {
-                        "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
+                        "paymentDate": paymentDate,
                         "nameProvider": nameProvider,
                         "cgceProvider": cgceProvider,
                         "document": document,

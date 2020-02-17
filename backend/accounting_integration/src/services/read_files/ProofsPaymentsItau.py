@@ -126,7 +126,7 @@ class ProofsPaymentsItau(object):
 
                     if paymentDate is not None and amountPaid > 0:
                         valuesOfLine = {
-                            "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
+                            "paymentDate": paymentDate,
                             "nameProvider": nameProvider,
                             "cnpjProvider": cnpjProvider,
                             "dueDate": dueDate,
@@ -224,7 +224,7 @@ class SispagItauExcel(object):
 
                 if paymentDate is not None and amountPaid > 0:
                     valuesOfLine = {
-                        "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
+                        "paymentDate": paymentDate,
                         "nameProvider": nameProvider,
                         "cnpjProvider": cnpjProvider,
                         "amountPaid": amountPaid,

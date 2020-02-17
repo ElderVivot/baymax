@@ -47,7 +47,7 @@ class ExtractsOFX(object):
             for transaction in transactions:
                 typeTransaction = funcoesUteis.treatTextField(transaction.type)
                 
-                dateTransaction = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(transaction.date)
+                dateTransaction = transaction.date
                 
                 amount = funcoesUteis.treatDecimalField(transaction.amount)
                 if amount < 0:
@@ -66,7 +66,7 @@ class ExtractsOFX(object):
                 historic = funcoesUteis.treatTextField(transaction.memo)
 
                 valuesOfLine = {
-                    "bankId": bankId,
+                    "bank": bankId,
                     "account": account,
                     "typeTransaction": typeTransaction,
                     "dateTransaction": dateTransaction,

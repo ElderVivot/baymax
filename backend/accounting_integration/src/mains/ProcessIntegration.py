@@ -16,7 +16,7 @@ from services.read_files.ExtractsOFX import ExtractsOFX
 from services.read_files.ReadPDFs import ReadPDFs
 from services.read_files.CallReadFilePayments import CallReadFilePayments
 from services.read_files.CallReadFileProofs import CallReadFileProofs
-from services.read_files.PaymentsGeneral import PaymentsGeneral
+from services.read_files.ReadGeneral import ReadGeneral
 from services.rules.ComparePaymentsAndProofWithExtracts import ComparePaymentsAndProofWithExtracts
 from services.rules.ComparePaymentsFinalWithDataBase import ComparePaymentsFinalWithDataBase
 from services.rules.GenerateExcel import GenerateExcel
@@ -86,8 +86,12 @@ class ProcessIntegration(object):
         if hasFinancy is True:
             systemFinancy = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "system"])
             if systemFinancy == "":
-                paymentsGeneral = PaymentsGeneral(self._codiEmp, self._wayFilesToRead, self._settings)
-                self._payments = paymentsGeneral.processAll()
+                readGeneral = ReadGeneral(self._codiEmp, self._wayFilesToRead, self._settings)
+                readGeneralData = readGeneral.processAll()
+                self._payments = readGeneralData[0]
+
+                self._extracts.append(readGeneralData[1])
+                self._extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
             else:
                 callReadFilePayments = CallReadFilePayments(systemFinancy, self._codiEmp, self._wayFilesToRead, self._wayFilesTemp)
                 self._payments = callReadFilePayments.process()

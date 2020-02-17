@@ -47,7 +47,7 @@ class PaymentsCDI(object):
 
                 if paymentDate is not None and amountPaid > 0:
                     self._valuesOfLine = {
-                        "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
+                        "paymentDate": paymentDate,
                         "nameProvider": nameProvider,
                         "document": document,
                         "amountPaid": amountPaid,

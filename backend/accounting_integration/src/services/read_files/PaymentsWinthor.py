@@ -180,7 +180,7 @@ class PaymentsWinthorExcel(object):
 
                 if paymentDate is not None and amountPaid != 0:
                     valuesOfLine = {
-                        "paymentDate": funcoesUteis.transformaCampoDataParaFormatoBrasileiro(paymentDate),
+                        "paymentDate": paymentDate,
                         "nameProvider": nameProvider,
                         "document": document,
                         "parcelNumber": parcelNumber,
