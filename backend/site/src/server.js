@@ -17,4 +17,5 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(routes)
 
-app.listen(3000, () => console.log('Executando ...'))
+const port = 3001
+app.listen(port, () => console.log(`Executando na porta ${port} ...`))
