@@ -108,22 +108,25 @@ class CompareWithSettings(object):
         
         for data in dataFile:
             try:
-                if str(data[0]).upper().count('BANCO') > 0:
+                if str(data[0]).upper().count('COMPARAR COM') > 0 or str(data[0]).upper().count('BANCO') > 0:
                     self._posionsOfHeaderBanks.clear()
                     for keyField, nameField in enumerate(data):
                         nameField = funcoesUteis.treatTextField(nameField)
                         self._posionsOfHeaderBanks[nameField] = keyField
                     continue
                 
-                nameBank = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderBanks, "Banco")
+                compareWith = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderBanks, "Comparar Com")
 
-                account = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderBanks, "Conta Corrente (Sem o Dígito Verificador)")
+                nameBank = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderBanks, "Banco")
+
+                account = funcoesUteis.treatTextFieldInVector(data, 3, self._posionsOfHeaderBanks, "Conta Corrente (Sem o Dígito Verificador)")
                 # account = account[:-1] # o -1 é pra tirar o digíto verificador caso o pessoal preencha na configuração, então pega sempre um char a menos evitando este problema
 
-                accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 3, self._posionsOfHeaderBanks, "Conta Contábil Banco na Domínio"))
+                accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 4, self._posionsOfHeaderBanks, "Conta Contábil Banco na Domínio"))
 
                 if nameBank != "" and accountDominio > 0:
                     self._valuesOfLineBanks = {
+                        "compareWith": compareWith,
                         "nameBankComparation": nameBank,
                         "accountComparation": account,
                         "accountDominio": accountDominio
@@ -132,7 +135,7 @@ class CompareWithSettings(object):
                     self._valuesOfFileBanks.append(self._valuesOfLineBanks.copy())
             except Exception as e:
                 pass
-
+            
         return self._valuesOfFileBanks
 
     def getSettingsExtract(self):
@@ -278,17 +281,21 @@ class CompareWithSettings(object):
             except Exception:
                 pass
 
-    def returnDataBanks(self, nameBank=None, account=None):
+    def returnDataBanks(self, nameBank=None, account=None, compareWith=None):
 
         if nameBank == "":
             nameBank = None
 
+        if compareWith == "":
+            compareWith = None
+
         for bank in self._valuesOfFileBanks:
-            bankComparation = funcoesUteis.analyzeIfFieldIsValid(bank, "nameBankComparation")
+            compareWithComparation = funcoesUteis.analyzeIfFieldIsValid(bank, "compareWith")
+            bankComparation = funcoesUteis.analyzeIfFieldIsValid(bank, "nameBankComparation").replace('-', ' ')
             accountComparation = funcoesUteis.analyzeIfFieldIsValid(bank, "accountComparation")
             accountDominio = funcoesUteis.analyzeIfFieldIsValid(bank, "accountDominio")
 
-            if bankComparation == nameBank and (account.count(accountComparation) > 0 or account == accountComparation):
+            if ( compareWithComparation == compareWith or compareWithComparation == "" ) and bankComparation == nameBank and (account.count(accountComparation) > 0 or account == accountComparation):
                 return accountDominio
 
     def returnDataExtract(self, historic=None, operation=None):
@@ -341,7 +348,7 @@ class CompareWithSettings(object):
             category = funcoesUteis.analyzeIfFieldIsValid(payment, "category", None)
             historic = funcoesUteis.analyzeIfFieldIsValid(payment, "historic", None)
             bank = funcoesUteis.analyzeIfFieldIsValid(payment, "bank", None)
-            account = funcoesUteis.analyzeIfFieldIsValid(payment, "account", None)
+            account = funcoesUteis.analyzeIfFieldIsValid(payment, "account")
 
             # busca a conta da despesa/fornecedor
             accountCode = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode", 0), isInt=True)
@@ -355,7 +362,7 @@ class CompareWithSettings(object):
                 accountCode = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(self._valuesFromToAccounts, accountCodeOld, None), isInt=True)
                 accountCode = 0 if accountCode is None else accountCode
 
-            accountCodeBank = self.returnDataBanks(bank, account)
+            accountCodeBank = self.returnDataBanks(bank, account, 'FINANCEIRO DO CLIENTE')
                 
             payment["accountCode"] = accountCode
             payment["accountCodeBank"] = accountCodeBank
@@ -386,7 +393,7 @@ class CompareWithSettings(object):
             accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit", 0), isInt=True)
 
             # --- retorna a conta débito/crédito referente ao banco
-            accountCodeBank = self.returnDataBanks(nameBank, account)
+            accountCodeBank = self.returnDataBanks(nameBank, account, 'EXTRATO BANCARIO')
             accountCodeBank = 0 if accountCodeBank is None else accountCodeBank
 
             if operation == "+" and accountCodeDebit == 0:

@@ -103,6 +103,11 @@ class ReadGeneral(object):
 
                 if valueField != 0:
                     validField = True
+            elif key.lower().find('bank') >= 0:
+                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameField).replace('-', ' ')
+
+                if valueField != "":
+                    validField = True
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
 

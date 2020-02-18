@@ -92,7 +92,7 @@ class ReadExcelToUpdateOrExportData(object):
             accountPlan = funcoesUteis.treatTextFieldInVector(data, 23, self._posionsOfHeaderPayments, "Plano de Contas")
             cgcePaying = funcoesUteis.treatTextFieldInVector(data, 24, self._posionsOfHeaderPayments, "CNPJ Pagador")
             historicExtract = funcoesUteis.treatTextFieldInVector(data, 25, self._posionsOfHeaderPayments, "Historico Extrato Bancário")
-            accountCodeOld = funcoesUteis.treatNumberFieldInVector(data, 26, self._posionsOfHeaderPayments, "Conta Contabil Sistema Cliente")
+            accountCodeOld = funcoesUteis.treatTextFieldInVector(data, 26, self._posionsOfHeaderPayments, "Conta Contabil Sistema Cliente")
 
             if amountPaid != 0:
                 self._paymentsOfLine = {
