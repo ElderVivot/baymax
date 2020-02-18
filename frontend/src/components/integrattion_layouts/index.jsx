@@ -34,6 +34,15 @@ export default function IntegrattionLayouts(){
         console.log(response)
     }
 
+    const fieldsHeader = [
+        {
+            nameField: "Data"
+        },
+        {
+            nameField: "Fornecedor"
+        }
+    ]
+
     return (
         <div className="card">
             <div className="card-header">
@@ -89,7 +98,7 @@ export default function IntegrattionLayouts(){
                     <div className="form row">
                         <label className="col-form-label">Campos que identificam o Cabeçalho do Arquivo:</label>
                     </div>
-                    < IntegrattionLayoutsHeader />
+                    < IntegrattionLayoutsHeader header={fieldsHeader} />
 
                     <div className="form-row mb-0">
                         <div className="col-12">
