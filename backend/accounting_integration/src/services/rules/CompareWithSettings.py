@@ -341,7 +341,7 @@ class CompareWithSettings(object):
             print(f"\t\t - Na planilha do ExtratoBancario na linha {key+2} a operação é SOMA mas não foi configurado a conta do débito ou crédito.")
 
     def processPayments(self):
-
+        
         for key, payment in enumerate(self._payments):
             nameProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "nameProvider", None)
             accountPlan = funcoesUteis.analyzeIfFieldIsValid(payment, "accountPlan", None)
@@ -383,8 +383,9 @@ class CompareWithSettings(object):
         return self._paymentsWithNewAccountCode
 
     def processExtracts(self):
+        
         for key, extract in enumerate(self._extracts):
-            nameBank = funcoesUteis.analyzeIfFieldIsValid(extract, "bankId", None)
+            nameBank = funcoesUteis.analyzeIfFieldIsValid(extract, "bank", None)
             account = funcoesUteis.analyzeIfFieldIsValid(extract, "account", None)
             operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation", None)
             historic = funcoesUteis.analyzeIfFieldIsValid(extract, "historic", None)

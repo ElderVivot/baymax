@@ -58,8 +58,8 @@ class GenerateExcel(object):
             amount = funcoesUteis.analyzeIfFieldIsValid(livroCaixa, "amount")
             document = funcoesUteis.analyzeIfFieldIsValid(livroCaixa, "document")
             documentType = funcoesUteis.analyzeIfFieldIsValid(livroCaixa, "documentType")
-            participante = 1
-            imovelRural = 1
+            participante = funcoesUteis.analyzeIfFieldIsValid(livroCaixa, "participante", 1)
+            imovelRural = funcoesUteis.analyzeIfFieldIsValid(livroCaixa, "imovelRural", 1)
             historic = funcoesUteis.analyzeIfFieldIsValid(livroCaixa, "historic")
             
             sheet.write(row, 0, dateLivro, self._cell_format_date)

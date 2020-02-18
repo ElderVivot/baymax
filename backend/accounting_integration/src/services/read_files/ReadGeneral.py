@@ -73,8 +73,10 @@ class ReadGeneral(object):
         valuesOfLine = {}
 
         for key, settingField in settingFields.items():
-            numberField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'numberField')
+            
+            numberField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'numberField', -1)
             nameField = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField'))
+            nameField = None if nameField == "" else nameField
             valueDefault = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'valueDefault'))
             validField = False
 
@@ -95,23 +97,27 @@ class ReadGeneral(object):
                     formatDate = 1
                 
                 valueField = funcoesUteis.treatDateFieldInVector(data, numberField, positionsOfHeader, nameField, formatDate, rowIsMain)
+                valueField = None if numberField == -1 and nameField is None else valueField
 
                 if valueField is not None:
                     validField = True
             elif key.lower().find('amount') >= 0:
                 valueField = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeader, nameField)
+                valueField = 0 if numberField == -1 and nameField is None else valueField
 
                 if valueField != 0:
                     validField = True
             elif key.lower().find('bank') >= 0:
                 valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameField).replace('-', ' ')
+                valueField = "" if numberField == -1 and nameField is None else valueField
 
-                if valueField != "":
+                if valueField != "" and valueField is not None:
                     validField = True
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
 
                 valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameField)
+                valueField = "" if numberField == -1 and nameField is None else valueField
 
                 if splitField != "":
                     valueField = valueField.split(splitField)
@@ -130,7 +136,10 @@ class ReadGeneral(object):
 
             if validField is True:
                 valuesOfLine['row'] = rowIsMain
-                valuesOfLine[key] = valueField                    
+                valuesOfLine[key] = valueField  
+
+            # if key == 'bank':
+            #     print(valuesOfLine)
         
         return valuesOfLine
 
@@ -180,6 +189,8 @@ class ReadGeneral(object):
 
     def process(self, file):
         self._fieldsRowNotMain.clear() # a cada processamento de um novo arquivo limpa os dados que ficam armazenados
+        posionsOfHeaderTemp = {}
+        posionsOfHeader = {}
 
         settingsLayouts = funcoesUteis.analyzeIfFieldIsValid( self._settings, 'settingsLayouts')
 
