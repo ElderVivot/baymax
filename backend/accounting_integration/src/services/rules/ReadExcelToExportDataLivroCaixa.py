@@ -18,7 +18,6 @@ class ReadExcelToUpdateOrExportData(object):
         self._posionsOfHeader = {}
 
         self._dataOfLineAccountPlan = {}
-        self._dataOfFileAccountPlan = []
         self._posionsOfHeaderAccountPlan = {}
 
     def getLivroCaixa(self):
@@ -72,31 +71,12 @@ class ReadExcelToUpdateOrExportData(object):
                     self._posionsOfHeaderAccountPlan[nameField] = keyField
                 continue
 
-            dateLivro = funcoesUteis.treatDateFieldInVector(data, 1, self._posionsOfHeader, "Data")
-            movementType = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeader, "Tipo Movimento")
-            account = funcoesUteis.treatTextFieldInVector(data, 3, self._posionsOfHeader, "Conta Contábil")
-            nameAccount = funcoesUteis.treatTextFieldInVector(data, 4, self._posionsOfHeader, "Nome Conta")
-            amount = funcoesUteis.treatDecimalFieldInVector(data, 5, self._posionsOfHeader, "Valor")
-            document = funcoesUteis.treatTextFieldInVector(data, 6, self._posionsOfHeader, "Documento")
-            documentType = funcoesUteis.treatTextFieldInVector(data, 7, self._posionsOfHeader, "Tipo Documento")
-            participante = funcoesUteis.treatTextFieldInVector(data, 8, self._posionsOfHeader, "Participante")
-            imovelRural = funcoesUteis.treatTextFieldInVector(data, 9, self._posionsOfHeader, "Imóvel Rural")
-            historic = funcoesUteis.treatTextFieldInVector(data, 10, self._posionsOfHeader, "Histórico")
+            account = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderAccountPlan, "Conta")
+            # nameAccount = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderAccountPlan, "Nome")
+            # nameAccountMain = funcoesUteis.treatTextFieldInVector(data, 3, self._posionsOfHeaderAccountPlan, "Grupo Principal")
+            # nameAccountSubMain = funcoesUteis.treatTextFieldInVector(data, 4, self._posionsOfHeaderAccountPlan, "Subgrupo")
+            accountDominio = funcoesUteis.treatNumberFieldInVector(data, 5, self._posionsOfHeaderAccountPlan, "Código Conta Domínio")
 
-            if amount != 0:
-                self._dataOfLine = {
-                    'dateLivro': dateLivro,
-                    'movementType':movementType,
-                    'account': account,
-                    'nameAccount': nameAccount,
-                    'amount': amount,
-                    'document': document,
-                    'documentType': documentType,
-                    'participante': participante,
-                    'imovelRural': imovelRural,
-                    'historic': historic
-                }
+            self._dataOfLineAccountPlan[account] = accountDominio
 
-                self._dataOfFile.append(self._dataOfLine.copy())
-
-        return self._dataOfFile
+        return self._dataOfLineAccountPlan
