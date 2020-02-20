@@ -4,7 +4,6 @@ import React from 'react';
 import './App.css';
 
 import Routes from './routes'
-// import IntegrattionLayouts from './components/integrattion_layouts/index'
 
 function App() {
   return (

@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
 import './styles.css'
-import api from '../../services/api'
-import IntegrattionLayoutsHeader from '../integrattion_layouts_header/index'
+import api from '../services/api'
+import IntegrattionLayoutsHeader from './IntegrattionLayoutsHeader'
 
 export default function IntegrattionLayouts(){
 
@@ -22,26 +22,31 @@ export default function IntegrattionLayouts(){
         valueLayoutType = event.target.value
     }
 
+    const blankFieldsHeader = { nameField: '' };
+    const [fieldsHeader, setFieldsHeader] = useState( [ { ...blankFieldsHeader } ]) 
+
+    const handleFieldHeaderChange = (event) => {
+        let nameClass = event.target.className
+        nameClass = nameClass.split(' ')[0]
+
+        const updatedFieldHeader = [...fieldsHeader];
+        // na linha abaixo o dataset.idx eu pego o ID da posição no array, e o nameClass eu pego o campo (field) dentro do objeto daquele array
+        updatedFieldHeader[event.target.dataset.idx][nameClass] = event.target.value;
+        setFieldsHeader(updatedFieldHeader);
+    };
+    
     async function handleSubmit(event) {
         event.preventDefault()
 
         const response = await api.post('/integrattion_layouts', {
             system,
             "fileType": valueFileType,
-            "layoutType": valueLayoutType
+            "layoutType": valueLayoutType,
+            "header": fieldsHeader
         } )
 
         console.log(response)
     }
-
-    const fieldsHeader = [
-        {
-            nameField: "Data"
-        },
-        {
-            nameField: "Fornecedor"
-        }
-    ]
 
     return (
         <div className="card">
@@ -98,7 +103,21 @@ export default function IntegrattionLayouts(){
                     <div className="form row">
                         <label className="col-form-label">Campos que identificam o Cabeçalho do Arquivo:</label>
                     </div>
-                    < IntegrattionLayoutsHeader header={fieldsHeader} />
+
+                    <table className="col-12">
+                        <tbody>
+                            {
+                                fieldsHeader.map( (field, idx) => (
+                                    < IntegrattionLayoutsHeader
+                                        key={`fieldHeader-${idx}`}
+                                        idx={idx}
+                                        fieldsHeader={fieldsHeader}
+                                        handleFieldHeaderChange={handleFieldHeaderChange}
+                                    /> 
+                                ))
+                            }
+                        </tbody>
+                    </table>
 
                     <div className="form-row mb-0">
                         <div className="col-12">
@@ -106,11 +125,8 @@ export default function IntegrattionLayouts(){
                             <button className="btn btn-secondary col-1" type="reset">Cancelar</button>
                         </div>
                     </div>
-
-                    
                 </form>
             </div>
         </div>
-        
     )
 }

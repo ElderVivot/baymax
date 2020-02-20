@@ -41,19 +41,21 @@ class RearrangeWayToSaveXML(object):
         callReadXmls = CallReadXmls(xml)
         nf = callReadXmls.process()
 
-        cnpjIssuer = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjIssuer')
-        cnpjReceiver = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjReceiver')
-        issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(nf, 'issueDateNF'), 2)
-        keyNF = funcoesUteis.analyzeIfFieldIsValid(nf, 'keyNF')
+        if nf is not None:
 
-        if issueDate < self._filterDate:
-            return ""
+            cnpjIssuer = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjIssuer')
+            cnpjReceiver = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjReceiver')
+            issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(nf, 'issueDateNF'), 2)
+            keyNF = funcoesUteis.analyzeIfFieldIsValid(nf, 'keyNF')
 
-        codiEmpIssuer = self.returnDataEmp(cnpjIssuer)
-        codiEmpReceiver = self.returnDataEmp(cnpjReceiver)
-        
-        self.copyXmlToFolderCompanieAndCompetence('X:/', codiEmpIssuer, issueDate, xml, 'Saidas', keyNF)
-        self.copyXmlToFolderCompanieAndCompetence('X:/', codiEmpReceiver, issueDate, xml, 'Entradas', keyNF)
+            if issueDate < self._filterDate:
+                return ""
+
+            codiEmpIssuer = self.returnDataEmp(cnpjIssuer)
+            codiEmpReceiver = self.returnDataEmp(cnpjReceiver)
+            
+            self.copyXmlToFolderCompanieAndCompetence('C:/_temp/notas-fiscais-2', codiEmpIssuer, issueDate, xml, 'Saidas', keyNF)
+            self.copyXmlToFolderCompanieAndCompetence('C:/_temp/notas-fiscais-2', codiEmpReceiver, issueDate, xml, 'Entradas', keyNF)
 
     def processAll(self):
         for root, dirs, files in os.walk(self._wayToRead):
