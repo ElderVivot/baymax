@@ -116,6 +116,7 @@ class CompareWithSettings(object):
                     continue
                 
                 compareWith = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderBanks, "Comparar Com")
+                compareWith = "" if compareWith != "EXTRATO BANCARIO" and compareWith != "FINANCEIRO DO CLIENTE" else compareWith
 
                 nameBank = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderBanks, "Banco")
 
