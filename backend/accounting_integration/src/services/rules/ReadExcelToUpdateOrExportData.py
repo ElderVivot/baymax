@@ -141,7 +141,7 @@ class ReadExcelToUpdateOrExportData(object):
                     self._posionsOfHeaderExtracts[nameField] = keyField
                 continue
 
-            dateExtract = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderExtracts, "Data")
+            dateExtract = funcoesUteis.treatDateFieldInVector(data, 1, self._posionsOfHeaderExtracts, "Data")
             accountCodeDebit = funcoesUteis.treatNumberFieldInVector(data, 2, self._posionsOfHeaderExtracts, "Debito")
             accountCodeCredit = funcoesUteis.treatNumberFieldInVector(data, 3, self._posionsOfHeaderExtracts, "Credito")
             amount = funcoesUteis.treatDecimalFieldInVector(data, 4, self._posionsOfHeaderExtracts, "Valor")

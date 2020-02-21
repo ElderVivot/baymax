@@ -32,8 +32,8 @@ class GenerateExportDominio(object):
         self._extracts = extracts
 
     def isPaymentOrExtract(self, data):
-        bankId = funcoesUteis.analyzeIfFieldIsValid(data, "bankId", None)
-        if bankId is None:
+        dateTransaction = funcoesUteis.analyzeIfFieldIsValid(data, "dateTransaction", None)
+        if dateTransaction is None:
             return "P" # payment pq não existe o bankId
         else:
             return "E"
@@ -55,7 +55,7 @@ class GenerateExportDominio(object):
         accountCodeCredit = ""
 
         if paymentOrExtract == "E":
-            exportDate = funcoesUteis.analyzeIfFieldIsValid(data, "dateTransaction", None)
+            exportDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.analyzeIfFieldIsValid(data, "dateTransaction", None))
             if typeData == 'D':
                 accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeDebit", "")
             else:
@@ -67,7 +67,7 @@ class GenerateExportDominio(object):
             historic = funcoesUteis.analyzeIfFieldIsValid(data, "historic", "")
 
         elif paymentOrExtract == "P":
-            exportDate = funcoesUteis.analyzeIfFieldIsValid(data, "dateOfImport", None)
+            exportDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.analyzeIfFieldIsValid(data, "dateOfImport", None))
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaid", 0.0)
             amountDiscount = funcoesUteis.analyzeIfFieldIsValid(data, "amountDiscount", 0.0)
             amountInterest = funcoesUteis.analyzeIfFieldIsValid(data, "amountInterest", 0.0)
@@ -126,6 +126,8 @@ class GenerateExportDominio(object):
         for key, extract in enumerate(self._extracts):
             accountCodeDebit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit"), isInt=True)
             accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit"), isInt=True)
+            operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")
+            
             
             if accountCodeDebit > 0 and accountCodeCredit > 0:
                 self._file.write(self.header6000())
