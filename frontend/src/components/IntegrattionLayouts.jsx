@@ -34,6 +34,17 @@ export default function IntegrattionLayouts(){
         updatedFieldHeader[event.target.dataset.idx][nameClass] = event.target.value;
         setFieldsHeader(updatedFieldHeader);
     };
+
+    const addFieldHeader = () => {
+        setFieldsHeader([...fieldsHeader, { ...blankFieldsHeader }]);
+    };
+
+    const deleteFieldHeader = (event) => {
+        const updatedFieldHeader = [...fieldsHeader];
+        // na linha abaixo o dataset.idx eu pego o ID da posição no array, e o nameClass eu pego o campo (field) dentro do objeto daquele array
+        updatedFieldHeader.splice([event.target.dataset.idx], 1)
+        setFieldsHeader(updatedFieldHeader);
+    };
     
     async function handleSubmit(event) {
         event.preventDefault()
@@ -113,13 +124,19 @@ export default function IntegrattionLayouts(){
                                         idx={idx}
                                         fieldsHeader={fieldsHeader}
                                         handleFieldHeaderChange={handleFieldHeaderChange}
+                                        addFieldHeader={addFieldHeader}
+                                        deleteFieldHeader={deleteFieldHeader}
                                     /> 
                                 ))
                             }
                         </tbody>
                     </table>
 
-                    <div className="form-row mb-0">
+                    <div className="form row mt-2">
+                        <label className="col-form-label">Configuração dos Campos do Layout:</label>
+                    </div>
+
+                    <div className="form-row">
                         <div className="col-12">
                             <button className="btn btn-primary mr-2 col-1 offset-4" type="submit" onClick={event => handleSubmit(event)}>Salvar</button>
                             <button className="btn btn-secondary col-1" type="reset">Cancelar</button>

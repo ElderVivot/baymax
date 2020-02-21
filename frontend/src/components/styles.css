@@ -1,3 +1,7 @@
 label {
     font-weight: 600;
 }
+
+input, button, label, select, span {
+    font-size: small !important;
+}
