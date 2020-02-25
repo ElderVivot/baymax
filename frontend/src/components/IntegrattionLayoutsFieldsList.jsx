@@ -1,15 +1,88 @@
 import React from 'react'
 
-function IntegrattionLayoutsFieldsList( { idx, fieldsFile, handleFieldFileChange } ){
+import IntegrattionLayoutsFieldsNewOrEdit from './IntegrattionLayoutsFieldsNewOrEdit'
+
+
+function IntegrattionLayoutsFieldsList( { idx, fieldsFile, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue } ){
+
+    const addField = () => {
+        setFieldValue("fields", [...fieldsFile, { 
+            nameField: "",
+            positionInFile: "",
+            positionInFileEnd: "",
+            nameColumn: "",
+            formatDate: ""
+         }])
+    }
+    
+    const deleteField = () => {
+        const updatedfieldsFile = [...fieldsFile]
+        updatedfieldsFile.splice(idx, 1)
+        setFieldValue("fields", updatedfieldsFile)
+    }
+
+    const editField = () => {
+        return (
+            < IntegrattionLayoutsFieldsNewOrEdit
+                key={`fieldFile-${idx}`}
+                idx={idx}
+                fieldsFile={fieldsFile}
+                errors={errors}
+                touched={touched}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+                setFieldValue={setFieldValue}
+                setFieldTouched={setFieldTouched}
+            />
+        )
+    }
+
+    function Buttons(){
+        if (fieldsFile.length === idx+1) {
+            return (
+                <div>
+                    <button className="btn btn-success" type="button" 
+                        onClick={addField}>
+                        <i className="fa fa-plus"></i>
+                    </button>
+                    <button className="btn btn-warning ml-2" type="button"
+                        onClick={event => console.log(event)}>
+                        <i className="fa fa-pencil-alt"></i>
+                    </button>
+                    <button className="btn btn-danger ml-2" type="button" 
+                        onClick={deleteField}>
+                        <i className="fa fa-trash"></i>
+                    </button>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    <button className="btn btn-warning" type="button" 
+                        >
+                        <i className="fa fa-pencil-alt"></i>
+                    </button>
+                    <button className="btn btn-danger ml-2" type="button" 
+                        onClick={deleteField}>
+                        <i className="fa fa-trash"></i>
+                    </button>
+                </div>
+                
+            )
+        }
+    }    
     
     return (
         <>
             <tr className="d-flex">
-                <td className="col-4">{fieldsFile[idx].nameField.label}</td>
-                <td className="col-1">{fieldsFile[idx].positionInFile.label}</td>
-                <td className="col-1">{fieldsFile[idx].positionInFileEnd.label}</td>
+                <td className="col-4">{fieldsFile[idx].nameField}</td>
+                <td className="col-1">{fieldsFile[idx].positionInFile}</td>
+                <td className="col-1">{fieldsFile[idx].positionInFileEnd}</td>
                 <td className="col-3">{fieldsFile[idx].nameColumn}</td>
-                <td className="col-1">{fieldsFile[idx].formatDate.label}</td>
+                <td className="col-1">{fieldsFile[idx].formatDate}</td>
+                <td className="col-2">
+                    < Buttons />
+                </td>
             </tr>
         </>
     );

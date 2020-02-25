@@ -2,7 +2,7 @@ label {
     font-weight: 600;
 }
 
-input, button, label, select, span, .selected {
+input, button, label, select, span, .selected, td {
     font-size: small !important;
 }
 
@@ -18,4 +18,8 @@ input, button, label, select, span, .selected {
 .fields-of-table {
     font-size: 12px;
     font-weight: 600;
+}
+
+.has-error, .has-error > div {
+    border-color:red !important;
 }

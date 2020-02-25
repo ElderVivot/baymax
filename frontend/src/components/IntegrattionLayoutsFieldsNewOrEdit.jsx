@@ -8,10 +8,9 @@ class ClassUtil{
         let obj = [{value: -1, label: "Posição Variável"}]
         while(numberInicial <= numberFinal){
             obj.push({
-                value: numberInicial, label: `${numberInicial}`
+                value: `${numberInicial}`, label: `${numberInicial}`
             })
             numberInicial++
-            console.log(numberInicial)
         }
         return obj
     }
@@ -19,12 +18,21 @@ class ClassUtil{
 
 const objetOfCount = ClassUtil.createAnObjetOfCount()
 
-function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, handleFieldFileChange } ){
+function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, errors, touched, handleChange, handleBlur, setFieldTouched } ){
 
-    const [show, setShow] = useState(false);
-      
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const fieldPosition = `fields[${idx}]`
+
+    const [show, setShow] = useState(true)
+
+    const handleClose = () => setShow(false)
+
+    function validateField(nameField){
+        try {
+            return touched.fields[idx][nameField] && errors.fields[idx][nameField] ? "has-error" : null
+        } catch (error) {
+            return null
+        }
+    }
 
     const fieldsOptions = [
         { value: 'paymentDate', label: 'Data de Pagamento'},
@@ -48,23 +56,22 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, handleFieldFileC
     
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>
-                New
-            </Button>
-        
+
             <Modal show={show} onHide={handleClose} dialogClassName="width-modal" >
                 <Modal.Body>
                     <Form.Row>
                         <Form.Label as="label" htmlFor="field" className="col-form-label">Campo:</Form.Label>
                         <Col lg={4}>
                             <Select 
-                                id={`nameField-${idx}`}
+                                id={`${fieldPosition}.nameField`}
+                                name={`${fieldPosition}.nameField`}
                                 options={fieldsOptions}
-                                onChange={ (event, action, attributes={nameClass: 'nameField', idx, eventType: 'selected'}) => handleFieldFileChange(event, attributes) }
-                                className="selected"
-                                isSearchable="true"
+                                className={`selected ${validateField("nameField")}`}
+                                isSearchable={true}
                                 placeholder="Selecione"
-                                value={fieldsFile[idx].nameField}
+                                value={fieldsOptions.filter(option => option.value === fieldsFile[idx].nameField)[0]}
+                                onChange={selectedOption => handleChange(`${fieldPosition}.nameField`)(selectedOption.value)}
+                                onBlur={() => setFieldTouched(`${fieldPosition}.nameField`, true)}
                             />
                         </Col>
                     </Form.Row>
@@ -72,14 +79,15 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, handleFieldFileC
                         <Form.Label as="label" htmlFor="field" className="col-form-label">Posição que se encontra no Arquivo:</Form.Label>
                         <Col lg={3}>
                             <Creatable 
-                                id={`positionInFile-${idx}`}
+                                id={`${fieldPosition}.positionInFile`}
+                                name={`${fieldPosition}.positionInFile`}
                                 options={positionInFileOptions}
-                                onChange={ (event, action, attributes={nameClass: 'positionInFile', idx, eventType: 'selected'}) => handleFieldFileChange(event, attributes) }
-                                className="selected"
-                                isSearchable="true"
-                                autoFocus={true}
+                                className={`selected ${validateField("positionInFile")}`}
+                                isSearchable={true}
                                 placeholder="Selecione"
-                                value={fieldsFile[idx].positionInFile}
+                                value={positionInFileOptions.filter(option => option.value === fieldsFile[idx].positionInFile)[0]}
+                                onChange={selectedOption => handleChange(`${fieldPosition}.positionInFile`)(selectedOption.value)}
+                                onBlur={() => setFieldTouched(`${fieldPosition}.positionInFile`, true)}
                                 formatCreateLabel={(string) => `Criar ${string}`}
                             />
                         </Col>
@@ -89,24 +97,28 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, handleFieldFileC
                         <Form.Label as="label" htmlFor="field" className="col-form-label">Nome da Coluna Correspondente:</Form.Label>
                         <Col lg={6}>
                             <Form.Control
+                                id={`${fieldPosition}.nameColumn`}
+                                name={`${fieldPosition}.nameColumn`}
                                 type="text"
                                 placeholder="Informe o nome da coluna que identifica este campo"
                                 value={fieldsFile[idx].nameColumn}
-                                onChange={ (event, action, attributes={nameClass: 'nameColumn', idx}) => handleFieldFileChange(event, attributes) }
+                                onChange={handleChange}
+                                onBlur={handleBlur}
                             />
                         </Col>
                     </Form.Row>
                 </Modal.Body>
 
                 <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Close
-                </Button>
-                <Button variant="primary" onClick={handleClose}>
-                    Save Changes
-                </Button>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleClose}>
+                        Save Changes
+                    </Button>
                 </Modal.Footer>
             </Modal>
+            {console.log(show)}
         </>
     );
 }

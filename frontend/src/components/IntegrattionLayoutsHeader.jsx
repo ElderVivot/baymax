@@ -1,20 +1,38 @@
 import React from 'react'
 import './styles.css'
 
-function IntegrattionLayoutsHeader({ idx, fieldsHeader, handleFieldHeaderChange, addFieldHeader, deleteFieldHeader }){
+function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleChange, handleBlur, setFieldValue }){
 
-    const fieldHeaderId = `nameField-${idx}`
+    const fieldPosition = `header[${idx}]`
+    
+    function validateField(nameField){
+        try {
+            return touched.header[idx][nameField] && errors.header[idx][nameField] ? "has-error" : null
+        } catch (error) {
+            return null
+        }
+    }
+
+    const addField = () => {
+        setFieldValue("header", [...fieldsHeader, { nameField: "" }])
+    }
+    
+    const deleteField = () => {
+        const updatedFieldsHeader = [...fieldsHeader]
+        updatedFieldsHeader.splice(idx, 1)
+        setFieldValue("header", updatedFieldsHeader)
+    }
 
     function Buttons(){
         if (fieldsHeader.length === idx+1) {
             return (
                 <div>
                     <button className="btn btn-success" type="button" 
-                        onClick={addFieldHeader}>
+                        onClick={addField}>
                         <i className="fa fa-plus"></i>
                     </button>
                     <button className="btn btn-danger ml-2" type="button" 
-                        onClick={deleteFieldHeader}>
+                        onClick={deleteField}>
                         <i className="fa fa-trash"></i>
                     </button>
                 </div>
@@ -23,7 +41,7 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, handleFieldHeaderChange,
             return (
                 <div className="col-2">
                     <button className="btn btn-danger ml-2" type="button" 
-                        onClick={deleteFieldHeader}>
+                        onClick={deleteField}>
                         <i className="fa fa-trash"></i>
                     </button>
                 </div>
@@ -42,12 +60,12 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, handleFieldHeaderChange,
                         </div>
                         <input 
                             type="text"
-                            name={fieldHeaderId}
-                            data-idx={idx}
-                            id={fieldHeaderId}
-                            className="nameField form-control"
+                            name={`${fieldPosition}.nameField`}
+                            id={`${fieldPosition}.nameField`}
+                            className={`form-control ${validateField("nameField") }`}
                             value={fieldsHeader[idx].nameField}
-                            onChange={handleFieldHeaderChange}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
                         />
                     </div>
                 </td>
