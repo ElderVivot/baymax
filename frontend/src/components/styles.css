@@ -2,6 +2,20 @@ label {
     font-weight: 600;
 }
 
-input, button, label, select, span {
+input, button, label, select, span, .selected {
     font-size: small !important;
+}
+
+.modal-title {
+    font-size: large;
+}
+
+.width-modal {
+    width: 50rem !important;
+    max-width: none !important;
+}
+
+.fields-of-table {
+    font-size: 12px;
+    font-weight: 600;
 }

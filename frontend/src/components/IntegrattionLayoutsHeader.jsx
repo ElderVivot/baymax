@@ -6,7 +6,6 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, handleFieldHeaderChange,
     const fieldHeaderId = `nameField-${idx}`
 
     function Buttons(){
-        console.log(fieldsHeader.length)
         if (fieldsHeader.length === idx+1) {
             return (
                 <div>
