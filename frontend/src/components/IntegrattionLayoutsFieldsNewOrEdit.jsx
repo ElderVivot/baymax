@@ -2,6 +2,18 @@ import React, {useState} from 'react'
 import Select from 'react-select'
 import Creatable from 'react-select/creatable'
 import { Modal, Button, Col, Form } from "react-bootstrap"
+import * as Yup from 'yup'
+import { Formik } from 'formik'
+
+let initialValues={
+    fields: {
+        nameField: "",
+        positionInFile: "",
+        positionInFileEnd: "",
+        nameColumn: "",
+        formatDate: ""
+    }
+}
 
 class ClassUtil{
     static createAnObjetOfCount(numberInicial=1, numberFinal=100){
@@ -36,21 +48,26 @@ const fieldsOptions = [
     { value: 'accountPlan', label: 'Plano de Conta'},
 ]
 
-function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, errors, touched, handleChange, handleBlur, setFieldTouched } ){
+function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent } ){
 
     const fieldPosition = `fields[${idx}]`
 
-    const [show, setShow] = useState(true)
+    const [show, setShow] = useState(false)
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
-    function validateField(nameField){
-        try {
-            return touched.fields[idx][nameField] && errors.fields[idx][nameField] ? "has-error" : null
-        } catch (error) {
-            return null
-        }
+    function handleSave(event, values) {
+        event.preventDefault()
+        const nameField = values.fields.nameField
+        const positionInFile = values.fields.positionInFile
+        const nameColumn = values.fields.nameColumn
+
+        setFieldValueParent(`${fieldPosition}.nameField`, nameField)
+        setFieldValueParent(`${fieldPosition}.positionInFile`, positionInFile)
+        setFieldValueParent(`${fieldPosition}.nameColumn`, nameColumn)
+
+        setShow(false)
     }
     
     return (
@@ -60,67 +77,73 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, errors, touched,
                 <i className="fa fa-pencil-alt"></i>
             </Button>
 
-            <Modal show={show} dialogClassName="width-modal" >
-                <Modal.Body>
-                    <Form.Row>
-                        <Form.Label as="label" htmlFor="field" className="col-form-label">Campo:</Form.Label>
-                        <Col lg={4}>
-                            <Select 
-                                id={`${fieldPosition}.nameField`}
-                                name={`${fieldPosition}.nameField`}
-                                options={fieldsOptions}
-                                className={`selected ${validateField("nameField")}`}
-                                isSearchable={true}
-                                placeholder="Selecione"
-                                value={fieldsOptions.filter(option => option.value === fieldsFile[idx].nameField)[0]}
-                                onChange={selectedOption => handleChange(`${fieldPosition}.nameField`)(selectedOption.value)}
-                                onBlur={() => setFieldTouched(`${fieldPosition}.nameField`, true)}
-                            />
-                        </Col>
-                    </Form.Row>
-                    <Form.Row className="mt-2">
-                        <Form.Label as="label" htmlFor="field" className="col-form-label">Posição que se encontra no Arquivo:</Form.Label>
-                        <Col lg={3}>
-                            <Creatable 
-                                id={`${fieldPosition}.positionInFile`}
-                                name={`${fieldPosition}.positionInFile`}
-                                options={positionInFileOptions}
-                                className={`selected ${validateField("positionInFile")}`}
-                                isSearchable={true}
-                                placeholder="Selecione"
-                                value={positionInFileOptions.filter(option => option.value === fieldsFile[idx].positionInFile)[0]}
-                                onChange={selectedOption => handleChange(`${fieldPosition}.positionInFile`)(selectedOption.value)}
-                                onBlur={() => setFieldTouched(`${fieldPosition}.positionInFile`, true)}
-                                formatCreateLabel={(string) => `Criar ${string}`}
-                            />
-                        </Col>
-                    </Form.Row>
+            <Formik 
+                initialValues={initialValues}
+            >
+                { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched }) => (
+                <Modal show={show} dialogClassName="width-modal" >
+                    <Modal.Body>
+                        <Form.Row>
+                            <Form.Label as="label" htmlFor="field" className="col-form-label">Campo:</Form.Label>
+                            <Col lg={4}>
+                                <Select 
+                                    id={`${fieldPosition}.nameField`}
+                                    name={`fields.nameField`}
+                                    options={fieldsOptions}
+                                    className={`selected ${touched.nameField && errors.nameField ? "has-error" : null }`}
+                                    isSearchable={true}
+                                    placeholder="Selecione"
+                                    value={fieldsOptions.filter(option => option.value === values.nameField)[0]}
+                                    onChange={selectedOption => handleChange(`fields.nameField`)(selectedOption.value)}
+                                    onBlur={() => setFieldTouched(`fields.nameField`, true)}
+                                />
+                            </Col>
+                        </Form.Row>
+                        <Form.Row className="mt-2">
+                            <Form.Label as="label" htmlFor="field" className="col-form-label">Posição que se encontra no Arquivo:</Form.Label>
+                            <Col lg={3}>
+                                <Creatable 
+                                    id={`${fieldPosition}.positionInFile`}
+                                    name={`fields.positionInFile`}
+                                    options={positionInFileOptions}
+                                    className={`selected ${touched.positionInFile && errors.positionInFile ? "has-error" : null }`}
+                                    isSearchable={true}
+                                    placeholder="Selecione"
+                                    value={positionInFileOptions.filter(option => option.value === values.positionInFile)[0]}
+                                    onChange={selectedOption => handleChange(`fields.positionInFile`)(selectedOption.value)}
+                                    onBlur={() => setFieldTouched(`fields.positionInFile`, true)}
+                                    formatCreateLabel={(string) => `Criar ${string}`}
+                                />
+                            </Col>
+                        </Form.Row>
 
-                    <Form.Row className="mt-2">
-                        <Form.Label as="label" htmlFor="field" className="col-form-label">Nome da Coluna Correspondente:</Form.Label>
-                        <Col lg={6}>
-                            <Form.Control
-                                id={`${fieldPosition}.nameColumn`}
-                                name={`${fieldPosition}.nameColumn`}
-                                type="text"
-                                placeholder="Informe o nome da coluna que identifica este campo"
-                                value={fieldsFile[idx].nameColumn}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                            />
-                        </Col>
-                    </Form.Row>
-                </Modal.Body>
+                        <Form.Row className="mt-2">
+                            <Form.Label as="label" htmlFor="field" className="col-form-label">Nome da Coluna Correspondente:</Form.Label>
+                            <Col lg={6}>
+                                <Form.Control
+                                    id={`${fieldPosition}.nameColumn`}
+                                    name={`fields.nameColumn`}
+                                    type="text"
+                                    placeholder="Informe o nome da coluna que identifica este campo"
+                                    value={values.nameColumn}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                />
+                            </Col>
+                        </Form.Row>
+                    </Modal.Body>
 
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={handleClose}>
-                        Save Changes
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={(event, _, attributes=values) => handleSave(event, attributes)}>
+                            Save Changes
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                )}
+            </Formik>
         </>
     );
 }

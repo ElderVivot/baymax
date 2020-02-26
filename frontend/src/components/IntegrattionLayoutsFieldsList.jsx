@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 
 import IntegrattionLayoutsFieldsNewOrEdit from './IntegrattionLayoutsFieldsNewOrEdit'
 
@@ -26,19 +26,13 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, errors, touched, hand
             < IntegrattionLayoutsFieldsNewOrEdit
                 key={`fieldFile-${idx}`}
                 idx={idx}
-                fieldsFile={fieldsFile}
-                errors={errors}
-                touched={touched}
-                handleChange={handleChange}
-                handleBlur={handleBlur}
-                setFieldValue={setFieldValue}
-                setFieldTouched={setFieldTouched}
+                setFieldValueParent={setFieldValue}
             />
         )
     }
 
     function Buttons(){
-        // if (fieldsFile.length === idx+1) {
+        if (fieldsFile.length === idx+1) {
             return (
                 <div>
                     <button className="btn btn-success" type="button" 
@@ -52,21 +46,21 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, errors, touched, hand
                     </button>
                 </div>
             )
-        // } else {
-        //     return (
-        //         <div>
-        //             <button className="btn btn-warning" type="button" 
-        //                 >
-        //                 <i className="fa fa-pencil-alt"></i>
-        //             </button>
-        //             <button className="btn btn-danger ml-2" type="button" 
-        //                 onClick={deleteField}>
-        //                 <i className="fa fa-trash"></i>
-        //             </button>
-        //         </div>
+        } else {
+            return (
+                <div>
+                    <button className="btn btn-warning" type="button" 
+                        >
+                        <i className="fa fa-pencil-alt"></i>
+                    </button>
+                    <button className="btn btn-danger ml-2" type="button" 
+                        onClick={deleteField}>
+                        <i className="fa fa-trash"></i>
+                    </button>
+                </div>
                 
-        //     )
-        // }
+            )
+        }
     }
     
     return (
