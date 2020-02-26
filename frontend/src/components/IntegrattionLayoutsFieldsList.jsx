@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 
 import IntegrattionLayoutsFieldsNewOrEdit from './IntegrattionLayoutsFieldsNewOrEdit'
 
@@ -21,7 +21,7 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, errors, touched, hand
         setFieldValue("fields", updatedfieldsFile)
     }
 
-    const editField = () => {
+    const EditField = () => {
         return (
             < IntegrattionLayoutsFieldsNewOrEdit
                 key={`fieldFile-${idx}`}
@@ -38,39 +38,36 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, errors, touched, hand
     }
 
     function Buttons(){
-        if (fieldsFile.length === idx+1) {
+        // if (fieldsFile.length === idx+1) {
             return (
                 <div>
                     <button className="btn btn-success" type="button" 
                         onClick={addField}>
                         <i className="fa fa-plus"></i>
                     </button>
-                    <button className="btn btn-warning ml-2" type="button"
-                        onClick={event => console.log(event)}>
-                        <i className="fa fa-pencil-alt"></i>
-                    </button>
+                    {EditField()}
                     <button className="btn btn-danger ml-2" type="button" 
                         onClick={deleteField}>
                         <i className="fa fa-trash"></i>
                     </button>
                 </div>
             )
-        } else {
-            return (
-                <div>
-                    <button className="btn btn-warning" type="button" 
-                        >
-                        <i className="fa fa-pencil-alt"></i>
-                    </button>
-                    <button className="btn btn-danger ml-2" type="button" 
-                        onClick={deleteField}>
-                        <i className="fa fa-trash"></i>
-                    </button>
-                </div>
+        // } else {
+        //     return (
+        //         <div>
+        //             <button className="btn btn-warning" type="button" 
+        //                 >
+        //                 <i className="fa fa-pencil-alt"></i>
+        //             </button>
+        //             <button className="btn btn-danger ml-2" type="button" 
+        //                 onClick={deleteField}>
+        //                 <i className="fa fa-trash"></i>
+        //             </button>
+        //         </div>
                 
-            )
-        }
-    }    
+        //     )
+        // }
+    }
     
     return (
         <>
@@ -81,11 +78,11 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, errors, touched, hand
                 <td className="col-3">{fieldsFile[idx].nameColumn}</td>
                 <td className="col-1">{fieldsFile[idx].formatDate}</td>
                 <td className="col-2">
-                    < Buttons />
+                    <Buttons />
                 </td>
             </tr>
         </>
-    );
+    )
 }
 
 export default IntegrattionLayoutsFieldsList

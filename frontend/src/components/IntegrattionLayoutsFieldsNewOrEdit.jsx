@@ -16,7 +16,25 @@ class ClassUtil{
     }
 }
 
-const objetOfCount = ClassUtil.createAnObjetOfCount()
+const positionInFileOptions = ClassUtil.createAnObjetOfCount()
+
+const fieldsOptions = [
+    { value: 'paymentDate', label: 'Data de Pagamento'},
+    { value: 'document', label: 'NF ou Documento'},
+    { value: 'cgceProvider', label: 'CNPJ Fornedor'},
+    { value: 'nameProvider', label: 'Nome Fornecedor'},
+    { value: 'bank', label: 'Banco/Caixa'},
+    { value: 'amountPaid', label: 'Valor Pago'},
+    { value: 'amountOriginal', label: 'Valor Original'},
+    { value: 'amountInterest', label: 'Valor Juros'},
+    { value: 'amountFine', label: 'Valor Multa'},
+    { value: 'amountDiscount', label: 'Valor Desconto'},
+    { value: 'dueDate', label: 'Data de Vencimento'},
+    { value: 'issueDate', label: 'Data de Emissão'},
+    { value: 'historic', label: 'Histórico'},
+    { value: 'category', label: 'Categoria'},
+    { value: 'accountPlan', label: 'Plano de Conta'},
+]
 
 function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, errors, touched, handleChange, handleBlur, setFieldTouched } ){
 
@@ -25,6 +43,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, errors, touched,
     const [show, setShow] = useState(true)
 
     const handleClose = () => setShow(false)
+    const handleShow = () => setShow(true)
 
     function validateField(nameField){
         try {
@@ -33,31 +52,15 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, errors, touched,
             return null
         }
     }
-
-    const fieldsOptions = [
-        { value: 'paymentDate', label: 'Data de Pagamento'},
-        { value: 'document', label: 'NF ou Documento'},
-        { value: 'cgceProvider', label: 'CNPJ Fornedor'},
-        { value: 'nameProvider', label: 'Nome Fornecedor'},
-        { value: 'bank', label: 'Banco/Caixa'},
-        { value: 'amountPaid', label: 'Valor Pago'},
-        { value: 'amountOriginal', label: 'Valor Original'},
-        { value: 'amountInterest', label: 'Valor Juros'},
-        { value: 'amountFine', label: 'Valor Multa'},
-        { value: 'amountDiscount', label: 'Valor Desconto'},
-        { value: 'dueDate', label: 'Data de Vencimento'},
-        { value: 'issueDate', label: 'Data de Emissão'},
-        { value: 'historic', label: 'Histórico'},
-        { value: 'category', label: 'Categoria'},
-        { value: 'accountPlan', label: 'Plano de Conta'},
-    ]
-    
-    const positionInFileOptions = objetOfCount
     
     return (
         <>
+            <Button variant="warning" className="ml-2" 
+                onClick={handleShow}>
+                <i className="fa fa-pencil-alt"></i>
+            </Button>
 
-            <Modal show={show} onHide={handleClose} dialogClassName="width-modal" >
+            <Modal show={show} dialogClassName="width-modal" >
                 <Modal.Body>
                     <Form.Row>
                         <Form.Label as="label" htmlFor="field" className="col-form-label">Campo:</Form.Label>
@@ -118,7 +121,6 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, fieldsFile, errors, touched,
                     </Button>
                 </Modal.Footer>
             </Modal>
-            {console.log(show)}
         </>
     );
 }

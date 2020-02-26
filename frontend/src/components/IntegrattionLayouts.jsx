@@ -176,18 +176,6 @@ export default function IntegrattionLayouts(){
                                     </tbody>
                                 </table>
                             </div>
-                            
-                            {/* < IntegrattionLayoutsFieldsNewOrEdit
-                                key={`fieldFile-${0}`}
-                                idx={0}
-                                fieldsFile={values.fields}
-                                errors={errors}
-                                touched={touched}
-                                handleChange={handleChange}
-                                handleBlur={handleBlur}
-                                setFieldValue={setFieldValue}
-                                setFieldTouched={setFieldTouched}
-                            /> */}
 
                             <div className="form-row">
                                 <div className="col-12">
