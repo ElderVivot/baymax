@@ -5,19 +5,17 @@ import { Modal, Button, Col, Form } from "react-bootstrap"
 import * as Yup from 'yup'
 import { Formik } from 'formik'
 
-let initialValues={
-    fields: {
-        nameField: "",
-        positionInFile: "",
-        positionInFileEnd: "",
-        nameColumn: "",
-        formatDate: ""
-    }
-}
+const validationSchema = Yup.object().shape({ 
+    nameField: Yup.string().required('Selecione uma opção válida'),
+    positionInFile: Yup.number('Valor deve ser um número').required('Campo obrigatório'),
+    positionInFileEnd: Yup.number(),
+    nameColumn: Yup.string(),
+    formatDate: Yup.number(),
+})
 
 class ClassUtil{
     static createAnObjetOfCount(numberInicial=1, numberFinal=100){
-        let obj = [{value: -1, label: "Posição Variável"}]
+        let obj = [{value: "0", label: "Posição Variável"}]
         while(numberInicial <= numberFinal){
             obj.push({
                 value: `${numberInicial}`, label: `${numberInicial}`
@@ -30,25 +28,7 @@ class ClassUtil{
 
 const positionInFileOptions = ClassUtil.createAnObjetOfCount()
 
-const fieldsOptions = [
-    { value: 'paymentDate', label: 'Data de Pagamento'},
-    { value: 'document', label: 'NF ou Documento'},
-    { value: 'cgceProvider', label: 'CNPJ Fornedor'},
-    { value: 'nameProvider', label: 'Nome Fornecedor'},
-    { value: 'bank', label: 'Banco/Caixa'},
-    { value: 'amountPaid', label: 'Valor Pago'},
-    { value: 'amountOriginal', label: 'Valor Original'},
-    { value: 'amountInterest', label: 'Valor Juros'},
-    { value: 'amountFine', label: 'Valor Multa'},
-    { value: 'amountDiscount', label: 'Valor Desconto'},
-    { value: 'dueDate', label: 'Data de Vencimento'},
-    { value: 'issueDate', label: 'Data de Emissão'},
-    { value: 'historic', label: 'Histórico'},
-    { value: 'category', label: 'Categoria'},
-    { value: 'accountPlan', label: 'Plano de Conta'},
-]
-
-function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent } ){
+function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsOptions, initialValues } ){
 
     const fieldPosition = `fields[${idx}]`
 
@@ -59,9 +39,9 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent } ){
 
     function handleSave(event, values) {
         event.preventDefault()
-        const nameField = values.fields.nameField
-        const positionInFile = values.fields.positionInFile
-        const nameColumn = values.fields.nameColumn
+        const nameField = values.nameField
+        const positionInFile = values.positionInFile
+        const nameColumn = values.nameColumn
 
         setFieldValueParent(`${fieldPosition}.nameField`, nameField)
         setFieldValueParent(`${fieldPosition}.positionInFile`, positionInFile)
@@ -79,23 +59,25 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent } ){
 
             <Formik 
                 initialValues={initialValues}
+                validationSchema={validationSchema}
             >
                 { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched }) => (
                 <Modal show={show} dialogClassName="width-modal" >
+                    <pre>{JSON.stringify(errors, null, 2)}</pre>
                     <Modal.Body>
                         <Form.Row>
                             <Form.Label as="label" htmlFor="field" className="col-form-label">Campo:</Form.Label>
                             <Col lg={4}>
                                 <Select 
                                     id={`${fieldPosition}.nameField`}
-                                    name={`fields.nameField`}
+                                    name={`nameField`}
                                     options={fieldsOptions}
                                     className={`selected ${touched.nameField && errors.nameField ? "has-error" : null }`}
                                     isSearchable={true}
                                     placeholder="Selecione"
                                     value={fieldsOptions.filter(option => option.value === values.nameField)[0]}
-                                    onChange={selectedOption => handleChange(`fields.nameField`)(selectedOption.value)}
-                                    onBlur={() => setFieldTouched(`fields.nameField`, true)}
+                                    onChange={selectedOption => handleChange(`nameField`)(selectedOption.value)}
+                                    onBlur={() => setFieldTouched(`nameField`, true)}
                                 />
                             </Col>
                         </Form.Row>
@@ -104,14 +86,14 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent } ){
                             <Col lg={3}>
                                 <Creatable 
                                     id={`${fieldPosition}.positionInFile`}
-                                    name={`fields.positionInFile`}
+                                    name={`positionInFile`}
                                     options={positionInFileOptions}
                                     className={`selected ${touched.positionInFile && errors.positionInFile ? "has-error" : null }`}
                                     isSearchable={true}
                                     placeholder="Selecione"
                                     value={positionInFileOptions.filter(option => option.value === values.positionInFile)[0]}
-                                    onChange={selectedOption => handleChange(`fields.positionInFile`)(selectedOption.value)}
-                                    onBlur={() => setFieldTouched(`fields.positionInFile`, true)}
+                                    onChange={selectedOption => handleChange(`positionInFile`)(selectedOption.value)}
+                                    onBlur={() => setFieldTouched(`positionInFile`, true)}
                                     formatCreateLabel={(string) => `Criar ${string}`}
                                 />
                             </Col>
@@ -122,8 +104,9 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent } ){
                             <Col lg={6}>
                                 <Form.Control
                                     id={`${fieldPosition}.nameColumn`}
-                                    name={`fields.nameColumn`}
+                                    name={`nameColumn`}
                                     type="text"
+                                    className={`selected ${touched.nameColumn && errors.nameColumn ? "has-error" : null }`}
                                     placeholder="Informe o nome da coluna que identifica este campo"
                                     value={values.nameColumn}
                                     onChange={handleChange}
@@ -135,10 +118,10 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent } ){
 
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
-                            Close
+                            Fechar
                         </Button>
                         <Button variant="primary" onClick={(event, _, attributes=values) => handleSave(event, attributes)}>
-                            Save Changes
+                            Salvar
                         </Button>
                     </Modal.Footer>
                 </Modal>

@@ -72,7 +72,6 @@ export default function IntegrattionLayouts(){
                 >
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue }) => (
                         <form action="" className="container-fluid">
-                            <pre>{JSON.stringify(values, null, 2)}</pre>
                             {/* Campo "Sistema" */}
                             <div className="form-group row">
                                 <label htmlFor="system" className="col-form-label">Sistema:</label>
@@ -164,12 +163,8 @@ export default function IntegrattionLayouts(){
                                                 key={`fieldFile-${idx}`}
                                                 idx={idx}
                                                 fieldsFile={values.fields}
-                                                errors={errors}
-                                                touched={touched}
-                                                handleChange={handleChange}
-                                                handleBlur={handleBlur}
                                                 setFieldValue={setFieldValue}
-                                                setFieldTouched={setFieldTouched}
+                                                initialValues={values.fields}
                                             /> 
                                         ))
                                     }
