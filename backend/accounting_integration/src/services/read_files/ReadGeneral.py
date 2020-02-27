@@ -19,6 +19,8 @@ class ReadGeneral(object):
         self._payments = []
         self._extracts = []
         self._fieldsRowNotMain = {}
+        self._groupingFields = {} # este obj irá gravar todos os campos que são agrupadores, linhas onde for partidas multiplas e será um lançamento só, e o que une elas é este campo
+        self._validationFields = []
 
     def identifiesTheHeader(self, data, settingLayout):
         posionsOfHeader = {}
@@ -75,9 +77,23 @@ class ReadGeneral(object):
         for key, settingField in settingFields.items():
             
             numberField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'numberField', -1)
+
             nameField = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField'))
             nameField = None if nameField == "" else nameField
+
             valueDefault = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'valueDefault'))
+
+            # --- este agrupamento é pra fazer a leitura de quando for um registro com vários débito pra vários créditos
+            groupingField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'groupingField', False)
+            if groupingField is True:
+                self._groupingFields[key] = True
+
+            validationField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'validationField', None)
+            if validationField is not None:
+                self._validationFields.append({
+                    key: validationField
+                })
+            
             validField = False
 
             row = funcoesUteis.analyzeIfFieldIsValid(settingField, 'row')
@@ -137,9 +153,6 @@ class ReadGeneral(object):
             if validField is True:
                 valuesOfLine['row'] = rowIsMain
                 valuesOfLine[key] = valueField  
-
-            # if key == 'bank':
-            #     print(valuesOfLine)
         
         return valuesOfLine
 
@@ -187,8 +200,50 @@ class ReadGeneral(object):
 
         return valuesOfLine
 
+    def handleLayoutIsPartidaMultipla(self, currentLine, valuesOfFile):
+        previousLine = funcoesUteis.analyzeIfFieldIsValidMatrix(valuesOfFile, -1, {}, True)
+        numberLote = funcoesUteis.analyzeIfFieldIsValid(previousLine, "numberLote", 0)
+        
+        currentField = ""
+        for nameField, valueField in currentLine.items():
+            if funcoesUteis.analyzeIfFieldIsValid(self._groupingFields, nameField, False) is True:
+                currentField = currentField + "-" + funcoesUteis.treatTextField(valueField)
+
+        previousField = ""
+        for nameField, valueField in previousLine.items():
+            if funcoesUteis.analyzeIfFieldIsValid(self._groupingFields, nameField, False) is True:
+                previousField = previousField + "-" + funcoesUteis.treatTextField(valueField)
+
+        if currentField == previousField:
+            return numberLote
+        else:
+            numberLote += 1
+            return numberLote
+
+    # esta função vai filtrar apenas as linhas que possuem o requisito válido pra ser impresso, ou seja, pra gerar a informação
+    def isValidLineToPrint(self, data):
+        # se não tiver nenhuma validação pra verificar já retorna true
+        if len(self._validationFields) == 0:
+            return True
+
+        countFieldsValid = 0
+        for validations in self._validationFields:
+            for nameField, validationField in validations.items():
+                valueFieldData = funcoesUteis.analyzeIfFieldIsValid(data, nameField)
+                
+                isEqual = funcoesUteis.analyzeIfFieldIsValid(validationField, "isEqual", None)
+
+                if isEqual is not None and isEqual == valueFieldData:
+                    countFieldsValid += 1
+
+        if countFieldsValid == len(self._validationFields):
+            return True
+
     def process(self, file):
-        self._fieldsRowNotMain.clear() # a cada processamento de um novo arquivo limpa os dados que ficam armazenados
+        # a cada processamento de um novo arquivo limpa os dados que ficam armazenados
+        self._fieldsRowNotMain.clear()
+        self._groupingFields.clear()
+        self._validationFields = []
         posionsOfHeaderTemp = {}
         posionsOfHeader = {}
 
@@ -243,10 +298,13 @@ class ReadGeneral(object):
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
                     if validationDate is not None and validationAmount != 0:
-                        if layoutType == 'account_paid':
-                            valuesOfFilePayments.append(valuesOfLine.copy())
-                        elif layoutType == 'extract_bank':
-                            valuesOfFileExtracts.append(valuesOfLine.copy())
+                        isValid = self.isValidLineToPrint(valuesOfLine)
+                        if isValid is True:
+                            if layoutType == 'account_paid':
+                                valuesOfLine['numberLote'] = self.handleLayoutIsPartidaMultipla(valuesOfLine, valuesOfFilePayments)
+                                valuesOfFilePayments.append(valuesOfLine.copy())
+                            elif layoutType == 'extract_bank':
+                                valuesOfFileExtracts.append(valuesOfLine.copy())
 
                 except Exception as e:
                     print(e)
@@ -266,13 +324,13 @@ class ReadGeneral(object):
 
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     from dao.src.GetSettingsCompany import GetSettingsCompany
+    from dao.src.GetSettingsCompany import GetSettingsCompany
 
-#     getSettingsCompany = GetSettingsCompany(1498)
-#     settings = getSettingsCompany.getSettingsFinancy()
+    getSettingsCompany = GetSettingsCompany(1428)
+    settings = getSettingsCompany.getSettingsFinancy()
 
-#     readFiles = ReadGeneral(1498, "C:/integracao_contabil/1498/arquivos_originais", settings)
-#     print(readFiles.processAll()[1])
+    readFiles = ReadGeneral(1428, "C:/integracao_contabil/1428/arquivos_originais", settings)
+    print(readFiles.processAll()[0])
 

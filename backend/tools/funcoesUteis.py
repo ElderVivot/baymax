@@ -91,9 +91,12 @@ def returnDataFieldInDict(data, valuesList):
         return ""
 
 
-def analyzeIfFieldIsValidMatrix(data, position, returnDefault=""):
+def analyzeIfFieldIsValidMatrix(data, position, returnDefault="", positionOriginal=False):
     try:
-        return data[position-1]
+        if positionOriginal is False:
+            return data[position-1]
+        else:
+            return data[position]
     except Exception:
         return returnDefault
 
