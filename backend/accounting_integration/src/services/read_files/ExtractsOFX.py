@@ -11,6 +11,7 @@ from ofxtools.Parser import OFXTree
 from ofxparse import OfxParser
 from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
+import datetime
 
 
 class ExtractsOFX(object):
@@ -49,6 +50,7 @@ class ExtractsOFX(object):
                 typeTransaction = funcoesUteis.treatTextField(transaction.type)
                 
                 dateTransaction = transaction.date
+                dateTransaction = datetime.datetime.date(dateTransaction)
                 
                 amount = funcoesUteis.treatDecimalField(transaction.amount)
                 if amount < 0:

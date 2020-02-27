@@ -173,8 +173,6 @@ class PaymentsWinthorExcel(object):
                 bank = funcoesUteis.treatTextFieldInVector(bankVector, 1)
 
                 account = funcoesUteis.treatTextFieldInVector(bankVector, 2)
-                
-                bankCheck = funcoesUteis.treatTextFieldInVector(data, 15)
 
                 companyBranch = funcoesUteis.treatTextFieldInVector(data, 18)
 
@@ -191,7 +189,6 @@ class PaymentsWinthorExcel(object):
                         "amountInterest": amountInterest,
                         "amountOriginal": amountOriginal,
                         "amountDevolution": amountDevolution,
-                        "bankCheck": bankCheck,
                         "paymentType": paymentType,
                         "accountPlan": accountPlan,
                         "historic": historic,

@@ -22,7 +22,7 @@ class FilterPeriod(object):
         for payment in self._payments:
             paymentDate = funcoesUteis.analyzeIfFieldIsValid(payment, "paymentDate", None)
             extractDate = funcoesUteis.analyzeIfFieldIsValid(payment, "dateExtract", None)
-            if extractDate is None:
+            if extractDate is None or extractDate == "":
                 extractDate = paymentDate
 
             if ( self._inicialDate <= paymentDate and paymentDate <= self._finalDate ) or ( self._inicialDate <= extractDate and extractDate <= self._finalDate ):
