@@ -203,6 +203,11 @@ class ReadGeneral(object):
     def handleLayoutIsPartidaMultipla(self, currentLine, valuesOfFile):
         previousLine = funcoesUteis.analyzeIfFieldIsValidMatrix(valuesOfFile, -1, {}, True)
         numberLote = funcoesUteis.analyzeIfFieldIsValid(previousLine, "numberLote", 0)
+
+        # se não houver campos agrupadores de informações cada registro será um lote sequencial
+        if len(self._groupingFields) == 0:
+            numberLote += 1
+            return numberLote
         
         currentField = ""
         for nameField, valueField in currentLine.items():
@@ -238,6 +243,30 @@ class ReadGeneral(object):
 
         if countFieldsValid == len(self._validationFields):
             return True
+
+    #  esta função soma o total pago por cada lote, afim de comparar com os extratos bancários posteriormente
+    def sumAmountPaidPerLote(self, valuesOfFile):
+        amountPaidPerLote = {}
+        valuesOfFileWithAmountPaid = []
+
+        for key, currentLine in enumerate(valuesOfFile):
+            previousLine = funcoesUteis.analyzeIfFieldIsValidMatrix(valuesOfFile, key-1, {}, True)
+            previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousLine, "numberLote")
+
+            currentNumberLote = funcoesUteis.analyzeIfFieldIsValid(currentLine, "numberLote")
+            amountPaid = funcoesUteis.analyzeIfFieldIsValid(currentLine, "amountPaid")
+
+            if previousNumberLote == currentNumberLote:
+                amountPaidPerLote[currentNumberLote] += amountPaid
+            else:
+                amountPaidPerLote[currentNumberLote] = amountPaid
+
+        for data in valuesOfFile:
+            numberLote = funcoesUteis.analyzeIfFieldIsValid(data, "numberLote")
+            data['amountPaidPerLote'] = round(amountPaidPerLote[numberLote], 2)
+            valuesOfFileWithAmountPaid.append(data)
+
+        return valuesOfFileWithAmountPaid
 
     def process(self, file):
         # a cada processamento de um novo arquivo limpa os dados que ficam armazenados
@@ -309,6 +338,9 @@ class ReadGeneral(object):
                 except Exception as e:
                     print(e)
                     
+        # soma o total pago por lote
+        valuesOfFilePayments = self.sumAmountPaidPerLote(valuesOfFilePayments)
+
         return [valuesOfFilePayments, valuesOfFileExtracts]
 
     def processAll(self):
@@ -317,8 +349,9 @@ class ReadGeneral(object):
                 wayFile = os.path.join(root, file)
 
                 if file.lower().endswith(('.xls', '.xlsx')):
-                    self._payments.append(self.process(wayFile)[0])
-                    self._extracts.append(self.process(wayFile)[1])
+                    process = self.process(wayFile)
+                    self._payments.append(process[0])
+                    self._extracts.append(process[1])
 
         return [funcoesUteis.removeAnArrayFromWithinAnother(self._payments), funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)]
 

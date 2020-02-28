@@ -102,39 +102,40 @@ class GenerateExcel(object):
         sheet = self._workbook.add_worksheet('Pagamentos')
         sheet.freeze_panes(1, 0)
 
-        sheet.set_column(2,2,options={'hidden':True}) # parcela
-        sheet.set_column(4,4,options={'hidden':True}) # cnpj fornecedor
-        sheet.set_column(7,7,options={'hidden':True}) # comprovante pagto
-        sheet.set_column(9,9,options={'hidden':True}) # data extrato
-        sheet.set_column(11,11,options={'hidden':True}) # data vencimento
-        sheet.set_column(12,12,options={'hidden':True}) # data emissão
+        sheet.set_column(3,3,options={'hidden':True}) # parcela
+        sheet.set_column(5,5,options={'hidden':True}) # cnpj fornecedor
+        sheet.set_column(8,8,options={'hidden':True}) # comprovante pagto
+        sheet.set_column(10,10,options={'hidden':True}) # data extrato
+        sheet.set_column(12,12,options={'hidden':True}) # data vencimento
+        sheet.set_column(13,13,options={'hidden':True}) # data emissão
 
-        sheet.write(0, 0, "Documento", self._cell_format_header)
-        sheet.write(0, 1, "NF na Domínio?", self._cell_format_header)
-        sheet.write(0, 2, "Parcela", self._cell_format_header) # hidden
-        sheet.write(0, 3, "Fornecedor", self._cell_format_header)
-        sheet.write(0, 4, "CNPJ Fornecedor", self._cell_format_header) # hidden
-        sheet.write(0, 5, "Banco Financeiro", self._cell_format_header)
-        sheet.write(0, 6, "Banco Extrato", self._cell_format_header)
-        sheet.write(0, 7, "Comprovante Pagto?", self._cell_format_header)
-        sheet.write(0, 8, "Data Financeiro", self._cell_format_header)
-        sheet.write(0, 9, "Data Extrato", self._cell_format_header)
-        sheet.write(0, 10, "Importação Domínio", self._cell_format_header)
-        sheet.write(0, 11, "Vencimento", self._cell_format_header)
-        sheet.write(0, 12, "Emissão", self._cell_format_header)
-        sheet.write(0, 13, "Valor Pago", self._cell_format_header)
-        sheet.write(0, 14, "Desconto", self._cell_format_header)
-        sheet.write(0, 15, "Juros", self._cell_format_header)
-        sheet.write(0, 16, "Multa", self._cell_format_header)
-        sheet.write(0, 17, "Valor Original", self._cell_format_header)
-        sheet.write(0, 18, "Conta Contabil Domínio", self._cell_format_header)
-        sheet.write(0, 19, "Codigo Empresa", self._cell_format_header)
-        sheet.write(0, 20, "Historico Financeiro", self._cell_format_header)
-        sheet.write(0, 21, "Categoria", self._cell_format_header)
-        sheet.write(0, 22, "Plano de Contas", self._cell_format_header)
-        sheet.write(0, 23, "CNPJ Pagador", self._cell_format_header)
-        sheet.write(0, 24, "Historico Extrato Bancário", self._cell_format_header)
-        sheet.write(0, 25, "Conta Contabil Sistema Cliente", self._cell_format_header)
+        sheet.write(0, 0, "Lote", self._cell_format_header)
+        sheet.write(0, 1, "Documento", self._cell_format_header)
+        sheet.write(0, 2, "NF na Domínio?", self._cell_format_header)
+        sheet.write(0, 3, "Parcela", self._cell_format_header) # hidden
+        sheet.write(0, 4, "Fornecedor", self._cell_format_header)
+        sheet.write(0, 5, "CNPJ Fornecedor", self._cell_format_header) # hidden
+        sheet.write(0, 6, "Banco Financeiro", self._cell_format_header)
+        sheet.write(0, 7, "Banco Extrato", self._cell_format_header)
+        sheet.write(0, 8, "Comprovante Pagto?", self._cell_format_header)
+        sheet.write(0, 9, "Data Financeiro", self._cell_format_header)
+        sheet.write(0, 10, "Data Extrato", self._cell_format_header)
+        sheet.write(0, 11, "Importação Domínio", self._cell_format_header)
+        sheet.write(0, 12, "Vencimento", self._cell_format_header)
+        sheet.write(0, 13, "Emissão", self._cell_format_header)
+        sheet.write(0, 14, "Valor Pago", self._cell_format_header)
+        sheet.write(0, 15, "Desconto", self._cell_format_header)
+        sheet.write(0, 16, "Juros", self._cell_format_header)
+        sheet.write(0, 17, "Multa", self._cell_format_header)
+        sheet.write(0, 18, "Valor Original", self._cell_format_header)
+        sheet.write(0, 19, "Conta Contabil Domínio", self._cell_format_header)
+        sheet.write(0, 20, "Codigo Empresa", self._cell_format_header)
+        sheet.write(0, 21, "Historico Financeiro", self._cell_format_header)
+        sheet.write(0, 22, "Categoria", self._cell_format_header)
+        sheet.write(0, 23, "Plano de Contas", self._cell_format_header)
+        sheet.write(0, 24, "CNPJ Pagador", self._cell_format_header)
+        sheet.write(0, 25, "Historico Extrato Bancário", self._cell_format_header)
+        sheet.write(0, 26, "Conta Contabil Sistema Cliente", self._cell_format_header)
 
         # ordena os payments por data
         payments = sorted(payments, key=itemgetter('bank', 'dateOfImport'))
@@ -142,6 +143,8 @@ class GenerateExcel(object):
         for key, payment in enumerate(payments):
             row = key+1
 
+            numberLote = funcoesUteis.analyzeIfFieldIsValid(payment, "numberLote", 0)
+            numberLote = row if numberLote == 0 else numberLote
             document = funcoesUteis.analyzeIfFieldIsValid(payment, "document")
             findNote = funcoesUteis.analyzeIfFieldIsValid(payment, "findNote")
             parcelNumber = funcoesUteis.analyzeIfFieldIsValid(payment, "parcelNumber")
@@ -162,8 +165,7 @@ class GenerateExcel(object):
             amountOriginal = funcoesUteis.analyzeIfFieldIsValid(payment, "amountOriginal", 0.0)
             accountCode = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode")
             codiEmp = funcoesUteis.analyzeIfFieldIsValid(payment, "codiEmp", None)
-            if codiEmp is None:
-                codiEmp = self._codiEmp
+            codiEmp = self._codiEmp if codiEmp is None else codiEmp
             historic = funcoesUteis.analyzeIfFieldIsValid(payment, "historic")
             category = funcoesUteis.analyzeIfFieldIsValid(payment, "category")
             accountPlan = funcoesUteis.analyzeIfFieldIsValid(payment, "accountPlan")
@@ -171,32 +173,33 @@ class GenerateExcel(object):
             historicExtract = funcoesUteis.analyzeIfFieldIsValid(payment, "historicExtract")
             accountCodeOld = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeOld")
 
-            sheet.write(row, 0, document)
-            sheet.write(row, 1, findNote)
-            sheet.write(row, 2, parcelNumber)
-            sheet.write(row, 3, nameProvider)
-            sheet.write(row, 4, cgceProvider)
-            sheet.write(row, 5, bankAndAccount)
-            sheet.write(row, 6, bankAndAccountExtract)
-            sheet.write(row, 7, foundProof)
-            sheet.write(row, 8, paymentDate, self._cell_format_date)
-            sheet.write(row, 9, extractDate, self._cell_format_date)
-            sheet.write(row, 10, dateOfImport, self._cell_format_date)
-            sheet.write(row, 11, dueDate, self._cell_format_date)
-            sheet.write(row, 12, issueDate, self._cell_format_date)
-            sheet.write(row, 13, amountPaid, self._cell_format_money)
-            sheet.write(row, 14, amountDiscount, self._cell_format_money)
-            sheet.write(row, 15, amountInterest, self._cell_format_money)
-            sheet.write(row, 16, amountFine, self._cell_format_money)
-            sheet.write(row, 17, amountOriginal, self._cell_format_money)
-            sheet.write(row, 18, accountCode)
-            sheet.write(row, 19, codiEmp)
-            sheet.write(row, 20, historic)
-            sheet.write(row, 21, category)
-            sheet.write(row, 22, accountPlan)
-            sheet.write(row, 23, cgcePaying)
-            sheet.write(row, 24, historicExtract)
-            sheet.write(row, 25, accountCodeOld)
+            sheet.write(row, 0, numberLote)
+            sheet.write(row, 1, document)
+            sheet.write(row, 2, findNote)
+            sheet.write(row, 3, parcelNumber)
+            sheet.write(row, 4, nameProvider)
+            sheet.write(row, 5, cgceProvider)
+            sheet.write(row, 6, bankAndAccount)
+            sheet.write(row, 7, bankAndAccountExtract)
+            sheet.write(row, 8, foundProof)
+            sheet.write(row, 9, paymentDate, self._cell_format_date)
+            sheet.write(row, 10, extractDate, self._cell_format_date)
+            sheet.write(row, 11, dateOfImport, self._cell_format_date)
+            sheet.write(row, 12, dueDate, self._cell_format_date)
+            sheet.write(row, 13, issueDate, self._cell_format_date)
+            sheet.write(row, 14, amountPaid, self._cell_format_money)
+            sheet.write(row, 15, amountDiscount, self._cell_format_money)
+            sheet.write(row, 16, amountInterest, self._cell_format_money)
+            sheet.write(row, 17, amountFine, self._cell_format_money)
+            sheet.write(row, 18, amountOriginal, self._cell_format_money)
+            sheet.write(row, 19, accountCode)
+            sheet.write(row, 20, codiEmp)
+            sheet.write(row, 21, historic)
+            sheet.write(row, 22, category)
+            sheet.write(row, 23, accountPlan)
+            sheet.write(row, 24, cgcePaying)
+            sheet.write(row, 25, historicExtract)
+            sheet.write(row, 26, accountCodeOld)
 
     def closeFile(self):
         self._workbook.close()

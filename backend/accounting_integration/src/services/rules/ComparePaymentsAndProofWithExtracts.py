@@ -202,8 +202,11 @@ class ComparePaymentsAndProofWithExtracts(object):
             operation = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "operation", "-")
             bank = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "bank")
             account = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "account")
+            amountPaid = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "amountPaid", 0.0)
+            amountPaidPerLote = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "amountPaidPerLote", 0.0)
+            amountPaid = amountPaidPerLote if amountPaidPerLote > 0 else amountPaid
             
-            extract = self.returnDataExtract(paymentFinal["paymentDate"], paymentFinal["amountPaid"], operation, bank, account)
+            extract = self.returnDataExtract(paymentFinal["paymentDate"], amountPaid, operation, bank, account)
 
             paymentFinal["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
             paymentFinal["bankExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'bank')}"

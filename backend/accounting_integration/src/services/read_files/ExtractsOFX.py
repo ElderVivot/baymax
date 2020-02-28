@@ -83,7 +83,7 @@ class ExtractsOFX(object):
                 valuesOfFile.append(valuesOfLine.copy())
         except Exception as e:
             print(e)
-
+        
         return valuesOfFile
 
     def processAll(self):
