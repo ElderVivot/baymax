@@ -31,9 +31,10 @@ class ReadExcelToUpdateOrExportData(object):
                     self._posionsOfHeaderPayments[nameField] = keyField
                 continue
 
-            document = funcoesUteis.treatTextFieldInVector(data, 1, self._posionsOfHeaderPayments, "Documento")
+            numberLote = funcoesUteis.treatNumberFieldInVector(data, 1, self._posionsOfHeaderPayments, "Lote")
+            document = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderPayments, "Documento")
 
-            findNote = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderPayments, "NF na Domínio?")
+            findNote = funcoesUteis.treatTextFieldInVector(data, 3, self._posionsOfHeaderPayments, "NF na Domínio?")
             if findNote == "1":
                 findNote = True
             elif findNote == "0":
@@ -41,11 +42,11 @@ class ReadExcelToUpdateOrExportData(object):
             else:
                 findNote = ""
 
-            parcelNumber = funcoesUteis.treatTextFieldInVector(data, 3, self._posionsOfHeaderPayments, "Parcela")
-            nameProvider = funcoesUteis.treatTextFieldInVector(data, 4, self._posionsOfHeaderPayments, "Fornecedor")
-            cgceProvider = funcoesUteis.treatTextFieldInVector(data, 5, self._posionsOfHeaderPayments, "CNPJ Fornecedor")
+            parcelNumber = funcoesUteis.treatTextFieldInVector(data, 4, self._posionsOfHeaderPayments, "Parcela")
+            nameProvider = funcoesUteis.treatTextFieldInVector(data, 5, self._posionsOfHeaderPayments, "Fornecedor")
+            cgceProvider = funcoesUteis.treatTextFieldInVector(data, 6, self._posionsOfHeaderPayments, "CNPJ Fornecedor")
 
-            bankAndAccount = funcoesUteis.treatTextFieldInVector(data, 6, self._posionsOfHeaderPayments, "Banco Financeiro").split('-')
+            bankAndAccount = funcoesUteis.treatTextFieldInVector(data, 7, self._posionsOfHeaderPayments, "Banco Financeiro").split('-')
             if len(bankAndAccount) == 2:
                 bank = bankAndAccount[0]
                 account = bankAndAccount[1]
@@ -56,7 +57,7 @@ class ReadExcelToUpdateOrExportData(object):
                 bank = ""
                 account = ""
                 
-            bankAndAccountExtract = funcoesUteis.treatTextFieldInVector(data, 7, self._posionsOfHeaderPayments, "Banco Extrato").split('-')
+            bankAndAccountExtract = funcoesUteis.treatTextFieldInVector(data, 8, self._posionsOfHeaderPayments, "Banco Extrato").split('-')
             if len(bankAndAccountExtract) == 2:
                 bankExtract = bankAndAccountExtract[0]
                 accountExtract = bankAndAccountExtract[1]
@@ -67,7 +68,7 @@ class ReadExcelToUpdateOrExportData(object):
                 bankExtract = ""
                 accountExtract = ""
 
-            foundProof = funcoesUteis.treatTextFieldInVector(data, 8, self._posionsOfHeaderPayments, "Comprovante Pagto?")
+            foundProof = funcoesUteis.treatTextFieldInVector(data, 9, self._posionsOfHeaderPayments, "Comprovante Pagto?")
             if foundProof == "1":
                 foundProof = True
             elif foundProof == "0":
@@ -75,27 +76,28 @@ class ReadExcelToUpdateOrExportData(object):
             else:
                 foundProof = ""
 
-            paymentDate = funcoesUteis.treatDateFieldInVector(data, 9, self._posionsOfHeaderPayments, "Data Financeiro")
-            extractDate = funcoesUteis.treatDateFieldInVector(data, 10, self._posionsOfHeaderPayments, "Data Extrato")
-            dateOfImport = funcoesUteis.treatDateFieldInVector(data, 11, self._posionsOfHeaderPayments, "Importação Domínio")
-            dueDate = funcoesUteis.treatTextFieldInVector(data, 12, self._posionsOfHeaderPayments, "Vencimento")
-            issueDate = funcoesUteis.treatTextFieldInVector(data, 13, self._posionsOfHeaderPayments, "Emissão")
-            amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 14, self._posionsOfHeaderPayments, "Valor Pago")
-            amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 15, self._posionsOfHeaderPayments, "Desconto")
-            amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 16, self._posionsOfHeaderPayments, "Juros")
-            amountFine = funcoesUteis.treatDecimalFieldInVector(data, 17, self._posionsOfHeaderPayments, "Multa")
-            amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 18, self._posionsOfHeaderPayments, "Valor Original")
-            accountCode = funcoesUteis.treatNumberFieldInVector(data, 19, self._posionsOfHeaderPayments, "Conta Contabil Domínio")
-            codiEmp = funcoesUteis.treatTextFieldInVector(data, 20, self._posionsOfHeaderPayments, "Codigo Empresa")
-            historic = funcoesUteis.treatTextFieldInVector(data, 21, self._posionsOfHeaderPayments, "Historico Planilha")
-            category = funcoesUteis.treatTextFieldInVector(data, 22, self._posionsOfHeaderPayments, "Categoria")
-            accountPlan = funcoesUteis.treatTextFieldInVector(data, 23, self._posionsOfHeaderPayments, "Plano de Contas")
-            cgcePaying = funcoesUteis.treatTextFieldInVector(data, 24, self._posionsOfHeaderPayments, "CNPJ Pagador")
-            historicExtract = funcoesUteis.treatTextFieldInVector(data, 25, self._posionsOfHeaderPayments, "Historico Extrato Bancário")
-            accountCodeOld = funcoesUteis.treatTextFieldInVector(data, 26, self._posionsOfHeaderPayments, "Conta Contabil Sistema Cliente")
+            paymentDate = funcoesUteis.treatDateFieldInVector(data, 10, self._posionsOfHeaderPayments, "Data Financeiro")
+            extractDate = funcoesUteis.treatDateFieldInVector(data, 11, self._posionsOfHeaderPayments, "Data Extrato")
+            dateOfImport = funcoesUteis.treatDateFieldInVector(data, 12, self._posionsOfHeaderPayments, "Importação Domínio")
+            dueDate = funcoesUteis.treatTextFieldInVector(data, 13, self._posionsOfHeaderPayments, "Vencimento")
+            issueDate = funcoesUteis.treatTextFieldInVector(data, 14, self._posionsOfHeaderPayments, "Emissão")
+            amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 15, self._posionsOfHeaderPayments, "Valor Pago")
+            amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 16, self._posionsOfHeaderPayments, "Desconto")
+            amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 17, self._posionsOfHeaderPayments, "Juros")
+            amountFine = funcoesUteis.treatDecimalFieldInVector(data, 18, self._posionsOfHeaderPayments, "Multa")
+            amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 19, self._posionsOfHeaderPayments, "Valor Original")
+            accountCode = funcoesUteis.treatNumberFieldInVector(data, 20, self._posionsOfHeaderPayments, "Conta Contabil Domínio")
+            codiEmp = funcoesUteis.treatTextFieldInVector(data, 21, self._posionsOfHeaderPayments, "Codigo Empresa")
+            historic = funcoesUteis.treatTextFieldInVector(data, 22, self._posionsOfHeaderPayments, "Historico Planilha")
+            category = funcoesUteis.treatTextFieldInVector(data, 23, self._posionsOfHeaderPayments, "Categoria")
+            accountPlan = funcoesUteis.treatTextFieldInVector(data, 24, self._posionsOfHeaderPayments, "Plano de Contas")
+            cgcePaying = funcoesUteis.treatTextFieldInVector(data, 25, self._posionsOfHeaderPayments, "CNPJ Pagador")
+            historicExtract = funcoesUteis.treatTextFieldInVector(data, 26, self._posionsOfHeaderPayments, "Historico Extrato Bancário")
+            accountCodeOld = funcoesUteis.treatTextFieldInVector(data, 27, self._posionsOfHeaderPayments, "Conta Contabil Sistema Cliente")
 
             if amountPaid != 0:
                 self._paymentsOfLine = {
+                    "numberLote": numberLote,
                     "document": document,
                     "findNote": findNote,
                     "parcelNumber": parcelNumber,
