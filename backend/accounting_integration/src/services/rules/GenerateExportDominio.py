@@ -31,10 +31,35 @@ class GenerateExportDominio(object):
         self._payments = payments
         self._extracts = extracts
 
+    #  esta função soma o total pago por cada lote, afim de comparar com os extratos bancários posteriormente
+    def sumAmountPaidPerLote(self, valuesOfFile):
+        amountPaidPerLote = {}
+        valuesOfFileWithAmountPaid = []
+
+        for key, currentLine in enumerate(valuesOfFile):
+            previousLine = funcoesUteis.analyzeIfFieldIsValidMatrix(valuesOfFile, key-1, {}, True)
+            previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousLine, "numberLote")
+
+            currentNumberLote = funcoesUteis.analyzeIfFieldIsValid(currentLine, "numberLote")
+            amountPaid = funcoesUteis.analyzeIfFieldIsValid(currentLine, "amountPaid")
+
+            if previousNumberLote == currentNumberLote:
+                amountPaidPerLote[currentNumberLote] += amountPaid
+            else:
+                amountPaidPerLote[currentNumberLote] = amountPaid
+
+        for key, data in enumerate(valuesOfFile):
+            numberLote = funcoesUteis.analyzeIfFieldIsValid(data, "numberLote")
+            
+            data['amountPaidPerLote'] = round(amountPaidPerLote[numberLote], 2)
+            valuesOfFileWithAmountPaid.append(data)
+
+        return valuesOfFileWithAmountPaid
+
     def isPaymentOrExtract(self, data):
         dateTransaction = funcoesUteis.analyzeIfFieldIsValid(data, "dateTransaction", None)
         if dateTransaction is None:
-            return "P" # payment pq não existe o bankId
+            return "P" # payment pq não existe o dateTransaction
         else:
             return "E"
 
@@ -47,9 +72,10 @@ class GenerateExportDominio(object):
 
         return f"{idRecord}|{typeEntry}|{codeDefaultEntry}|{localizador}|{rttFcont}|\n"
 
-    def entry6100(self, data, typeData, typeEntry='N'):
+    def entry6100(self, data, typeData, typeEntry='N', isAmountPaidPerLote=False):
         # o typeData é pra identificar se é débito ou crédito
         # o typeEntry é pra identificar se é um lançamento de juros (J), multa (M), desconto (D) ou normal (N)
+        # o isAmountPaidPerLote serve pra pegar o valor do lançamento em vez da chave 'amountPaid' pelo 'amountPaidPerLote'
         paymentOrExtract = self.isPaymentOrExtract(data)
         accountCodeDebit =  ""
         accountCodeCredit = ""
@@ -69,6 +95,10 @@ class GenerateExportDominio(object):
         elif paymentOrExtract == "P":
             exportDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.analyzeIfFieldIsValid(data, "dateOfImport", None))
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaid", 0.0)
+            if amountPaid < 0: # quando negativo multipla por menos 1, geralmente são os descontos
+                amountPaid *= -1
+            if isAmountPaidPerLote is True:
+                amountPaid = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaidPerLote", 0.0)
             amountDiscount = funcoesUteis.analyzeIfFieldIsValid(data, "amountDiscount", 0.0)
             amountInterest = funcoesUteis.analyzeIfFieldIsValid(data, "amountInterest", 0.0)
             amountFine = funcoesUteis.analyzeIfFieldIsValid(data, "amountFine", 0.0)
@@ -112,6 +142,11 @@ class GenerateExportDominio(object):
             else:
                 historic = f"DO FORNECEDOR {nameProvider}{historicTemp}"
 
+            # mudo o histórico pois num pagamento em lote (diferentes fornecedores e mesmo banco) não pode vir a informação do fornecedor, pois cada pagamento é um diferente
+            if isAmountPaidPerLote is True:
+                historicCode = ""
+                historic = f"PAGAMENTOS"
+
         idRecord = '6100'
         user = ""
         branch = ""
@@ -121,6 +156,8 @@ class GenerateExportDominio(object):
             return f"{idRecord}|{exportDate}|{accountCodeDebit}|{accountCodeCredit}|{amount}|{historicCode}|{historic}|{user}|{branch}|{scp}|\n"
         else:
             return ""
+
+    # def entry6100PaymentsAmountOfBank(self):
 
     def exportExtracts(self):
         for key, extract in enumerate(self._extracts):
@@ -135,13 +172,34 @@ class GenerateExportDominio(object):
                 self._file.write(self.entry6100(extract, 'C'))
                 
     def exportPayments(self):
-        for key, payment in enumerate(self._payments):
+
+        numberLotesProcessed = []
+
+        try:
+            payments = sorted(self._payments, key=itemgetter('numberLote'))
+        except Exception:
+            payments = self._payments
+
+        payments = self.sumAmountPaidPerLote(payments)
+
+        for key, payment in enumerate(payments):
             accountCodeDebit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode"), isInt=True)
             accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeBank", 0), isInt=True)
+            amountPaid = funcoesUteis.analyzeIfFieldIsValid(payment, "amountPaid", 0)
+            numberLote = funcoesUteis.analyzeIfFieldIsValid(payment, "numberLote")
             if accountCodeDebit > 0 and accountCodeCredit > 0:
-                self._file.write(self.header6000())
-                self._file.write(self.entry6100(payment, 'D', 'N'))
-                self._file.write(self.entry6100(payment, 'C', 'N'))
+
+                # somente gera o cabeçalho e o total do lote caso ainda não tenha processado aquele 'numberLote'
+                if numberLotesProcessed.count(numberLote) == 0:
+                    self._file.write(self.header6000())
+                    self._file.write(self.entry6100(payment, 'C', 'N', isAmountPaidPerLote=True))
+                    numberLotesProcessed.append(numberLote)
+                
+                if amountPaid > 0:
+                    self._file.write(self.entry6100(payment, 'D', 'N'))
+                else:
+                    self._file.write(self.entry6100(payment, 'C', 'N')) # os negativos tenho que creditar, geralmente são os descontos
+                
                 self._file.write(self.entry6100(payment, 'D', 'J'))
                 self._file.write(self.entry6100(payment, 'D', 'M'))
                 self._file.write(self.entry6100(payment, 'C', 'D'))

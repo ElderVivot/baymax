@@ -200,6 +200,7 @@ class ReadGeneral(object):
 
         return valuesOfLine
 
+    # tem alguns sistemas que o valor do pagamento não está considerando o juros/multa/desconto, esta função faz isto
     def sumInterestFineAndDiscountInAmountPaid(self, data, isToSum=False):
         amountPaid = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaid", 0.0)
         amountInterest = funcoesUteis.analyzeIfFieldIsValid(data, "amountInterest", 0.0)

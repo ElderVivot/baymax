@@ -145,7 +145,7 @@ def treatNumberField(value, isInt=False):
     except Exception:
         return 0
 
-def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldHeader=''):
+def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldHeader='', isInt=False):
     """
     :param data: Informar o array de dados que quer ler
     :param numberOfField: numero do campo na planilha (opcional)
@@ -155,15 +155,15 @@ def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldH
     """
     if len(fieldsHeader) > 0:
         try:
-            return treatNumberField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
+            return treatNumberField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)], isInt)
         except Exception:
             try:
-                return treatNumberField(data[numberOfField-1])
+                return treatNumberField(data[numberOfField-1], isInt)
             except Exception:
                 return 0
     else:
         try:
-            return treatNumberField(data[numberOfField-1])
+            return treatNumberField(data[numberOfField-1], isInt)
         except Exception:
             return 0     
 
