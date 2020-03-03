@@ -143,9 +143,11 @@ class GenerateExportDominio(object):
                 historic = f"DO FORNECEDOR {nameProvider}{historicTemp}"
 
             # mudo o histórico pois num pagamento em lote (diferentes fornecedores e mesmo banco) não pode vir a informação do fornecedor, pois cada pagamento é um diferente
-            if isAmountPaidPerLote is True:
-                historicCode = ""
-                historic = f"PAGAMENTOS"
+            amountPaidOriginal = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaid", 0.0)
+            amountPaidPerLote = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaidPerLote", 0.0)
+            if isAmountPaidPerLote is True and amountPaidOriginal != amountPaidPerLote:
+                historicCode = 15
+                historic = ""
 
         idRecord = '6100'
         user = ""
