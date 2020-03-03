@@ -90,14 +90,15 @@ class ProcessIntegration(object):
                 readGeneralData = readGeneral.processAll()
                 self._payments = readGeneralData[0]
 
-                self._extracts.append(readGeneralData[1])
-                self._extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
+                self._extracts.append(readGeneralData[1])                
             else:
                 callReadFilePayments = CallReadFilePayments(systemFinancy, self._codiEmp, self._wayFilesToRead, self._wayFilesTemp)
                 self._payments = callReadFilePayments.process()
         else:
             print('\t - Cliente sem a configuração do sistema financeiro realizada (provavelmente esta empresa não possui)')
 
+        self._extracts = funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
+        
         # reads the txts
         print(' - Etapa 4: Lendo os comprovantes de pagamentos e analisando as estruturas deles.')
         callReadFileProofs = CallReadFileProofs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead, self._settings)

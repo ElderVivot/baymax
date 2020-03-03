@@ -203,7 +203,6 @@ class GenerateExportDominio(object):
                 if amountPaid > 0:
                     self._file.write(self.entry6100(payment, 'D', 'N'))
                 else:
-                    print('teste')
                     self._file.write(self.entry6100(payment, 'C', 'N')) # os negativos tenho que creditar, geralmente são os descontos
                 
                 self._file.write(self.entry6100(payment, 'D', 'J'))

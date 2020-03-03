@@ -20,7 +20,7 @@ class ReadGeneral(object):
         self._extracts = []
         self._fieldsRowNotMain = {}
         self._groupingFields = {} # este obj irá gravar todos os campos que são agrupadores, linhas onde for partidas multiplas e será um lançamento só, e o que une elas é este campo
-        self._validationFields = []
+        self._validationsLineToPrint = []
 
     def identifiesTheHeader(self, data, settingLayout):
         posionsOfHeader = {}
@@ -88,11 +88,11 @@ class ReadGeneral(object):
             if groupingField is True:
                 self._groupingFields[key] = True
 
-            validationField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'validationField', None)
-            if validationField is not None:
-                self._validationFields.append({
-                    key: validationField
-                })
+            validationLineToPrint = funcoesUteis.analyzeIfFieldIsValid(settingField, 'validationLineToPrint', None)
+            if validationLineToPrint is not None:
+                objValidationLineToPrint = { key: validationLineToPrint }
+                if self._validationsLineToPrint.count(objValidationLineToPrint) == 0:
+                    self._validationsLineToPrint.append(objValidationLineToPrint)
             
             validField = False
 
@@ -240,11 +240,11 @@ class ReadGeneral(object):
     # esta função vai filtrar apenas as linhas que possuem o requisito válido pra ser impresso, ou seja, pra gerar a informação
     def isValidLineToPrint(self, data):
         # se não tiver nenhuma validação pra verificar já retorna true
-        if len(self._validationFields) == 0:
+        if len(self._validationsLineToPrint) == 0:
             return True
 
         countFieldsValid = 0
-        for validations in self._validationFields:
+        for validations in self._validationsLineToPrint:
             for nameField, validationField in validations.items():
                 valueFieldData = funcoesUteis.analyzeIfFieldIsValid(data, nameField)
                 
@@ -253,7 +253,7 @@ class ReadGeneral(object):
                 if isEqual is not None and isEqual == valueFieldData:
                     countFieldsValid += 1
 
-        if countFieldsValid == len(self._validationFields):
+        if countFieldsValid == len(self._validationsLineToPrint):
             return True
 
     #  esta função soma o total pago por cada lote, afim de comparar com os extratos bancários posteriormente
@@ -284,7 +284,7 @@ class ReadGeneral(object):
         # a cada processamento de um novo arquivo limpa os dados que ficam armazenados
         self._fieldsRowNotMain.clear()
         self._groupingFields.clear()
-        self._validationFields = []
+        self._validationsLineToPrint = []
         posionsOfHeaderTemp = {}
         posionsOfHeader = {}
 
