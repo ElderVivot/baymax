@@ -109,7 +109,10 @@ class GenerateExportDominio(object):
                     accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCode", "")
                     amount = amountLiquid
                 else:
-                    accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeBank", "")
+                    if isAmountPaidPerLote is True: # se for o total do lote então o crédito é o banco
+                        accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeBank", "")
+                    else: # se não for o total do lote e for lançamento de crédito então provavelmente são os descontos
+                        accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCode", "")
                     amount = amountPaid
                 historicCode = 15
             elif typeEntry == 'J':
@@ -200,6 +203,7 @@ class GenerateExportDominio(object):
                 if amountPaid > 0:
                     self._file.write(self.entry6100(payment, 'D', 'N'))
                 else:
+                    print('teste')
                     self._file.write(self.entry6100(payment, 'C', 'N')) # os negativos tenho que creditar, geralmente são os descontos
                 
                 self._file.write(self.entry6100(payment, 'D', 'J'))
