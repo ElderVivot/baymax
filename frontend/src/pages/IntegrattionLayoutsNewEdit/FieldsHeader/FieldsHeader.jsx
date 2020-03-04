@@ -1,5 +1,4 @@
 import React from 'react'
-import './styles.css'
 
 function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleChange, handleBlur, setFieldValue }){
 

@@ -4,9 +4,9 @@ import * as Yup from 'yup'
 import { Formik } from 'formik'
 
 import './styles.css'
-import api from '../services/api'
-import IntegrattionLayoutsHeader from './IntegrattionLayoutsHeader'
-import IntegrattionLayoutsFieldsList from './IntegrattionLayoutsFieldsList'
+import api from '../../services/api'
+import IntegrattionLayoutsHeader from './FieldsHeader/FieldsHeader'
+import IntegrattionLayoutsFieldsList from './FieldsBody/FieldsList'
 
 let validationSchema = Yup.object().shape({
     system: Yup.string().required('O nome do sistema é obrigatório'),
@@ -70,8 +70,8 @@ export default function IntegrattionLayouts(){
                     initialValues={initialValues}
                     validationSchema={validationSchema}
                 >
-                    { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue }) => (
-                        <form action="" className="container-fluid">
+                    { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
+                        <form onSubmit={handleSubmit} className="container-fluid">
                             {/* Campo "Sistema" */}
                             <div className="form-group row">
                                 <label htmlFor="system" className="col-form-label">Sistema:</label>
@@ -120,7 +120,7 @@ export default function IntegrattionLayouts(){
                             </div>
                             
                             <div className="form row">
-                                <label className="col-form-label">Nome dos campos que identifica as colunas do Arquivo:</label>
+                                <label className="col-form-label">Nome dos campos que identifica as colunas do Arquivo (informe 2 ou 3):</label>
                             </div>
                             <table className="col-12">
                                 <tbody>

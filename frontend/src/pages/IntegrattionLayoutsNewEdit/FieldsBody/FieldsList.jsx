@@ -1,6 +1,6 @@
 import React from 'react'
 
-import IntegrattionLayoutsFieldsNewOrEdit from './IntegrattionLayoutsFieldsNewOrEdit'
+import IntegrattionLayoutsFieldsNewOrEdit from './FieldsNewOrEdit'
 
 const fieldsOptions = [
     { value: 'paymentDate', label: 'Data de Pagamento'},

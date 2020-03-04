@@ -26,10 +26,27 @@ class ClassUtil{
     }
 }
 
-const positionInFileOptions = ClassUtil.createAnObjetOfCount()
+function addOptionInCreatable(vector, value){
+    // se o value for em branco já retorna o próprio vector, pois não deve adicionar nada
+    if(value === ""){
+        return vector
+    }
+
+    // adiciona uma nova opção quando é um valor que ainda não existe
+    if(vector.filter(option => option.value === value)[0] === undefined){
+        vector.push({
+            value: `${value}`, label: `${value}`
+        })
+    }
+    return vector
+}
+
+let positionInFileOptions = ClassUtil.createAnObjetOfCount()
 
 function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsOptions, initialValues } ){
 
+    positionInFileOptions = addOptionInCreatable(positionInFileOptions, initialValues.positionInFile)
+    
     const fieldPosition = `fields[${idx}]`
 
     const [show, setShow] = useState(false)
@@ -98,6 +115,10 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                                 />
                             </Col>
                         </Form.Row>
+
+                        {/* {
+                            addNewPositionInFile(positionInFileOptions, values.positionInFile)
+                        } */}
 
                         <Form.Row className="mt-2">
                             <Form.Label as="label" htmlFor="field" className="col-form-label">Nome da Coluna Correspondente:</Form.Label>
