@@ -6,7 +6,7 @@ fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json
-from tools.leArquivos import leXls_Xlsx, leTxt, readJson
+from tools.leArquivos import leXls_Xlsx, leTxt, readJson, readCsv
 import tools.funcoesUteis as funcoesUteis
 
 
@@ -23,10 +23,14 @@ class ReadGeneral(object):
         self._validationsLineToPrint = []
 
     def identifiesTheHeader(self, data, settingLayout):
+        # :data são os valores de cada "linha" dos arquivos processados
+        # :settingLayout é a configuração do layout que está no banco de dados
+
         posionsOfHeader = {}
-        header = funcoesUteis.analyzeIfFieldIsValid(settingLayout, 'header')
+        header = funcoesUteis.analyzeIfFieldIsValid(settingLayout, 'header') # pega as configurações só do cabeçalho
         dataManipulate = []
 
+        # se não tiver cabeçalho já retorna em branco
         if len(header) == 0:
             return None
         
@@ -35,15 +39,15 @@ class ReadGeneral(object):
         
         countNumberHeader = 0
         for field in header:
-            nameField = funcoesUteis.treatTextField(field['nameField'])
+            nameColumn = funcoesUteis.treatTextField(field['nameColumn'])
 
-            if dataManipulate.count(nameField) > 0:
+            if dataManipulate.count(nameColumn) > 0:
                 countNumberHeader += 1
 
         if countNumberHeader == len(header):
-            for keyField, nameField in enumerate(dataManipulate):
-                if nameField != "":
-                    posionsOfHeader[nameField] = keyField
+            for keyField, nameColumn in enumerate(dataManipulate):
+                if nameColumn != "":
+                    posionsOfHeader[nameColumn] = keyField
 
         return posionsOfHeader
 
@@ -74,23 +78,24 @@ class ReadGeneral(object):
     def treatDataLayout(self, data, settingFields, positionsOfHeader):
         valuesOfLine = {}
 
-        for key, settingField in settingFields.items():
-            
+        for settingField in settingFields:
+            nameField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField')
+
             numberField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'numberField', -1)
 
-            nameField = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField'))
-            nameField = None if nameField == "" else nameField
+            nameColumn = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameColumn'))
+            nameColumn = None if nameColumn == "" else nameColumn
 
             valueDefault = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'valueDefault'))
 
             # --- este agrupamento é pra fazer a leitura de quando for um registro com vários débito pra vários créditos
             groupingField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'groupingField', False)
             if groupingField is True:
-                self._groupingFields[key] = True
+                self._groupingFields[nameField] = True
 
             validationLineToPrint = funcoesUteis.analyzeIfFieldIsValid(settingField, 'validationLineToPrint', None)
             if validationLineToPrint is not None:
-                objValidationLineToPrint = { key: validationLineToPrint }
+                objValidationLineToPrint = { nameField: validationLineToPrint }
                 if self._validationsLineToPrint.count(objValidationLineToPrint) == 0:
                     self._validationsLineToPrint.append(objValidationLineToPrint)
             
@@ -103,7 +108,7 @@ class ReadGeneral(object):
             if rowIsMain == "" or rowIsMain == "main":
                 rowIsMain = 'not_main' if isRowCorrect is True else 'main'
             
-            if key.lower().find('date') >= 0:
+            if nameField.lower().find('date') >= 0:
                 formatDate = funcoesUteis.analyzeIfFieldIsValid(settingField, 'formatDate')
                 if formatDate == 'dd/mm/aaaa':
                     formatDate = 1
@@ -112,28 +117,28 @@ class ReadGeneral(object):
                 else:
                     formatDate = 1
                 
-                valueField = funcoesUteis.treatDateFieldInVector(data, numberField, positionsOfHeader, nameField, formatDate, rowIsMain)
-                valueField = None if numberField == -1 and nameField is None else valueField
+                valueField = funcoesUteis.treatDateFieldInVector(data, numberField, positionsOfHeader, nameColumn, formatDate, rowIsMain)
+                valueField = None if numberField == -1 and nameColumn is None else valueField
 
                 if valueField is not None:
                     validField = True
-            elif key.lower().find('amount') >= 0:
-                valueField = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeader, nameField)
-                valueField = 0 if numberField == -1 and nameField is None else valueField
+            elif nameField.lower().find('amount') >= 0:
+                valueField = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeader, nameColumn)
+                valueField = 0 if numberField == -1 and nameColumn is None else valueField
 
                 if valueField != 0:
                     validField = True
-            elif key.lower().find('bank') >= 0:
-                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameField).replace('-', ' ')
-                valueField = "" if numberField == -1 and nameField is None else valueField
+            elif nameField.lower().find('bank') >= 0:
+                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameColumn).replace('-', ' ')
+                valueField = "" if numberField == -1 and nameColumn is None else valueField
 
                 if valueField != "" and valueField is not None:
                     validField = True
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
 
-                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameField)
-                valueField = "" if numberField == -1 and nameField is None else valueField
+                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameColumn)
+                valueField = "" if numberField == -1 and nameColumn is None else valueField
 
                 if splitField != "":
                     valueField = valueField.split(splitField)
@@ -152,9 +157,15 @@ class ReadGeneral(object):
 
             if validField is True:
                 valuesOfLine['row'] = rowIsMain
-                valuesOfLine[key] = valueField  
+                valuesOfLine[nameField] = valueField  
         
         return valuesOfLine
+
+    def getPositionFieldByName(self, settingFields, nameField):
+        for positionFieldInVector, settingField in enumerate(settingFields):
+            existField = funcoesUteis.analyzeIfFieldIsValid( settingField, nameField )
+            if existField != "":
+                return positionFieldInVector
 
     def updateFieldsNotMain(self, data, settingFields):
         row = funcoesUteis.analyzeIfFieldIsValid(data, 'row')
@@ -162,7 +173,12 @@ class ReadGeneral(object):
         if row == 'not_main':
             for nameField, valueField in data.items():
 
-                fieldIsAnotherRow = funcoesUteis.returnDataFieldInDict(settingFields, [nameField, 'row'])
+                positionFieldInVector = funcoesUteis.getPositionFieldByName(settingFields, nameField)
+                if positionFieldInVector is not None:
+                    fieldIsAnotherRow = funcoesUteis.analyzeIfFieldIsValid(settingFields[positionFieldInVector], 'row')
+                else:
+                    fieldIsAnotherRow = ""
+
                 if fieldIsAnotherRow != "":
                     if nameField.lower().find('date') >= 0:
                         if valueField is not None:
@@ -306,6 +322,8 @@ class ReadGeneral(object):
             
             if setting['fileType'] == 'excel':
                 dataFile = leXls_Xlsx(file)
+            elif setting['fileType'] == 'csv':
+                dataFile = readCsv(file)
             else:
                 dataFile = []
 
@@ -314,8 +332,8 @@ class ReadGeneral(object):
             for key, data in enumerate(dataFile):
 
                 try:
-                    posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)
-                    if posionsOfHeaderTemp is not None:
+                    posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)                    
+                    if len(posionsOfHeaderTemp) > 0:
                         if len(posionsOfHeaderTemp.items()) > 0:
                             posionsOfHeader = posionsOfHeaderTemp
                             continue
@@ -349,6 +367,7 @@ class ReadGeneral(object):
                     
                     if validationDate is not None and validationAmount != 0:
                         isValid = self.isValidLineToPrint(valuesOfLine)
+                        isValid = True
                         if isValid is True:
                             if layoutType == 'account_paid':
                                 valuesOfLine['numberLote'] = self.handleLayoutIsPartidaMultipla(valuesOfLine, valuesOfFilePayments)
@@ -369,7 +388,7 @@ class ReadGeneral(object):
             for file in files:
                 wayFile = os.path.join(root, file)
 
-                if file.lower().endswith(('.xls', '.xlsx')):
+                if file.lower().endswith(('.xls', '.xlsx', '.csv')):
                     process = self.process(wayFile)
                     self._payments.append(process[0])
                     self._extracts.append(process[1])
@@ -382,9 +401,9 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    getSettingsCompany = GetSettingsCompany(1428)
+    getSettingsCompany = GetSettingsCompany(1412)
     settings = getSettingsCompany.getSettingsFinancy()
 
-    readFiles = ReadGeneral(1428, "C:/integracao_contabil/1428/arquivos_originais", settings)
+    readFiles = ReadGeneral(1412, "C:/integracao_contabil/1412/arquivos_originais", settings)
     print(readFiles.processAll()[0])
 

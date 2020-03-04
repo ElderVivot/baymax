@@ -4,16 +4,16 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
 
     const fieldPosition = `header[${idx}]`
     
-    function validateField(nameField){
+    function validateField(nameColumn){
         try {
-            return touched.header[idx][nameField] && errors.header[idx][nameField] ? "has-error" : null
+            return touched.header[idx][nameColumn] && errors.header[idx][nameColumn] ? "has-error" : null
         } catch (error) {
             return null
         }
     }
 
     const addField = () => {
-        setFieldValue("header", [...fieldsHeader, { nameField: "" }])
+        setFieldValue("header", [...fieldsHeader, { nameColumn: "" }])
     }
     
     const deleteField = () => {
@@ -59,10 +59,10 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
                         </div>
                         <input 
                             type="text"
-                            name={`${fieldPosition}.nameField`}
-                            id={`${fieldPosition}.nameField`}
-                            className={`form-control ${validateField("nameField") }`}
-                            value={fieldsHeader[idx].nameField}
+                            name={`${fieldPosition}.nameColumn`}
+                            id={`${fieldPosition}.nameColumn`}
+                            className={`form-control ${validateField("nameColumn") }`}
+                            value={fieldsHeader[idx].nameColumn}
                             onChange={handleChange}
                             onBlur={handleBlur}
                         />

@@ -13,7 +13,7 @@ let validationSchema = Yup.object().shape({
     fileType: Yup.string().required('Selecione uma opção válida'),
     layoutType: Yup.string().required('Selecione uma opção válida'),
     header: Yup.array().of( Yup.object().shape({
-        nameField: Yup.string().required('O nome da coluna é obrigatório')
+        nameColumn: Yup.string().required('O nome da coluna é obrigatório')
     })),
     fields: Yup.array().of( Yup.object().shape({ 
         nameField: Yup.string().required('Selecione uma opção válida'),
@@ -28,7 +28,7 @@ let initialValues={
     system: "",
     fileType: "",
     layoutType: "",
-    header: [ { nameField: ""} ],
+    header: [ { nameColumn: ""} ],
     fields: [ {
         nameField: "",
         positionInFile: "",
