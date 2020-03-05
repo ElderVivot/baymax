@@ -39,7 +39,7 @@ class ReadGeneral(object):
         
         countNumberHeader = 0
         for field in header:
-            nameColumn = funcoesUteis.treatTextField(field['nameColumn'])
+            nameColumn = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(field, 'nameColumn'))
 
             if dataManipulate.count(nameColumn) > 0:
                 countNumberHeader += 1
@@ -61,7 +61,7 @@ class ReadGeneral(object):
             numberField = funcoesUteis.analyzeIfFieldIsValid(rowValidation, 'numberField')
             validation = funcoesUteis.analyzeIfFieldIsValid(rowValidation, 'validation')
             value = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(rowValidation, 'value'))
-
+            
             if validation == "isDate":
                 valueField = funcoesUteis.treatTextFieldInVector(data, numberField)
                 valueFieldDate = funcoesUteis.retornaCampoComoData(valueField) if len(valueField) <= 10 else None # este campo é pra caso tenha algum valor que seja data + horário ele não cai na verificação do isDate
@@ -75,6 +75,23 @@ class ReadGeneral(object):
         if countHeaderEquals == len(row):
             return True
 
+    #  pra saber quais campos são de agrupamento ou de validação eu não preciso saber o valor daquela linha, então não preciso identifá-los pra toda linha
+    #  que é processada
+    def analyzeSettingFieldsThatAreNecessaryData(self, settingFields):
+        for settingField in settingFields:
+            nameField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField')
+
+            # --- este agrupamento é pra fazer a leitura de quando for um registro com vários débito pra vários créditos
+            groupingField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'groupingField', False)
+            if groupingField is True:
+                self._groupingFields[nameField] = True
+
+            validationLineToPrint = funcoesUteis.analyzeIfFieldIsValid(settingField, 'validationLineToPrint', None)
+            if validationLineToPrint is not None:
+                objValidationLineToPrint = { nameField: validationLineToPrint }
+                if self._validationsLineToPrint.count(objValidationLineToPrint) == 0:
+                    self._validationsLineToPrint.append(objValidationLineToPrint)
+
     def treatDataLayout(self, data, settingFields, positionsOfHeader):
         valuesOfLine = {}
 
@@ -87,22 +104,12 @@ class ReadGeneral(object):
             nameColumn = None if nameColumn == "" else nameColumn
 
             valueDefault = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'valueDefault'))
-
-            # --- este agrupamento é pra fazer a leitura de quando for um registro com vários débito pra vários créditos
-            groupingField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'groupingField', False)
-            if groupingField is True:
-                self._groupingFields[nameField] = True
-
-            validationLineToPrint = funcoesUteis.analyzeIfFieldIsValid(settingField, 'validationLineToPrint', None)
-            if validationLineToPrint is not None:
-                objValidationLineToPrint = { nameField: validationLineToPrint }
-                if self._validationsLineToPrint.count(objValidationLineToPrint) == 0:
-                    self._validationsLineToPrint.append(objValidationLineToPrint)
             
             validField = False
 
             row = funcoesUteis.analyzeIfFieldIsValid(settingField, 'row')
             isRowCorrect = self.identifiesIfTheRowCorrect(row, data)
+            # print(data, isRowCorrect)
             
             rowIsMain = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'row')
             if rowIsMain == "" or rowIsMain == "main":
@@ -173,9 +180,10 @@ class ReadGeneral(object):
         if row == 'not_main':
             for nameField, valueField in data.items():
 
-                positionFieldInVector = funcoesUteis.getPositionFieldByName(settingFields, nameField)
+                positionFieldInVector = self.getPositionFieldByName(settingFields, nameField)
                 if positionFieldInVector is not None:
                     fieldIsAnotherRow = funcoesUteis.analyzeIfFieldIsValid(settingFields[positionFieldInVector], 'row')
+                    print(fieldIsAnotherRow)
                 else:
                     fieldIsAnotherRow = ""
 
@@ -259,17 +267,28 @@ class ReadGeneral(object):
         if len(self._validationsLineToPrint) == 0:
             return True
 
-        countFieldsValid = 0
-        for validations in self._validationsLineToPrint:
-            for nameField, validationField in validations.items():
-                valueFieldData = funcoesUteis.analyzeIfFieldIsValid(data, nameField)
-                
-                isEqual = funcoesUteis.analyzeIfFieldIsValid(validationField, "isEqual", None)
+        countValidationsIsTrue = 0
+        countValidations = 0
+        for validationsLineToPrint in self._validationsLineToPrint:
+            for nameField, validations in validationsLineToPrint.items():
+                for validation in validations:
+                    countValidations += 1
 
-                if isEqual is not None and isEqual == valueFieldData:
-                    countFieldsValid += 1
+                    typeValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'typeValidation')
+                    valueValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation')
 
-        if countFieldsValid == len(self._validationsLineToPrint):
+                    valueFieldData = funcoesUteis.analyzeIfFieldIsValid(data, nameField)
+
+                    if typeValidation == "isLessThan" and valueFieldData < valueValidation:
+                        countValidationsIsTrue += 1
+                    elif typeValidation == "isEqual" and valueFieldData == valueValidation:
+                        countValidationsIsTrue += 1
+                    elif typeValidation == "isDate" and str(type(valueFieldData)).count('datetime.date') > 0:
+                        countValidationsIsTrue += 1
+                    elif typeValidation == "isDifferent" and valueFieldData != valueValidation:
+                        countValidationsIsTrue += 1
+        
+        if countValidationsIsTrue == countValidations:
             return True
 
     #  esta função soma o total pago por cada lote, afim de comparar com os extratos bancários posteriormente
@@ -328,12 +347,12 @@ class ReadGeneral(object):
                 dataFile = []
 
             fields = setting['fields']
+            self.analyzeSettingFieldsThatAreNecessaryData(fields)
 
-            for key, data in enumerate(dataFile):
-
+            for data in dataFile:
                 try:
                     posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)                    
-                    if len(posionsOfHeaderTemp) > 0:
+                    if posionsOfHeaderTemp is not None and len(posionsOfHeaderTemp) > 0:
                         if len(posionsOfHeaderTemp.items()) > 0:
                             posionsOfHeader = posionsOfHeaderTemp
                             continue
@@ -341,18 +360,7 @@ class ReadGeneral(object):
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
-                    
-                    if layoutType == 'account_paid':
-                        validationDate = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'paymentDate', None)
-                        validationAmount = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amountPaid', 0)
-                        valuesOfLine['document'] = funcoesUteis.handleNote(funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'document'))
-                    elif layoutType == 'extract_bank':
-                        valuesOfLine = self.handleExtracts(valuesOfLine)
-                        validationDate = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'dateTransaction', None)
-                        validationAmount = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'amount', 0)
-                    else:
-                        validationDate = None
-                        validationAmount = 0
+                    # print(valuesOfLine)
                     
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
@@ -365,18 +373,17 @@ class ReadGeneral(object):
                     if accountPlan == "MULTA E JUROS DE MORA" or accountPlan == "DESCONTOS OBTIDOS":
                         continue
                     
-                    if validationDate is not None and validationAmount != 0:
-                        isValid = self.isValidLineToPrint(valuesOfLine)
-                        isValid = True
-                        if isValid is True:
-                            if layoutType == 'account_paid':
-                                valuesOfLine['numberLote'] = self.handleLayoutIsPartidaMultipla(valuesOfLine, valuesOfFilePayments)
-                                valuesOfFilePayments.append(valuesOfLine.copy())
-                            elif layoutType == 'extract_bank':
-                                valuesOfFileExtracts.append(valuesOfLine.copy())
+                    isValid = self.isValidLineToPrint(valuesOfLine)
+                    # isValid = True
+                    if isValid is True:
+                        if layoutType == 'account_paid':
+                            valuesOfLine['numberLote'] = self.handleLayoutIsPartidaMultipla(valuesOfLine, valuesOfFilePayments)
+                            valuesOfFilePayments.append(valuesOfLine.copy())
+                        elif layoutType == 'extract_bank':
+                            valuesOfFileExtracts.append(valuesOfLine.copy())
 
                 except Exception as e:
-                    print(e)
+                    print(e.with_traceback())
                     
         # soma o total pago por lote
         valuesOfFilePayments = self.sumAmountPaidPerLote(valuesOfFilePayments)
@@ -401,9 +408,11 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    getSettingsCompany = GetSettingsCompany(1412)
+    codi_emp = 1498
+
+    getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
 
-    readFiles = ReadGeneral(1412, "C:/integracao_contabil/1412/arquivos_originais", settings)
+    readFiles = ReadGeneral(codi_emp, f"C:/integracao_contabil/{codi_emp}/arquivos_originais", settings)
     print(readFiles.processAll()[0])
 
