@@ -50,29 +50,57 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initia
         )
     }
 
+    function ButtonAdd(){
+        return (
+            <button className="btn btn-success" type="button" 
+                onClick={addField}>
+                <i className="fa fa-plus"></i>
+            </button>
+        )
+    }
+
+    function ButtonDelete(isDisabled=false){
+        if(isDisabled === true){
+            return( 
+                <button className="btn btn-danger ml-2" type="button" 
+                    onClick={deleteField} disabled>
+                    <i className="fa fa-trash"></i>
+                </button>
+            )
+        } else {
+            return( 
+                <button className="btn btn-danger ml-2" type="button" 
+                    onClick={deleteField}>
+                    <i className="fa fa-trash"></i>
+                </button>
+            )
+        }
+    }
+
     function Buttons(){
         if (fieldsFile.length === idx+1) {
-            return (
-                <div>
-                    <button className="btn btn-success" type="button" 
-                        onClick={addField}>
-                        <i className="fa fa-plus"></i>
-                    </button>
-                    {EditField()}
-                    <button className="btn btn-danger ml-2" type="button" 
-                        onClick={deleteField}>
-                        <i className="fa fa-trash"></i>
-                    </button>
-                </div>
-            )
+            if(fieldsFile.length === 1 && idx === 0){
+                return (
+                    <div>
+                        {ButtonAdd()}
+                        {EditField()}
+                        {ButtonDelete(true)}
+                    </div>
+                )
+            } else {
+                return (
+                    <div>
+                        {ButtonAdd()}
+                        {EditField()}
+                        {ButtonDelete()}
+                    </div>
+                )
+            }
         } else {
             return (
                 <div>
                     {EditField()}
-                    <button className="btn btn-danger ml-2" type="button" 
-                        onClick={deleteField}>
-                        <i className="fa fa-trash"></i>
-                    </button>
+                    {ButtonDelete()}
                 </div>
                 
             )
@@ -93,7 +121,7 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initia
                 <td className="col-1">{fieldsFile[idx].positionInFileEnd}</td>
                 <td className="col-3">{fieldsFile[idx].nameColumn}</td>
                 <td className="col-1">{fieldsFile[idx].formatDate}</td>
-                <td className="col-2">
+                <td className="col-2 text-align-center">
                     <Buttons />
                 </td>
             </tr>

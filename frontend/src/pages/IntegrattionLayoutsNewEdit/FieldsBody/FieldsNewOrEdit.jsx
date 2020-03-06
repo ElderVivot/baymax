@@ -10,7 +10,7 @@ const validationSchema = Yup.object().shape({
     positionInFile: Yup.number('Valor deve ser um número').required('Campo obrigatório'),
     positionInFileEnd: Yup.number(),
     nameColumn: Yup.string(),
-    formatDate: Yup.number(),
+    formatDate: Yup.string(),
 })
 
 class ClassUtil{
@@ -26,26 +26,41 @@ class ClassUtil{
     }
 }
 
-function addOptionInCreatable(vector, value){
+function addOptionInCreatable(vector, value, isString=false){
+    // o isString serve pra tirar espaços e caracteres especiais que o usuário tiver digitado no Creatable
+
     // se o value for em branco já retorna o próprio vector, pois não deve adicionar nada
     if(value === ""){
         return vector
     }
 
+    let valueFormated = ''
+    if(isString === true){
+        valueFormated = value.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
+    } else {
+        valueFormated = value
+    }
+
     // adiciona uma nova opção quando é um valor que ainda não existe
-    if(vector.filter(option => option.value === value)[0] === undefined){
+    if(vector.filter(option => option.value === valueFormated)[0] === undefined){
         vector.push({
-            value: `${value}`, label: `${value}`
+            value: `${valueFormated}`, label: `${value}`
         })
     }
     return vector
 }
+
+const formatDateOptions = [
+    { value: 'dd/mm/aaaa', label: 'dd/mm/aaaa'},
+    { value: 'aaaa-mm-dd', label: 'aaaa-mm-dd'}
+]
 
 let positionInFileOptions = ClassUtil.createAnObjetOfCount()
 
 function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsOptions, initialValues } ){
 
     positionInFileOptions = addOptionInCreatable(positionInFileOptions, initialValues.positionInFile)
+    fieldsOptions = addOptionInCreatable(fieldsOptions, initialValues.nameField, true)
     
     const fieldPosition = `fields[${idx}]`
 
@@ -66,6 +81,28 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
 
         setShow(false)
     }
+
+    function fieldFormatDate(values, errors, touched, handleChange, setFieldTouched){
+        return (
+            <Form.Row className="mt-2">
+                <Form.Label as="label" htmlFor="field" className="col-form-label">Formato Data:</Form.Label>
+                <Col lg={4}>
+                    <Select 
+                        id={`${fieldPosition}.formatDate`}
+                        name={`nameField`}
+                        options={formatDateOptions}
+                        className={`selected ${touched.formatDate && errors.formatDate ? "has-error" : null }`}
+                        isSearchable={true}
+                        placeholder="Selecione"
+                        value={formatDateOptions.filter(option => option.value === values.formatDate)[0]}
+                        onChange={selectedOption => handleChange(`formatDate`)(selectedOption.value)}
+                        onBlur={() => setFieldTouched(`formatDate`, true)}
+                    />
+                </Col>
+            </Form.Row>
+        )
+        
+    }
     
     return (
         <>
@@ -81,11 +118,12 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                 { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched }) => (
                 <Modal show={show} dialogClassName="width-modal" >
                     <pre>{JSON.stringify(errors, null, 2)}</pre>
+
                     <Modal.Body>
                         <Form.Row>
                             <Form.Label as="label" htmlFor="field" className="col-form-label">Campo:</Form.Label>
                             <Col lg={4}>
-                                <Select 
+                                <Creatable 
                                     id={`${fieldPosition}.nameField`}
                                     name={`nameField`}
                                     options={fieldsOptions}
@@ -95,9 +133,11 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                                     value={fieldsOptions.filter(option => option.value === values.nameField)[0]}
                                     onChange={selectedOption => handleChange(`nameField`)(selectedOption.value)}
                                     onBlur={() => setFieldTouched(`nameField`, true)}
+                                    formatCreateLabel={(string) => `Criar ${string}`}
                                 />
                             </Col>
                         </Form.Row>
+                        {fieldFormatDate(values, errors, touched, handleChange, setFieldTouched)}
                         <Form.Row className="mt-2">
                             <Form.Label as="label" htmlFor="field" className="col-form-label">Posição que se encontra no Arquivo:</Form.Label>
                             <Col lg={3}>
@@ -115,10 +155,6 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                                 />
                             </Col>
                         </Form.Row>
-
-                        {/* {
-                            addNewPositionInFile(positionInFileOptions, values.positionInFile)
-                        } */}
 
                         <Form.Row className="mt-2">
                             <Form.Label as="label" htmlFor="field" className="col-form-label">Nome da Coluna Correspondente:</Form.Label>

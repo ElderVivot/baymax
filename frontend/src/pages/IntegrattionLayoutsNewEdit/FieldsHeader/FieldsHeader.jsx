@@ -22,29 +22,55 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
         setFieldValue("header", updatedFieldsHeader)
     }
 
+    function ButtonAdd(){
+        return (
+            <button className="btn btn-success" type="button" 
+                onClick={addField}>
+                <i className="fa fa-plus"></i>
+            </button>
+        )
+    }
+
+    function ButtonDelete(isDisabled=false){
+        if(isDisabled === true){
+            return( 
+                <button className="btn btn-danger ml-2" type="button" 
+                    onClick={deleteField} disabled>
+                    <i className="fa fa-trash"></i>
+                </button>
+            )
+        } else {
+            return( 
+                <button className="btn btn-danger ml-2" type="button" 
+                    onClick={deleteField}>
+                    <i className="fa fa-trash"></i>
+                </button>
+            )
+        }
+    }
+
     function Buttons(){
         if (fieldsHeader.length === idx+1) {
-            return (
-                <div>
-                    <button className="btn btn-success" type="button" 
-                        onClick={addField}>
-                        <i className="fa fa-plus"></i>
-                    </button>
-                    <button className="btn btn-danger ml-2" type="button" 
-                        onClick={deleteField}>
-                        <i className="fa fa-trash"></i>
-                    </button>
-                </div>
-            )
+            if(fieldsHeader.length === 1 && idx === 0){
+                return (
+                    <div>
+                        {ButtonAdd()}
+                        {ButtonDelete(true)}
+                    </div>
+                )
+            } else {
+                return (
+                    <div>
+                        {ButtonAdd()}
+                        {ButtonDelete()}
+                    </div>
+                )
+            }
         } else {
             return (
                 <div className="col-2">
-                    <button className="btn btn-danger ml-2" type="button" 
-                        onClick={deleteField}>
-                        <i className="fa fa-trash"></i>
-                    </button>
+                    {ButtonDelete()}
                 </div>
-                
             )
         }
     }
