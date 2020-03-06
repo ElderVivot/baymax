@@ -107,9 +107,10 @@ class ReadGeneral(object):
             
             validField = False
 
-            row = funcoesUteis.analyzeIfFieldIsValid(settingField, 'row')
+            # esta row é apenas pra identificar se a informação está na linha principal ou não, caso não esteja, vai guardar seu valor
+            # na self._fieldsRowNotMain pra serem utilizados na linha principal depois         
+            row = funcoesUteis.analyzeIfFieldIsValid(settingField, 'dataIsNotLineMain')
             isRowCorrect = self.identifiesIfTheRowCorrect(row, data)
-            # print(data, isRowCorrect)
             
             rowIsMain = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'row')
             if rowIsMain == "" or rowIsMain == "main":
@@ -168,10 +169,10 @@ class ReadGeneral(object):
         
         return valuesOfLine
 
-    def getPositionFieldByName(self, settingFields, nameField):
+    def getPositionFieldByNameField(self, settingFields, nameFieldSearch):
         for positionFieldInVector, settingField in enumerate(settingFields):
-            existField = funcoesUteis.analyzeIfFieldIsValid( settingField, nameField )
-            if existField != "":
+            nameField = funcoesUteis.analyzeIfFieldIsValid( settingField, 'nameField' )
+            if nameField == nameFieldSearch:
                 return positionFieldInVector
 
     def updateFieldsNotMain(self, data, settingFields):
@@ -180,14 +181,13 @@ class ReadGeneral(object):
         if row == 'not_main':
             for nameField, valueField in data.items():
 
-                positionFieldInVector = self.getPositionFieldByName(settingFields, nameField)
+                positionFieldInVector = self.getPositionFieldByNameField(settingFields, nameField)
                 if positionFieldInVector is not None:
-                    fieldIsAnotherRow = funcoesUteis.analyzeIfFieldIsValid(settingFields[positionFieldInVector], 'row')
-                    print(fieldIsAnotherRow)
+                    fieldIsAnotherRow = funcoesUteis.analyzeIfFieldIsValid(settingFields[positionFieldInVector], 'dataIsNotLineMain', None)
                 else:
-                    fieldIsAnotherRow = ""
+                    fieldIsAnotherRow = None
 
-                if fieldIsAnotherRow != "":
+                if fieldIsAnotherRow is not None:
                     if nameField.lower().find('date') >= 0:
                         if valueField is not None:
                             self._fieldsRowNotMain[nameField] = valueField
@@ -360,7 +360,6 @@ class ReadGeneral(object):
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
-                    # print(valuesOfLine)
                     
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
@@ -369,9 +368,9 @@ class ReadGeneral(object):
 
                     # juros e desconto sai repetido no relatório do cliente, pois já vem na coluna de juros e multa, então ignoro
                     # tirar esta linha, é apenas temporária
-                    accountPlan = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'accountPlan')
-                    if accountPlan == "MULTA E JUROS DE MORA" or accountPlan == "DESCONTOS OBTIDOS":
-                        continue
+                    # accountPlan = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'accountPlan')
+                    # if accountPlan == "MULTA E JUROS DE MORA" or accountPlan == "DESCONTOS OBTIDOS":
+                    #     continue
                     
                     isValid = self.isValidLineToPrint(valuesOfLine)
                     # isValid = True
@@ -408,7 +407,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1498
+    codi_emp = 1751
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
