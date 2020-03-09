@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer')
 const fs = require('fs')
 
 const searchNFSeGoiania = async(loguin='02319085122', password='3771814') => {
-    const browser = await puppeteer.launch({headless: true, args: ['--start-maximized']})
+    const browser = await puppeteer.launch({headless: false, args: ['--start-maximized']})
     const page = await browser.newPage()
     await page.setViewport({ width:0, height:0 })
 
@@ -61,14 +61,14 @@ const searchNFSeGoiania = async(loguin='02319085122', password='3771814') => {
     await page.click('#GoianiaTheme_wt27_block_wtMainContent_wtSistemaTable_ctl03_wt28')
     
     // 4 - clicando no botão Nota Fiscal
-    await checkIfLoadedThePage('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_wt25_WebPatterns_wt72_block_wtText_wtNFEletronica')
-    await page.click('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_wt25_WebPatterns_wt72_block_wtText_wtNFEletronica', {waitUntil: 'domcontentloaded'})
+    await checkIfLoadedThePage('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_WebPatterns_wt157_block_wtContent1_wt54_WebPatterns_wt370_block_wtContent_WebPatterns_wt477_block_wtText_wtNFEletronica')
+    await page.click('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_WebPatterns_wt157_block_wtContent1_wt54_WebPatterns_wt370_block_wtContent_WebPatterns_wt477_block_wtText_wtNFEletronica', {waitUntil: 'domcontentloaded'})
      
     // 5 - Abre a página da Nota Fiscal e passa pelo alert
-    await checkIfLoadedThePage('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_wt25_WebPatterns_wt50_block_wtContent_wt229')
+    await checkIfLoadedThePage('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_WebPatterns_wt157_block_wtContent1_wt54_WebPatterns_wt70_block_wtContent_wt298')
     try {
         const linkOpenPageDown = await page.evaluate( 
-            () => document.querySelector('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_wt25_WebPatterns_wt50_block_wtContent_wt229').getAttribute('href')
+            () => document.querySelector('#GoianiaTheme_wtTelaPrincipal_block_wtMainContent_WebPatterns_wt157_block_wtContent1_wt54_WebPatterns_wt70_block_wtContent_wt298').getAttribute('href')
         );
         console.log(linkOpenPageDown)
         // o then é pra passar pelo alert
