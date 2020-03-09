@@ -82,26 +82,31 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
         setShow(false)
     }
 
-    function fieldFormatDate(values, errors, touched, handleChange, setFieldTouched){
-        return (
-            <Form.Row className="mt-2">
-                <Form.Label as="label" htmlFor="field" className="col-form-label">Formato Data:</Form.Label>
-                <Col lg={4}>
-                    <Select 
-                        id={`${fieldPosition}.formatDate`}
-                        name={`nameField`}
-                        options={formatDateOptions}
-                        className={`selected ${touched.formatDate && errors.formatDate ? "has-error" : null }`}
-                        isSearchable={true}
-                        placeholder="Selecione"
-                        value={formatDateOptions.filter(option => option.value === values.formatDate)[0]}
-                        onChange={selectedOption => handleChange(`formatDate`)(selectedOption.value)}
-                        onBlur={() => setFieldTouched(`formatDate`, true)}
-                    />
-                </Col>
-            </Form.Row>
-        )
-        
+    function fieldFormatDate(values, errors, touched, handleChange, setFieldTouched, fieldsOptions){
+        let nameLabelOfNameField = fieldsOptions.filter(option => option.value === values.nameField)[0]
+        nameLabelOfNameField = nameLabelOfNameField || { label: "" }
+        nameLabelOfNameField = nameLabelOfNameField.label.toUpperCase().split(' ')
+        if(nameLabelOfNameField.indexOf("DATA") >= 0){
+            return (
+                <Form.Row className="mt-2">
+                    <Form.Label as="label" htmlFor="field" className="col-form-label">Formato Data:</Form.Label>
+                    <Col lg={4}>
+                        <Select 
+                            id={`${fieldPosition}.formatDate`}
+                            name={`nameField`}
+                            options={formatDateOptions}
+                            className={`selected ${touched.formatDate && errors.formatDate ? "has-error" : null }`}
+                            isSearchable={true}
+                            placeholder="Selecione"
+                            value={formatDateOptions.filter(option => option.value === values.formatDate)[0]}
+                            onChange={selectedOption => handleChange(`formatDate`)(selectedOption.value)}
+                            onBlur={() => setFieldTouched(`formatDate`, true)}
+                        />
+                    </Col>
+                </Form.Row>
+            )
+        }
+                
     }
     
     return (
@@ -133,11 +138,11 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                                     value={fieldsOptions.filter(option => option.value === values.nameField)[0]}
                                     onChange={selectedOption => handleChange(`nameField`)(selectedOption.value)}
                                     onBlur={() => setFieldTouched(`nameField`, true)}
-                                    formatCreateLabel={(string) => `Criar ${string}`}
+                                    formatCreateLabel={(string) => `Criar a opção "${string}"`}
                                 />
                             </Col>
                         </Form.Row>
-                        {fieldFormatDate(values, errors, touched, handleChange, setFieldTouched)}
+                        {fieldFormatDate(values, errors, touched, handleChange, setFieldTouched, fieldsOptions)}
                         <Form.Row className="mt-2">
                             <Form.Label as="label" htmlFor="field" className="col-form-label">Posição que se encontra no Arquivo:</Form.Label>
                             <Col lg={3}>
@@ -151,7 +156,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                                     value={positionInFileOptions.filter(option => option.value === values.positionInFile)[0]}
                                     onChange={selectedOption => handleChange(`positionInFile`)(selectedOption.value)}
                                     onBlur={() => setFieldTouched(`positionInFile`, true)}
-                                    formatCreateLabel={(string) => `Criar ${string}`}
+                                    formatCreateLabel={(string) => `Criar a opção "${string}"`}
                                 />
                             </Col>
                         </Form.Row>
