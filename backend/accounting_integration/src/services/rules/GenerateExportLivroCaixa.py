@@ -97,7 +97,7 @@ class GenerateExportDominio(object):
             documentType = 6
 
         if movementType > 0 and documentType > 0:
-            return f"{idRecord}|{movementType}|{document}|{documentType}|{participante}|{imovelRural}|{natureLaunch}\n"
+            return f"{idRecord}|{movementType}|{document}|{documentType}|{participante}|{imovelRural}|{natureLaunch}|\n"
         else:
             print(f' \t- ERRO: Na linha {key+2} o "Tipo do Movimento" está errado ou então o "Tipo do Documento".')
 
