@@ -20,7 +20,8 @@ class ReadGeneral(object):
         self._extracts = []
         self._fieldsRowNotMain = {}
         self._groupingFields = {} # este obj irá gravar todos os campos que são agrupadores, linhas onde for partidas multiplas e será um lançamento só, e o que une elas é este campo
-        self._validationsLineToPrint = []
+        self._validationsLineToPrint = [] # vai salvar os critérios pra ver se uma linha é válida pra gerar o lançamento ou não
+        self._sumInterestFineAndDiscount = False
 
     def identifiesTheHeader(self, data, settingLayout):
         # :data são os valores de cada "linha" dos arquivos processados
@@ -91,6 +92,9 @@ class ReadGeneral(object):
                 objValidationLineToPrint = { nameField: validationLineToPrint }
                 if self._validationsLineToPrint.count(objValidationLineToPrint) == 0:
                     self._validationsLineToPrint.append(objValidationLineToPrint)
+
+            if nameField == "amountPaid":
+                self._sumInterestFineAndDiscount = funcoesUteis.analyzeIfFieldIsValid(settingField, 'sumInterestFineAndDiscount', False)
 
     def treatDataLayout(self, data, settingFields, positionsOfHeader):
         valuesOfLine = {}
@@ -225,13 +229,13 @@ class ReadGeneral(object):
         return valuesOfLine
 
     # tem alguns sistemas que o valor do pagamento não está considerando o juros/multa/desconto, esta função faz isto
-    def sumInterestFineAndDiscountInAmountPaid(self, data, isToSum=False):
+    def sumInterestFineAndDiscountInAmountPaid(self, data):
         amountPaid = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaid", 0.0)
         amountInterest = funcoesUteis.analyzeIfFieldIsValid(data, "amountInterest", 0.0)
         amountFine = funcoesUteis.analyzeIfFieldIsValid(data, "amountFine", 0.0)
         amountDiscount = funcoesUteis.analyzeIfFieldIsValid(data, "amountDiscount", 0.0)
 
-        if isToSum is False:
+        if self._sumInterestFineAndDiscount is False:
             return amountPaid
         else:
             return amountPaid + amountInterest + amountFine - amountDiscount
@@ -320,6 +324,7 @@ class ReadGeneral(object):
         self._fieldsRowNotMain.clear()
         self._groupingFields.clear()
         self._validationsLineToPrint = []
+        self._sumInterestFineAndDiscount = False
         posionsOfHeaderTemp = {}
         posionsOfHeader = {}
 
@@ -363,17 +368,9 @@ class ReadGeneral(object):
                     
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
-                    # colocar um campo pra verificar esta linha depois, não é toda vez que deve somar. Pois pode ser que o valor pago já vem com o juros/multa/desconto
-                    valuesOfLine['amountPaid'] = self.sumInterestFineAndDiscountInAmountPaid(valuesOfLine, True)
+                    valuesOfLine['amountPaid'] = self.sumInterestFineAndDiscountInAmountPaid(valuesOfLine)
 
-                    # juros e desconto sai repetido no relatório do cliente, pois já vem na coluna de juros e multa, então ignoro
-                    # tirar esta linha, é apenas temporária
-                    # accountPlan = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'accountPlan')
-                    # if accountPlan == "MULTA E JUROS DE MORA" or accountPlan == "DESCONTOS OBTIDOS":
-                    #     continue
-                    
                     isValid = self.isValidLineToPrint(valuesOfLine)
-                    # isValid = True
                     if isValid is True:
                         if layoutType == 'account_paid':
                             valuesOfLine['numberLote'] = self.handleLayoutIsPartidaMultipla(valuesOfLine, valuesOfFilePayments)
