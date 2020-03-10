@@ -1,0 +1,5 @@
+.form-message.invalid {
+    font-size: 11px;
+    color: red;
+    font-weight: 600;
+}

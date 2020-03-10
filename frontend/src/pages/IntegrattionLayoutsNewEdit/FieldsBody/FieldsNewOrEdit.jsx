@@ -10,7 +10,7 @@ const validationSchema = Yup.object().shape({
     positionInFile: Yup.number('Valor deve ser um número').required('Campo obrigatório'),
     positionInFileEnd: Yup.number(),
     nameColumn: Yup.string(),
-    formatDate: Yup.string(),
+    formatDate: Yup.string("Selecione uma opção válida"),
 })
 
 class ClassUtil{
@@ -66,27 +66,15 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
 
     const [show, setShow] = useState(false)
 
-    const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
-
-    function handleSave(event, values) {
-        event.preventDefault()
-        const nameField = values.nameField
-        const positionInFile = values.positionInFile
-        const nameColumn = values.nameColumn
-
-        setFieldValueParent(`${fieldPosition}.nameField`, nameField)
-        setFieldValueParent(`${fieldPosition}.positionInFile`, positionInFile)
-        setFieldValueParent(`${fieldPosition}.nameColumn`, nameColumn)
-
-        setShow(false)
-    }
 
     function fieldFormatDate(values, errors, touched, handleChange, setFieldTouched, fieldsOptions){
         let nameLabelOfNameField = fieldsOptions.filter(option => option.value === values.nameField)[0]
         nameLabelOfNameField = nameLabelOfNameField || { label: "" }
         nameLabelOfNameField = nameLabelOfNameField.label.toUpperCase().split(' ')
         if(nameLabelOfNameField.indexOf("DATA") >= 0){
+            // esta linha faz com que seja obrigado a selecionar este campo quando for uma data
+            values.formatDate = null
             return (
                 <Form.Row className="mt-2">
                     <Form.Label as="label" htmlFor="field" className="col-form-label">Formato Data:</Form.Label>
@@ -105,8 +93,64 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                     </Col>
                 </Form.Row>
             )
+        } else {
+            // zera o valor do campo novamente quando muda de informação
+            values.formatDate = ""
         }
                 
+    }
+
+    function ButtonSave(values, errors){
+        const existErrors = Object.entries(errors)
+        const existValues = Object.values(values)
+        let hasValuesValid = 0
+        existValues.forEach( 
+            function(value){
+                if( value !== ""){
+                    hasValuesValid++
+                }
+            }  
+        )
+
+        if(existErrors.length > 0 || hasValuesValid === 0){
+            return(
+                <Button disabled variant="primary">
+                    Salvar
+                </Button>
+            )
+        } else {
+            return(
+                <Button variant="primary" onClick={(event, _, attributes=values) => handleSave(event, attributes)}>
+                    Salvar
+                </Button>
+            )
+        }
+    }
+
+    function handleSave(event, values) {
+        event.preventDefault()
+        const nameField = values.nameField
+        const positionInFile = values.positionInFile
+        const nameColumn = values.nameColumn
+        const formatDate = values.formatDate
+        
+        setFieldValueParent(`${fieldPosition}.nameField`, nameField)
+        setFieldValueParent(`${fieldPosition}.positionInFile`, positionInFile)
+        setFieldValueParent(`${fieldPosition}.nameColumn`, nameColumn)
+        setFieldValueParent(`${fieldPosition}.formatDate`, formatDate)
+
+        setShow(false)
+    }
+
+    // volta os valores pros iniciais de quando abriu o modal
+    function handleCanceled(event, values){
+        event.preventDefault()
+
+        for(let value in values){
+            values[`${value}`] = initialValues[`${value}`]
+        }
+
+        setShow(false)
     }
     
     return (
@@ -122,7 +166,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
             >
                 { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched }) => (
                 <Modal show={show} dialogClassName="width-modal" >
-                    <pre>{JSON.stringify(errors, null, 2)}</pre>
+                    <pre>{JSON.stringify(values, null, 2)}</pre>
 
                     <Modal.Body>
                         <Form.Row>
@@ -179,12 +223,10 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                     </Modal.Body>
 
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            Fechar
+                        <Button variant="secondary" onClick={(event, _, attributes=values) => handleCanceled(event, attributes)}>
+                            Cancelar
                         </Button>
-                        <Button variant="primary" onClick={(event, _, attributes=values) => handleSave(event, attributes)}>
-                            Salvar
-                        </Button>
+                        {ButtonSave(values, errors)}
                     </Modal.Footer>
                 </Modal>
                 )}

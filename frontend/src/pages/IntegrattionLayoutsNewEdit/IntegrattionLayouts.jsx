@@ -7,6 +7,7 @@ import './styles.css'
 import api from '../../services/api'
 import IntegrattionLayoutsHeader from './FieldsHeader/FieldsHeader'
 import IntegrattionLayoutsFieldsList from './FieldsBody/FieldsList'
+import Error from '../../components/Error'
 
 let validationSchema = Yup.object().shape({
     system: Yup.string().required('O nome do sistema é obrigatório'),
@@ -20,7 +21,7 @@ let validationSchema = Yup.object().shape({
         positionInFile: Yup.number().integer('Selecione uma opção válida'),
         positionInFileEnd: Yup.number(),
         nameColumn: Yup.string(),
-        formatDate: Yup.number(),
+        formatDate: Yup.string(),
     }))
 })
 
@@ -72,8 +73,7 @@ export default function IntegrattionLayouts(){
                 >
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
                         <form onSubmit={handleSubmit} className="container-fluid">
-                            {/* Campo "Sistema" */}
-                            <div className="form-group row">
+                            <div className="form-group row mb-0">
                                 <label htmlFor="system" className="col-form-label">Sistema:</label>
                                 <div className="col">
                                     <input 
@@ -87,9 +87,11 @@ export default function IntegrattionLayouts(){
                                     />
                                 </div>
                             </div>
+                            <div className="form-group row mb-0">
+                                <Error touched={touched.system} message={errors.system}/>
+                            </div>
 
-                            {/* Campo Tipo Arquivo e Tipo Layout */}
-                            <div className="form-group row">
+                            <div className="form-group row mt-3 mb-0">
                                 <label htmlFor="fileType" className="col-form-label">Tipo Arquivo:</label>
                                 <div className="col-3">
                                     <Select 
@@ -118,8 +120,11 @@ export default function IntegrattionLayouts(){
                                     />
                                 </div>
                             </div>
+                            <div className="form-group row mb-0">
+                                <Error className="m-0 p-0" touched={touched.fileType} message={errors.fileType}/>
+                            </div>
                             
-                            <div className="form row">
+                            <div className="form row mt-2">
                                 <label className="col-form-label">Nome dos campos que identifica as colunas do Arquivo (informe 2 ou 3):</label>
                             </div>
                             <table className="col-12">
