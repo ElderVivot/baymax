@@ -6,10 +6,15 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
     fileType: String,
     layoutType: String,
     header: [{
-        numberField: Number,
         nameField: String
     }],
-    fields: Map
+    fields: [{
+        nameField: String,
+        positionInFile: Number,
+        positionInFileEnd: Number,
+        nameColumn: String,
+        formatDate: String
+    }]
 })
 
 // cria a 'tabela' de fato

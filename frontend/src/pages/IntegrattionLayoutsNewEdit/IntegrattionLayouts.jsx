@@ -51,15 +51,6 @@ const layoutTypes = [
 
 export default function IntegrattionLayouts(){
 
-    // Salva os dados no MongoDB
-    // async function handleSubmit(event, data) {
-    //     event.preventDefault()
-
-    //     const response = await api.post('/integrattion_layouts', { ...data } )
-
-    //     console.log(response)
-    // }
-
     return (
         <div className="card">
             <div className="card-header">
@@ -70,9 +61,24 @@ export default function IntegrattionLayouts(){
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
+                    onSubmit={ async (values, { setSubmitting, resetFort }) => {
+                        setSubmitting(true)
+
+                        try {
+                            const response = await api.post('/integrattion_layouts', { ...values } )
+
+                            if(response.status !== 200){
+                                console.log(response)
+                            }
+                        } catch (error) {
+                            console.log(error)
+                        }
+                        setSubmitting(false)
+                    }}
                 >
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
                         <form onSubmit={handleSubmit} className="container-fluid">
+                            <pre>{JSON.stringify(values, null, 2)}</pre>
                             <div className="form-group row mb-0">
                                 <label htmlFor="system" className="col-form-label">Sistema:</label>
                                 <div className="col">
@@ -179,7 +185,7 @@ export default function IntegrattionLayouts(){
 
                             <div className="form-row">
                                 <div className="col-12">
-                                    <button className="btn btn-primary mr-2 col-1 offset-4" type="submit">Salvar</button>
+                                    <button className="btn btn-primary mr-2 col-1 offset-4" type="submit" disabled={isSubmitting}>Salvar</button>
                                     <button className="btn btn-secondary col-1" type="reset">Cancelar</button>
                                 </div>
                             </div>

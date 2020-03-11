@@ -60,21 +60,12 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initia
     }
 
     function ButtonDelete(isDisabled=false){
-        if(isDisabled === true){
-            return( 
-                <button className="btn btn-danger ml-2" type="button" 
-                    onClick={deleteField} disabled>
-                    <i className="fa fa-trash"></i>
-                </button>
-            )
-        } else {
-            return( 
-                <button className="btn btn-danger ml-2" type="button" 
-                    onClick={deleteField}>
-                    <i className="fa fa-trash"></i>
-                </button>
-            )
-        }
+        return( 
+            <button className="btn btn-danger ml-2" type="button" 
+                onClick={deleteField} disabled={isDisabled}>
+                <i className="fa fa-trash"></i>
+            </button>
+        )
     }
 
     function Buttons(){
