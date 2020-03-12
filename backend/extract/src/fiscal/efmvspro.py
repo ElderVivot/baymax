@@ -21,14 +21,14 @@ wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.
 wayDefault = json.load(wayToSaveFiles)
 wayToSaveFiles.close()
 
-class extractEfmvepro():
+class extractEfmvspro():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
         self._cursor = None
         self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json')
         self._dataCompanies = readJson(self._wayCompanies)
-        self._baseWayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'entradas_produtos')
+        self._baseWayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'saidas_produtos')
         if os.path.exists(self._baseWayToSave) is False:
             os.makedirs(self._baseWayToSave)
         self._today = datetime.date.today()
@@ -46,7 +46,7 @@ class extractEfmvepro():
                 if filterCompanie != 0 and filterCompanie != codi_emp:
                     continue # ignora as empresas que não estão no filtro
 
-                print(f"- Exportando produtos das NF de entradas da empresa {codi_emp} - {companie['nome_emp']}")
+                print(f"- Exportando produtos das NF de saídas da empresa {codi_emp} - {companie['nome_emp']}")
                 
                 wayToSaveCompanie = os.path.join(self._baseWayToSave, str(codi_emp))
                 if os.path.exists(wayToSaveCompanie) is False:
@@ -71,20 +71,20 @@ class extractEfmvepro():
                         self._wayToSave = os.path.join(wayToSaveCompanie, f'{str(year)}{month:0>2}.json')
 
                         self._cursor = self._connection.cursor()
-                        sql = ( f"SELECT pro.codi_emp, pro.codi_ent, pro.nume_mep, pro.codi_pdi, procad.desc_pdi, pro.cfop_mep, pro.qtde_mep, pro.valor_unit_mep, pro.vlor_mep, pro.vipi_mep, pro.bcal_mep, "
-                                    f"       pro.cst_mep, pro.vpro_mep, pro.vdes_mep, pro.bicms_mep, pro.bicmsst_mep, pro.aliicms_mep, pro.valor_icms_mep, pro.valor_subtri_mep, "
-                                    f"       pro.vfre_mep, pro.vseg_mep, pro.vdesace_mep "
-                                    f"  FROM bethadba.efmvepro AS pro "
-                                    f"       INNER JOIN bethadba.efentradas AS ent "
-                                    f"            ON    ent.codi_emp = pro.codi_emp "
-                                    f"              AND ent.codi_ent = pro.codi_ent "
+                        sql = ( f"SELECT pro.codi_emp, pro.codi_sai, pro.nume_msp, pro.codi_pdi, procad.desc_pdi, pro.cfop_msp, pro.qtde_msp, pro.valor_unit_msp, pro.vipi_msp, pro.bcal_msp, "
+                                    f"       pro.cst_msp, pro.vpro_msp, pro.vdes_msp, pro.bicms_msp, pro.bicmsst_msp, pro.aliicms_msp, pro.valor_icms_msp, pro.valor_subtri_msp, "
+                                    f"       pro.vfre_msp, pro.vseg_msp, pro.vdesace_msp "
+                                    f"  FROM bethadba.efmvspro AS pro "
+                                    f"       INNER JOIN bethadba.efsaidas AS sai "
+                                    f"            ON    sai.codi_emp = pro.codi_emp "
+                                    f"              AND sai.codi_sai = pro.codi_sai "
                                     f"       INNER JOIN bethadba.efprodutos AS procad "
                                     f"            ON    procad.codi_emp = pro.codi_emp "
                                     f"              AND procad.codi_pdi = pro.codi_pdi "
-                                    f" WHERE ent.codi_emp = {codi_emp}"
-                                    f"   AND year(ent.dent_ent) >= {year}"
-                                    f"   AND month(ent.dent_ent) >= {month}"
-                                    f"ORDER BY pro.codi_emp, pro.codi_ent, pro.nume_mep")
+                                    f" WHERE sai.codi_emp = {codi_emp}"
+                                    f"   AND year(sai.dsai_sai) >= {year}"
+                                    f"   AND month(sai.dsai_sai) >= {month}"
+                                    f"ORDER BY pro.codi_emp, pro.codi_sai, pro.nume_msp")
                         self._cursor.execute(sql)
 
                         df = pd.read_sql_query(sql, self._connection)
@@ -103,5 +103,5 @@ class extractEfmvepro():
 
 
 if __name__ == "__main__":
-    extract = extractEfmvepro()
+    extract = extractEfmvspro()
     extract.exportData()

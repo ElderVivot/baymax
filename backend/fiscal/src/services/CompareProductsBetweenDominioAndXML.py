@@ -21,7 +21,7 @@ wayToSaveFile = wayDefault['wayDefaultToSaveFiles']
 
 class MeshNote(object):
     def __init__(self, wayToRead, filterDate="01/01/2019"):
-        self._wayToRead = wayToRead
+        self._wayToRead = os.path.join(wayToSaveFile, 'saidas_produtos')
         self._filterDate = funcoesUteis.retornaCampoComoData(filterDate)
         self._companies = readJson(os.path.join(wayToSaveFile, 'empresas.json'))
 
@@ -93,52 +93,51 @@ class MeshNote(object):
                 }
             )
 
-    def process(self, xml):
-        callReadXmls = CallReadXmls(xml)
-        nf = callReadXmls.process()
+    def process(self, jsonNF):
+        nf = readJson(jsonNF)
 
-        if nf is None:
+        if len(nf) == 0:
             return ""
 
-        cnpjIssuer = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjIssuer')
-        cnpjReceiver = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjReceiver')
-        issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(nf, 'issueDateNF'), 2)
-        keyNF = funcoesUteis.analyzeIfFieldIsValid(nf, 'keyNF')
+        # cnpjIssuer = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjIssuer')
+        # cnpjReceiver = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjReceiver')
+        # issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(nf, 'issueDateNF'), 2)
+        # keyNF = funcoesUteis.analyzeIfFieldIsValid(nf, 'keyNF')
 
-        monthIssueDateNF = issueDate.month
-        yearIssueDateNF = issueDate.year
+        # monthIssueDateNF = issueDate.month
+        # yearIssueDateNF = issueDate.year
 
-        codiEmpIssuer = self.returnDataEmp(cnpjIssuer)
-        codiEmpReceiver = self.returnDataEmp(cnpjReceiver)
+        # codiEmpIssuer = self.returnDataEmp(cnpjIssuer)
+        # codiEmpReceiver = self.returnDataEmp(cnpjReceiver)
         
-        outputNoteDominio = None
-        entryNoteDominio = None
+        # outputNoteDominio = None
+        # entryNoteDominio = None
 
-        if codiEmpIssuer is not None:
-            outputNoteDominio = self.returnDataOutputNoteDominio(codiEmpIssuer, monthIssueDateNF, yearIssueDateNF, keyNF)
+        # if codiEmpIssuer is not None:
+        #     outputNoteDominio = self.returnDataOutputNoteDominio(codiEmpIssuer, monthIssueDateNF, yearIssueDateNF, keyNF)
 
-        if codiEmpReceiver is not None:
-            entryNoteDominio = self.returnDataEntryNoteDominio(codiEmpReceiver, monthIssueDateNF, yearIssueDateNF, keyNF)
+        # if codiEmpReceiver is not None:
+        #     entryNoteDominio = self.returnDataEntryNoteDominio(codiEmpReceiver, monthIssueDateNF, yearIssueDateNF, keyNF)
 
-        dataProcessNF = {
-            "codiEmpIssuer": codiEmpIssuer,
-            "codiEmpReceiver": codiEmpReceiver,
-            "keyNF": keyNF,
-            "nfXml": nf,
-            "nfEntryNoteDominio": entryNoteDominio,
-            "nfOutputNoteDominio": outputNoteDominio,
-            "wayXml": xml.replace('\\', '/')
-        }
+        # dataProcessNF = {
+        #     "codiEmpIssuer": codiEmpIssuer,
+        #     "codiEmpReceiver": codiEmpReceiver,
+        #     "keyNF": keyNF,
+        #     "nfXml": nf,
+        #     "nfEntryNoteDominio": entryNoteDominio,
+        #     "nfOutputNoteDominio": outputNoteDominio,
+        #     "wayXml": xml.replace('\\', '/')
+        # }
 
-        self.saveResultProcessEntryNote(dataProcessNF)
-        self.saveResultProcessOutputNote(dataProcessNF)
+        # self.saveResultProcessEntryNote(dataProcessNF)
+        # self.saveResultProcessOutputNote(dataProcessNF)
     
     def processAll(self):
         for root, dirs, files in os.walk(self._wayToRead):
             countFiles = len(files)
             for key, file in enumerate(files):
                 wayFile = os.path.join(root, file)
-                if file.lower().endswith(('.xml')):
+                if file.lower().endswith(('.json')):
                     print(f'- Processando XML {wayFile} / {key+1} de {countFiles}')
                     self.process(wayFile)
                 # if file.lower().endswith(('.zip')):

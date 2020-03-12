@@ -53,6 +53,9 @@ class NFe(object):
             cnpjReceiverCorrect = cnpjReceiver
             nameReceiverCorrect = nameReceiver
 
+        produtos = funcoesUteis.returnDataFieldInDict(self._dataXml, ['nfeProc', 'NFe', 'infNFe', 'det'])
+        print(produtos)
+
         return {
             "numberNF": numberNF,
             "serieNF": serieNF,
@@ -66,5 +69,6 @@ class NFe(object):
             "nameReceiver": nameReceiverCorrect,
             "cnpjReceiver": cnpjReceiverCorrect,
             "keyNF": keyNF,
-            "statusNF": 0 # ativa
+            "statusNF": 0, # ativa
+            "produtos": produtos
         }

@@ -61,7 +61,7 @@ export default function IntegrattionLayouts(){
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
-                    onSubmit={ async (values, { setSubmitting, resetFort }) => {
+                    onSubmit={ async (values, { setSubmitting, resetForm }) => {
                         setSubmitting(true)
 
                         try {
@@ -69,6 +69,8 @@ export default function IntegrattionLayouts(){
 
                             if(response.status !== 200){
                                 console.log(response)
+                            } else {
+                                resetForm()
                             }
                         } catch (error) {
                             console.log(error)
