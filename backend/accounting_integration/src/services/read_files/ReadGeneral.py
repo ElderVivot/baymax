@@ -110,6 +110,8 @@ class ReadGeneral(object):
             nameColumn = None if nameColumn == "" else nameColumn
 
             valueDefault = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'valueDefault'))
+
+            multiplePerLessOne = funcoesUteis.analyzeIfFieldIsValid(settingField, 'multiplePerLessOne', False)
             
             validField = False
 
@@ -123,8 +125,8 @@ class ReadGeneral(object):
                 rowIsMain = 'not_main' if isRowCorrect is True else 'main'
             
             # caso não seja uma linha prinpial e o argumento readOnlyRowIsNotMain seja True então ignora pra parar o processamento
-            if readOnlyRowIsNotMain is True and rowIsMain == 'main':
-                continue
+            # if readOnlyRowIsNotMain is True and rowIsMain == 'main':
+            #     continue
             
             if nameField.lower().find('date') >= 0:
                 formatDate = funcoesUteis.analyzeIfFieldIsValid(settingField, 'formatDate')
@@ -143,6 +145,7 @@ class ReadGeneral(object):
             elif nameField.lower().find('amount') >= 0:
                 valueField = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeader, nameColumn)
                 valueField = 0 if numberField == -1 and nameColumn is None else valueField
+                valueField = valueField * (-1) if multiplePerLessOne is True else valueField
 
                 if valueField != 0:
                     validField = True
@@ -374,6 +377,7 @@ class ReadGeneral(object):
                     #     self.updateFieldsNotMain(valuesOfLine, fields)
                     #     print(self._fieldsRowNotMain)
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
+                    # print(valuesOfLine)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
                     
