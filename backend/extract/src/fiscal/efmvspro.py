@@ -35,7 +35,7 @@ class extractEfmvspro():
         self._currentMonth = self._today.month
         self._currentYear = self._today.year
 
-    def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013, filterMonthEnd=0, filterYearEnd=0):
+    def exportData(self, filterCompanie=2, filterMonthStart=1, filterYearStart=2019, filterMonthEnd=0, filterYearEnd=0):
         filterMonthEnd = self._currentMonth if filterMonthEnd == 0 else filterMonthEnd
         filterYearEnd = self._currentYear if filterYearEnd == 0 else filterYearEnd
 
@@ -71,20 +71,25 @@ class extractEfmvspro():
                         self._wayToSave = os.path.join(wayToSaveCompanie, f'{str(year)}{month:0>2}.json')
 
                         self._cursor = self._connection.cursor()
-                        sql = ( f"SELECT pro.codi_emp, pro.codi_sai, pro.nume_msp, pro.codi_pdi, procad.desc_pdi, pro.cfop_msp, pro.qtde_msp, pro.valor_unit_msp, pro.vipi_msp, pro.bcal_msp, "
-                                    f"       pro.cst_msp, pro.vpro_msp, pro.vdes_msp, pro.bicms_msp, pro.bicmsst_msp, pro.aliicms_msp, pro.valor_icms_msp, pro.valor_subtri_msp, "
-                                    f"       pro.vfre_msp, pro.vseg_msp, pro.vdesace_msp "
-                                    f"  FROM bethadba.efmvspro AS pro "
-                                    f"       INNER JOIN bethadba.efsaidas AS sai "
-                                    f"            ON    sai.codi_emp = pro.codi_emp "
-                                    f"              AND sai.codi_sai = pro.codi_sai "
-                                    f"       INNER JOIN bethadba.efprodutos AS procad "
-                                    f"            ON    procad.codi_emp = pro.codi_emp "
-                                    f"              AND procad.codi_pdi = pro.codi_pdi "
-                                    f" WHERE sai.codi_emp = {codi_emp}"
-                                    f"   AND year(sai.dsai_sai) >= {year}"
-                                    f"   AND month(sai.dsai_sai) >= {month}"
-                                    f"ORDER BY pro.codi_emp, pro.codi_sai, pro.nume_msp")
+                        sql = ( f"SELECT pro.codi_emp, codigo_nota = pro.codi_sai, numero = sai.nume_sai, cli_for = cli.nome_cli, chave_nfe = sai.chave_nfe_sai, "
+                                f"       emissao = sai.ddoc_sai, saida_entrada = sai.dsai_sai, codi_pdi = pro.codi_pdi, desc_pdi = procad.desc_pdi, "
+                                f"       cfop = pro.cfop_msp, qtd = pro.qtde_msp, vunit = pro.valor_unit_msp, vtot = pro.vpro_msp /*, pro.vipi_msp, pro.bcal_msp, "
+                                f"       pro.cst_msp, pro.vdes_msp, pro.bicms_msp, pro.bicmsst_msp, pro.aliicms_msp, pro.valor_icms_msp, pro.valor_subtri_msp, "
+                                f"       pro.vfre_msp, pro.vseg_msp, pro.vdesace_msp */ "
+                                f"  FROM bethadba.efmvspro AS pro "
+                                f"       INNER JOIN bethadba.efsaidas AS sai "
+                                f"            ON    sai.codi_emp = pro.codi_emp "
+                                f"              AND sai.codi_sai = pro.codi_sai "
+                                f"       INNER JOIN bethadba.efclientes AS cli "
+                                f"            ON    cli.codi_emp = sai.codi_emp "
+                                f"              AND cli.codi_cli = sai.codi_cli "
+                                f"       INNER JOIN bethadba.efprodutos AS procad "
+                                f"            ON    procad.codi_emp = pro.codi_emp "
+                                f"              AND procad.codi_pdi = pro.codi_pdi "
+                                f" WHERE sai.codi_emp = {codi_emp}"
+                                f"   AND year(sai.ddoc_sai) = {year}"
+                                f"   AND month(sai.ddoc_sai) = {month}"
+                                f"ORDER BY pro.codi_emp, pro.codi_sai, pro.nume_msp")
                         self._cursor.execute(sql)
 
                         df = pd.read_sql_query(sql, self._connection)

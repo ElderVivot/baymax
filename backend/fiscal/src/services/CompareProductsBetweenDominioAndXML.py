@@ -20,8 +20,9 @@ wayDefault = readJson(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.
 wayToSaveFile = wayDefault['wayDefaultToSaveFiles']
 
 class MeshNote(object):
-    def __init__(self, wayToRead, filterDate="01/01/2019"):
-        self._wayToRead = os.path.join(wayToSaveFile, 'saidas_produtos')
+    def __init__(self, wayToReadXMLs, filterDate="01/01/2019"):
+        self._wayToReadXMLs = wayToReadXMLs
+        self._wayToRead = os.path.join(wayToSaveFile, 'entradas_produtos')
         self._filterDate = funcoesUteis.retornaCampoComoData(filterDate)
         self._companies = readJson(os.path.join(wayToSaveFile, 'empresas.json'))
 
@@ -30,28 +31,25 @@ class MeshNote(object):
         self._db = self._client.baymax
         self._collection = self._db[f'MeshNote']        
 
-    def returnDataEmp(self, cgce):
+    def returnDataEmp(self, codi_emp):
         for companie in self._companies:
-            if companie["cgce_emp"] == cgce and companie["stat_emp"] == "A" and companie["dina_emp"] is None:
-                return companie["codi_emp"]
+            if companie["codi_emp"] == codi_emp and companie["stat_emp"] == "A" and companie["dina_emp"] is None:
+                return companie["cgce_emp"]
 
-    def returnDataEntryNoteDominio(self, codi_emp, month, year, keyNF):
+    def returnDataEntryNoteXML(self, codi_emp, month, year, keyNF):
         try:
-            dataNfs = readJson(os.path.join(wayToSaveFile, 'entradas', str(codi_emp), f'{str(year)}{month:0>2}.json'))
-
-            for nf in dataNfs:
-                if nf['chave_nfe_ent'] == keyNF:
-                    return nf
+            wayXml = os.path.join(self._wayToReadXMLs, f'{codi_emp} -', f'{str(year)}-{month:0>2}', 'Entradas', f'{keyNF}.xml')
+            callReadXmls = CallReadXmls(wayXml)
+            nf = callReadXmls.process()
+            
+            produtos = funcoesUteis.analyzeIfFieldIsValid(nf, 'produtos')
+            print(produtos)
         except Exception:
             pass
 
-    def returnDataOutputNoteDominio(self, codi_emp, month, year, keyNF):
+    def returnDataOutputNoteXML(self, codi_emp, month, year, keyNF):
         try:
-            dataNfs = readJson(os.path.join(wayToSaveFile, 'saidas', str(codi_emp), f'{str(year)}{month:0>2}.json'))
-
-            for nf in dataNfs:
-                if nf['chave_nfe_sai'] == keyNF:
-                    return nf
+            nf = CallReadXmls(os.path.join(wayToSaveFile, f'{codi_emp} -', f'{str(year)}-{month:0>2}', 'Entradas', f'{keyNF}.xml'))
         except Exception:
             pass
 
@@ -94,30 +92,26 @@ class MeshNote(object):
             )
 
     def process(self, jsonNF):
-        nf = readJson(jsonNF)
+        nfs = readJson(jsonNF)
 
-        if len(nf) == 0:
+        if len(nfs) == 0:
             return ""
 
-        # cnpjIssuer = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjIssuer')
-        # cnpjReceiver = funcoesUteis.analyzeIfFieldIsValid(nf, 'cnpjReceiver')
-        # issueDate = funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(nf, 'issueDateNF'), 2)
-        # keyNF = funcoesUteis.analyzeIfFieldIsValid(nf, 'keyNF')
+        for nf in nfs:
+            codi_emp = nf['codi_emp']
+            cgce_emp = self.returnDataEmp(codi_emp)
+            
+            chave_nfe = nf['chave_nfe']
 
-        # monthIssueDateNF = issueDate.month
-        # yearIssueDateNF = issueDate.year
+            emissao = nf['emissao']
+            emissao = funcoesUteis.retornaCampoComoData(emissao, 2)
 
-        # codiEmpIssuer = self.returnDataEmp(cnpjIssuer)
-        # codiEmpReceiver = self.returnDataEmp(cnpjReceiver)
-        
-        # outputNoteDominio = None
-        # entryNoteDominio = None
-
-        # if codiEmpIssuer is not None:
-        #     outputNoteDominio = self.returnDataOutputNoteDominio(codiEmpIssuer, monthIssueDateNF, yearIssueDateNF, keyNF)
-
-        # if codiEmpReceiver is not None:
-        #     entryNoteDominio = self.returnDataEntryNoteDominio(codiEmpReceiver, monthIssueDateNF, yearIssueDateNF, keyNF)
+            month = emissao.month
+            year = emissao.year
+            
+            # busca os dados das notas de entradas
+            if jsonNF.find('entradas_produtos') >= 0:
+                self.returnDataEntryNoteXML(codi_emp, month, year, chave_nfe)
 
         # dataProcessNF = {
         #     "codiEmpIssuer": codiEmpIssuer,
@@ -138,14 +132,9 @@ class MeshNote(object):
             for key, file in enumerate(files):
                 wayFile = os.path.join(root, file)
                 if file.lower().endswith(('.json')):
-                    print(f'- Processando XML {wayFile} / {key+1} de {countFiles}')
+                    print(f'- Processando JSON {wayFile} / {key+1} de {countFiles}')
                     self.process(wayFile)
-                # if file.lower().endswith(('.zip')):
-                #     with ZipFile(wayFile, 'r') as compressed:
-                #         for fileCompressed in compressed.namelist():
-                #             if fileCompressed.lower().endswith(('.xml')):
-                #                 print(fileCompressed)
 
 if __name__ == "__main__":
-    meshNote = MeshNote("C:/_temp/notas-fiscais-2/413 -/2019-07/Saidas")
+    meshNote = MeshNote("C:/_temp/notas-fiscais-2/")
     meshNote.processAll()
