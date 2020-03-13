@@ -103,6 +103,7 @@ class ReadGeneral(object):
     def treatDataLayout(self, data, settingFields, positionsOfHeader, readOnlyRowIsNotMain=False):
         # o readOnlyRowIsNotMain serve pra ler as linhas que estão uma abaixo da principal, pra poder agrupar com a linha anterior
         valuesOfLine = {}
+        positionsOfHeaderCorrect = positionsOfHeader
 
         for settingField in settingFields:
             nameField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField')
@@ -122,13 +123,17 @@ class ReadGeneral(object):
             isRowCorrect = self.identifiesIfTheRowCorrect(dataIsNotLineMain, data)
             
             rowIsMain = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'row')
-            if rowIsMain == "" or rowIsMain == "main":
-                rowIsMain = 'not_main' if isRowCorrect is True else 'main'
+            if rowIsMain == "" or rowIsMain == "main":                
+                if isRowCorrect is True:
+                    rowIsMain = 'not_main'
+                    positionsOfHeaderCorrect = {}
+                else:
+                    rowIsMain = 'main'
             
             # caso não seja uma linha prinpial e o argumento readOnlyRowIsNotMain seja True então ignora pra parar o processamento
-            # if readOnlyRowIsNotMain is True and rowIsMain == 'main':
-            #     continue
-            
+            if readOnlyRowIsNotMain is True and rowIsMain == 'main':
+                continue
+
             if nameField.lower().find('date') >= 0:
                 formatDate = funcoesUteis.analyzeIfFieldIsValid(settingField, 'formatDate')
                 if formatDate == 'dd/mm/aaaa':
@@ -138,27 +143,27 @@ class ReadGeneral(object):
                 else:
                     formatDate = 1
                 
-                valueField = funcoesUteis.treatDateFieldInVector(data, numberField, positionsOfHeader, nameColumn, formatDate, rowIsMain)
+                valueField = funcoesUteis.treatDateFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn, formatDate, rowIsMain)
                 valueField = None if numberField == -1 and nameColumn is None else valueField
 
                 if valueField is not None:
                     validField = True
             elif nameField.lower().find('amount') >= 0:
-                valueField = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeader, nameColumn)
+                valueField = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn)
                 valueField = 0 if numberField == -1 and nameColumn is None else valueField
 
                 if valueField != 0:
                     validField = True
             elif nameField.lower().find('bank') >= 0:
-                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameColumn).replace('-', ' ')
+                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn).replace('-', ' ')
                 valueField = "" if numberField == -1 and nameColumn is None else valueField
-
+                
                 if valueField != "" and valueField is not None:
                     validField = True
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
 
-                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeader, nameColumn)
+                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn)
                 valueField = "" if numberField == -1 and nameColumn is None else valueField
 
                 if splitField != "":
@@ -168,15 +173,15 @@ class ReadGeneral(object):
                     else:
                         valueField = ''.join(valueField[0:])
                     valueField = funcoesUteis.minimalizeSpaces(valueField)
-
+                
                 if valueField != "":
                     validField = True
             
             if validField is False and valueDefault != "":
                 validField = True
-                valueField = valueDefault
-
-            if validField is True:
+                valueField = valueDefault            
+            
+            if validField is True:                
                 valuesOfLine['row'] = rowIsMain
                 valuesOfLine[nameField] = valueField
         
@@ -341,6 +346,7 @@ class ReadGeneral(object):
         self._groupingFields.clear()
         self._validationsLineToPrint = []
         self._sumInterestFineAndDiscount = False
+        self._fieldsThatMultiplePerLessOne = {}
         posionsOfHeaderTemp = {}
         posionsOfHeader = {}
 
@@ -382,8 +388,9 @@ class ReadGeneral(object):
                     #     nextData = funcoesUteis.analyzeIfFieldIsValidMatrix(dataFile, key+1)
                     #     valuesOfLine = self.treatDataLayout(nextData, fields, posionsOfHeader, True)
                     #     self.updateFieldsNotMain(valuesOfLine, fields)
-                    #     print(self._fieldsRowNotMain)
+                        # print(valuesOfLine)
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
+                    # print(valuesOfLine)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
                     
@@ -392,9 +399,9 @@ class ReadGeneral(object):
                     # ele verifica se é necessário somar juros/multa e subtrair o desconto no valor pago
                     valuesOfLine['amountPaid'] = self.sumInterestFineAndDiscountInAmountPaid(valuesOfLine)
 
-                    isValid = self.isValidLineToPrint(valuesOfLine)
-                    valuesOfLine = self.multiplePerLessOneWhenNecessary(valuesOfLine)
+                    isValid = self.isValidLineToPrint(valuesOfLine)                    
                     if isValid is True:
+                        valuesOfLine = self.multiplePerLessOneWhenNecessary(valuesOfLine)
                         if layoutType == 'account_paid':
                             valuesOfLine['numberLote'] = self.handleLayoutIsPartidaMultipla(valuesOfLine, valuesOfFilePayments)
                             valuesOfFilePayments.append(valuesOfLine.copy())
@@ -427,7 +434,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1643
+    codi_emp = 102
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
