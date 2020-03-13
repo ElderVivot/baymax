@@ -23,6 +23,7 @@ class ReadGeneral(object):
         self._validationsLineToPrint = [] # vai salvar os critérios pra ver se uma linha é válida pra gerar o lançamento ou não
         self._sumInterestFineAndDiscount = False
         self._informationIsOnOneLineBelowTheMain = False
+        self._fieldsThatMultiplePerLessOne = {}
 
     def identifiesTheHeader(self, data, settingLayout):
         # :data são os valores de cada "linha" dos arquivos processados
@@ -97,6 +98,8 @@ class ReadGeneral(object):
 
             self._informationIsOnOneLineBelowTheMain = funcoesUteis.analyzeIfFieldIsValid(settingField, 'informationIsOnOneLineBelowTheMain', False)
 
+            self._fieldsThatMultiplePerLessOne[nameField] = funcoesUteis.analyzeIfFieldIsValid(settingField, 'multiplePerLessOne', False)
+
     def treatDataLayout(self, data, settingFields, positionsOfHeader, readOnlyRowIsNotMain=False):
         # o readOnlyRowIsNotMain serve pra ler as linhas que estão uma abaixo da principal, pra poder agrupar com a linha anterior
         valuesOfLine = {}
@@ -111,8 +114,6 @@ class ReadGeneral(object):
 
             valueDefault = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'valueDefault'))
 
-            multiplePerLessOne = funcoesUteis.analyzeIfFieldIsValid(settingField, 'multiplePerLessOne', False)
-            
             validField = False
 
             # esta row é apenas pra identificar se a informação está na linha principal ou não, caso não esteja, vai guardar seu valor
@@ -145,7 +146,6 @@ class ReadGeneral(object):
             elif nameField.lower().find('amount') >= 0:
                 valueField = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeader, nameColumn)
                 valueField = 0 if numberField == -1 and nameColumn is None else valueField
-                valueField = valueField * (-1) if multiplePerLessOne is True else valueField
 
                 if valueField != 0:
                     validField = True
@@ -304,6 +304,13 @@ class ReadGeneral(object):
         if countValidationsIsTrue == countValidations:
             return True
 
+    def multiplePerLessOneWhenNecessary(self, valuesOfLine):
+        for nameField, valueField in valuesOfLine.items():
+            if funcoesUteis.analyzeIfFieldIsValid(self._fieldsThatMultiplePerLessOne, nameField, False) is True:
+                valuesOfLine[nameField] = valueField * (-1)
+        
+        return valuesOfLine
+
     #  esta função soma o total pago por cada lote, afim de comparar com os extratos bancários posteriormente
     def sumAmountPaidPerLote(self, valuesOfFile):
         amountPaidPerLote = {}
@@ -377,7 +384,6 @@ class ReadGeneral(object):
                     #     self.updateFieldsNotMain(valuesOfLine, fields)
                     #     print(self._fieldsRowNotMain)
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
-                    # print(valuesOfLine)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
                     
@@ -387,6 +393,7 @@ class ReadGeneral(object):
                     valuesOfLine['amountPaid'] = self.sumInterestFineAndDiscountInAmountPaid(valuesOfLine)
 
                     isValid = self.isValidLineToPrint(valuesOfLine)
+                    valuesOfLine = self.multiplePerLessOneWhenNecessary(valuesOfLine)
                     if isValid is True:
                         if layoutType == 'account_paid':
                             valuesOfLine['numberLote'] = self.handleLayoutIsPartidaMultipla(valuesOfLine, valuesOfFilePayments)
@@ -420,7 +427,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 102
+    codi_emp = 1643
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
