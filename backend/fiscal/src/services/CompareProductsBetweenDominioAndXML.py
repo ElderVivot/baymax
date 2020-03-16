@@ -43,29 +43,28 @@ class MeshNote(object):
 
         for productXML in productsXML:
             nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])
-            qtdProductXML = funcoesUteis.treatDecimalField(productXML['prod']['qCom'])
-            vunitProductXML = funcoesUteis.treatDecimalField(productXML['prod']['vUnCom'])
-            vtotProductXML = funcoesUteis.treatDecimalField(productXML['prod']['vProd'])
+            qtdProductXML = round(funcoesUteis.treatDecimalField(productXML['prod']['qCom']),2)
+            vunitProductXML = round(funcoesUteis.treatDecimalField(productXML['prod']['vUnCom']),2)
+            vtotProductXML = round(funcoesUteis.treatDecimalField(productXML['prod']['vProd']),2)
 
             if qtdProductXML == qtdAccountSystem and vunitProductXML == vunitAccountSystem and vtotProductXML == vtotAccountSystem:
                 productXML['valueComparationBetweenAccountSystemAndXML'] = SequenceMatcher(None, nameProductAccountSystem, nameProductXML).ratio()
-                if productXML['valueComparationBetweenAccountSystemAndXML'] > 0.75:
+                if productXML['valueComparationBetweenAccountSystemAndXML'] > 0.85:
                     return productXML
                 else:
                     productsEquals.append(productXML)
-                print(productXML)
 
-        # print(productsEquals)
-        # print( sorted(productsEquals, key=itemgetter('valueComparationBetweenAccountSystemAndXML')) )
+        if len(productsEquals) > 0:
+            return sorted(productsEquals, key=itemgetter('valueComparationBetweenAccountSystemAndXML'))[0]
 
     def returnProductComparation(self, productAccountSystem, productsXML):
         if len(productsXML) == 0:
             return None
 
         nameProductAccountSystem = funcoesUteis.treatTextField(productAccountSystem['desc_pdi'])
-        qtdAccountSystem = funcoesUteis.treatDecimalField(productAccountSystem['qtd'])
-        vunitAccountSystem = funcoesUteis.treatDecimalField(productAccountSystem['vunit'])
-        vtotAccountSystem = funcoesUteis.treatDecimalField(productAccountSystem['vtot'])
+        qtdAccountSystem = round(funcoesUteis.treatDecimalField(productAccountSystem['qtd']),2)
+        vunitAccountSystem = round(funcoesUteis.treatDecimalField(productAccountSystem['vunit']),2)
+        vtotAccountSystem = round(funcoesUteis.treatDecimalField(productAccountSystem['vtot']),2)
 
         productXML = None
         
@@ -165,23 +164,11 @@ class MeshNote(object):
 
             productXML = self.returnProductComparation(product, productsXML)
 
-            nameProductAccountSystem = funcoesUteis.treatTextField(product['desc_pdi'])
+            # nameProductAccountSystem = funcoesUteis.treatTextField(product['desc_pdi'])
             # nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])
             # valueComparation = productXML['valueComparationBetweenAccountSystemAndXML']
 
-            print(keyNF, '---', nameProductAccountSystem, '---', )
-
-            nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])                
-
-        # dataProcessNF = {
-        #     "codiEmpIssuer": codiEmpIssuer,
-        #     "codiEmpReceiver": codiEmpReceiver,
-        #     "keyNF": keyNF,
-        #     "nfXml": nf,
-        #     "nfEntryNoteDominio": entryNoteDominio,
-        #     "nfOutputNoteDominio": outputNoteDominio,
-        #     "wayXml": xml.replace('\\', '/')
-        # }
+            # print(keyNF, '---', nameProductAccountSystem, '---', nameProductXML, '---', valueComparation)
 
         # self.saveResultProcessEntryNote(dataProcessNF)
         # self.saveResultProcessOutputNote(dataProcessNF)

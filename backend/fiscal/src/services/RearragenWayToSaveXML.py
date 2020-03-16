@@ -16,9 +16,11 @@ wayDefault = readJson(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.
 wayToSaveFile = wayDefault['wayDefaultToSaveFiles']
 
 class RearrangeWayToSaveXML(object):
-    def __init__(self, wayToRead, filterDate="01/01/2019"):
-        self._wayToRead = wayToRead
-        self._filterDate = funcoesUteis.retornaCampoComoData(filterDate)
+    def __init__(self):
+        self._wayToRead = input('- Informe o caminho onde estão os XMLs que deseja organizar: ')
+        self._wayToSave = input('- Agora informe o caminho onde deseja salvar os XMLs organizados: ')
+        self._filterDate = input('- A partir de qual data deseja organizar estes XMLs (dd/mm/aaaa): ')
+        self._filterDate = funcoesUteis.retornaCampoComoData(self._filterDate)
         self._companies = readJson(os.path.join(wayToSaveFile, 'empresas.json'))
 
     def returnDataEmp(self, cgce):
@@ -54,8 +56,15 @@ class RearrangeWayToSaveXML(object):
             codiEmpIssuer = self.returnDataEmp(cnpjIssuer)
             codiEmpReceiver = self.returnDataEmp(cnpjReceiver)
             
-            self.copyXmlToFolderCompanieAndCompetence('C:/_temp/notas-fiscais-2', codiEmpIssuer, issueDate, xml, 'Saidas', keyNF)
-            self.copyXmlToFolderCompanieAndCompetence('C:/_temp/notas-fiscais-2', codiEmpReceiver, issueDate, xml, 'Entradas', keyNF)
+            try:
+                self.copyXmlToFolderCompanieAndCompetence(self._wayToSave, codiEmpIssuer, issueDate, xml, 'Saidas', keyNF)
+            except Exception:
+                pass
+
+            try:
+                self.copyXmlToFolderCompanieAndCompetence(self._wayToSave, codiEmpReceiver, issueDate, xml, 'Entradas', keyNF)
+            except Exception:
+                pass
 
     def processAll(self):
         for root, dirs, files in os.walk(self._wayToRead):
@@ -67,5 +76,5 @@ class RearrangeWayToSaveXML(object):
                     self.process(wayFile)
 
 if __name__ == "__main__":
-    rearrangeWayToSaveXML = RearrangeWayToSaveXML("C:/_temp/notas-fiscais")
+    rearrangeWayToSaveXML = RearrangeWayToSaveXML()
     rearrangeWayToSaveXML.processAll()
