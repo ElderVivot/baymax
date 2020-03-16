@@ -72,6 +72,8 @@ class ReadGeneral(object):
                     countHeaderEquals += 1
             elif typeValidation == "isEqual" and valueValidation == valueFieldData:
                 countHeaderEquals += 1
+            elif typeValidation == "contains" and valueFieldData.find(valueValidation) >= 0:
+                countHeaderEquals += 1
         
         if countHeaderEquals == len(dataIsNotLineMain):
             return True
@@ -130,6 +132,11 @@ class ReadGeneral(object):
                 else:
                     rowIsMain = 'main'
             
+            # quando não é uma linha main ele apenas dá seguinte processando ela se de fato for uma linha not_main já passado pela validação do isRowCorrect,
+            # ou seja, só retorna o dado se de fato a validação do campo é válida
+            if dataIsNotLineMain != "" and isRowCorrect is not True:
+                continue
+            
             # caso não seja uma linha prinpial e o argumento readOnlyRowIsNotMain seja True então ignora pra parar o processamento
             if readOnlyRowIsNotMain is True and rowIsMain == 'main':
                 continue
@@ -156,6 +163,7 @@ class ReadGeneral(object):
                     validField = True
             elif nameField.lower().find('bank') >= 0:
                 valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn).replace('-', ' ')
+                valueField = funcoesUteis.minimalizeSpaces(valueField)
                 valueField = "" if numberField == -1 and nameColumn is None else valueField
                 
                 if valueField != "" and valueField is not None:
@@ -440,7 +448,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 102
+    codi_emp = 425
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
