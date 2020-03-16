@@ -12,6 +12,8 @@ from pymongo import MongoClient
 from fiscal.src.read_files.CallReadXmls import CallReadXmls
 from tools.leArquivos import readXml, readJson
 import tools.funcoesUteis as funcoesUteis
+from difflib import SequenceMatcher
+from operator import itemgetter
 # from zipfile import ZipFile
 # from rarfile import RarFile
 # from py7zr import SevenZipFile
@@ -36,22 +38,45 @@ class MeshNote(object):
             if companie["codi_emp"] == codi_emp and companie["stat_emp"] == "A" and companie["dina_emp"] is None:
                 return companie["cgce_emp"]
 
-    def returnDataEntryNoteXML(self, codi_emp, month, year, keyNF):
-        try:
-            wayXml = os.path.join(self._wayToReadXMLs, f'{codi_emp} -', f'{str(year)}-{month:0>2}', 'Entradas', f'{keyNF}.xml')
-            callReadXmls = CallReadXmls(wayXml)
-            nf = callReadXmls.process()
-            
-            produtos = funcoesUteis.analyzeIfFieldIsValid(nf, 'produtos')
-            print(produtos)
-        except Exception:
-            pass
+    def foundProductInNote(self, productsXML, nameProductAccountSystem, qtdAccountSystem, vunitAccountSystem, vtotAccountSystem):
+        productsEquals = []
 
-    def returnDataOutputNoteXML(self, codi_emp, month, year, keyNF):
-        try:
-            nf = CallReadXmls(os.path.join(wayToSaveFile, f'{codi_emp} -', f'{str(year)}-{month:0>2}', 'Entradas', f'{keyNF}.xml'))
-        except Exception:
-            pass
+        for productXML in productsXML:
+            nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])
+            qtdProductXML = funcoesUteis.treatDecimalField(productXML['prod']['qCom'])
+            vunitProductXML = funcoesUteis.treatDecimalField(productXML['prod']['vUnCom'])
+            vtotProductXML = funcoesUteis.treatDecimalField(productXML['prod']['vProd'])
+
+            if qtdProductXML == qtdAccountSystem and vunitProductXML == vunitAccountSystem and vtotProductXML == vtotAccountSystem:
+                productXML['valueComparationBetweenAccountSystemAndXML'] = SequenceMatcher(None, nameProductAccountSystem, nameProductXML).ratio()
+                if productXML['valueComparationBetweenAccountSystemAndXML'] > 0.75:
+                    return productXML
+                else:
+                    productsEquals.append(productXML)
+                print(productXML)
+
+        # print(productsEquals)
+        # print( sorted(productsEquals, key=itemgetter('valueComparationBetweenAccountSystemAndXML')) )
+
+    def returnProductComparation(self, productAccountSystem, productsXML):
+        if len(productsXML) == 0:
+            return None
+
+        nameProductAccountSystem = funcoesUteis.treatTextField(productAccountSystem['desc_pdi'])
+        qtdAccountSystem = funcoesUteis.treatDecimalField(productAccountSystem['qtd'])
+        vunitAccountSystem = funcoesUteis.treatDecimalField(productAccountSystem['vunit'])
+        vtotAccountSystem = funcoesUteis.treatDecimalField(productAccountSystem['vtot'])
+
+        productXML = None
+        
+        if len(productsXML) == 1:
+            productXML = productsXML[0]
+            nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])
+            productXML['valueComparationBetweenAccountSystemAndXML'] = SequenceMatcher(None, nameProductAccountSystem, nameProductXML).ratio()
+        else:
+            productXML = self.foundProductInNote(productsXML, nameProductAccountSystem, qtdAccountSystem, vunitAccountSystem, vtotAccountSystem)
+
+        return productXML
 
     def saveResultProcessEntryNote(self, dataProcess):
         codi_emp = dataProcess['codiEmpReceiver']
@@ -92,26 +117,61 @@ class MeshNote(object):
             )
 
     def process(self, jsonNF):
-        nfs = readJson(jsonNF)
+        nf = ''
+        productsXML = []
+        typeNF = ''
 
-        if len(nfs) == 0:
+        products = readJson(jsonNF)
+
+        if len(products) == 0:
             return ""
 
-        for nf in nfs:
-            codi_emp = nf['codi_emp']
+        for key, product in enumerate(products):
+            codi_emp = product['codi_emp']
+
             cgce_emp = self.returnDataEmp(codi_emp)
             
-            chave_nfe = nf['chave_nfe']
+            keyNF = product['chave_nfe']
 
-            emissao = nf['emissao']
+            emissao = product['emissao']
             emissao = funcoesUteis.retornaCampoComoData(emissao, 2)
 
             month = emissao.month
             year = emissao.year
+
+            previousProduct = funcoesUteis.analyzeIfFieldIsValidMatrix(products, key-1)
+            previousKeyNF = previousProduct['chave_nfe']
             
             # busca os dados das notas de entradas
             if jsonNF.find('entradas_produtos') >= 0:
-                self.returnDataEntryNoteXML(codi_emp, month, year, chave_nfe)
+                typeNF = 'Entradas'
+            if jsonNF.find('saidas_produtos') >= 0:
+                typeNF = 'Saidas'
+
+            if keyNF != previousKeyNF or len(products) == 1:
+                wayXml = os.path.join(self._wayToReadXMLs, f'{codi_emp} -', f'{str(year)}-{month:0>2}', f'{typeNF}', f'{keyNF}.xml')
+                callReadXmls = CallReadXmls(wayXml)
+                nf = callReadXmls.process()
+                
+                productsXML = funcoesUteis.analyzeIfFieldIsValid(nf, 'produtos')
+                
+                # quando existe apenas um produto no XML ele não cria um array de produtos, e sim apenas um objeto. Todavia, pra função de
+                # comparação funcionar preciso que seja um array. As linhas abaixo fazem esta análise e cria o array quando necessário
+                productsWhenExistOneProductXML = []
+                onlyProductInXML = funcoesUteis.analyzeIfFieldIsValid(productsXML, 'prod', False)
+                if onlyProductInXML is not False:
+                    productsWhenExistOneProductXML.append(productsXML)
+                    productsXML = productsWhenExistOneProductXML
+
+            productXML = self.returnProductComparation(product, productsXML)
+
+            nameProductAccountSystem = funcoesUteis.treatTextField(product['desc_pdi'])
+            # nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])
+            # valueComparation = productXML['valueComparationBetweenAccountSystemAndXML']
+
+            print(keyNF, '---', nameProductAccountSystem, '---', )
+
+            nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])                
 
         # dataProcessNF = {
         #     "codiEmpIssuer": codiEmpIssuer,

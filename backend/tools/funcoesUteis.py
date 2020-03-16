@@ -92,6 +92,11 @@ def returnDataFieldInDict(data, valuesList):
 
 
 def analyzeIfFieldIsValidMatrix(data, position, returnDefault="", positionOriginal=False):
+    # :data é o vetor com as informações
+    # :position a posição que a informação que quero retornar se encontra no vetor
+    # :returnDefault caso não encontre a posição qual valor deve retornar
+    # :positionOriginal é pra não subtrair por menos 1 o retorno, por padrão eu passo o número normal e ele subtrai um visto que o vetor
+    # começa com zero. Quando True ele não faz esta substração.
     try:
         if positionOriginal is False:
             return data[position-1]

@@ -54,7 +54,6 @@ class NFe(object):
             nameReceiverCorrect = nameReceiver
 
         produtos = funcoesUteis.returnDataFieldInDict(self._dataXml, ['nfeProc', 'NFe', 'infNFe', 'det'])
-        print(produtos)
 
         return {
             "numberNF": numberNF,

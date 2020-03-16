@@ -194,17 +194,21 @@ class ReadGeneral(object):
                 return positionFieldInVector
 
     def updateFieldsNotMain(self, data, settingFields):
+        # :data é os dados com informações dos campos daquela linha
+        # :settingFields é o vetor de configuração de cada campo que fica no 'fields'
         row = funcoesUteis.analyzeIfFieldIsValid(data, 'row')
 
         if row == 'not_main':
             for nameField, valueField in data.items():
 
+                # pega a posição do campo do vetor do fields da tabela IntegrattionLayouts
                 positionFieldInVector = self.getPositionFieldByNameField(settingFields, nameField)
                 if positionFieldInVector is not None:
                     fieldIsAnotherRow = funcoesUteis.analyzeIfFieldIsValid(settingFields[positionFieldInVector], 'dataIsNotLineMain', None)
                 else:
                     fieldIsAnotherRow = None
 
+                # faz validação dos campos pra ver se devem ser atualizados as informações ou não
                 if fieldIsAnotherRow is not None:
                     if nameField.lower().find('date') >= 0:
                         if valueField is not None:
@@ -309,6 +313,7 @@ class ReadGeneral(object):
         if countValidationsIsTrue == countValidations:
             return True
 
+    # tem alguns sistemas que trás o valor negativo como sendo o pago, tem que multiplicar por menos 1 pra ficar certo
     def multiplePerLessOneWhenNecessary(self, valuesOfLine):
         for nameField, valueField in valuesOfLine.items():
             if funcoesUteis.analyzeIfFieldIsValid(self._fieldsThatMultiplePerLessOne, nameField, False) is True:
@@ -374,6 +379,7 @@ class ReadGeneral(object):
                 dataFile = []
 
             fields = setting['fields']
+            # esta linha é útil pois vários campos preciso guardar as configurações dele pra verificações futuras
             self.analyzeSettingFieldsThatAreNecessaryData(fields)
 
             for key, data in enumerate(dataFile):
@@ -384,13 +390,13 @@ class ReadGeneral(object):
                             posionsOfHeader = posionsOfHeaderTemp
                             continue
 
-                    # if self._informationIsOnOneLineBelowTheMain is True:
-                    #     nextData = funcoesUteis.analyzeIfFieldIsValidMatrix(dataFile, key+1)
-                    #     valuesOfLine = self.treatDataLayout(nextData, fields, posionsOfHeader, True)
-                    #     self.updateFieldsNotMain(valuesOfLine, fields)
-                        # print(valuesOfLine)
+                    # quando as informações complementares estão uma linha abaixo da principal então lê ela primeiro e atualiza os campos notMain
+                    if self._informationIsOnOneLineBelowTheMain is True:
+                        nextData = funcoesUteis.analyzeIfFieldIsValidMatrix(dataFile, key+1, positionOriginal=True)
+                        valuesOfLine = self.treatDataLayout(nextData, fields, posionsOfHeader, readOnlyRowIsNotMain=True)
+                        self.updateFieldsNotMain(valuesOfLine, fields)
+
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
-                    # print(valuesOfLine)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
                     
