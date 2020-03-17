@@ -101,6 +101,9 @@ class CompareProductsBetweenAccountSystemAndXML(object):
                 continue
             
             keyNF = product['chave_nfe']
+            # ignora notas que não são NF-e
+            if keyNF == "" or keyNF is None:
+                continue
 
             emissao = product['emissao']
             emissao = funcoesUteis.retornaCampoComoData(emissao, 2)
