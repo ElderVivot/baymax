@@ -21,17 +21,17 @@ from operator import itemgetter
 wayDefault = readJson(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
 wayToSaveFile = wayDefault['wayDefaultToSaveFiles']
 
-class MeshNote(object):
+class CompareProductsBetweenAccountSystemAndXML(object):
     def __init__(self, wayToReadXMLs, filterDate="01/01/2019"):
         self._wayToReadXMLs = wayToReadXMLs
-        self._wayToRead = os.path.join(wayToSaveFile, 'entradas_produtos')
+        self._wayToRead = [os.path.join(wayToSaveFile, 'entradas_produtos'), os.path.join(wayToSaveFile, 'saidas_produtos')]
         self._filterDate = funcoesUteis.retornaCampoComoData(filterDate)
         self._companies = readJson(os.path.join(wayToSaveFile, 'empresas.json'))
 
         self._hourProcessing = datetime.datetime.now()
         self._client = MongoClient() # conecta num cliente do MongoDB rodando na sua máquina
         self._db = self._client.baymax
-        self._collection = self._db[f'MeshNote']        
+        self._collection = self._db[f'ProductComparationBetweenAccountSystemAndXML']        
 
     def returnDataEmp(self, codi_emp):
         for companie in self._companies:
@@ -77,43 +77,9 @@ class MeshNote(object):
 
         return productXML
 
-    def saveResultProcessEntryNote(self, dataProcess):
-        codi_emp = dataProcess['codiEmpReceiver']
-        if codi_emp is None:
-            return None
-
-        existsProcessNF = self._collection.find_one( { "$and": [ {"codiEmp": codi_emp}, {"hourProcessing": self._hourProcessing }, {"typeNF": "ENT" }, {"keyNF": dataProcess['keyNF'] } ] } )
-        if existsProcessNF is None:
-            self._collection.insert_one(
-                {
-                    "codiEmp": codi_emp,
-                    "keyNF": dataProcess['keyNF'],
-                    "hourProcessing": self._hourProcessing,
-                    "typeNF": "ENT",
-                    "nfXml": dataProcess['nfXml'],
-                    "nfDominio": dataProcess['nfEntryNoteDominio'],
-                    "wayXml": dataProcess['wayXml']
-                }
-            )
-
-    def saveResultProcessOutputNote(self, dataProcess):
-        codi_emp = dataProcess['codiEmpIssuer']
-        if codi_emp is None:
-            return None
-
-        existsProcessNF = self._collection.find_one( { "$and": [ {"codiEmp": codi_emp}, {"hourProcessing": self._hourProcessing }, {"typeNF": "SAI" }, {"keyNF": dataProcess['keyNF'] } ] } )
-        if existsProcessNF is None:
-            self._collection.insert_one(
-                {
-                    "codiEmp": codi_emp,
-                    "keyNF": dataProcess['keyNF'],
-                    "hourProcessing": self._hourProcessing,
-                    "typeNF": "SAI",
-                    "nfXml": dataProcess['nfXml'],
-                    "nfDominio": dataProcess['nfOutputNoteDominio'],
-                    "wayXml": dataProcess['wayXml']
-                }
-            )
+    def saveResultProcess(self, dataProcess):
+        filterProcess = { "$and": [ {"codiEmp": dataProcess['codiEmp']}, {"typeNF": dataProcess['typeNF'] }, {"keyNF": dataProcess['keyNF'] } ] }
+        self._collection.replace_one(filterProcess, dataProcess, upsert=True)
 
     def process(self, jsonNF):
         nf = ''
@@ -127,8 +93,6 @@ class MeshNote(object):
 
         for key, product in enumerate(products):
             codi_emp = product['codi_emp']
-
-            cgce_emp = self.returnDataEmp(codi_emp)
             
             keyNF = product['chave_nfe']
 
@@ -163,25 +127,39 @@ class MeshNote(object):
                     productsXML = productsWhenExistOneProductXML
 
             productXML = self.returnProductComparation(product, productsXML)
+            if productXML is not None:
+                valueComparationBetweenAccountSystemAndXML = productXML['valueComparationBetweenAccountSystemAndXML']
+                
+                # deleta o campo pois pra remover o productXML do arrays de products as informações tem que ser idênticas
+                del productXML['valueComparationBetweenAccountSystemAndXML']
+                
+                # remove o produto pra ele não processar 2 vezes dizendo como seria de outro produto
+                productsXML.remove(productXML)
+            else:
+                valueComparationBetweenAccountSystemAndXML = 0
 
-            # nameProductAccountSystem = funcoesUteis.treatTextField(product['desc_pdi'])
-            # nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])
-            # valueComparation = productXML['valueComparationBetweenAccountSystemAndXML']
+            if valueComparationBetweenAccountSystemAndXML <= 0.3:
+                dataProcess = {
+                    "codiEmp": codi_emp,
+                    "keyNF": keyNF,
+                    "typeNF": typeNF[:3].upper(),
+                    "productDominio": product,
+                    "productXML": productXML,
+                    "valueComparationBetweenAccountSystemAndXML": valueComparationBetweenAccountSystemAndXML
+                }
 
-            # print(keyNF, '---', nameProductAccountSystem, '---', nameProductXML, '---', valueComparation)
-
-        # self.saveResultProcessEntryNote(dataProcessNF)
-        # self.saveResultProcessOutputNote(dataProcessNF)
+                self.saveResultProcess(dataProcess)
     
     def processAll(self):
-        for root, dirs, files in os.walk(self._wayToRead):
-            countFiles = len(files)
-            for key, file in enumerate(files):
-                wayFile = os.path.join(root, file)
-                if file.lower().endswith(('.json')):
-                    print(f'- Processando JSON {wayFile} / {key+1} de {countFiles}')
-                    self.process(wayFile)
+        for wayToRead in self._wayToRead:
+            for root, dirs, files in os.walk(wayToRead):
+                countFiles = len(files)
+                for key, file in enumerate(files):
+                    wayFile = os.path.join(root, file)
+                    if file.lower().endswith(('.json')):
+                        print(f'- Processando JSON {wayFile} / {key+1} de {countFiles}')
+                        self.process(wayFile)
 
 if __name__ == "__main__":
-    meshNote = MeshNote("C:/_temp/notas-fiscais-2/")
-    meshNote.processAll()
+    compareProductsBetweenAccountSystemAndXML = CompareProductsBetweenAccountSystemAndXML("C:/_temp/notas-fiscais-2/")
+    compareProductsBetweenAccountSystemAndXML.processAll()

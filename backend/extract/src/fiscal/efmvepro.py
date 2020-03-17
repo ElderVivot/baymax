@@ -35,7 +35,7 @@ class extractEfmvepro():
         self._currentMonth = self._today.month
         self._currentYear = self._today.year
 
-    def exportData(self, filterCompanie=2, filterMonthStart=1, filterYearStart=2019, filterMonthEnd=0, filterYearEnd=0):
+    def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2019, filterMonthEnd=0, filterYearEnd=0):
         filterMonthEnd = self._currentMonth if filterMonthEnd == 0 else filterMonthEnd
         filterYearEnd = self._currentYear if filterYearEnd == 0 else filterYearEnd
 
