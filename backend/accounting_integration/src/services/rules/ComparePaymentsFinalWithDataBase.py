@@ -156,7 +156,7 @@ class ComparePaymentsFinalWithDataBase(object):
                 return provider
 
     def returnDataEntryNote(self, note=0, cgceProvider=None, ddoc_ent = None, dent_ent = None, amountPayment = 0.0, nameProvider=None, dueDate=None, amountOriginal=0.0):
-        if note == "":
+        if note == "" or note is None:
             note = 0
         if cgceProvider == "":
             cgceProvider = None
@@ -259,7 +259,7 @@ class ComparePaymentsFinalWithDataBase(object):
         if dueDate is None:
             return None # se a data de vencimento for nula já nem processa o resto
 
-        if note == "":
+        if note == "" or note is None:
             note = 0
         if cgceProvider == "":
             cgceProvider = None

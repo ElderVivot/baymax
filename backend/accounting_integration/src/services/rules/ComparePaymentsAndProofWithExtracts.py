@@ -25,7 +25,7 @@ class ComparePaymentsAndProofWithExtracts(object):
         self._extractsToSearch = self._extracts.copy() # este daqui é que vai ser utilizado pra procurar se o pagamento existe correspondente no extrato, conforme for encontrando vai excluindo pra não procurar novamente num que já tinha retornado
         self._extractsFinal = []
         self._numberOfDaysInterval = 3
-        self._financyIsReliable = funcoesUteis.returnDataFieldInDict(self._settings, ['financy', 'isReliable'])
+        self._financyIsReliable = funcoesUteis.returnDataFieldInDict(self._settings, ['financy', 'isReliable'], True)
 
     def returnDayFoundInPayment(self, payment, paymentDate, amountPaid):
         paymentDate = paymentDate
@@ -225,7 +225,7 @@ class ComparePaymentsAndProofWithExtracts(object):
             if self._financyIsReliable is True:
                 dateOfImport = paymentFinal["paymentDate"]
             else:
-                if len(extract) > 0 and ( bank == paymentFinal["bankExtract"] or bank == "" ):
+                if paymentFinal["dateExtract"] is not None and paymentFinal["dateExtract"] != "":
                     dateOfImport = paymentFinal["dateExtract"]
                 else:
                     dateOfImport = paymentFinal["paymentDate"]

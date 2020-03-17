@@ -168,6 +168,29 @@ class ReadGeneral(object):
                 
                 if valueField != "" and valueField is not None:
                     validField = True
+            elif nameField.lower() == 'document':
+                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn)
+                hasHyphen = valueField.find('-')
+                hasBackslash = valueField.find('/')
+
+                if hasHyphen >= 0 and hasBackslash == -1:
+                    valueField = valueField.split('-')[0]
+                elif hasHyphen == -1 and hasBackslash >= 0:
+                    valueField = valueField.split('/')[0]
+                else:
+                    if hasHyphen < hasBackslash:
+                        valueField = valueField.split('-')[0]
+                    else:
+                        valueField = valueField.split('/')[0]
+
+                valueField = funcoesUteis.minimalizeSpaces(valueField)
+                valueField = "" if numberField == -1 and nameColumn is None else valueField
+
+                if valueField == "":
+                    valueField = None
+                
+                if valueField != "" or valueField is not None:
+                    validField = True
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
 

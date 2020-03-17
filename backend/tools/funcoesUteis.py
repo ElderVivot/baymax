@@ -69,7 +69,7 @@ def analyzeIfFieldIsValid(data, name, returnDefault="", otherComparationName="")
     except Exception:
         return returnDefault
 
-def returnDataFieldInDict(data, valuesList):
+def returnDataFieldInDict(data, valuesList, valueDefault=''):
     lenList = len(valuesList)
 
     try:
@@ -88,7 +88,7 @@ def returnDataFieldInDict(data, valuesList):
         else:
             return ""
     except Exception:
-        return ""
+        return valueDefault
 
 
 def analyzeIfFieldIsValidMatrix(data, position, returnDefault="", positionOriginal=False):
