@@ -38,16 +38,16 @@ class CompareProductsBetweenAccountSystemAndXML(object):
             if companie["codi_emp"] == codi_emp and companie["stat_emp"] == "A" and companie["dina_emp"] is None:
                 return companie["cgce_emp"]
 
-    def foundProductInNote(self, productsXML, nameProductAccountSystem, qtdAccountSystem, vunitAccountSystem, vtotAccountSystem):
+    def foundProductInNote(self, productsXML, nameProductAccountSystem, qtdAccountSystem, vunitAccountSystem):
         productsEquals = []
 
         for productXML in productsXML:
             nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])
             qtdProductXML = round(funcoesUteis.treatDecimalField(productXML['prod']['qCom']),2)
             vunitProductXML = round(funcoesUteis.treatDecimalField(productXML['prod']['vUnCom']),2)
-            vtotProductXML = round(funcoesUteis.treatDecimalField(productXML['prod']['vProd']),2)
+            # vtotProductXML = round(funcoesUteis.treatDecimalField(productXML['prod']['vProd']),2)
 
-            if qtdProductXML == qtdAccountSystem and vunitProductXML == vunitAccountSystem and vtotProductXML == vtotAccountSystem:
+            if qtdProductXML == qtdAccountSystem and vunitProductXML == vunitAccountSystem:
                 productXML['valueComparationBetweenAccountSystemAndXML'] = SequenceMatcher(None, nameProductAccountSystem, nameProductXML).ratio()
                 if productXML['valueComparationBetweenAccountSystemAndXML'] > 0.85:
                     return productXML
@@ -73,7 +73,7 @@ class CompareProductsBetweenAccountSystemAndXML(object):
             nameProductXML = funcoesUteis.treatTextField(productXML['prod']['xProd'])
             productXML['valueComparationBetweenAccountSystemAndXML'] = SequenceMatcher(None, nameProductAccountSystem, nameProductXML).ratio()
         else:
-            productXML = self.foundProductInNote(productsXML, nameProductAccountSystem, qtdAccountSystem, vunitAccountSystem, vtotAccountSystem)
+            productXML = self.foundProductInNote(productsXML, nameProductAccountSystem, qtdAccountSystem, vunitAccountSystem)
 
         return productXML
 
