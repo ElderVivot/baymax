@@ -21,7 +21,7 @@ from operator import itemgetter
 wayDefault = readJson(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
 wayToSaveFile = wayDefault['wayDefaultToSaveFiles']
 
-class CompareProductsBetweenAccountSystemAndXML(object):
+class ProductsAccountSystemXXML(object):
     def __init__(self, filterDate="01/01/2019"):
         self._wayToReadXMLs = input('- Informe a pasta onde estão os XMLs que servirão como base na comparação: ')
         self._wayToRead = [os.path.join(wayToSaveFile, 'entradas_produtos'), os.path.join(wayToSaveFile, 'saidas_produtos')]
@@ -172,5 +172,5 @@ class CompareProductsBetweenAccountSystemAndXML(object):
                         self.process(wayFile)
 
 if __name__ == "__main__":
-    compareProductsBetweenAccountSystemAndXML = CompareProductsBetweenAccountSystemAndXML()
-    compareProductsBetweenAccountSystemAndXML.processAll()
+    productsAccountSystemXXML = ProductsAccountSystemXXML()
+    productsAccountSystemXXML.processAll()
