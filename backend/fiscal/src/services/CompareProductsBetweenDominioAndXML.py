@@ -85,6 +85,7 @@ class CompareProductsBetweenAccountSystemAndXML(object):
         nf = ''
         productsXML = []
         typeNF = ''
+        noteHasProducts = False
 
         products = readJson(jsonNF)
 
@@ -117,6 +118,8 @@ class CompareProductsBetweenAccountSystemAndXML(object):
                 nf = callReadXmls.process()
                 
                 productsXML = funcoesUteis.analyzeIfFieldIsValid(nf, 'produtos')
+
+                noteHasProducts = False if len(productsXML) == 0 else True
                 
                 # quando existe apenas um produto no XML ele não cria um array de produtos, e sim apenas um objeto. Todavia, pra função de
                 # comparação funcionar preciso que seja um array. As linhas abaixo fazem esta análise e cria o array quando necessário
@@ -138,7 +141,7 @@ class CompareProductsBetweenAccountSystemAndXML(object):
             else:
                 valueComparationBetweenAccountSystemAndXML = 0
 
-            if valueComparationBetweenAccountSystemAndXML <= 0.3:
+            if valueComparationBetweenAccountSystemAndXML <= 0.3 and noteHasProducts is True:
                 dataProcess = {
                     "codiEmp": codi_emp,
                     "keyNF": keyNF,
