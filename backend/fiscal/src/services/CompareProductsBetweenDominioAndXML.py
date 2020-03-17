@@ -22,8 +22,8 @@ wayDefault = readJson(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.
 wayToSaveFile = wayDefault['wayDefaultToSaveFiles']
 
 class CompareProductsBetweenAccountSystemAndXML(object):
-    def __init__(self, wayToReadXMLs, filterDate="01/01/2019"):
-        self._wayToReadXMLs = wayToReadXMLs
+    def __init__(self, filterDate="01/01/2019"):
+        self._wayToReadXMLs = input('- Informe a pasta onde estão os XMLs que servirão como base na comparação: ')
         self._wayToRead = [os.path.join(wayToSaveFile, 'entradas_produtos'), os.path.join(wayToSaveFile, 'saidas_produtos')]
         self._filterDate = funcoesUteis.retornaCampoComoData(filterDate)
         self._companies = readJson(os.path.join(wayToSaveFile, 'empresas.json'))
@@ -169,5 +169,5 @@ class CompareProductsBetweenAccountSystemAndXML(object):
                         self.process(wayFile)
 
 if __name__ == "__main__":
-    compareProductsBetweenAccountSystemAndXML = CompareProductsBetweenAccountSystemAndXML("C:/_temp/notas-fiscais-2/")
+    compareProductsBetweenAccountSystemAndXML = CompareProductsBetweenAccountSystemAndXML()
     compareProductsBetweenAccountSystemAndXML.processAll()
