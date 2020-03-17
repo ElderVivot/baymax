@@ -94,6 +94,11 @@ class CompareProductsBetweenAccountSystemAndXML(object):
 
         for key, product in enumerate(products):
             codi_emp = product['codi_emp']
+
+            cgce_emp = self.returnDataEmp(codi_emp)
+            # ignora empresas inativas
+            if cgce_emp is None:
+                continue
             
             keyNF = product['chave_nfe']
 
