@@ -197,6 +197,8 @@ class ComparePaymentsAndProofWithExtracts(object):
         self.compareProofWithPayments()
         self.comparePaymentsWithProof()
 
+        extract = []
+
         for key, paymentFinal in enumerate(self._paymentsFinal):
 
             operation = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "operation", "-")
@@ -205,8 +207,14 @@ class ComparePaymentsAndProofWithExtracts(object):
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "amountPaid", 0.0)
             amountPaidPerLote = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "amountPaidPerLote", 0.0)
             amountPaid = amountPaidPerLote if amountPaidPerLote > 0 else amountPaid
+            numberLote = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "numberLote")
             
-            extract = self.returnDataExtract(paymentFinal["paymentDate"], amountPaid, operation, bank, account)
+            # estas 4 linhas de baixo (principalmente o if) serão utilizadas afim de que quando for o mesmo lote ele retorne a conta do banco pra segunda linha do lote também
+            # caso contrário ele retorna só no primeiro, pois depois o valor do extratc é retirado
+            previousPaymentFinal = self._paymentsFinal[key-1]
+            previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousPaymentFinal, "numberLote")
+            if previousNumberLote != numberLote or len(self._paymentsFinal) == 1:
+                extract = self.returnDataExtract(paymentFinal["paymentDate"], amountPaid, operation, bank, account)
 
             paymentFinal["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
             paymentFinal["bankExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'bank')}"
