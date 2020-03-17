@@ -103,7 +103,7 @@ class CompareProductsBetweenAccountSystemAndXML(object):
             year = emissao.year
 
             previousProduct = funcoesUteis.analyzeIfFieldIsValidMatrix(products, key-1)
-            previousKeyNF = previousProduct['chave_nfe']
+            previousKeyNF = funcoesUteis.analyzeIfFieldIsValid(previousProduct, 'chave_nfe')
             
             # busca os dados das notas de entradas
             if jsonNF.find('entradas_produtos') >= 0:
