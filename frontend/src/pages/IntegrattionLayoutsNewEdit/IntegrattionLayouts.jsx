@@ -49,6 +49,14 @@ const layoutTypes = [
     { value: 'extract', label: 'Extrato Bancário'}
 ]
 
+// function getOffset(element){
+//     const rect = element.getBoundingClientRect();
+//     return {
+//         left: rect.left + window.scrollX,
+//         top: rect.top + window.scrollY
+//     };
+// }
+
 export default function IntegrattionLayouts(){
 
     return (
@@ -80,7 +88,6 @@ export default function IntegrattionLayouts(){
                 >
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
                         <form onSubmit={handleSubmit} className="container-fluid">
-                            <pre>{JSON.stringify(values, null, 2)}</pre>
                             <div className="form-group row mb-0">
                                 <label htmlFor="system" className="col-form-label">Sistema:</label>
                                 <div className="col">
@@ -98,6 +105,7 @@ export default function IntegrattionLayouts(){
                             <div className="form-group row mb-0">
                                 <Error touched={touched.system} message={errors.system}/>
                             </div>
+                            {console.log(document.getElementById('system'))}
 
                             <div className="form-group row mt-3 mb-0">
                                 <label htmlFor="fileType" className="col-form-label">Tipo Arquivo:</label>
