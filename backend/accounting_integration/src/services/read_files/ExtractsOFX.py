@@ -37,52 +37,52 @@ class ExtractsOFX(object):
             with codecs.open(file) as fileobj:
                 ofx = OfxParser.parse(fileobj)
 
-            accountData = ofx.account
+            # accountData = ofx.account
 
-            bankId = int(accountData.routing_number)
-            bankId = self.returnNameBank(bankId)
+            # bankId = int(accountData.routing_number)
+            # bankId = self.returnNameBank(bankId)
 
-            account = accountData.account_id
-            account = str(account).replace('-', '')
+            # account = accountData.account_id
+            # account = str(account).replace('-', '')
 
-            transactions = accountData.statement.transactions
-            for transaction in transactions:
-                typeTransaction = funcoesUteis.treatTextField(transaction.type)
+            # transactions = accountData.statement.transactions
+            # for transaction in transactions:
+            #     typeTransaction = funcoesUteis.treatTextField(transaction.type)
                 
-                dateTransaction = transaction.date
-                dateTransaction = datetime.datetime.date(dateTransaction)
+            #     dateTransaction = transaction.date
+            #     dateTransaction = datetime.datetime.date(dateTransaction)
                 
-                amount = funcoesUteis.treatDecimalField(transaction.amount)
-                if amount < 0:
-                    operation = '-'
-                    amount *= -1
-                else:
-                    operation = '+'
+            #     amount = funcoesUteis.treatDecimalField(transaction.amount)
+            #     if amount < 0:
+            #         operation = '-'
+            #         amount *= -1
+            #     else:
+            #         operation = '+'
 
-                if operation == "+":
-                    historicCode = 24
-                else:
-                    historicCode = 78
+            #     if operation == "+":
+            #         historicCode = 24
+            #     else:
+            #         historicCode = 78
                 
-                document = funcoesUteis.treatTextField(transaction.checknum)
+            #     document = funcoesUteis.treatTextField(transaction.checknum)
 
-                historic = funcoesUteis.treatTextField(transaction.memo)
+            #     historic = funcoesUteis.treatTextField(transaction.memo)
 
-                valuesOfLine = {
-                    "bank": bankId,
-                    "account": account,
-                    "typeTransaction": typeTransaction,
-                    "dateTransaction": dateTransaction,
-                    "amount": amount,
-                    "operation": operation,
-                    "document": document,
-                    "historicCode": historicCode,
-                    "historic": historic
-                }
+            #     valuesOfLine = {
+            #         "bank": bankId,
+            #         "account": account,
+            #         "typeTransaction": typeTransaction,
+            #         "dateTransaction": dateTransaction,
+            #         "amount": amount,
+            #         "operation": operation,
+            #         "document": document,
+            #         "historicCode": historicCode,
+            #         "historic": historic
+            #     }
 
-                valuesOfFile.append(valuesOfLine.copy())
+            #     valuesOfFile.append(valuesOfLine.copy())
         except Exception as e:
-            print(e)
+            print(e.with_traceback())
         
         return valuesOfFile
 
@@ -96,5 +96,5 @@ class ExtractsOFX(object):
         return funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
 
 if __name__ == "__main__":
-    extractOFX = ExtractsOFX("C:/integracao_contabil/890/arquivos_originais")
-    extractOFX.processAll()
+    extractOFX = ExtractsOFX("C:/integracao_contabil/1752/arquivos_originais")
+    print(extractOFX.processAll())
