@@ -59,10 +59,14 @@ class GenerateExcelProductsAccountSystemXXML(object):
         sheet.write(0, 19, "Chave Nota", self._cell_format_header)
 
         productsAccountSystemXXML = self._collection.find()
+        
+        qtdProductsAccountSystemXXML = len(productsAccountSystemXXML)
 
         for key, productAccountSystemXXML in enumerate(productsAccountSystemXXML):
-            column = key+1
-
+            row = key+1
+            
+            print(f' - Processando {row} de {qtdProductsAccountSystemXXML}.')
+            
             codiEmp = funcoesUteis.analyzeIfFieldIsValid(productAccountSystemXXML, "codiEmp")
             codiNote = funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "codigo_nota"])
             numberNote = funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "numero"])
@@ -84,26 +88,26 @@ class GenerateExcelProductsAccountSystemXXML(object):
             valueComparationBetweenAccountSystemAndXML = funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["valueComparationBetweenAccountSystemAndXML"]))
             keyNF = funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "chave_nfe"])
 
-            sheet.write(column, 0, codiEmp)
-            sheet.write(column, 1, codiNote)
-            sheet.write(column, 2, numberNote)
-            sheet.write(column, 3, typeNF)
-            sheet.write(column, 4, cliFor)
-            sheet.write(column, 5, issueDate, self._cell_format_date)
-            sheet.write(column, 6, saidaEntradaDate, self._cell_format_date)
-            sheet.write(column, 7, codeProductAccountSystem)
-            sheet.write(column, 8, nameProductAccountSystem)
-            sheet.write(column, 9, cfopProductAccountSystem)
-            sheet.write(column, 10, qtdProductAccountSystem, self._cell_format_money)
-            sheet.write(column, 11, vunitProductAccountSystem, self._cell_format_money)
-            sheet.write(column, 12, vtotProductAccountSystem, self._cell_format_money)
-            sheet.write(column, 13, codeProductXML)
-            sheet.write(column, 14, nameProductXML)
-            sheet.write(column, 15, qtdProductXML, self._cell_format_money)
-            sheet.write(column, 16, vunitProductXML, self._cell_format_money)
-            sheet.write(column, 17, vtotProductXML, self._cell_format_money)
-            sheet.write(column, 18, valueComparationBetweenAccountSystemAndXML, self._cell_format_money)
-            sheet.write(column, 19, keyNF)
+            sheet.write(row, 0, codiEmp)
+            sheet.write(row, 1, codiNote)
+            sheet.write(row, 2, numberNote)
+            sheet.write(row, 3, typeNF)
+            sheet.write(row, 4, cliFor)
+            sheet.write(row, 5, issueDate, self._cell_format_date)
+            sheet.write(row, 6, saidaEntradaDate, self._cell_format_date)
+            sheet.write(row, 7, codeProductAccountSystem)
+            sheet.write(row, 8, nameProductAccountSystem)
+            sheet.write(row, 9, cfopProductAccountSystem)
+            sheet.write(row, 10, qtdProductAccountSystem, self._cell_format_money)
+            sheet.write(row, 11, vunitProductAccountSystem, self._cell_format_money)
+            sheet.write(row, 12, vtotProductAccountSystem, self._cell_format_money)
+            sheet.write(row, 13, codeProductXML)
+            sheet.write(row, 14, nameProductXML)
+            sheet.write(row, 15, qtdProductXML, self._cell_format_money)
+            sheet.write(row, 16, vunitProductXML, self._cell_format_money)
+            sheet.write(row, 17, vtotProductXML, self._cell_format_money)
+            sheet.write(row, 18, valueComparationBetweenAccountSystemAndXML, self._cell_format_money)
+            sheet.write(row, 19, keyNF)
 
     def closeFile(self):
         self._workbook.close()
