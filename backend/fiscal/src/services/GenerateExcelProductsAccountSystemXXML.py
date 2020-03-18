@@ -58,14 +58,12 @@ class GenerateExcelProductsAccountSystemXXML(object):
         sheet.write(0, 18, "Comparação", self._cell_format_header)
         sheet.write(0, 19, "Chave Nota", self._cell_format_header)
 
-        productsAccountSystemXXML = self._collection.find()
-        
-        qtdProductsAccountSystemXXML = len(productsAccountSystemXXML)
+        productsAccountSystemXXML = self._collection.find()        
 
         for key, productAccountSystemXXML in enumerate(productsAccountSystemXXML):
             row = key+1
             
-            print(f' - Processando {row} de {qtdProductsAccountSystemXXML}.')
+            print(f' - Processando {row}')
             
             codiEmp = funcoesUteis.analyzeIfFieldIsValid(productAccountSystemXXML, "codiEmp")
             codiNote = funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "codigo_nota"])
