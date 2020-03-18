@@ -34,8 +34,8 @@ class GenerateExcelProductsAccountSystemXXML(object):
         sheet = self._workbook.add_worksheet('Products')
         sheet.freeze_panes(1, 0)
 
-        sheet.set_column(9,11,options={'hidden':True}) # qtd, valor unitário e valor total domínio
-        sheet.set_column(14,16,options={'hidden':True}) # qtd, valor unitário e valor total xml
+        sheet.set_column(10,12,options={'hidden':True}) # qtd, valor unitário e valor total domínio
+        sheet.set_column(15,17,options={'hidden':True}) # qtd, valor unitário e valor total xml
 
         sheet.write(0, 0, "Código Empresa", self._cell_format_header)
         sheet.write(0, 1, "Código Nota", self._cell_format_header)
@@ -78,11 +78,11 @@ class GenerateExcelProductsAccountSystemXXML(object):
             qtdProductAccountSystem = funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "qtd"]))
             vunitProductAccountSystem = funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "vunit"]))
             vtotProductAccountSystem = funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "vtot"]))
-            codeProductXML = funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "prod", "cProd"]).strip()
-            nameProductXML = funcoesUteis.treatTextField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "prod", "xProd"]))
-            qtdProductXML= funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "prod", "qCom"]))
-            vunitProductXML = funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "prod", "vUnCom"]))
-            vtotProductXML = funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "prod", "vProd"]))
+            codeProductXML = funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productXML", "prod", "cProd"]).strip()
+            nameProductXML = funcoesUteis.treatTextField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productXML", "prod", "xProd"]))
+            qtdProductXML= funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productXML", "prod", "qCom"]))
+            vunitProductXML = funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productXML", "prod", "vUnCom"]))
+            vtotProductXML = funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productXML", "prod", "vProd"]))
             valueComparationBetweenAccountSystemAndXML = funcoesUteis.treatDecimalField(funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["valueComparationBetweenAccountSystemAndXML"]))
             keyNF = funcoesUteis.returnDataFieldInDict(productAccountSystemXXML, ["productDominio", "chave_nfe"])
 
@@ -114,3 +114,4 @@ class GenerateExcelProductsAccountSystemXXML(object):
 if __name__ == "__main__":
     generateExcelProductsAccountSystemXXML = GenerateExcelProductsAccountSystemXXML('C:/_temp')
     generateExcelProductsAccountSystemXXML.sheetProducts()
+    generateExcelProductsAccountSystemXXML.closeFile()
