@@ -6,12 +6,10 @@ import IntegrattionLayouts from './pages/IntegrattionLayoutsNewEdit/Integrattion
 
 export default function Routes() {
     return (
-        <BrowserRouter>
-            <Switch>
+        <Switch>
                 <Route exact path='/' component={Home} />
                 <Route path="/integrattion_layouts" component={IntegrattionLayouts} />
                 <Redirect from='*' to='/' />
             </Switch>
-        </BrowserRouter>
     )
 }

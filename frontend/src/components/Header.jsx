@@ -8,10 +8,10 @@ export default props =>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                    <Nav.Link href="#home" className="text-settings-header">Home</Nav.Link>
+                    <Nav.Link href="/" className="text-settings-header">Home</Nav.Link>
                     <NavDropdown title={ <span className="text-settings-header pl-3">Configurações</span> } id="basic-nav-dropdown">
                         <NavDropdown.Item href="/integrattion_layouts" className="text-settings-general">Layouts</NavDropdown.Item>
-                        <NavDropdown.Item href="#action/3.2" className="text-settings-general">Vincular Layout nas Empresas</NavDropdown.Item>
+                        <NavDropdown.Item href="/integrattion_layouts_x_companies" className="text-settings-general">Vincular Layout nas Empresas</NavDropdown.Item>
                     </NavDropdown>
                 </Nav>
             </Navbar.Collapse>
