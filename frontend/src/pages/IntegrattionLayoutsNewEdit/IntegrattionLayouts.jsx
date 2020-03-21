@@ -60,7 +60,7 @@ const layoutTypes = [
 export default function IntegrattionLayouts(){
 
     return (
-        <div className="card">
+        <main className="card content container-fluid">
             <div className="card-header">
                 <h5 className="mb-0">Configuração de Layout</h5>
             </div>
@@ -203,6 +203,6 @@ export default function IntegrattionLayouts(){
                     )}
                 </Formik>
             </div>
-        </div>
+        </main>
     )
 }

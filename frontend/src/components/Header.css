@@ -1,0 +1,11 @@
+.dropdown-toggle::after{
+    color: #fff !important;
+}
+
+.dropdown-item.active, .dropdown-item:focus{
+    background-color: #5f4981;
+}
+
+.dropdown-item:hover{
+    background-color: #c6b8da;
+}
