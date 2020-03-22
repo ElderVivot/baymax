@@ -62,3 +62,10 @@ footer.footer {
     font-size: 0.85rem !important;
     font-weight: 530;
 }
+
+.header-table{
+    font-size: 1rem !important;
+    font-weight: 600;
+    border-color: gray !important;
+    background-color: rgba(0,0,0,.075) !important;
+}

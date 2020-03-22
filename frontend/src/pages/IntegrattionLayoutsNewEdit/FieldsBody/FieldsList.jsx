@@ -17,7 +17,7 @@ const fieldsOptions = [
     { value: 'issueDate', label: 'Data de Emissão'},
     { value: 'historic', label: 'Histórico'},
     { value: 'category', label: 'Categoria'},
-    { value: 'accountPlan', label: 'Plano de Conta'},
+    { value: 'accountPlan', label: 'Plano de Contas'},
 ]
 
 function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initialValues } ){
@@ -106,13 +106,13 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initia
     
     return (
         <>
-            <tr className="d-flex">
+            <tr className="d-flex justify-content-center text-center">
                 <td className="col-4">{nameField}</td>
                 <td className="col-1">{fieldsFile[idx].positionInFile}</td>
                 <td className="col-1">{fieldsFile[idx].positionInFileEnd}</td>
                 <td className="col-3">{fieldsFile[idx].nameColumn}</td>
                 <td className="col-1">{fieldsFile[idx].formatDate}</td>
-                <td className="col-2 text-align-center">
+                <td className="col-2">
                     <Buttons />
                 </td>
             </tr>

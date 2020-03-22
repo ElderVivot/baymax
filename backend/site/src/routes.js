@@ -5,6 +5,7 @@ const IntegrattionLayoutController = require('./controllers/IntegrattionLayoutCo
 // routes cria as rotas
 const routes = express.Router()
 
+routes.get('/integrattion_layouts', IntegrattionLayoutController.index)
 routes.post('/integrattion_layouts', IntegrattionLayoutController.store)
 
 // exportando as rotas

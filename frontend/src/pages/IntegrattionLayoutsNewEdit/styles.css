@@ -1,9 +1,11 @@
-label {
-    font-weight: 600;
+:root{
+    --bg-dark: #1A2F3A;
+    --theme-ui-colors-bg: #5f4981; /* rgb(109, 55, 145);*/
 }
 
-input, button, label, select, span, .selected, td {
-    font-size: small !important;
+input, button, label, select, span, .selected, td, .filter-label > input {
+    font-size: 0.85rem !important;
+    font-weight: 530;
 }
 
 .modal-title {
@@ -15,11 +17,32 @@ input, button, label, select, span, .selected, td {
     max-width: none !important;
 }
 
-.fields-of-table {
-    font-size: 12px;
+/* .fields-of-table {
+    font-size: 0.75rem !important;
     font-weight: 600;
-}
+} */
 
 .has-error, .has-error > div {
     border-color:red !important;
+}
+
+th, td {
+    padding: 3px !important;
+    text-align: center;
+}
+
+th {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-color: rgb(180, 179, 179) !important;
+    background-color: rgba(0,0,0,.075) !important;
+}
+
+.filter-label {
+    margin-bottom: 2px;
+    margin-top: 2px;
+}
+
+button {
+    font-size: 10px !important;
 }

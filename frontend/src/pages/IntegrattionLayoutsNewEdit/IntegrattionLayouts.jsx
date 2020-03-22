@@ -60,7 +60,7 @@ const layoutTypes = [
 export default function IntegrattionLayouts(){
 
     return (
-        <main className="card content container-fluid">
+        <main className="content card container-fluid">
             <div className="card-header">
                 <h5 className="mb-0">Configuração de Layout</h5>
             </div>
@@ -169,7 +169,7 @@ export default function IntegrattionLayouts(){
                             <div className="form row">
                                 <table className="table ml-3 table-striped table-bordered table-hover">
                                     <thead>
-                                        <tr className="d-flex">
+                                        <tr className="d-flex justify-content-center text-center">
                                             <th className="col-4 fields-of-table">Campo</th>
                                             <th className="col-1 fields-of-table">Posição Inicial</th>
                                             <th className="col-1 fields-of-table">Posição Final</th>
