@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
@@ -25,7 +25,7 @@ let validationSchema = Yup.object().shape({
     }))
 })
 
-let initialValues={
+let initialValues = {
     system: "",
     fileType: "",
     layoutType: "",
@@ -57,7 +57,31 @@ const layoutTypes = [
 //     };
 // }
 
-export default function IntegrattionLayouts(){
+export default function IntegrattionLayouts({history}){
+    const [integrattionLayout, setIntegrattionLayout ] = useState([])
+
+    const url = window.location.href
+    const id = url.split('/')[4]
+
+    useEffect(() => {
+        async function loadIntegrattionLayout() {
+            try {
+                const response = await api.get(`/integrattion_layouts/${id}`)
+                
+                setIntegrattionLayout(response.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        loadIntegrattionLayout()
+
+    }, [id])
+    
+    if(integrattionLayout._id !== undefined){
+        initialValues = integrattionLayout
+        console.log(initialValues)
+    } 
 
     return (
         <main className="content card container-fluid">
@@ -67,6 +91,7 @@ export default function IntegrattionLayouts(){
 
             <div className="card-body">
                 <Formik
+                    enableReinitialize={true}
                     initialValues={initialValues}
                     validationSchema={validationSchema}
                     onSubmit={ async (values, { setSubmitting, resetForm }) => {
@@ -80,14 +105,17 @@ export default function IntegrattionLayouts(){
                             } else {
                                 resetForm()
                             }
+
                         } catch (error) {
                             console.log(error)
                         }
                         setSubmitting(false)
+
+                        history.push('/integrattion_layouts_list')
                     }}
                 >
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
-                        <form onSubmit={handleSubmit} className="container-fluid">
+                        <form onSubmit={handleSubmit} className="container-fluid">            
                             <div className="form-group row mb-0">
                                 <label htmlFor="system" className="col-form-label">Sistema:</label>
                                 <div className="col">
@@ -105,7 +133,7 @@ export default function IntegrattionLayouts(){
                             <div className="form-group row mb-0">
                                 <Error touched={touched.system} message={errors.system}/>
                             </div>
-                            {console.log(document.getElementById('system'))}
+                            {/* {console.log(document.getElementById('system'))} */}
 
                             <div className="form-group row mt-3 mb-0">
                                 <label htmlFor="fileType" className="col-form-label">Tipo Arquivo:</label>

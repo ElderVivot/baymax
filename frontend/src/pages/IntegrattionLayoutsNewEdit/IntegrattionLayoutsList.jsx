@@ -4,19 +4,25 @@ import api from '../../services/api'
 import BootstrapTable from 'react-bootstrap-table-next'
 import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
 
-const IntegrattionLayoutsList = () => {
+const IntegrattionLayoutsList = ( {history} ) => {
     const [integrattionLayouts, setIntegrattionLayouts ] = useState([])
+
+    const editIntegrattionLayout = (id) => {
+        history.push(`/integrattion_layouts/${id}`)
+    }
+
+    const addIntegrattionLayout = () => {
+        history.push('/integrattion_layouts')
+    }
 
     const systemFilter = textFilter({
         placeholder: 'Informe o nome sistema',
         style: { height: 25 }
     })
-
     const fileTypeFilter = textFilter({
         placeholder: 'Informe o tipo arquivo',
         style: { height: 25 }
     })
-
     const filterLenght = textFilter({
         placeholder: 'Informe a Quantidade',
         comparator: Comparator.EQ,
@@ -51,12 +57,10 @@ const IntegrattionLayoutsList = () => {
         formatter: (cellContent, row) => {
             return (
                 <div>
-                    <button className="btn btn-success btn-sm" type="button" 
-                        >
+                    <button className="btn btn-success btn-sm" type="button" onClick={addIntegrattionLayout}>
                         <i className="fa fa-plus"></i>
                     </button>
-                    <button className="btn btn-warning ml-2 btn-sm" type="button" 
-                        >
+                    <button className="btn btn-warning ml-2 btn-sm" type="button" onClick={() => editIntegrattionLayout(row.id)}>
                         <i className="fa fa-pencil-alt"></i>
                     </button>
                     <button className="btn btn-danger ml-2 btn-sm" type="button" 
