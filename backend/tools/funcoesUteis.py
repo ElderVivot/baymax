@@ -111,7 +111,7 @@ def treatTextField(value):
     except Exception:
         return ""
 
-def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader=''):
+def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', positionInFileEnd=-1):
     """
     :param data: Informar o array de dados que quer ler
     :param numberOfField: numero do campo na planilha (opcional)
@@ -119,17 +119,19 @@ def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
     :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
     :return: retorna um campo como texto, retirando acentos, espaços excessivos, etc
     """
+    positionInFile = numberOfField-1
+    positionInFileEnd = positionInFileEnd if positionInFileEnd > 0 else positionInFile+1
     if len(fieldsHeader) > 0:
         try:
             return treatTextField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
         except Exception:
             try:
-                return treatTextField(data[numberOfField-1])
+                return treatTextField(data[positionInFile:positionInFileEnd])
             except Exception:
                 return ""
     else:
         try:
-            return treatTextField(data[numberOfField-1])
+            return treatTextField(data[positionInFile:positionInFileEnd])
         except Exception:
             return ""
 
@@ -150,7 +152,7 @@ def treatNumberField(value, isInt=False):
     except Exception:
         return 0
 
-def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldHeader='', isInt=False):
+def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldHeader='', isInt=False, positionInFileEnd=-1):
     """
     :param data: Informar o array de dados que quer ler
     :param numberOfField: numero do campo na planilha (opcional)
@@ -158,17 +160,19 @@ def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldH
     :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
     :return: retorna um campo apenas como número
     """
+    positionInFile = numberOfField-1
+    positionInFileEnd = positionInFileEnd if positionInFileEnd > 0 else positionInFile+1
     if len(fieldsHeader) > 0:
         try:
             return treatNumberField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)], isInt)
         except Exception:
             try:
-                return treatNumberField(data[numberOfField-1], isInt)
+                return treatNumberField(data[positionInFile:positionInFileEnd], isInt)
             except Exception:
                 return 0
     else:
         try:
-            return treatNumberField(data[numberOfField-1], isInt)
+            return treatNumberField(data[positionInFile:positionInFileEnd], isInt)
         except Exception:
             return 0     
 
@@ -191,7 +195,7 @@ def treatDecimalField(value, numberOfDecimalPlaces=2):
     except Exception as e:
         return float(0)
 
-def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', row='main'):
+def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', row='main', positionInFileEnd=-1):
     """
     :param data: Informar o array de dados que quer ler
     :param numberOfField: numero do campo na planilha (opcional)
@@ -200,20 +204,22 @@ def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldH
     :param row: este serve pra caso não seja um pagamento que esteja na linha principal (que não tem cabeçalho, então pegar apenas pelo número do campo). O valor 'main' quer dizer que tá numa linha que pode ter cabeçalho
     :return: retorna um campo como decimal
     """
+    positionInFile = numberOfField-1
+    positionInFileEnd = positionInFileEnd if positionInFileEnd > 0 else positionInFile+1
     if len(fieldsHeader) > 0:
         try:
             if row == 'main':
                 return treatDecimalField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
             else:
-                return treatDecimalField(data[numberOfField-1])
+                return treatDecimalField(data[positionInFile:positionInFileEnd])
         except Exception:
             try:
-                return treatDecimalField(data[numberOfField-1])
+                return treatDecimalField(data[positionInFile:positionInFileEnd])
             except Exception:
                 return float(0)
     else:
         try:
-            return treatDecimalField(data[numberOfField-1])
+            return treatDecimalField(data[positionInFile:positionInFileEnd])
         except Exception:
             return float(0)
 
@@ -245,7 +251,7 @@ def retornaCampoComoData(valorCampo, formatoData=1):
     except ValueError:
         return None
 
-def treatDateFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', formatoData=1, row='main'):
+def treatDateFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', formatoData=1, row='main', positionInFileEnd=-1):
     """
     :param data: Informar o array de dados que quer ler
     :param numberOfField: numero do campo na planilha (opcional)
@@ -255,20 +261,22 @@ def treatDateFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
     :param row: este serve pra caso não seja um pagamento que esteja na linha principal (que não tem cabeçalho, então pegar apenas pelo número do campo). O valor 'main' quer dizer que tá numa linha que pode ter cabeçalho
     :return: retorna um campo como decimal
     """
+    positionInFile = numberOfField-1
+    positionInFileEnd = positionInFileEnd if positionInFileEnd > 0 else positionInFile+1
     if len(fieldsHeader) > 0:
         try:
             if row == 'main':
                 return retornaCampoComoData(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)], formatoData)
             else:
-                return retornaCampoComoData(data[numberOfField-1], formatoData)
+                return retornaCampoComoData(data[positionInFile:positionInFileEnd], formatoData)
         except Exception:
             try:
-                return retornaCampoComoData(data[numberOfField-1], formatoData)
+                return retornaCampoComoData(data[positionInFile:positionInFileEnd], formatoData)
             except Exception:
                 return None
     else:
         try:
-            return retornaCampoComoData(data[numberOfField-1], formatoData)
+            return retornaCampoComoData(data[positionInFile:positionInFileEnd], formatoData)
         except Exception:
             return None
 

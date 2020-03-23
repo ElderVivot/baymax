@@ -61,10 +61,11 @@ class ReadGeneral(object):
         countHeaderEquals = 0
 
         for dataIsNotLineMainValidation in dataIsNotLineMain:
-            numberField = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'numberField')
+            positionInFile = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'positionInFile', -1)
+            positionInFileEnd = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'positionInFileEnd', -1)
             typeValidation = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'typeValidation')
             valueValidation = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'valueValidation'))
-            valueFieldData = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(data, numberField-1))
+            valueFieldData = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionInFileEnd=positionInFileEnd)
             
             if typeValidation == "isDate":
                 valueFieldDate = funcoesUteis.retornaCampoComoData(valueFieldData) if len(valueFieldData) <= 10 else None # este campo é pra caso tenha algum valor que seja data + horário ele não cai na verificação do isDate
@@ -110,7 +111,8 @@ class ReadGeneral(object):
         for settingField in settingFields:
             nameField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField')
 
-            numberField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'numberField', -1)
+            positionInFile = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionInFile', -1)
+            positionInFileEnd = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionInFileEnd', -1)
 
             nameColumn = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameColumn'))
             nameColumn = None if nameColumn == "" else nameColumn
@@ -150,26 +152,26 @@ class ReadGeneral(object):
                 else:
                     formatDate = 1
                 
-                valueField = funcoesUteis.treatDateFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn, formatDate, rowIsMain)
-                valueField = None if numberField == -1 and nameColumn is None else valueField
+                valueField = funcoesUteis.treatDateFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, formatDate, rowIsMain, positionInFileEnd=positionInFileEnd)
+                valueField = None if positionInFile == -1 and nameColumn is None else valueField
 
                 if valueField is not None:
                     validField = True
             elif nameField.lower().find('amount') >= 0:
-                valueField = funcoesUteis.treatDecimalFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn)
-                valueField = 0 if numberField == -1 and nameColumn is None else valueField
+                valueField = funcoesUteis.treatDecimalFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
+                valueField = 0 if positionInFile == -1 and nameColumn is None else valueField
 
                 if valueField != 0:
                     validField = True
             elif nameField.lower().find('bank') >= 0:
-                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn).replace('-', ' ')
+                valueField = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd).replace('-', ' ')
                 valueField = funcoesUteis.minimalizeSpaces(valueField)
-                valueField = "" if numberField == -1 and nameColumn is None else valueField
+                valueField = "" if positionInFile == -1 and nameColumn is None else valueField
                 
                 if valueField != "" and valueField is not None:
                     validField = True
             elif nameField.lower() == 'document':
-                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn)
+                valueField = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
                 hasHyphen = valueField.find('-')
                 hasBackslash = valueField.find('/')
 
@@ -184,7 +186,7 @@ class ReadGeneral(object):
                         valueField = valueField.split('/')[0]
 
                 valueField = funcoesUteis.minimalizeSpaces(valueField)
-                valueField = "" if numberField == -1 and nameColumn is None else valueField
+                valueField = "" if positionInFile == -1 and nameColumn is None else valueField
 
                 if valueField == "":
                     valueField = None
@@ -194,8 +196,8 @@ class ReadGeneral(object):
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
 
-                valueField = funcoesUteis.treatTextFieldInVector(data, numberField, positionsOfHeaderCorrect, nameColumn)
-                valueField = "" if numberField == -1 and nameColumn is None else valueField
+                valueField = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
+                valueField = "" if positionInFile == -1 and nameColumn is None else valueField
 
                 if splitField != "":
                     valueField = valueField.split(splitField)
