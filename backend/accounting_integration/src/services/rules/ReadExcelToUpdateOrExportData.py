@@ -24,7 +24,7 @@ class ReadExcelToUpdateOrExportData(object):
         dataFile = leXls_Xlsx(self._file, 'Pagamentos')
 
         for data in dataFile:
-            if str(data[0]).upper().count('DOCUMENTO') > 0:
+            if str(data[0]).upper().count('LOTE') > 0:
                 self._posionsOfHeaderPayments.clear()
                 for keyField, nameField in enumerate(data):
                     nameField = funcoesUteis.treatTextField(nameField)

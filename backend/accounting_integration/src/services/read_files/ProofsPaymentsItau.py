@@ -139,7 +139,8 @@ class ProofsPaymentsItau(object):
                             "historic": historic,
                             "category": category,
                             "cgcePaying": cgcePaying,
-                            "foundProof": True
+                            "foundProof": True,
+                            "amountPaidPerLote": amountPaid
                         }
 
                         valuesOfFile.append(valuesOfLine.copy())
