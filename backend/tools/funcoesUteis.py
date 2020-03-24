@@ -355,7 +355,7 @@ def returnBankForName(nameBank):
         nameBank = 'BRASIL'
     elif nameBank.count('BRADESCO') > 0:
         nameBank = 'BRADESCO'
-    elif nameBank.count('CAIXA') > 0:
+    elif nameBank.count('CAIXA') > 0 or nameBank.count('CEF') > 0:
         nameBank = 'CEF'
     elif nameBank.count('SICOOB') > 0:
         nameBank = 'SICOOB'
@@ -371,6 +371,31 @@ def returnBankForName(nameBank):
         nameBank = 'DINHEIRO'
     else:
         nameBank = nameBank
+
+    return nameBank
+
+def returnBankForNumber(numberBank):
+    numberBankOriginal = numberBank
+    numberBank = treatNumberField(numberBank, True)
+    nameBank = ""
+    if numberBank == 1:
+        nameBank = 'BRASIL'
+    elif numberBank == 237:
+        nameBank = 'BRADESCO'
+    elif numberBank == 104:
+        nameBank = 'CEF'
+    elif numberBank == 756:
+        nameBank = 'SICOOB'
+    elif numberBank == 748:
+        nameBank = 'SICRED'
+    elif numberBank == 33:
+        nameBank = 'SANTANDER'
+    elif numberBank == 341:
+        nameBank = 'ITAU'
+    elif numberBank == 422:
+        nameBank = 'SAFRA'
+    else:
+        nameBank = numberBankOriginal
 
     return nameBank
 

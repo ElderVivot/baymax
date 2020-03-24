@@ -93,11 +93,11 @@ class ComparePaymentsAndProofWithExtracts(object):
             paymentDateComparison = paymentDate + timedelta(days=day)
             paymentDateComparisonLess = paymentDate + timedelta(days=-day)
             if typeComparation == 1:
-                if ( extractDate == paymentDateComparison or extractDate == paymentDateComparisonLess ) and extractAmount == amountPaid and extractOperation == operation and extractBank == bank and extractAccount.find(account) >= 0:
+                if ( extractDate == paymentDateComparison or extractDate == paymentDateComparisonLess ) and extractAmount == amountPaid and extractOperation == operation and extractBank.find(bank) >= 0 and extractAccount.find(account) >= 0:
                     search = True
                     break
             elif typeComparation == 2:
-                if ( extractDate == paymentDateComparison or extractDate == paymentDateComparisonLess ) and extractAmount == amountPaid and extractOperation == operation and extractBank == bank:
+                if ( extractDate == paymentDateComparison or extractDate == paymentDateComparisonLess ) and extractAmount == amountPaid and extractOperation == operation and extractBank.find(bank) >= 0:
                     search = True
                     break
             elif typeComparation == 3:
@@ -206,7 +206,6 @@ class ComparePaymentsAndProofWithExtracts(object):
             account = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "account")
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "amountPaid", 0.0)
             amountPaidPerLote = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "amountPaidPerLote", 0.0)
-            amountPaid = amountPaidPerLote if amountPaidPerLote > 0 else amountPaid
             numberLote = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "numberLote")
             
             # estas 4 linhas de baixo (principalmente o if) serão utilizadas afim de que quando for o mesmo lote ele retorne a conta do banco pra segunda linha do lote também
@@ -214,7 +213,14 @@ class ComparePaymentsAndProofWithExtracts(object):
             previousPaymentFinal = self._paymentsFinal[key-1]
             previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousPaymentFinal, "numberLote")
             if previousNumberLote != numberLote or len(self._paymentsFinal) == 1:
+                extract = self.returnDataExtract(paymentFinal["paymentDate"], amountPaidPerLote, operation, bank, account)
+
+            # se não conseguir retornar nada ele compara só o amountPaid, talvez no extrato o valor não esteja agrupado, e sim individual
+            if extract is None:
                 extract = self.returnDataExtract(paymentFinal["paymentDate"], amountPaid, operation, bank, account)
+                # se encontrar o valor individual então trocar o numberLote pra um número negativo pra não causar problemas depois na exportação
+                if extract is not None:
+                    paymentFinal["numberLote"] = (key+1) * -1
 
             paymentFinal["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
             paymentFinal["bankExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'bank')}"

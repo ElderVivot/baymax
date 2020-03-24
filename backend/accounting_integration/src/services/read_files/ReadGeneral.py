@@ -135,9 +135,14 @@ class ReadGeneral(object):
                 else:
                     rowIsMain = 'main'
             
-            # quando não é uma linha main ele apenas dá seguinte processando ela se de fato for uma linha not_main já passado pela validação do isRowCorrect,
-            # ou seja, só retorna o dado se de fato a validação do campo é válida
-            if dataIsNotLineMain != "" and isRowCorrect is not True:
+            # quando não é uma linha main ele apenas dá seguimento no processamento se de fato for uma linha not_main já passado pela validação do isRowCorrect,
+            # ou seja, só retorna o dado se realmente for uma linha not_main
+            if dataIsNotLineMain != "" and rowIsMain != "not_main":
+                continue
+
+            # quando o campo não deve estar em uma linha not_main então já ignora ele, ou seja, se a linha for not_main e o campo não precisa estar nela,
+            # passa pro próximo processamento
+            if dataIsNotLineMain == "" and rowIsMain == "not_main":
                 continue
             
             # caso não seja uma linha prinpial e o argumento readOnlyRowIsNotMain seja True então ignora pra parar o processamento
@@ -164,50 +169,35 @@ class ReadGeneral(object):
 
                 if valueField != 0:
                     validField = True
-            elif nameField.lower().find('bank') >= 0:
-                valueField = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd).replace('-', ' ')
-                valueField = funcoesUteis.minimalizeSpaces(valueField)
-                valueField = "" if positionInFile == -1 and nameColumn is None else valueField
-                
-                if valueField != "" and valueField is not None:
-                    validField = True
-            elif nameField.lower() == 'document':
-                valueField = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
-                hasHyphen = valueField.find('-')
-                hasBackslash = valueField.find('/')
-
-                if hasHyphen >= 0 and hasBackslash == -1:
-                    valueField = valueField.split('-')[0]
-                elif hasHyphen == -1 and hasBackslash >= 0:
-                    valueField = valueField.split('/')[0]
-                else:
-                    if hasHyphen < hasBackslash:
-                        valueField = valueField.split('-')[0]
-                    else:
-                        valueField = valueField.split('/')[0]
-
-                valueField = funcoesUteis.minimalizeSpaces(valueField)
-                valueField = "" if positionInFile == -1 and nameColumn is None else valueField
-
-                if valueField == "":
-                    valueField = None
-                
-                if valueField != "" or valueField is not None:
-                    validField = True
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
+                positionFieldInTheSplit = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionFieldInTheSplit')
+                positionFieldInTheSplitEnd = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionFieldInTheSplitEnd', 0) # o zero determina que não tem fim, é daquele campo pra frente
 
                 valueField = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
                 valueField = "" if positionInFile == -1 and nameColumn is None else valueField
 
                 if splitField != "":
                     valueField = valueField.split(splitField)
-                    if len(valueField) > 1:
-                        valueField = ''.join(valueField[1:])
+                    if len(valueField) >= positionFieldInTheSplit:
+                        if positionFieldInTheSplitEnd != 0:
+                            valueField = ''.join(valueField[positionFieldInTheSplit-1:positionFieldInTheSplitEnd])
+                        else:
+                            valueField = ''.join(valueField[positionFieldInTheSplit-1:])
                     else:
-                        valueField = ''.join(valueField[0:])
+                        valueField = ""
                     valueField = funcoesUteis.minimalizeSpaces(valueField)
                 
+                if nameField == "account":
+                    valueField = funcoesUteis.minimalizeSpaces(valueField.replace('-', ''))
+                    valueField = funcoesUteis.treatNumberField(valueField, True)
+                    valueField = "" if valueField == 0 else str(valueField)
+                
+                if nameField == "bank":
+                    valueField = funcoesUteis.minimalizeSpaces(valueField.replace('-', ''))
+                    valueField = funcoesUteis.returnBankForName(valueField)
+                    valueField = funcoesUteis.returnBankForNumber(valueField)
+
                 if valueField != "":
                     validField = True
             
@@ -435,7 +425,6 @@ class ReadGeneral(object):
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
-                    # print(valuesOfLine)
                     
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     

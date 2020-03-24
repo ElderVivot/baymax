@@ -134,9 +134,13 @@ class ComparePaymentsFinalWithDataBase(object):
 
         for provider in self._providers:
 
+            provider['cgce_for_original'] = provider['cgce_for']
+            provider['cgce_for'] = "" if provider['cgce_for'] is None else provider['cgce_for'][:12]
+
             if int(provider['codi_for']) == int(codi_for):
                 return provider
 
+            # pega só os 12 primeiros caracteres pois os dois últimos são apenas de validação do cnpj. Já se for CPF pega todos normal
             if provider['cgce_for'] == cgce and cgce is not None:
                 return provider
 
@@ -310,7 +314,8 @@ class ComparePaymentsFinalWithDataBase(object):
         countTotal = len(self._payments)
         for key, payment in enumerate(self._payments):
             document = funcoesUteis.analyzeIfFieldIsValid(payment, "document")
-            cgceProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "cgceProvider", None)
+            cgceProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "cgceProvider")
+            cgceProvider = None if cgceProvider == "" else cgceProvider[:12] # retorna só 12 pois os dois últimos do cnpj são apenas dígitos verificadores. Já se for CPF retorna tudo
             issueDate = funcoesUteis.analyzeIfFieldIsValid(payment, "issueDate", None)
             dueDate = funcoesUteis.analyzeIfFieldIsValid(payment, "dueDate", None)
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(payment, "amountPaid", 0.0)
@@ -333,13 +338,13 @@ class ComparePaymentsFinalWithDataBase(object):
             
             if provider is None:
                 provider = self.returnDataProvider(cgce=cgceProvider, name=nameProvider)
-            # print(provider)
 
             accountCode = funcoesUteis.analyzeIfFieldIsValid(provider, "codi_cta", 0)
             accountCode = 0 if accountCode is None else int(accountCode)
             payment["accountCode"] = accountCode
-            payment["cgceProvider"] = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for")
+            payment["cgceProvider"] = funcoesUteis.analyzeIfFieldIsValid(provider, "cgce_for_original")
             payment["codiEmp"] = self._codiEmp
+            payment["nameProvider"] = funcoesUteis.analyzeIfFieldIsValid(provider, "nome_for") if nameProvider is None else nameProvider
 
             if document == "":
                 payment["document"] = int(funcoesUteis.analyzeIfFieldIsValid(entryNote, "nume_ent", 0))

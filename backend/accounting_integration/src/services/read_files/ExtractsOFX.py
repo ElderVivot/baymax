@@ -88,7 +88,7 @@ class ExtractsOFX(object):
     def processAll(self):
         for root, dirs, files in os.walk(self._wayOriginal):
             for file in files:
-                if file.lower().endswith(('.ofx')):
+                if file.lower().endswith(('.ofx', '.ofc', '.txt')):
                     wayFile = os.path.join(root, file)
                     self._extracts.append(self.process(wayFile))
 
