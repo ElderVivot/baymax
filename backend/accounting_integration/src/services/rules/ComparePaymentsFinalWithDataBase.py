@@ -173,10 +173,7 @@ class ComparePaymentsFinalWithDataBase(object):
         if nameProvider == "":
             nameProvider = None
 
-        try:
-            note = int(note)
-        except Exception:
-            note = 0
+        note = funcoesUteis.treatNumberField(note, True)
 
         if note == 0 and ddoc_ent is None and dent_ent is None and cgceProvider is None and nameProvider is None:
             return None
@@ -290,7 +287,7 @@ class ComparePaymentsFinalWithDataBase(object):
             amountInstallmentEntryNote = float(funcoesUteis.analyzeIfFieldIsValid(installment, "vlor_entp", 0.0))
 
             # o int é pra poder tirar o .0 de quando é exportado os dados
-            note = int(note)
+            note = funcoesUteis.treatNumberField(note, True)
 
             if dueDateEntryNote == dueDate and noteEntryNote == note:
                 return installment
