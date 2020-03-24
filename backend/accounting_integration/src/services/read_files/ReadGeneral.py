@@ -99,7 +99,8 @@ class ReadGeneral(object):
             if nameField == "amountPaid":
                 self._sumInterestFineAndDiscount = funcoesUteis.analyzeIfFieldIsValid(settingField, 'sumInterestFineAndDiscount', False)
 
-            self._informationIsOnOneLineBelowTheMain = funcoesUteis.analyzeIfFieldIsValid(settingField, 'informationIsOnOneLineBelowTheMain', False)
+            if self._informationIsOnOneLineBelowTheMain is False:
+                self._informationIsOnOneLineBelowTheMain = funcoesUteis.analyzeIfFieldIsValid(settingField, 'informationIsOnOneLineBelowTheMain', False)
 
             self._fieldsThatMultiplePerLessOne[nameField] = funcoesUteis.analyzeIfFieldIsValid(settingField, 'multiplePerLessOne', False)
 
@@ -408,6 +409,8 @@ class ReadGeneral(object):
                 dataFile = leXls_Xlsx(file)
             elif setting['fileType'] == 'csv':
                 dataFile = readCsv(file)
+            elif setting['fileType'] == 'txt':
+                dataFile = leTxt(file)
             else:
                 dataFile = []
 
@@ -432,6 +435,7 @@ class ReadGeneral(object):
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
+                    # print(valuesOfLine)
                     
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
@@ -460,7 +464,7 @@ class ReadGeneral(object):
             for file in files:
                 wayFile = os.path.join(root, file)
 
-                if file.lower().endswith(('.xls', '.xlsx', '.csv')):
+                if file.lower().endswith(('.xls', '.xlsx', '.csv', '.html')):
                     process = self.process(wayFile)
                     self._payments.append(process[0])
                     self._extracts.append(process[1])
@@ -473,7 +477,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 425
+    codi_emp = 118
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
