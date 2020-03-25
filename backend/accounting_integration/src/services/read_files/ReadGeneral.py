@@ -21,9 +21,9 @@ class ReadGeneral(object):
         self._fieldsRowNotMain = {}
         self._groupingFields = {} # este obj irá gravar todos os campos que são agrupadores, linhas onde for partidas multiplas e será um lançamento só, e o que une elas é este campo
         self._validationsLineToPrint = [] # vai salvar os critérios pra ver se uma linha é válida pra gerar o lançamento ou não
-        self._sumInterestFineAndDiscount = False
-        self._informationIsOnOneLineBelowTheMain = False
-        self._fieldsThatMultiplePerLessOne = {}
+        self._sumInterestFineAndDiscount = False # alguns valores amountPaid não vem com o juros/multa somados, este é pra definir isto
+        self._informationIsOnOneLineBelowTheMain = False # são para informações que estão uma linha abaixo da main
+        self._fieldsThatMultiplePerLessOne = {} # alguns campos vem com valor negativo, tem que multiplicar por menos 1
 
     def identifiesTheHeader(self, data, settingLayout):
         # :data são os valores de cada "linha" dos arquivos processados
@@ -58,30 +58,41 @@ class ReadGeneral(object):
         if len(dataIsNotLineMain) == 0:
             return None
 
-        countHeaderEquals = 0
+        countValidationsOK = 0
+        countValidationsConfigured = 0
 
-        for dataIsNotLineMainValidation in dataIsNotLineMain:
+        for key, dataIsNotLineMainValidation in enumerate(dataIsNotLineMain):
             positionInFile = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'positionInFile', -1)
             positionInFileEnd = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'positionInFileEnd', -1)
             typeValidation = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'typeValidation')
             valueValidation = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'valueValidation'))
+            nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'nextValidationOrAnd', 'and')
             valueFieldData = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionInFileEnd=positionInFileEnd)
+
+            if nextValidationOrAnd == 'and' or key == len(dataIsNotLineMain)-1:
+                countValidationsConfigured += 1
             
             if typeValidation == "isDate":
                 valueFieldDate = funcoesUteis.retornaCampoComoData(valueFieldData) if len(valueFieldData) <= 10 else None # este campo é pra caso tenha algum valor que seja data + horário ele não cai na verificação do isDate
                 if valueFieldDate is not None:
-                    countHeaderEquals += 1
+                    countValidationsOK += 1
             elif typeValidation == "isEqual" and valueValidation == valueFieldData:
-                countHeaderEquals += 1
+                countValidationsOK += 1
             elif typeValidation == "contains" and valueFieldData.find(valueValidation) >= 0:
-                countHeaderEquals += 1
+                countValidationsOK += 1
+            elif typeValidation == "notContains" and valueFieldData.find(valueValidation) == -1:
+                countValidationsOK += 1
         
-        if countHeaderEquals == len(dataIsNotLineMain):
+        if countValidationsOK == countValidationsConfigured:
             return True
 
-    #  pra saber quais campos são de agrupamento ou de validação eu não preciso saber o valor daquela linha, então não preciso identifá-los pra toda linha
-    #  que é processada
-    def analyzeSettingFieldsThatAreNecessaryData(self, settingFields):
+    # avalia quais configurações são importantes pro processamento de outros campos, tais como _groupingFields, _validationsLineToPrint, etc
+    # além disso, ele reagrupa os fields pra trazer primeiro o que tem o atributo dataIsNotLineMain, pra depois trazer os  que não tem
+    # isto é necessário afim de que um campo numa linha not_main ele só seja preenchido se de fato ele tiver naquela linha
+    def analyzeSettingFields(self, settingFields):
+        fieldsHasDataIsNotLineMain = []
+        fieldsDontHasDataIsNotLineMain = []
+
         for settingField in settingFields:
             nameField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField')
 
@@ -104,6 +115,14 @@ class ReadGeneral(object):
 
             self._fieldsThatMultiplePerLessOne[nameField] = funcoesUteis.analyzeIfFieldIsValid(settingField, 'multiplePerLessOne', False)
 
+            dataIsNotLineMain = funcoesUteis.analyzeIfFieldIsValid(settingField, 'dataIsNotLineMain', '')
+            if dataIsNotLineMain != "":
+                fieldsHasDataIsNotLineMain.append(settingField)
+            else:
+                fieldsDontHasDataIsNotLineMain.append(settingField)
+        
+        return funcoesUteis.removeAnArrayFromWithinAnother([fieldsHasDataIsNotLineMain, fieldsDontHasDataIsNotLineMain])
+
     def treatDataLayout(self, data, settingFields, positionsOfHeader, readOnlyRowIsNotMain=False):
         # o readOnlyRowIsNotMain serve pra ler as linhas que estão uma abaixo da principal, pra poder agrupar com a linha anterior
         valuesOfLine = {}
@@ -119,12 +138,10 @@ class ReadGeneral(object):
             nameColumn = None if nameColumn == "" else nameColumn
 
             valueDefault = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'valueDefault'))
-
-            validField = False
-
+            
             # esta row é apenas pra identificar se a informação está na linha principal ou não, caso não esteja, vai guardar seu valor
             # na self._fieldsRowNotMain pra serem utilizados na linha principal depois         
-            dataIsNotLineMain = funcoesUteis.analyzeIfFieldIsValid(settingField, 'dataIsNotLineMain')
+            dataIsNotLineMain = funcoesUteis.analyzeIfFieldIsValid(settingField, 'dataIsNotLineMain', '')
             isRowCorrect = self.identifiesIfTheRowCorrect(dataIsNotLineMain, data)
             
             rowIsMain = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'row')
@@ -135,18 +152,16 @@ class ReadGeneral(object):
                 else:
                     rowIsMain = 'main'
             
-            # quando não é uma linha main ele apenas dá seguimento no processamento se de fato for uma linha not_main já passado pela validação do isRowCorrect,
-            # ou seja, só retorna o dado se realmente for uma linha not_main
-            if dataIsNotLineMain != "" and rowIsMain != "not_main":
+            # se não for a linha correta mas o campo seja referente a uma linha notMain então ignora, pois este campo não é válido nesta linha
+            if isRowCorrect is None and dataIsNotLineMain != "":
                 continue
 
-            # quando o campo não deve estar em uma linha not_main então já ignora ele, ou seja, se a linha for not_main e o campo não precisa estar nela,
-            # passa pro próximo processamento
-            if dataIsNotLineMain == "" and rowIsMain == "not_main":
+            # se a linha for "not_main" mas o isRowCorrect não retornar resultado, então quer dizer que aquele campo não é daquela linha not_main. Pode ser de outra.
+            if rowIsMain == "not_main" and isRowCorrect is None:
                 continue
             
-            # caso não seja uma linha prinpial e o argumento readOnlyRowIsNotMain seja True então ignora pra parar o processamento
-            if readOnlyRowIsNotMain is True and rowIsMain == 'main':
+            # se o isRowCorrect não for válido e estou exigindo que seja eita apenas uma linha not_main então ignora, visto que isRowCorrect é apenas pra linhas not_main
+            if readOnlyRowIsNotMain is True and isRowCorrect is None:
                 continue
 
             if nameField.lower().find('date') >= 0:
@@ -161,17 +176,13 @@ class ReadGeneral(object):
                 valueField = funcoesUteis.treatDateFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, formatDate, rowIsMain, positionInFileEnd=positionInFileEnd)
                 valueField = None if positionInFile == -1 and nameColumn is None else valueField
 
-                if valueField is not None:
-                    validField = True
             elif nameField.lower().find('amount') >= 0:
                 valueField = funcoesUteis.treatDecimalFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
                 valueField = 0 if positionInFile == -1 and nameColumn is None else valueField
 
-                if valueField != 0:
-                    validField = True
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
-                positionFieldInTheSplit = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionFieldInTheSplit')
+                positionFieldInTheSplit = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionFieldInTheSplit', 0)
                 positionFieldInTheSplitEnd = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionFieldInTheSplitEnd', 0) # o zero determina que não tem fim, é daquele campo pra frente
 
                 valueField = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
@@ -179,7 +190,7 @@ class ReadGeneral(object):
 
                 if splitField != "":
                     valueField = valueField.split(splitField)
-                    if len(valueField) >= positionFieldInTheSplit:
+                    if len(valueField) >= positionFieldInTheSplit and positionFieldInTheSplit != 0:
                         if positionFieldInTheSplitEnd != 0:
                             valueField = ''.join(valueField[positionFieldInTheSplit-1:positionFieldInTheSplitEnd])
                         else:
@@ -197,17 +208,9 @@ class ReadGeneral(object):
                     valueField = funcoesUteis.minimalizeSpaces(valueField.replace('-', ''))
                     valueField = funcoesUteis.returnBankForName(valueField)
                     valueField = funcoesUteis.returnBankForNumber(valueField)
-
-                if valueField != "":
-                    validField = True
             
-            if validField is False and valueDefault != "":
-                validField = True
-                valueField = valueDefault            
-            
-            if validField is True:                
-                valuesOfLine['row'] = rowIsMain
-                valuesOfLine[nameField] = valueField
+            valuesOfLine['row'] = rowIsMain
+            valuesOfLine[nameField] = valueField
         
         return valuesOfLine
 
@@ -228,21 +231,13 @@ class ReadGeneral(object):
                 # pega a posição do campo do vetor do fields da tabela IntegrattionLayouts
                 positionFieldInVector = self.getPositionFieldByNameField(settingFields, nameField)
                 if positionFieldInVector is not None:
-                    fieldIsAnotherRow = funcoesUteis.analyzeIfFieldIsValid(settingFields[positionFieldInVector], 'dataIsNotLineMain', None)
+                    dataIsNotLineMain = funcoesUteis.analyzeIfFieldIsValid(settingFields[positionFieldInVector], 'dataIsNotLineMain', None)
                 else:
-                    fieldIsAnotherRow = None
+                    dataIsNotLineMain = None
 
                 # faz validação dos campos pra ver se devem ser atualizados as informações ou não
-                if fieldIsAnotherRow is not None:
-                    if nameField.lower().find('date') >= 0:
-                        if valueField is not None:
-                            self._fieldsRowNotMain[nameField] = valueField
-                    elif nameField.lower().find('amount') >= 0:
-                        if valueField != 0:
-                            self._fieldsRowNotMain[nameField] = valueField
-                    else:
-                        if valueField != "":
-                            self._fieldsRowNotMain[nameField] = valueField
+                if dataIsNotLineMain is not None:
+                    self._fieldsRowNotMain[nameField] = valueField                    
 
     def groupsRowData(self, valuesOfLine):
         for nameField, valueField in self._fieldsRowNotMain.items():
@@ -405,8 +400,7 @@ class ReadGeneral(object):
                 dataFile = []
 
             fields = setting['fields']
-            # esta linha é útil pois vários campos preciso guardar as configurações dele pra verificações futuras
-            self.analyzeSettingFieldsThatAreNecessaryData(fields)
+            fields = self.analyzeSettingFields(fields)
 
             for key, data in enumerate(dataFile):
                 try:
@@ -424,7 +418,7 @@ class ReadGeneral(object):
 
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
-                    valuesOfLine = self.groupsRowData(valuesOfLine)
+                    valuesOfLine = self.groupsRowData(valuesOfLine)                    
                     
                     valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
                     
