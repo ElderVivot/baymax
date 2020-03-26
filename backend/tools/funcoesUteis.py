@@ -144,6 +144,16 @@ def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
         except Exception:
             return ""
 
+def treatTextFieldInDictionary(data, nameField):
+    """
+    :param data: Informar o dicionário de dados que quer ler
+    :param nameField: nome do campo a ser lido
+    """
+    try:
+        return treatTextField(data[nameField])
+    except Exception:
+        return ""            
+
 def treatNumberField(value, isInt=False):
     if type(value) == int:
         return value
@@ -181,7 +191,17 @@ def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldH
         try:
             return treatNumberField(analyzeIfFieldHasPositionInFileEnd(data, numberOfField, positionInFileEnd), isInt)
         except Exception:
-            return 0     
+            return 0 
+
+def treatNumberFieldInDictionary(data, nameField, isInt=False):
+    """
+    :param data: Informar o dicionário de dados que quer ler
+    :param nameField: nome do campo a ser lido
+    """
+    try:
+        return treatNumberField(data[nameField], isInt)
+    except Exception:
+        return 0
 
 def treatDecimalField(value, numberOfDecimalPlaces=2):
     if type(value) == float:

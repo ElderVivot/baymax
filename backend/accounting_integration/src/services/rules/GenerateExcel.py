@@ -138,7 +138,7 @@ class GenerateExcel(object):
         sheet.write(0, 26, "Conta Contabil Sistema Cliente", self._cell_format_header)
 
         # ordena os payments por data
-        payments = sorted(payments, key=itemgetter('bank', 'dateOfImport'))
+        payments = sorted(payments, key=itemgetter('bank', 'account', 'dateOfImport'))
 
         for key, payment in enumerate(payments):
             row = key+1

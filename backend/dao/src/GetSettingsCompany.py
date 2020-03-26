@@ -29,8 +29,12 @@ class GetSettingsCompany(object):
 
                 settings = collectionLayouts.find_one( { "_id": ObjectId(idLayout) } )
 
+                bankAndAccountCorrelation = funcoesUteis.analyzeIfFieldIsValid(layout, 'bankAndAccountCorrelation', None)
+                
                 if settings is not None:
+                    settings['bankAndAccountCorrelation'] = bankAndAccountCorrelation
                     settingsLayouts.append(settings)
+
         except Exception:
             pass
 

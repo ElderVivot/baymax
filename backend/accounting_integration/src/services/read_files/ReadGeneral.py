@@ -206,8 +206,8 @@ class ReadGeneral(object):
                 
                 if nameField == "bank":
                     valueField = funcoesUteis.minimalizeSpaces(valueField.replace('-', ''))
-                    valueField = funcoesUteis.returnBankForName(valueField)
-                    valueField = funcoesUteis.returnBankForNumber(valueField)
+                    # valueField = funcoesUteis.returnBankForName(valueField)
+                    # valueField = funcoesUteis.returnBankForNumber(valueField)
             
             valuesOfLine['row'] = rowIsMain
             valuesOfLine[nameField] = valueField
@@ -364,6 +364,36 @@ class ReadGeneral(object):
 
         return valuesOfFileWithAmountPaid
 
+    def correlationBankAndAccountBetweenSettingsAndClient(self, valuesOfLine, bankAndAccountCorrelation):
+        # :valuesOfLine é o banco que vem lá do financeiro do cliente já passado pelo treatDataLayout
+        # :bankAndAccountCorrelation recebe as configurações do de-para dos bancos
+
+        bankFinancy = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank')
+        accountFinancy = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'account')
+
+        if bankAndAccountCorrelation is not None:
+            for correlation in bankAndAccountCorrelation:
+                correlationBankFile = funcoesUteis.treatTextFieldInDictionary(correlation, 'bankFile').replace('-', '')
+                correlationAccountFile = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountFile', isInt=True)).replace('-', '')
+                correlationAccountFile = "" if correlationAccountFile == "0" else correlationAccountFile
+                
+                correlationBankNew = funcoesUteis.treatTextFieldInDictionary(correlation, 'bankNew').replace('-', '')
+                correlationAccountNew = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountNew', isInt=True)).replace('-', '')
+                correlationAccountNew = "" if correlationAccountNew == "0" else correlationAccountNew
+
+                if bankFinancy == correlationBankFile and accountFinancy == correlationAccountFile:
+                    valuesOfLine['bank'] = correlationBankNew
+                    valuesOfLine['account'] = correlationAccountNew
+                    break
+                else:
+                    valuesOfLine['bank'] = bankFinancy
+                    valuesOfLine['account'] = accountFinancy
+        else:
+            valuesOfLine['bank'] = funcoesUteis.returnBankForNumber(funcoesUteis.returnBankForName(bankFinancy))
+            valuesOfLine['account'] = accountFinancy
+        
+        return valuesOfLine
+
     def process(self, file):
         # a cada processamento de um novo arquivo limpa os dados que ficam armazenados
         self._fieldsRowNotMain.clear()
@@ -402,6 +432,8 @@ class ReadGeneral(object):
             fields = setting['fields']
             fields = self.analyzeSettingFields(fields)
 
+            bankAndAccountCorrelation = funcoesUteis.analyzeIfFieldIsValid(setting, 'bankAndAccountCorrelation')
+
             for key, data in enumerate(dataFile):
                 try:
                     posionsOfHeaderTemp = self.identifiesTheHeader(data, setting)                    
@@ -420,8 +452,7 @@ class ReadGeneral(object):
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)                    
                     
-                    valuesOfLine['bank'] = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank') # o banco é um campo obrigatório na ordenação do Excel. Portanto, se não existir ele vai dar erro. Por isto desta linha. 
-                    
+                    valuesOfLine = self.correlationBankAndAccountBetweenSettingsAndClient(valuesOfLine, bankAndAccountCorrelation)
                     # ele verifica se é necessário somar juros/multa e subtrair o desconto no valor pago
                     valuesOfLine['amountPaid'] = self.sumInterestFineAndDiscountInAmountPaid(valuesOfLine)
 
