@@ -394,6 +394,48 @@ class ReadGeneral(object):
         
         return valuesOfLine
 
+    def bankAndAccountInTheCorrelation(self, bank, account, bankAndAccountCorrelation):
+        # :valuesOfLine é o banco que vem lá do financeiro do cliente já passado pelo treatDataLayout
+        # :bankAndAccountCorrelation recebe as configurações do de-para dos bancos
+        if bankAndAccountCorrelation is None:
+            return True
+
+        for correlation in bankAndAccountCorrelation:
+            correlationBankNew = funcoesUteis.treatTextFieldInDictionary(correlation, 'bankNew').replace('-', '')
+            correlationAccountNew = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountNew', isInt=True)).replace('-', '')
+            correlationAccountNew = "" if correlationAccountNew == "0" else correlationAccountNew
+
+            if bank == correlationBankNew and account == correlationAccountNew:
+                return True
+
+    def isValidDataThisCompanie(self, valuesOfLine, validateIfDataIsThisCompanie, bankAndAccountCorrelation):
+        """
+        :param valuesOfLine: valores normais da linha onde a verificação será será feita
+        :parm validateIfDataIsThisCompanie: configurações do IntegrattionCompanies onde tem as verificações pra ver é uma linha válida ou não
+        """
+        if validateIfDataIsThisCompanie is None:
+            return valuesOfLine
+        
+        countValidationsOK = 0
+        countValidationsConfigured = 0
+
+        for key, validate in enumerate(validateIfDataIsThisCompanie):
+            typeValidation = funcoesUteis.analyzeIfFieldIsValid(validate, 'typeValidation')
+            nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(validateIfDataIsThisCompanie, 'nextValidationOrAnd', 'and')
+
+            if nextValidationOrAnd == 'and' or key == len(validateIfDataIsThisCompanie)-1:
+                countValidationsConfigured += 1
+
+            if typeValidation == "banksInTheCorrelation":
+                bank = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank')
+                account = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'account')
+                bankAndAccountInTheCorrelation = self.bankAndAccountInTheCorrelation(bank, account, bankAndAccountCorrelation)
+                if bankAndAccountInTheCorrelation is True:
+                    countValidationsOK += 1
+
+        if countValidationsOK == countValidationsConfigured:
+            return True
+    
     def process(self, file):
         # a cada processamento de um novo arquivo limpa os dados que ficam armazenados
         self._fieldsRowNotMain.clear()
@@ -433,6 +475,7 @@ class ReadGeneral(object):
             fields = self.analyzeSettingFields(fields)
 
             bankAndAccountCorrelation = funcoesUteis.analyzeIfFieldIsValid(setting, 'bankAndAccountCorrelation')
+            validateIfDataIsThisCompanie = funcoesUteis.analyzeIfFieldIsValid(setting, 'validateIfDataIsThisCompanie')
 
             for key, data in enumerate(dataFile):
                 try:
@@ -456,8 +499,9 @@ class ReadGeneral(object):
                     # ele verifica se é necessário somar juros/multa e subtrair o desconto no valor pago
                     valuesOfLine['amountPaid'] = self.sumInterestFineAndDiscountInAmountPaid(valuesOfLine)
 
-                    isValid = self.isValidLineToPrint(valuesOfLine)                    
-                    if isValid is True:
+                    isValid = self.isValidLineToPrint(valuesOfLine)
+                    isValidDataThisCompanie = self.isValidDataThisCompanie(valuesOfLine, validateIfDataIsThisCompanie, bankAndAccountCorrelation)              
+                    if isValid is True and isValidDataThisCompanie is True:
                         valuesOfLine = self.multiplePerLessOneWhenNecessary(valuesOfLine)
                         if layoutType == 'account_paid':
                             valuesOfLine['numberLote'] = self.handleLayoutIsPartidaMultipla(valuesOfLine, valuesOfFilePayments)
@@ -497,5 +541,5 @@ if __name__ == "__main__":
     settings = getSettingsCompany.getSettingsFinancy()
 
     readFiles = ReadGeneral(codi_emp, f"C:/integracao_contabil/{codi_emp}/arquivos_originais", settings)
-    print(readFiles.processAll()[0])
+    print(len(readFiles.processAll()[0]))
 
