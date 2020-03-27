@@ -11,20 +11,15 @@ import tools.funcoesUteis as funcoesUteis
 
 
 class CallReadFileProofs(object):
-    def __init__(self, codiEmp, wayTemp, wayOriginal, settings):
+    def __init__(self, codiEmp, wayTemp, wayOriginal, banksList):
         self._proofs = []
         self._codiEmp = codiEmp
         self._wayTemp = wayTemp
         self._wayOriginal = wayOriginal
-        self._settings = settings
+        self._banksList = banksList
 
-    def process(self):
-        try:
-            banksList = self._settings["banks"]["listNumbers"]
-        except Exception:
-            banksList = [0]
-
-        if banksList.count(341) > 0:
+    def process(self):        
+        if self._banksList.count(341) > 0:
             print(f'\t - Processando comprovantes de pagamento do Itaú')
             from read_files.ProofsPaymentsItau import ProofsPaymentsItau, SispagItauExcel
 
@@ -40,7 +35,7 @@ class CallReadFileProofs(object):
                 
             self._proofs.append(proofsPaymentsItau.processAll())
         
-        if banksList.count(33) > 0:
+        if self._banksList.count(33) > 0:
             print(f'\t - Processando comprovantes de pagamento do Santander')
             from read_files.ProofsPaymentsSantander import ProofsPaymentsSantander
             proofsPaymentsSantander = ProofsPaymentsSantander(self._wayTemp)

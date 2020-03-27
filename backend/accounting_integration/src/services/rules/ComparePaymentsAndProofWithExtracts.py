@@ -33,7 +33,7 @@ class ComparePaymentsAndProofWithExtracts(object):
         dayBefore = None
 
         # olha até 10 dias a mais
-        for day in range(0, 11):
+        for day in range(0, 3):
             paymentDateComparison = paymentDate + timedelta(days=day)
             if payment['paymentDate'] == paymentDateComparison and payment['amountPaid'] == amountPaid:
                 dayAfter = day
@@ -44,7 +44,7 @@ class ComparePaymentsAndProofWithExtracts(object):
             return dayAfter
 
         # olha até 10 dias a menos
-        for day in range(1, 11):
+        for day in range(1, 3):
             paymentDateComparison = paymentDate + timedelta(days=-day)
             if payment['paymentDate'] == paymentDateComparison and payment['amountPaid'] == amountPaid:
                 dayBefore = day

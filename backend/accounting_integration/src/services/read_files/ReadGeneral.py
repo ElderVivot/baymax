@@ -414,7 +414,7 @@ class ReadGeneral(object):
         :parm validateIfDataIsThisCompanie: configurações do IntegrattionCompanies onde tem as verificações pra ver é uma linha válida ou não
         """
         if validateIfDataIsThisCompanie is None:
-            return valuesOfLine
+            return True
         
         countValidationsOK = 0
         countValidationsConfigured = 0
@@ -493,7 +493,7 @@ class ReadGeneral(object):
 
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
-                    valuesOfLine = self.groupsRowData(valuesOfLine)                    
+                    valuesOfLine = self.groupsRowData(valuesOfLine)     
                     
                     valuesOfLine = self.correlationBankAndAccountBetweenSettingsAndClient(valuesOfLine, bankAndAccountCorrelation)
                     # ele verifica se é necessário somar juros/multa e subtrair o desconto no valor pago
@@ -535,11 +535,11 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 118
+    codi_emp = 1117
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
 
     readFiles = ReadGeneral(codi_emp, f"C:/integracao_contabil/{codi_emp}/arquivos_originais", settings)
-    print(len(readFiles.processAll()[0]))
+    print(readFiles.processAll()[0])
 

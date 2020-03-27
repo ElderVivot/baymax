@@ -46,8 +46,10 @@ class ProcessIntegration(object):
         if os.path.exists(self._waySettings) is False:
             getSettingsCompany = GetSettingsCompany(self._codiEmp)
             self._settings = getSettingsCompany.getSettingsFinancy()
+            self._banksToProof = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "banks", "listNumbers"], [0])
         else:
             self._settings = leArquivos.readJson(self._waySettings)
+            self._banksToProof = funcoesUteis.returnDataFieldInDict(self._settings, ["banks", "listNumbers"], [0])
 
         self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
         self._wayFilesTemp = os.path.join(fileDir, f'backend/accounting_integration/data/temp/{self._codiEmp}')
@@ -101,7 +103,7 @@ class ProcessIntegration(object):
         
         # reads the txts
         print(' - Etapa 4: Lendo os comprovantes de pagamentos e analisando as estruturas deles.')
-        callReadFileProofs = CallReadFileProofs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead, self._settings)
+        callReadFileProofs = CallReadFileProofs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead, self._banksToProof)
         self._proofsOfPayments = callReadFileProofs.process()
         
         print(' - Etapa 5: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
