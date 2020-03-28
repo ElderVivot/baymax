@@ -193,7 +193,7 @@ class ComparePaymentsAndProofWithExtracts(object):
                 
                 self._paymentsWithProofAndFinancy.append(proof) # adiciona o comprovante de pagamento
                 
-        list(map(lambda proofPayment: self._paymentsWithProofAndFinancy.append(proofPayment), self._proofOfPayments))
+        # list(map(lambda proofPayment: self._paymentsWithProofAndFinancy.append(proofPayment), self._proofOfPayments))
 
     def comparePaymentsWithProof(self):
         for payment in self._payments:
