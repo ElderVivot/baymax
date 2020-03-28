@@ -241,10 +241,7 @@ class ComparePaymentsAndProofWithExtracts(object):
                 if self._financyIsReliable is True:
                     paymentTemp["dateOfImport"] = paymentTemp["paymentDate"]
                 else:
-                    if paymentTemp["dateExtract"] is not None and paymentTemp["dateExtract"] != "":
-                        paymentTemp["dateOfImport"] = paymentTemp["dateExtract"]
-                    else:
-                        paymentTemp["dateOfImport"] = paymentTemp["paymentDate"]
+                    paymentTemp["dateOfImport"] = paymentTemp["dateExtract"]
 
                 foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentTemp, "foundProof", False)
                 if foundProof is True:
@@ -254,7 +251,10 @@ class ComparePaymentsAndProofWithExtracts(object):
                 self._paymentsTemp.remove(paymentTemp) # remove do _paymentTemp pra não pesquisar duas vezes o mesmo valor
 
         # adiciono os paymentsTemp que não encontrou o extrato no paymentsFinal
-        list(map(lambda paymentTemp: self._paymentsFinal.append(paymentTemp), self._paymentsTemp))
+        # list(map(lambda paymentTemp: self._paymentsFinal.append(paymentTemp), self._paymentsTemp))
+        for paymentTemp in self._paymentsTemp:
+            paymentTemp['dateOfImport'] = paymentTemp['paymentDate']
+            self._paymentsFinal.append(paymentTemp)
         
         return self._paymentsFinal
 
