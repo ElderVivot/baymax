@@ -212,6 +212,12 @@ class ComparePaymentsAndProofWithExtracts(object):
                     if funcoesUteis.analyzeIfFieldIsValid(proof, nameField, None) is None:
                         proof[nameField] = valueField
 
+            # somente o histórico que eu substituo do que está no comprovante de pagamento, mesmo que ele já exista. Pois o histórico do
+            # financeiro sempre é melhor do que o está no comprovante
+            historicPayment = funcoesUteis.analyzeIfFieldIsValid(payment, 'historic')
+            if historicPayment != "":
+                proof['historic'] = historicPayment
+
             self._paymentsFinal.append(proof)
 
     def comparePaymentsWithProof(self):
