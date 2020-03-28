@@ -102,7 +102,7 @@ class ComparePaymentsAndProofWithExtracts(object):
             
             if len(paymentsFound) > 0:
                 paymentReturn = self.findsLessDifferenceBetweenDatesInArrayOfObject(paymentsFound, 'paymentDate', paymentDate)
-                if paymentReturn is not None:
+                if paymentReturn is not None:                    
                     self._paymentsAlreadyRead.append(paymentReturn)
                     self._paymentsToSearch.remove(paymentReturn)
                     return paymentReturn
@@ -201,7 +201,7 @@ class ComparePaymentsAndProofWithExtracts(object):
     def compareProofWithPayments(self):
         for proof in self._proofOfPayments:
             paymentDate = funcoesUteis.analyzeIfFieldIsValid(proof, 'paymentDate')
-            amountPaid = funcoesUteis.analyzeIfFieldIsValid(proof, 'paymentDate')
+            amountPaid = funcoesUteis.analyzeIfFieldIsValid(proof, 'amountPaid')
             bank = funcoesUteis.analyzeIfFieldIsValid(proof, 'bank')
             account = funcoesUteis.analyzeIfFieldIsValid(proof, 'account')
 
