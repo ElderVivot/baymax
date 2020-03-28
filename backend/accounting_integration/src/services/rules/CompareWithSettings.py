@@ -398,10 +398,10 @@ class CompareWithSettings(object):
             accountCodeBank = self.returnDataBanks(nameBank, account, 'EXTRATO BANCARIO')
             accountCodeBank = 0 if accountCodeBank is None else accountCodeBank
 
-            if operation == "+" and accountCodeDebit == 0:
+            if operation == "+":
                 extract["accountCodeDebit"] = "" if accountCodeBank == 0 else accountCodeBank
 
-            if operation == "-" and accountCodeCredit == 0:
+            if operation == "-":
                 extract["accountCodeCredit"] = "" if accountCodeBank == 0 else accountCodeBank
 
             # --- retorna a conta débito/crédito referente a contrapartida
