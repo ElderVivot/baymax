@@ -145,58 +145,22 @@ class ComparePaymentsAndProofWithExtracts(object):
         return search        
 
     def returnDataExtract(self, paymentDate, amountPaid, operation, bank='', account=''):
-        extractsFoundComplete = []
-        extractsFoundMedium = []
-        extractsFoundWeak = []
-        extractsFound = []
+        # o range de 1 a 3 é pq primeiro vou rodar o typeComparation com mais confiabilidade (igual a 1), depois rodo com média e fraca por último
+        for numberSequencial in range(1, 4):
+            extractsFound = []
+            extractReturn = None
 
-        for extract in self._extractsToSearch:
-            searchComplete = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account, typeComparation=1)
-            if searchComplete is True:
-                extractsFoundComplete.append(extract)
-
-            searchMedium = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account, typeComparation=2)
-            if searchMedium is True:
-                extractsFoundMedium.append(extract)
-
-            searchWeak = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account, typeComparation=3)
-            if searchWeak is True:
-                extractsFoundWeak.append(extract)
-
-        if len(extractsFoundWeak) > 0:
-            extractsFound = extractsFoundWeak
-        if len(extractsFoundMedium) > 0:
-            extractsFound = extractsFoundMedium
-        if len(extractsFoundComplete) > 0:
-            extractsFound = extractsFoundComplete
-
-        paymentDate = paymentDate
-        smallerDifferenceBetweenDates = None
-        extractReturn = {}
-        
-        for extract in extractsFound:
-            extractDate = extract['dateTransaction']
-
-            differenceBetweenDates = abs((paymentDate - extractDate).days)
-
-            # se a diferença entre datas for zero, nem segue a pesquisa, pois já retorno a data correta
-            if differenceBetweenDates == 0:
-                extractReturn = extract
-                break
-
-            if smallerDifferenceBetweenDates is None:
-                smallerDifferenceBetweenDates = differenceBetweenDates
-                extractReturn = extract
-
-            if differenceBetweenDates < smallerDifferenceBetweenDates:
-                smallerDifferenceBetweenDates = differenceBetweenDates
-                extractReturn = extract
-
-        if extractReturn is not None and len(extractReturn) > 0:
-            self._extractsExistsInPayments.append(extractReturn)
-            self._extractsToSearch.remove(extractReturn)
-        
-        return extractReturn
+            for extract in self._extractsToSearch:
+                search = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account, typeComparation=numberSequencial)
+                if search is True:
+                    extractsFound.append(extract)
+            
+            if len(extractsFound) > 0:
+                extractReturn = self.findsLessDifferenceBetweenDatesInArrayOfObject(extractsFound, 'dateTransaction', paymentDate)
+                if extractReturn is not None:
+                    self._extractsExistsInPayments.append(extractReturn)
+                    self._extractsToSearch.remove(extractReturn)
+                    return extractReturn
 
     def compareProofWithPayments(self):
         for proof in self._proofOfPayments:
@@ -211,6 +175,12 @@ class ComparePaymentsAndProofWithExtracts(object):
                 for nameField, valueField in payment.items():
                     if funcoesUteis.analyzeIfFieldIsValid(proof, nameField, None) is None:
                         proof[nameField] = valueField
+
+            # somente o histórico que eu substituo do que está no comprovante de pagamento, mesmo que ele já exista. Pois o histórico do
+            # financeiro sempre é melhor do que o está no comprovante
+            historicPayment = funcoesUteis.analyzeIfFieldIsValid(payment, 'historic')
+            if historicPayment != "":
+                proof['historic'] = historicPayment
 
             self._paymentsFinal.append(proof)
 
