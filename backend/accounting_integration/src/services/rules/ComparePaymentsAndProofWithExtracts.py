@@ -177,6 +177,8 @@ class ComparePaymentsAndProofWithExtracts(object):
                 # se não encontrou o pagamento nem dá seguimento, pula pro próximo. O que sobrar no self._proofOfPayments sem encontrar o financeiro será adicionado no final
                 if payment is None:
                     continue
+                else:
+                    self._proofOfPayments.remove(proof) # remove da lista de comprovantes de pagamento pra não processar duas vezes o mesmo comprovante
 
                 if payment is not None:
                     for nameField, valueField in payment.items():
@@ -190,8 +192,7 @@ class ComparePaymentsAndProofWithExtracts(object):
                     proof['historic'] = historicPayment
                 
                 self._paymentsWithProofAndFinancy.append(proof) # adiciona o comprovante de pagamento
-                self._proofOfPayments.remove(proof) # remove da lista de comprovantes de pagamento pra não processar duas vezes o mesmo comprovante
-
+                
         list(map(lambda proofPayment: self._paymentsWithProofAndFinancy.append(proofPayment), self._proofOfPayments))
 
     def comparePaymentsWithProof(self):
@@ -244,6 +245,8 @@ class ComparePaymentsAndProofWithExtracts(object):
                 # se não encontrou o extrato nem dá seguimento, pula pro próximo. O que sobrar no self._paymentsWithProofAndFinancy sem encontrar no extrato será impresso depois
                 if extract is None:
                     continue
+                else:
+                    self._paymentsWithProofAndFinancy.remove(paymentWithProofAndFinancy) # remove do _paymentWithProofAndFinancy pra não pesquisar duas vezes o mesmo valor
 
                 paymentWithProofAndFinancy["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
                 paymentWithProofAndFinancy["bankExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, 'bank')
@@ -261,8 +264,7 @@ class ComparePaymentsAndProofWithExtracts(object):
                     paymentWithProofAndFinancy["dateOfImport"] = paymentWithProofAndFinancy["paymentDate"]
                 
                 self._paymentsFinal.append(paymentWithProofAndFinancy) # adiciona num novo array o paymentWithProofAndFinancy ajustado
-                self._paymentsWithProofAndFinancy.remove(paymentWithProofAndFinancy) # remove do _paymentWithProofAndFinancy pra não pesquisar duas vezes o mesmo valor
-
+                
         # adiciono os paymentsTemp que não encontrou o extrato no paymentsFinal        
         for paymentWithProofAndFinancy in self._paymentsWithProofAndFinancy:
             paymentWithProofAndFinancy['dateOfImport'] = paymentWithProofAndFinancy['paymentDate']
