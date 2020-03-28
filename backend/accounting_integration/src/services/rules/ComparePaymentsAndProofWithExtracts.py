@@ -19,6 +19,7 @@ class ComparePaymentsAndProofWithExtracts(object):
         self._extracts = extracts
         self._payments = payments
         self._proofOfPayments = proofOfPayments
+        self._paymentsTemp = []
         self._paymentsFinal = []
         self._paymentsAlreadyRead = []
         self._extractsExistsInPayments = [] # este daqui são para os extratos que encontrou correlação nos pagamentos, na planilha de extratos conterá um campo com esta informação
@@ -144,23 +145,21 @@ class ComparePaymentsAndProofWithExtracts(object):
 
         return search        
 
-    def returnDataExtract(self, paymentDate, amountPaid, operation, bank='', account=''):
-        # o range de 1 a 3 é pq primeiro vou rodar o typeComparation com mais confiabilidade (igual a 1), depois rodo com média e fraca por último
-        for numberSequencial in range(1, 4):
-            extractsFound = []
-            extractReturn = None
+    def returnDataExtract(self, paymentDate, amountPaid, operation, bank='', account='', typeComparation=1):
+        extractsFound = []
+        extractReturn = None
 
-            for extract in self._extractsToSearch:
-                search = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account, typeComparation=numberSequencial)
-                if search is True:
-                    extractsFound.append(extract)
-            
-            if len(extractsFound) > 0:
-                extractReturn = self.findsLessDifferenceBetweenDatesInArrayOfObject(extractsFound, 'dateTransaction', paymentDate)
-                if extractReturn is not None:
-                    self._extractsExistsInPayments.append(extractReturn)
-                    self._extractsToSearch.remove(extractReturn)
-                    return extractReturn
+        for extract in self._extractsToSearch:
+            search = self.returnDayFoundInExtract(extract, paymentDate, amountPaid, operation, bank, account, typeComparation)
+            if search is True:
+                extractsFound.append(extract)
+        
+        if len(extractsFound) > 0:
+            extractReturn = self.findsLessDifferenceBetweenDatesInArrayOfObject(extractsFound, 'dateTransaction', paymentDate)
+            if extractReturn is not None:
+                self._extractsExistsInPayments.append(extractReturn)
+                self._extractsToSearch.remove(extractReturn)
+                return extractReturn
 
     def compareProofWithPayments(self):
         for proof in self._proofOfPayments:
@@ -182,7 +181,7 @@ class ComparePaymentsAndProofWithExtracts(object):
             if historicPayment != "":
                 proof['historic'] = historicPayment
 
-            self._paymentsFinal.append(proof)
+            self._paymentsTemp.append(proof)
 
     def comparePaymentsWithProof(self):
         for payment in self._payments:
@@ -192,7 +191,7 @@ class ComparePaymentsAndProofWithExtracts(object):
                 continue
             else:
                 payment["foundProof"] = False
-                self._paymentsFinal.append(payment)
+                self._paymentsTemp.append(payment)
 
     # This the end process, he comes the others
     def comparePaymentsFinalWithExtract(self):
@@ -200,53 +199,63 @@ class ComparePaymentsAndProofWithExtracts(object):
         self.compareProofWithPayments()
         self.comparePaymentsWithProof()
 
-        extract = []
+        countPayments = 0 # este campo vai ser usado pra multiplicar por menos 1 o valor do count quando não encontrar o valor pelo agrupamento do lote mas sim ele separado
+        for numberSequencial in range(1, 4):
+            extract = []
+            countPayments += 1
 
-        for key, paymentFinal in enumerate(self._paymentsFinal):
+            for key, paymentTemp in enumerate(self._paymentsTemp):
 
-            operation = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "operation", "-")
-            bank = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "bank")
-            account = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "account")
-            amountPaid = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "amountPaid", 0.0)
-            amountPaidPerLote = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "amountPaidPerLote", 0.0)
-            numberLote = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "numberLote")
-            
-            # estas 4 linhas de baixo (principalmente o if) serão utilizadas afim de que quando for o mesmo lote ele retorne a conta do banco pra segunda linha do lote também
-            # caso contrário ele retorna só no primeiro, pois depois o valor do extratc é retirado
-            previousPaymentFinal = self._paymentsFinal[key-1]
-            previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousPaymentFinal, "numberLote")
-            if previousNumberLote != numberLote or len(self._paymentsFinal) == 1:
-                extract = self.returnDataExtract(paymentFinal["paymentDate"], amountPaidPerLote, operation, bank, account)
+                paymentDate = funcoesUteis.analyzeIfFieldIsValid(paymentTemp, "paymentDate")
+                operation = funcoesUteis.analyzeIfFieldIsValid(paymentTemp, "operation", "-")
+                bank = funcoesUteis.analyzeIfFieldIsValid(paymentTemp, "bank")
+                account = funcoesUteis.analyzeIfFieldIsValid(paymentTemp, "account")
+                amountPaid = funcoesUteis.analyzeIfFieldIsValid(paymentTemp, "amountPaid", 0.0)
+                amountPaidPerLote = funcoesUteis.analyzeIfFieldIsValid(paymentTemp, "amountPaidPerLote", 0.0)
+                numberLote = funcoesUteis.analyzeIfFieldIsValid(paymentTemp, "numberLote")
+                
+                # estas 4 linhas de baixo (principalmente o if) serão utilizadas afim de que quando for o mesmo lote ele retorne a conta do banco pra segunda linha do lote também
+                # caso contrário ele retorna só no primeiro, pois depois o valor do extratc é retirado
+                previousPaymentTemp = self._paymentsTemp[key-1]
+                previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousPaymentTemp, "numberLote")
+                if previousNumberLote != numberLote or len(self._paymentsTemp) == 1:
+                    extract = self.returnDataExtract(paymentDate, amountPaidPerLote, operation, bank, account, typeComparation=numberSequencial)
 
-            # se não conseguir retornar nada ele compara só o amountPaid, talvez no extrato o valor não esteja agrupado, e sim individual
-            if extract is None:
-                extract = self.returnDataExtract(paymentFinal["paymentDate"], amountPaid, operation, bank, account)
-                # se encontrar o valor individual então trocar o numberLote pra um número negativo pra não causar problemas depois na exportação
-                if extract is not None:
-                    paymentFinal["numberLote"] = (key+1) * -1
+                # se não conseguir retornar nada ele compara só o amountPaid, talvez no extrato o valor não esteja agrupado, e sim individual
+                if extract is None:
+                    extract = self.returnDataExtract(paymentDate, amountPaid, operation, bank, account, typeComparation=numberSequencial)
+                    # se encontrar o valor individual então trocar o numberLote pra um número negativo pra não causar problemas depois na exportação
+                    if extract is not None:
+                        paymentTemp["numberLote"] = (countPayments+1) * -1
+                
+                # se não encontrou o extrato nem dá seguimento, pula pro próximo. O que sobrar no self._paymentsTemp sem encontrar no extrato será impresso depois
+                if extract is None:
+                    continue
 
-            paymentFinal["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
-            paymentFinal["bankExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'bank')}"
-            paymentFinal["accountExtract"] = f"{funcoesUteis.analyzeIfFieldIsValid(extract, 'account')}"
-            paymentFinal["historicExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "historic")            
+                paymentTemp["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
+                paymentTemp["bankExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, 'bank')
+                paymentTemp["accountExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, 'account')
+                paymentTemp["historicExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "historic")            
 
-            # data da importação, importante ela pois nem sempre a data do financeiro do cliente é a certa
-            if self._financyIsReliable is True:
-                dateOfImport = paymentFinal["paymentDate"]
-            else:
-                if paymentFinal["dateExtract"] is not None and paymentFinal["dateExtract"] != "":
-                    dateOfImport = paymentFinal["dateExtract"]
+                # data da importação, importante ela pois nem sempre a data do financeiro do cliente é a certa
+                if self._financyIsReliable is True:
+                    paymentTemp["dateOfImport"] = paymentTemp["paymentDate"]
                 else:
-                    dateOfImport = paymentFinal["paymentDate"]
+                    if paymentTemp["dateExtract"] is not None and paymentTemp["dateExtract"] != "":
+                        paymentTemp["dateOfImport"] = paymentTemp["dateExtract"]
+                    else:
+                        paymentTemp["dateOfImport"] = paymentTemp["paymentDate"]
 
-            paymentFinal["dateOfImport"] = dateOfImport
+                foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentTemp, "foundProof", False)
+                if foundProof is True:
+                    paymentTemp["dateOfImport"] = paymentTemp["paymentDate"]
+                
+                self._paymentsFinal.append(paymentTemp) # adiciona num novo array o paymentTemp ajustado
+                self._paymentsTemp.remove(paymentTemp) # remove do _paymentTemp pra não pesquisar duas vezes o mesmo valor
 
-            foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentFinal, "foundProof", False)
-            if foundProof is True:
-                paymentFinal["dateOfImport"] = paymentFinal["paymentDate"]
-
-            self._paymentsFinal[key] = paymentFinal
-
+        # adiciono os paymentsTemp que não encontrou o extrato no paymentsFinal
+        list(map(lambda paymentTemp: self._paymentsFinal.append(paymentTemp), self._paymentsTemp))
+        
         return self._paymentsFinal
 
     # esta função é a responsável por inserir a informação se aquele valor do extrato também existe no pagamento ou não
