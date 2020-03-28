@@ -163,23 +163,21 @@ class ComparePaymentsAndProofWithExtracts(object):
         """
         Une os comprovantes de pagamentos com o financeiro do cliente, adicionando os campos que não tem no comprovante de pagamento
         """
-        
+
         # o range de 1 a 3 é pq primeiro vou rodar o typeComparation com mais confiabilidade (igual a 1), depois rodo com média e fraca por último
         for numberSequencial in range(1, 4):
-            for proof in self._proofOfPayments:
+            for key, proof in enumerate(self._proofOfPayments):
+                # se for um pagamento que já tiver lido e encontrado o financeiro dele então ignora a leitura
+                if funcoesUteis.analyzeIfFieldIsValid(proof, 'alreadyFoundTheFinancial', False) is True:
+                    continue
+                
                 paymentDate = funcoesUteis.analyzeIfFieldIsValid(proof, 'paymentDate')
                 amountPaid = funcoesUteis.analyzeIfFieldIsValid(proof, 'amountPaid')
                 bank = funcoesUteis.analyzeIfFieldIsValid(proof, 'bank')
                 account = funcoesUteis.analyzeIfFieldIsValid(proof, 'account')
 
                 payment = self.returnDataPayment(paymentDate, amountPaid, bank, account, typeComparation=numberSequencial)
-
-                # se não encontrou o pagamento nem dá seguimento, pula pro próximo. O que sobrar no self._proofOfPayments sem encontrar o financeiro será adicionado no final
-                if payment is None:
-                    continue
-                else:
-                    self._proofOfPayments.remove(proof) # remove da lista de comprovantes de pagamento pra não processar duas vezes o mesmo comprovante
-
+                 
                 if payment is not None:
                     for nameField, valueField in payment.items():
                         if funcoesUteis.analyzeIfFieldIsValid(proof, nameField, None) is None:
@@ -191,9 +189,17 @@ class ComparePaymentsAndProofWithExtracts(object):
                 if historicPayment != "":
                     proof['historic'] = historicPayment
                 
-                self._paymentsWithProofAndFinancy.append(proof) # adiciona o comprovante de pagamento
-                
-        # list(map(lambda proofPayment: self._paymentsWithProofAndFinancy.append(proofPayment), self._proofOfPayments))
+                if payment is not None:
+                    self._paymentsWithProofAndFinancy.append(proof) # adiciona o comprovante de pagamento
+
+                    proof['alreadyFoundTheFinancial'] = True
+                else:
+                    proof['alreadyFoundTheFinancial'] = False
+                self._proofOfPayments[key] = proof
+
+        # esta junção de map e filter adiciona no array _paymentsWithProofAndFinancy somente os  comprovantes de pagamentos que não encontrou o financeiro dele
+        list(map(lambda proofPayment: self._paymentsWithProofAndFinancy.append(proofPayment), \
+            filter(lambda proofPayment: proofPayment['alreadyFoundTheFinancial'] is False, self._proofOfPayments)))
 
     def comparePaymentsWithProof(self):
         for payment in self._payments:
@@ -215,10 +221,12 @@ class ComparePaymentsAndProofWithExtracts(object):
         
         # o range de 1 a 3 é pq primeiro vou rodar o typeComparation com mais confiabilidade (igual a 1), depois rodo com média e fraca por último
         for numberSequencial in range(1, 4):
-            extract = []
             countPayments += 1
 
             for key, paymentWithProofAndFinancy in enumerate(self._paymentsWithProofAndFinancy):
+                # se for um pagamento que já tiver lido e encontrado o financeiro dele então ignora a leitura
+                if funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, 'alreadyFoundTheExtract', False) is True:
+                    continue                
 
                 paymentDate = funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "paymentDate")
                 operation = funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "operation", "-")
@@ -241,12 +249,6 @@ class ComparePaymentsAndProofWithExtracts(object):
                     # se encontrar o valor individual então trocar o numberLote pra um número negativo pra não causar problemas depois na exportação
                     if extract is not None:
                         paymentWithProofAndFinancy["numberLote"] = (countPayments+1) * -1
-                
-                # se não encontrou o extrato nem dá seguimento, pula pro próximo. O que sobrar no self._paymentsWithProofAndFinancy sem encontrar no extrato será impresso depois
-                if extract is None:
-                    continue
-                else:
-                    self._paymentsWithProofAndFinancy.remove(paymentWithProofAndFinancy) # remove do _paymentWithProofAndFinancy pra não pesquisar duas vezes o mesmo valor
 
                 paymentWithProofAndFinancy["dateExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
                 paymentWithProofAndFinancy["bankExtract"] = funcoesUteis.analyzeIfFieldIsValid(extract, 'bank')
@@ -257,18 +259,32 @@ class ComparePaymentsAndProofWithExtracts(object):
                 if self._financyIsReliable is True:
                     paymentWithProofAndFinancy["dateOfImport"] = paymentWithProofAndFinancy["paymentDate"]
                 else:
-                    paymentWithProofAndFinancy["dateOfImport"] = paymentWithProofAndFinancy["dateExtract"]
+                    if paymentWithProofAndFinancy["dateExtract"] is not None and paymentWithProofAndFinancy["dateExtract"] != "":
+                        paymentWithProofAndFinancy["dateOfImport"] = paymentWithProofAndFinancy["dateExtract"]
+                    else:
+                        paymentWithProofAndFinancy["dateOfImport"] = paymentWithProofAndFinancy["paymentDate"]
 
                 foundProof = funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "foundProof", False)
                 if foundProof is True:
                     paymentWithProofAndFinancy["dateOfImport"] = paymentWithProofAndFinancy["paymentDate"]
                 
-                self._paymentsFinal.append(paymentWithProofAndFinancy) # adiciona num novo array o paymentWithProofAndFinancy ajustado
-                
-        # adiciono os paymentsTemp que não encontrou o extrato no paymentsFinal        
-        for paymentWithProofAndFinancy in self._paymentsWithProofAndFinancy:
-            paymentWithProofAndFinancy['dateOfImport'] = paymentWithProofAndFinancy['paymentDate']
-            self._paymentsFinal.append(paymentWithProofAndFinancy)
+                if extract is not None:
+                    self._paymentsFinal.append(paymentWithProofAndFinancy) # adiciona num novo array o paymentWithProofAndFinancy ajustado
+                    
+                    paymentWithProofAndFinancy['alreadyFoundTheExtract'] = True
+                else:
+                    paymentWithProofAndFinancy['alreadyFoundTheExtract'] = False
+                self._paymentsWithProofAndFinancy[key] = paymentWithProofAndFinancy
+
+        # esta junção de map e filter adiciona no array _paymentsFinal somente os pagamentos que não encontrou no extrado
+        list(map(lambda payment: self._paymentsFinal.append(payment), \
+            filter(lambda payment: payment['alreadyFoundTheExtract'] is False, self._paymentsWithProofAndFinancy)))
+
+        # adiciono os paymentsWithProofAndFinancy que não encontrou o extrato no paymentsFinal        
+        # for paymentWithProofAndFinancy in self._paymentsWithProofAndFinancy:
+        #     if paymentWithProofAndFinancy['alreadyFoundTheExtract'] is False:
+        #         paymentWithProofAndFinancy['dateOfImport'] = paymentWithProofAndFinancy['paymentDate']
+        #         self._paymentsFinal.append(paymentWithProofAndFinancy)
         
         return self._paymentsFinal
 
