@@ -4,7 +4,7 @@
 }
 
 input, button, label, select, span, .selected, td, .filter-label > input {
-    font-size: 0.85rem !important;
+    font-size: 0.83rem !important;
     font-weight: 530;
 }
 
@@ -32,7 +32,7 @@ th, td {
 }
 
 th {
-    font-size: 0.85rem !important;
+    font-size: 0.83rem !important;
     font-weight: 600 !important;
     border-color: rgb(180, 179, 179) !important;
     background-color: rgba(0,0,0,.075) !important;
@@ -43,6 +43,20 @@ th {
     margin-top: 2px;
 }
 
-button {
+.btn10px {
     font-size: 10px !important;
+}
+
+.align-center {
+    display:flex !important;
+    justify-content:center !important;
+    align-items: center !important;
+}
+
+.table thead th {
+    vertical-align: middle;
+}
+
+.table td, .table th {
+    vertical-align: middle;
 }

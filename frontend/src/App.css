@@ -69,3 +69,7 @@ footer.footer {
     border-color: gray !important;
     background-color: rgba(0,0,0,.075) !important;
 }
+
+.font-weight-600{
+    font-weight: 600 !important;
+}

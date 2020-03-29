@@ -24,7 +24,7 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
 
     function ButtonAdd(){
         return (
-            <button className="btn btn-success" type="button" 
+            <button className="btn btn-success btn-sm btn10px" type="button" 
                 onClick={addField}>
                 <i className="fa fa-plus"></i>
             </button>
@@ -33,7 +33,7 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
 
     function ButtonDelete(isDisabled=false){
         return( 
-            <button className="btn btn-danger ml-2" type="button" 
+            <button className="btn btn-danger ml-2 btn-sm btn10px" type="button" 
                 onClick={deleteField} disabled={isDisabled}>
                 <i className="fa fa-trash"></i>
             </button>
@@ -68,7 +68,7 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
     
     return (
         <>
-            <tr className="form-group row mb-1">
+            <tr className="form-group row mb-1 d-flex text-center justify-content-center align-items-center">
                 <td className="col-11">
                     <div className="input-group">
                         <div className="input-group-prepend">

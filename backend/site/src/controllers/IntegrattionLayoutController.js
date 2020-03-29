@@ -8,7 +8,6 @@ module.exports = {
     },
 
     async store(req, res) {
-        // desestruturação --> busco um campo dentro de um JSON passando só o nome dele dentro de chaves
         const { system, fileType, layoutType, header, fields } = req.body
 
         const integrattionLayout = await IntegrattionLayout.create({
@@ -25,7 +24,6 @@ module.exports = {
     async update(req, res) {
         const _id = req.params.id
 
-        // desestruturação --> busco um campo dentro de um JSON passando só o nome dele dentro de chaves
         const { system, fileType, layoutType, header, fields } = req.body
 
         const integrattionLayout = await IntegrattionLayout.updateOne( {_id}, {

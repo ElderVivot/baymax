@@ -74,10 +74,12 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
         nameLabelOfNameField = nameLabelOfNameField.label.toUpperCase().split(' ')
         if(nameLabelOfNameField.indexOf("DATA") >= 0){
             // esta linha faz com que seja obrigado a selecionar este campo quando for uma data
-            values.formatDate = null
+            if(values.formatDate === ""){
+                values.formatDate = null
+            }
             return (
                 <Form.Row className="mt-2">
-                    <Form.Label as="label" htmlFor="field" className="col-form-label">Formato Data:</Form.Label>
+                    <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Formato Data:</Form.Label>
                     <Col lg={4}>
                         <Select 
                             id={`${fieldPosition}.formatDate`}
@@ -130,7 +132,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
     function handleSave(event, values) {
         event.preventDefault()
         const nameField = values.nameField
-        const positionInFile = values.positionInFile
+        const positionInFile = parseInt(values.positionInFile)
         const nameColumn = values.nameColumn
         const formatDate = values.formatDate
         
@@ -155,7 +157,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
     
     return (
         <>
-            <Button variant="warning" className="ml-2" 
+            <Button size="sm" variant="warning" className="ml-2 btn10px" 
                 onClick={handleShow}>
                 <i className="fa fa-pencil-alt"></i>
             </Button>
@@ -166,11 +168,9 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
             >
                 { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched }) => (
                 <Modal show={show} dialogClassName="width-modal" >
-                    <pre>{JSON.stringify(values, null, 2)}</pre>
-
                     <Modal.Body>
                         <Form.Row>
-                            <Form.Label as="label" htmlFor="field" className="col-form-label">Campo:</Form.Label>
+                            <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Campo:</Form.Label>
                             <Col lg={4}>
                                 <Creatable 
                                     id={`${fieldPosition}.nameField`}
@@ -188,7 +188,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                         </Form.Row>
                         {fieldFormatDate(values, errors, touched, handleChange, setFieldTouched, fieldsOptions)}
                         <Form.Row className="mt-2">
-                            <Form.Label as="label" htmlFor="field" className="col-form-label">Posição que se encontra no Arquivo:</Form.Label>
+                            <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição que se encontra no Arquivo:</Form.Label>
                             <Col lg={3}>
                                 <Creatable 
                                     id={`${fieldPosition}.positionInFile`}
@@ -197,7 +197,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                                     className={`selected ${touched.positionInFile && errors.positionInFile ? "has-error" : null }`}
                                     isSearchable={true}
                                     placeholder="Selecione"
-                                    value={positionInFileOptions.filter(option => option.value === values.positionInFile)[0]}
+                                    value={positionInFileOptions.filter(option => option.value === `${values.positionInFile}`)[0]}
                                     onChange={selectedOption => handleChange(`positionInFile`)(selectedOption.value)}
                                     onBlur={() => setFieldTouched(`positionInFile`, true)}
                                     formatCreateLabel={(string) => `Criar a opção "${string}"`}
@@ -206,7 +206,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                         </Form.Row>
 
                         <Form.Row className="mt-2">
-                            <Form.Label as="label" htmlFor="field" className="col-form-label">Nome da Coluna Correspondente:</Form.Label>
+                            <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Nome da Coluna Correspondente:</Form.Label>
                             <Col lg={6}>
                                 <Form.Control
                                     id={`${fieldPosition}.nameColumn`}

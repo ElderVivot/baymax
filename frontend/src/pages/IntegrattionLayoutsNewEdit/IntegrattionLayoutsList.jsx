@@ -54,16 +54,23 @@ const IntegrattionLayoutsList = ( {history} ) => {
         isDummyField: true,
         text: "Ações",
         sort: false,
+        headerFormatter: (column, colIndex) => {
+            return (
+                <div>
+                    <div style={{"margin-bottom": 2}}>{column.text}</div>
+                    <button className="btn btn-success btn-sm btn10px" style={{"margin-top": 1}} type="button" onClick={addIntegrattionLayout}>
+                        <i className="fa fa-plus"></i>
+                    </button>
+                </div>
+            )
+        },
         formatter: (cellContent, row) => {
             return (
                 <div>
-                    <button className="btn btn-success btn-sm" type="button" onClick={addIntegrattionLayout}>
-                        <i className="fa fa-plus"></i>
-                    </button>
-                    <button className="btn btn-warning ml-2 btn-sm" type="button" onClick={() => editIntegrattionLayout(row.id)}>
+                    <button className="btn btn-warning ml-2 btn-sm btn10px btn10px" type="button" onClick={() => editIntegrattionLayout(row.id)}>
                         <i className="fa fa-pencil-alt"></i>
                     </button>
-                    <button className="btn btn-danger ml-2 btn-sm" type="button" 
+                    <button className="btn btn-danger ml-2 btn-sm btn10px btn10px" type="button" 
                         >
                         <i className="fa fa-trash"></i>
                     </button>

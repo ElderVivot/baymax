@@ -45,7 +45,7 @@ const fileTypes = [
 ]
 
 const layoutTypes = [
-    { value: 'financy', label: 'Financeiro'},
+    { value: 'account_paid', label: 'Contas Pagas'},
     { value: 'extract', label: 'Extrato Bancário'}
 ]
 
@@ -60,6 +60,7 @@ const layoutTypes = [
 export default function IntegrattionLayouts({history}){
     const [integrattionLayout, setIntegrattionLayout ] = useState([])
 
+    // pega da url o id pra poder carregar os dados de edição
     const url = window.location.href
     const id = url.split('/')[4]
 
@@ -73,20 +74,18 @@ export default function IntegrattionLayouts({history}){
                 console.log(error)
             }
         }
-
         loadIntegrattionLayout()
-
     }, [id])
     
     if(integrattionLayout._id !== undefined){
         initialValues = integrattionLayout
-        console.log(initialValues)
+        // initialValues.fields.map()
     } 
 
     return (
         <main className="content card container-fluid">
             <div className="card-header">
-                <h5 className="mb-0">Configuração de Layout</h5>
+                <h5 className="mb-0">Configuração de Layout</h5>                
             </div>
 
             <div className="card-body">
@@ -117,7 +116,7 @@ export default function IntegrattionLayouts({history}){
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
                         <form onSubmit={handleSubmit} className="container-fluid">            
                             <div className="form-group row mb-0">
-                                <label htmlFor="system" className="col-form-label">Sistema:</label>
+                                <label htmlFor="system" className="col-form-label font-weight-600">Sistema:</label>
                                 <div className="col">
                                     <input 
                                         id="system"
@@ -136,7 +135,7 @@ export default function IntegrattionLayouts({history}){
                             {/* {console.log(document.getElementById('system'))} */}
 
                             <div className="form-group row mt-3 mb-0">
-                                <label htmlFor="fileType" className="col-form-label">Tipo Arquivo:</label>
+                                <label htmlFor="fileType" className="col-form-label font-weight-600">Tipo Arquivo:</label>
                                 <div className="col-3">
                                     <Select 
                                         id="fileType"
@@ -150,7 +149,7 @@ export default function IntegrattionLayouts({history}){
                                     />
                                 </div>
 
-                                <label htmlFor="layoutType" className="col-form-label">Tipo Layout:</label>
+                                <label htmlFor="layoutType" className="col-form-label font-weight-600">Tipo Layout:</label>
                                 <div className="col-3">
                                     <Select 
                                         id="layoutType"
@@ -169,7 +168,12 @@ export default function IntegrattionLayouts({history}){
                             </div>
                             
                             <div className="form row mt-2">
-                                <label className="col-form-label">Nome dos campos que identifica as colunas do Arquivo (informe 2 ou 3):</label>
+                                <label className="col-form-label font-weight-600">Nome dos campos que identifica as colunas do Arquivo (informe 2 ou 3):</label>
+                                <button className="btn btn-success btn-sm btn10px" type="button" 
+                                    onClick={() => setFieldValue(values.header, [...values.header, { nameColumn: "" }])}>
+                                    <i className="fa fa-plus"></i>
+                                </button>
+                                {console.log(values.header)}
                             </div>
                             <table className="col-12">
                                 <tbody>
@@ -191,19 +195,20 @@ export default function IntegrattionLayouts({history}){
                             </table>
 
                             <div className="form row mt-2">
-                                <label className="col-form-label">Configuração dos Campos do Layout:</label>
+                                <label className="col-form-label font-weight-600">Configuração dos Campos do Layout:</label>
                             </div>
 
                             <div className="form row">
                                 <table className="table ml-3 table-striped table-bordered table-hover">
                                     <thead>
                                         <tr className="d-flex justify-content-center text-center">
-                                            <th className="col-4 fields-of-table">Campo</th>
-                                            <th className="col-1 fields-of-table">Posição Inicial</th>
-                                            <th className="col-1 fields-of-table">Posição Final</th>
-                                            <th className="col-3 fields-of-table">Nome Coluna</th>
-                                            <th className="col-1 fields-of-table">Formato Data</th>
-                                            <th className="col-2 fields-of-table">Ações</th>
+                                        {/* <tr className="flex-container"> */}
+                                            <th className="col-4 fields-of-table align-center">Campo</th>
+                                            <th className="col-1 fields-of-table align-center">Posição Inicial</th>
+                                            <th className="col-1 fields-of-table align-center">Posição Final</th>
+                                            <th className="col-3 fields-of-table align-center">Nome Coluna</th>
+                                            <th className="col-1 fields-of-table align-center">Formato Data</th>
+                                            <th className="col-2 fields-of-table align-center">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>{
