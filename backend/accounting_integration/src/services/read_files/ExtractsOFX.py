@@ -72,7 +72,7 @@ class ExtractsOFX(object):
                     "account": account,
                     "typeTransaction": typeTransaction,
                     "dateTransaction": dateTransaction,
-                    "amount": amount,
+                    "amount": round(amount, 2),
                     "operation": operation,
                     "document": document,
                     "historicCode": historicCode,

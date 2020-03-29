@@ -57,7 +57,7 @@ class ComparePaymentsAndProofWithExtracts(object):
     def returnDayFoundInPayment(self, payment, paymentDate, amountPaid, bank, account, typeComparation):
         # :typeComparation --> 1 = completa (banco e conta corrente); 2 = média (banco); 3 = fraca (apenas valores, data e operação)
         datePayment = payment['paymentDate']
-        amountPayment = payment['amountPaid']
+        amountPayment = round(payment['amountPaid'], 2)
         bankPayment = payment['bank']
         accountPayment = payment['account']
         search = False
@@ -109,7 +109,7 @@ class ComparePaymentsAndProofWithExtracts(object):
     def returnDayFoundInExtract(self, extract, paymentDate, amountPaid, operation, bank, account, typeComparation):
         # :typeComparation --> 1 = completa (banco e conta corrente); 2 = média (banco); 3 = fraca (apenas valores, data e operação)
         extractDate = extract['dateTransaction']
-        extractAmount = extract['amount']
+        extractAmount = round(extract['amount'], 2)
         extractOperation = extract['operation']
         extractBank = extract['bank']
         extractAccount = extract['account']
@@ -172,7 +172,7 @@ class ComparePaymentsAndProofWithExtracts(object):
                     continue
                 
                 paymentDate = funcoesUteis.analyzeIfFieldIsValid(proof, 'paymentDate')
-                amountPaid = funcoesUteis.analyzeIfFieldIsValid(proof, 'amountPaid')
+                amountPaid = round(funcoesUteis.analyzeIfFieldIsValid(proof, 'amountPaid', 0.0), 2)
                 bank = funcoesUteis.analyzeIfFieldIsValid(proof, 'bank')
                 account = funcoesUteis.analyzeIfFieldIsValid(proof, 'account')
 
@@ -220,10 +220,10 @@ class ComparePaymentsAndProofWithExtracts(object):
         countPayments = 0 # este campo vai ser usado pra multiplicar por menos 1 o valor do count quando não encontrar o valor pelo agrupamento do lote mas sim ele separado
         
         # o range de 1 a 3 é pq primeiro vou rodar o typeComparation com mais confiabilidade (igual a 1), depois rodo com média e fraca por último
-        for numberSequencial in range(1, 4):
-            countPayments += 1
-
+        for numberSequencial in range(1, 4):            
             for key, paymentWithProofAndFinancy in enumerate(self._paymentsWithProofAndFinancy):
+                countPayments += 1
+
                 # se for um pagamento que já tiver lido e encontrado o financeiro dele então ignora a leitura
                 if funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, 'alreadyFoundTheExtract', False) is True:
                     continue                
@@ -232,8 +232,8 @@ class ComparePaymentsAndProofWithExtracts(object):
                 operation = funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "operation", "-")
                 bank = funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "bank")
                 account = funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "account")
-                amountPaid = funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "amountPaid", 0.0)
-                amountPaidPerLote = funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "amountPaidPerLote", 0.0)
+                amountPaid = round(funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "amountPaid", 0.0), 2)
+                amountPaidPerLote = round(funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "amountPaidPerLote", 0.0), 2)
                 numberLote = funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, "numberLote")
                 
                 # estas 4 linhas de baixo (principalmente o if) serão utilizadas afim de que quando for o mesmo lote ele retorne a conta do banco pra segunda linha do lote também
@@ -279,12 +279,6 @@ class ComparePaymentsAndProofWithExtracts(object):
         # esta junção de map e filter adiciona no array _paymentsFinal somente os pagamentos que não encontrou no extrado
         list(map(lambda payment: self._paymentsFinal.append(payment), \
             filter(lambda payment: payment['alreadyFoundTheExtract'] is False, self._paymentsWithProofAndFinancy)))
-
-        # adiciono os paymentsWithProofAndFinancy que não encontrou o extrato no paymentsFinal        
-        # for paymentWithProofAndFinancy in self._paymentsWithProofAndFinancy:
-        #     if paymentWithProofAndFinancy['alreadyFoundTheExtract'] is False:
-        #         paymentWithProofAndFinancy['dateOfImport'] = paymentWithProofAndFinancy['paymentDate']
-        #         self._paymentsFinal.append(paymentWithProofAndFinancy)
         
         return self._paymentsFinal
 

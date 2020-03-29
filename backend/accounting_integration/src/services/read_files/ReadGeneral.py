@@ -178,7 +178,7 @@ class ReadGeneral(object):
 
             elif nameField.lower().find('amount') >= 0:
                 valueField = funcoesUteis.treatDecimalFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
-                valueField = 0 if positionInFile == -1 and nameColumn is None else valueField
+                valueField = 0 if positionInFile == -1 and nameColumn is None else round(valueField,2)
 
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')

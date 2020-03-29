@@ -132,12 +132,12 @@ class ProofsPaymentsItau(object):
                             "dueDate": dueDate,
                             "bank": bank,
                             "account": account,
-                            "amountPaid": amountPaid,
+                            "amountPaid": round(amountPaid, 2),
                             "historic": historic,
                             "category": category,
                             "cgcePaying": cgcePaying,
                             "foundProof": True,
-                            "amountPaidPerLote": amountPaid
+                            "amountPaidPerLote": round(amountPaid, 2)
                         }
 
                         valuesOfFile.append(valuesOfLine.copy())
