@@ -134,13 +134,13 @@ export default function IntegrattionLayouts({history}){
                             </div>
                             {/* {console.log(document.getElementById('system'))} */}
 
-                            <div className="form-group row mt-3 mb-0">
+                            <div className="form-group row mt-2 mb-0">
                                 <label htmlFor="fileType" className="col-form-label font-weight-600">Tipo Arquivo:</label>
                                 <div className="col-3">
                                     <Select 
                                         id="fileType"
                                         options={fileTypes}
-                                        className={`selected ${touched.fileType && errors.fileType ? "has-error" : null }`}
+                                        className={`selected height-calc ${touched.fileType && errors.fileType ? "has-error" : null }`}
                                         isSearchable={true}
                                         placeholder="Selecione"
                                         value={fileTypes.filter(option => option.value === values.fileType)[0]}
@@ -167,13 +167,13 @@ export default function IntegrattionLayouts({history}){
                                 <Error className="m-0 p-0" touched={touched.fileType} message={errors.fileType}/>
                             </div>
                             
-                            <div className="form row mt-2">
+                            <div className="form row mt-2 mb-0">
                                 <label className="col-form-label font-weight-600">Nome dos campos que identifica as colunas do Arquivo (informe 2 ou 3):</label>
-                                <button className="btn btn-success btn-sm btn10px" type="button" 
-                                    onClick={() => setFieldValue(values.header, [...values.header, { nameColumn: "" }])}>
+                                <button className="btn btn-success btn-sm btn10px ml-3 mt-1" type="button" style={{height:25}}
+                                    onClick={() => setFieldValue("header", [...values.header, { nameColumn: "" }]) }>
                                     <i className="fa fa-plus"></i>
                                 </button>
-                                {console.log(values.header)}
+                                
                             </div>
                             <table className="col-12">
                                 <tbody>
@@ -195,7 +195,7 @@ export default function IntegrattionLayouts({history}){
                             </table>
 
                             <div className="form row mt-2">
-                                <label className="col-form-label font-weight-600">Configuração dos Campos do Layout:</label>
+                                <label className="col-form-label font-weight-600">Configuração dos Campos do Layout:</label>                                
                             </div>
 
                             <div className="form row">
@@ -208,7 +208,21 @@ export default function IntegrattionLayouts({history}){
                                             <th className="col-1 fields-of-table align-center">Posição Final</th>
                                             <th className="col-3 fields-of-table align-center">Nome Coluna</th>
                                             <th className="col-1 fields-of-table align-center">Formato Data</th>
-                                            <th className="col-2 fields-of-table align-center">Ações</th>
+                                            <th className="col-2 fields-of-table align-center">
+                                                <div className="div">Ações</div>
+                                                <button className="btn btn-success btn-sm btn10px ml-3" type="button" style={{height:25}}
+                                                    onClick={() => {
+                                                        setFieldValue("fields", [...values.fields, { 
+                                                            nameField: "",
+                                                            positionInFile: "",
+                                                            positionInFileEnd: "",
+                                                            nameColumn: "",
+                                                            formatDate: ""
+                                                        }])
+                                                    } }>
+                                                    <i className="fa fa-plus"></i>
+                                                </button>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>{

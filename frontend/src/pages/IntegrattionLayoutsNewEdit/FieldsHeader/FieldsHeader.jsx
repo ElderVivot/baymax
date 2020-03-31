@@ -11,24 +11,11 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
             return null
         }
     }
-
-    const addField = () => {
-        setFieldValue("header", [...fieldsHeader, { nameColumn: "" }])
-    }
     
     const deleteField = () => {
         const updatedFieldsHeader = [...fieldsHeader]
         updatedFieldsHeader.splice(idx, 1)
         setFieldValue("header", updatedFieldsHeader)
-    }
-
-    function ButtonAdd(){
-        return (
-            <button className="btn btn-success btn-sm btn10px" type="button" 
-                onClick={addField}>
-                <i className="fa fa-plus"></i>
-            </button>
-        )
     }
 
     function ButtonDelete(isDisabled=false){
@@ -41,38 +28,20 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
     }
 
     function Buttons(){
-        if (fieldsHeader.length === idx+1) {
-            if(fieldsHeader.length === 1 && idx === 0){
-                return (
-                    <div>
-                        {ButtonAdd()}
-                        {ButtonDelete(true)}
-                    </div>
-                )
-            } else {
-                return (
-                    <div>
-                        {ButtonAdd()}
-                        {ButtonDelete()}
-                    </div>
-                )
-            }
-        } else {
-            return (
-                <div className="col-2">
-                    {ButtonDelete()}
-                </div>
-            )
-        }
+        return (
+            <div >
+                {ButtonDelete()}
+            </div>
+        )
     }
     
     return (
         <>
-            <tr className="form-group row mb-1 d-flex text-center justify-content-center align-items-center">
+            <tr className="form-group row d-flex mb-0 pb-0 text-center justify-content-center align-items-center">
                 <td className="col-11">
                     <div className="input-group">
                         <div className="input-group-prepend">
-                            <span className="input-group-text">{idx+1}</span>
+                            <span className="input-group-text" style={{"color": "black !important"}}>{idx+1}</span>
                         </div>
                         <input 
                             type="text"

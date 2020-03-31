@@ -27,16 +27,6 @@ const fieldsOptions = [
 
 function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initialValues } ){
 
-    const addField = () => {
-        setFieldValue("fields", [...fieldsFile, { 
-            nameField: "",
-            positionInFile: "",
-            positionInFileEnd: "",
-            nameColumn: "",
-            formatDate: ""
-         }])
-    }
-    
     const deleteField = () => {
         const updatedfieldsFile = [...fieldsFile]
         updatedfieldsFile.splice(idx, 1)
@@ -55,15 +45,6 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initia
         )
     }
 
-    function ButtonAdd(){
-        return (
-            <button className="btn btn-success btn-sm btn10px" type="button" 
-                onClick={addField}>
-                <i className="fa fa-plus"></i>
-            </button>
-        )
-    }
-
     function ButtonDelete(isDisabled=false){
         return( 
             <button className="btn btn-danger ml-2 btn-sm btn10px" type="button" 
@@ -74,33 +55,12 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initia
     }
 
     function Buttons(){
-        if (fieldsFile.length === idx+1) {
-            if(fieldsFile.length === 1 && idx === 0){
-                return (
-                    <div>
-                        {ButtonAdd()}
-                        {EditField()}
-                        {ButtonDelete(true)}
-                    </div>
-                )
-            } else {
-                return (
-                    <div>
-                        {ButtonAdd()}
-                        {EditField()}
-                        {ButtonDelete()}
-                    </div>
-                )
-            }
-        } else {
-            return (
-                <div>
-                    {EditField()}
-                    {ButtonDelete()}
-                </div>
-                
-            )
-        }
+        return (
+            <div>
+                {EditField()}
+                {ButtonDelete()}
+            </div>
+        )
     }
 
     const nameFieldVector = fieldsOptions.filter(option => option.value === fieldsFile[idx].nameField)

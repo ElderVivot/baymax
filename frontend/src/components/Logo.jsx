@@ -1,4 +1,3 @@
-import './Logo.css'
 import logo from '../assets/imgs/baymax.png'
 import React from 'react'
 import { Link } from 'react-router-dom'

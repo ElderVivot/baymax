@@ -1,8 +1,3 @@
-:root{
-    --bg-dark: #1A2F3A;
-    --theme-ui-colors-bg: #5f4981; /* rgb(109, 55, 145);*/
-}
-
 input, button, label, select, span, .selected, td, .filter-label > input {
     font-size: 0.83rem !important;
     font-weight: 530;
@@ -59,4 +54,18 @@ th {
 
 .table td, .table th {
     vertical-align: middle;
+}
+
+.css-yk16xz-control, .css-1pahdxg-control{
+    height: calc(1.5em + .75rem + 2px) !important;
+    min-height: calc(1.5em + .75rem + 2px) !important;
+}
+
+.css-1hwfws3 {
+    position: initial !important;
+}
+
+.css-tlfecz-indicatorContainer, .css-1gtu0rj-indicatorContainer{
+    padding: 6px !important;
+    position: initial !important;
 }
