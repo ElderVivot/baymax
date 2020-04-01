@@ -9,7 +9,9 @@ const app = express()
 
 mongoose.connect('mongodb://localhost/baymax', {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true
 })
 
 app.use(cors())

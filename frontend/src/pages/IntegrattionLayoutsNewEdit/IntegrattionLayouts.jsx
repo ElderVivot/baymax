@@ -67,7 +67,13 @@ export default function IntegrattionLayouts({history}){
     useEffect(() => {
         async function loadIntegrattionLayout() {
             try {
-                const response = await api.get(`/integrattion_layouts/${id}`)
+                let response = undefined
+
+                if(id !== undefined){
+                    response = await api.get(`/integrattion_layouts/${id}`)
+                } else {
+                    response = await api.get(`/integrattion_layouts`)
+                }
                 
                 setIntegrattionLayout(response.data)
             } catch (error) {
@@ -97,19 +103,22 @@ export default function IntegrattionLayouts({history}){
                         setSubmitting(true)
 
                         try {
-                            const response = await api.post('/integrattion_layouts', { ...values } )
+                            let response = undefined
+
+                            if(id !== undefined){
+                                response = await api.post(`/integrattion_layouts/${id}`, { ...values } )
+                            } else {
+                                response = await api.post('/integrattion_layouts', { ...values } )
+                            }
 
                             if(response.status !== 200){
                                 console.log(response)
-                            } else {
-                                resetForm()
                             }
-
                         } catch (error) {
                             console.log(error)
                         }
-                        setSubmitting(false)
-
+                        setSubmitting(false)                        
+                        resetForm()
                         history.push('/integrattion_layouts_list')
                     }}
                 >

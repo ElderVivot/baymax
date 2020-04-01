@@ -57,8 +57,8 @@ const IntegrattionLayoutsList = ( {history} ) => {
         headerFormatter: (column, colIndex) => {
             return (
                 <div>
-                    <div style={{"margin-bottom": 2}}>{column.text}</div>
-                    <button className="btn btn-success btn-sm btn10px" style={{"margin-top": 1}} type="button" onClick={addIntegrattionLayout}>
+                    <div style={{"marginBottom": 2}}>{column.text}</div>
+                    <button className="btn btn-success btn-sm btn10px" style={{"marginTop": 1}} type="button" onClick={addIntegrattionLayout}>
                         <i className="fa fa-plus"></i>
                     </button>
                 </div>

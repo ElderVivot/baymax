@@ -4,6 +4,8 @@ module.exports = {
     async index(req, res){
         const integrattionLayout = await IntegrattionLayout.find({})
 
+        console.log(` - IntegrattionLayoutController.index`)
+
         return res.json(integrattionLayout)
     },
 
@@ -18,6 +20,8 @@ module.exports = {
             fields
         })
 
+        console.log(` - IntegrattionLayoutController.store --> ${system}`)
+
         return res.json(integrattionLayout)
     },
 
@@ -26,22 +30,35 @@ module.exports = {
 
         const { system, fileType, layoutType, header, fields } = req.body
 
-        const integrattionLayout = await IntegrattionLayout.updateOne( {_id}, {
-            system,
-            fileType,
-            layoutType,
-            header,
-            fields
-        })
+        try {
+            const integrattionLayout = await IntegrattionLayout.findByIdAndUpdate( {_id}, {
+                system,
+                fileType,
+                layoutType,
+                header,
+                fields
+            })
 
-        return res.json(integrattionLayout)
+            console.log(` - IntegrattionLayoutController.update --> ${_id} - ${system}`)
+    
+            return res.json(integrattionLayout)
+        } catch (error) {
+            console.log(error)
+            return res.status(400).json({error: 'Não foi possível atualizar os dados'})        
+        }        
     },
 
     async show(req, res) {
         const _id = req.params.id
 
-        const integrattionLayout = await IntegrattionLayout.findOne( {_id} )
+        try {
+            const integrattionLayout = await IntegrattionLayout.findOne( {_id} )
 
-        return res.json(integrattionLayout)
+            console.log(` - IntegrattionLayoutController.show --> ${_id}`)
+
+            return res.json(integrattionLayout)
+        } catch (error) {
+            return res.status(400).json({error: 'Não foi possível mostrar os dados'})
+        } 
     }
 }
