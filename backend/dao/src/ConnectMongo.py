@@ -1,19 +1,18 @@
 from pymongo import MongoClient
 
-nameDB = 'baymax'
-
 
 class ConnectMongo(object):
 
-    def __init__(self):
+    def __init__(self, nameDB='baymax'):
         self._connection =  None
         self._selectDB = None
+        self._nameDB = nameDB
         
     def getConnetion(self):
         if self._connection is None:
             try:
                 self._connection = MongoClient() # conecta num cliente do MongoDB rodando na sua máquina
-                self._selectDB = self._connection.baymax
+                self._selectDB = self._connection[self._nameDB]
             except Exception as e:
                 print(f"** Não foi possível realizar a conexão. O erro é: {e}")
         return self._selectDB
