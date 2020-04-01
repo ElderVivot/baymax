@@ -88,7 +88,7 @@ class ReadExcelToUpdateOrExportData(object):
             amountOriginal = funcoesUteis.treatDecimalFieldInVector(data, 19, self._posionsOfHeaderPayments, "Valor Original")
             accountCode = funcoesUteis.treatNumberFieldInVector(data, 20, self._posionsOfHeaderPayments, "Conta Contabil Domínio")
             codiEmp = funcoesUteis.treatTextFieldInVector(data, 21, self._posionsOfHeaderPayments, "Codigo Empresa")
-            historic = funcoesUteis.treatTextFieldInVector(data, 22, self._posionsOfHeaderPayments, "Historico Planilha")
+            historic = funcoesUteis.treatTextFieldInVector(data, 22, self._posionsOfHeaderPayments, "Historico Financeiro")
             category = funcoesUteis.treatTextFieldInVector(data, 23, self._posionsOfHeaderPayments, "Categoria")
             accountPlan = funcoesUteis.treatTextFieldInVector(data, 24, self._posionsOfHeaderPayments, "Plano de Contas")
             cgcePaying = funcoesUteis.treatTextFieldInVector(data, 25, self._posionsOfHeaderPayments, "CNPJ Pagador")
