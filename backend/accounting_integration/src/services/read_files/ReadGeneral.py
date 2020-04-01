@@ -364,6 +364,7 @@ class ReadGeneral(object):
 
         return valuesOfFileWithAmountPaid
 
+    # esta é a função que faz o de-para do banco do cliente (financeiro) com o banco configurado no mongo na tabela IntegrattionCompanies
     def correlationBankAndAccountBetweenSettingsAndClient(self, valuesOfLine, bankAndAccountCorrelation):
         # :valuesOfLine é o banco que vem lá do financeiro do cliente já passado pelo treatDataLayout
         # :bankAndAccountCorrelation recebe as configurações do de-para dos bancos
@@ -381,7 +382,7 @@ class ReadGeneral(object):
                 correlationAccountNew = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountNew', isInt=True)).replace('-', '')
                 correlationAccountNew = "" if correlationAccountNew == "0" else correlationAccountNew
 
-                if bankFinancy == correlationBankFile and accountFinancy == correlationAccountFile:
+                if bankFinancy.find(correlationBankFile) >= 0 and accountFinancy == correlationAccountFile:
                     valuesOfLine['bank'] = correlationBankNew
                     valuesOfLine['account'] = correlationAccountNew
                     break
@@ -394,6 +395,7 @@ class ReadGeneral(object):
         
         return valuesOfLine
 
+    # esta função é utilizada pra verificar se o banco e a conta está na relação que foi feito em IntegrattionCompanies no Mongo
     def bankAndAccountInTheCorrelation(self, bank, account, bankAndAccountCorrelation):
         # :valuesOfLine é o banco que vem lá do financeiro do cliente já passado pelo treatDataLayout
         # :bankAndAccountCorrelation recebe as configurações do de-para dos bancos
@@ -493,7 +495,7 @@ class ReadGeneral(object):
 
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
-                    valuesOfLine = self.groupsRowData(valuesOfLine)     
+                    valuesOfLine = self.groupsRowData(valuesOfLine)
                     
                     valuesOfLine = self.correlationBankAndAccountBetweenSettingsAndClient(valuesOfLine, bankAndAccountCorrelation)
                     # ele verifica se é necessário somar juros/multa e subtrair o desconto no valor pago
@@ -535,7 +537,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1117
+    codi_emp = 220
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
