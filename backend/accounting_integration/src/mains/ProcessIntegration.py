@@ -36,12 +36,12 @@ class ProcessIntegration(object):
         self._paymentsDates = []
         self._proofsOfPayments = []
         self._extracts = []
-        self._codiEmp = int(input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: '))
-        self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
-        self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
-        # self._codiEmp = 1117
-        # self._inicialDate = '01/02/2020'
-        # self._finalDate = '29/02/2020'
+        # self._codiEmp = int(input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: '))
+        # self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
+        # self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
+        self._codiEmp = 220
+        self._inicialDate = '01/10/2019'
+        self._finalDate = '31/10/2019'
         self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}.json')
         if os.path.exists(self._waySettings) is False:
             getSettingsCompany = GetSettingsCompany(self._codiEmp)

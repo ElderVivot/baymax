@@ -141,7 +141,7 @@ class ComparePaymentsFinalWithDataBase(object):
                 return provider
 
             # pega só os 12 primeiros caracteres pois os dois últimos são apenas de validação do cnpj. Já se for CPF pega todos normal
-            if provider['cgce_for'] == cgce and cgce is not None:
+            if provider['cgce_for_original'] == cgce and cgce is not None:
                 return provider
 
             # agora as verificações pelo nome (esta primeira tem grau alto de confiabilidade)
@@ -202,59 +202,61 @@ class ComparePaymentsFinalWithDataBase(object):
                             funcoesUteis.retornaCampoComoData(funcoesUteis.analyzeIfFieldIsValid(entryNote, "dent_ent"), 2) )
                         amountAccountEntryNote = float(funcoesUteis.analyzeIfFieldIsValid(entryNote, "vcon_ent", 0.0))
 
-                        if noteEntryNote == note and cgceProviderEntryNote == cgceProvider:
-                            return entryNote
+                        if note != 0: # se a nota for válida compara os dados com ela, uma comparação no mínimo tem que ser igual, pq a se a nota tá preenchida ela tem que existir na domínio (mesmo número)
+                            if noteEntryNote == note and cgceProviderEntryNote == cgceProvider:
+                                return entryNote
 
-                        if noteEntryNote == note and issueEntryNote == ddoc_ent and ddoc_ent is not None:
-                            return entryNote
+                            if noteEntryNote == note and issueEntryNote == ddoc_ent and ddoc_ent is not None:
+                                return entryNote
 
-                        if noteEntryNote == note and entryEntryNote == dent_ent and dent_ent is not None:
-                            return entryNote
+                            if noteEntryNote == note and entryEntryNote == dent_ent and dent_ent is not None:
+                                return entryNote
 
-                        if noteEntryNote == note and issueEntryNote == dueDate and dueDate is not None: # a comparação por vencimento e emissão é pq algumas vezes a data de vencimento é a própria emissão
-                            return entryNote
+                            if noteEntryNote == note and issueEntryNote == dueDate and dueDate is not None: # a comparação por vencimento e emissão é pq algumas vezes a data de vencimento é a própria emissão
+                                return entryNote
 
-                        if noteEntryNote == note and amountAccountEntryNote == amountOriginal and amountOriginal > 0:
-                            return entryNote
+                            if noteEntryNote == note and amountAccountEntryNote == amountOriginal and amountOriginal > 0:
+                                return entryNote
 
-                        if noteEntryNote == note and amountAccountEntryNote == amountPayment and amountPayment > 0:
-                            return entryNote
+                            if noteEntryNote == note and amountAccountEntryNote == amountPayment and amountPayment > 0:
+                                return entryNote
+                        else: # se não tiver a nota olha outros pontos de apoios que não são tão confiáveis
+                            if issueEntryNote == ddoc_ent and cgceProviderEntryNote == cgceProvider and ddoc_ent is not None:
+                                return entryNote
 
-                        if issueEntryNote == ddoc_ent and cgceProviderEntryNote == cgceProvider and ddoc_ent is not None:
-                            return entryNote
+                            if entryEntryNote == dent_ent and cgceProviderEntryNote == cgceProvider and dent_ent is not None:
+                                return entryNote
 
-                        if entryEntryNote == dent_ent and cgceProviderEntryNote == cgceProvider and dent_ent is not None:
-                            return entryNote
+                            if issueEntryNote == dueDate and cgceProviderEntryNote == cgceProvider and dueDate is not None:
+                                return entryNote
+                            
+                            if amountAccountEntryNote == amountOriginal and cgceProviderEntryNote == cgceProvider and amountOriginal > 0:
+                                return entryNote
 
-                        if issueEntryNote == dueDate and cgceProviderEntryNote == cgceProvider and dueDate is not None:
-                            return entryNote
-                        
-                        if amountAccountEntryNote == amountOriginal and cgceProviderEntryNote == cgceProvider and amountOriginal > 0:
-                            return entryNote
-
-                        if amountAccountEntryNote == amountPayment and cgceProviderEntryNote == cgceProvider and amountPayment > 0:
-                            return entryNote
+                            if amountAccountEntryNote == amountPayment and cgceProviderEntryNote == cgceProvider and amountPayment > 0:
+                                return entryNote
 
                         # comparação pelo nome, caso as hipóteses acima não retorne nada
                         compareTwoWords = self.compareTwoNames(nameProviderEntryNote, nameProvider)
                         if compareTwoWords["first7LettersEquals"] is True or compareTwoWords["percentWordsEqualsAboutNameTwo"] >= 0.25:
-                            if noteEntryNote == note:
-                                return entryNote
+                            if note != 0: # se a nota for válida compara os dados com ela, uma comparação no mínimo tem que ser igual, pq a se a nota tá preenchida ela tem que existir na domínio (mesmo número)
+                                if noteEntryNote == note:
+                                    return entryNote
+                            else:
+                                if issueEntryNote == ddoc_ent and ddoc_ent is not None:
+                                    return entryNote
 
-                            if issueEntryNote == ddoc_ent and ddoc_ent is not None:
-                                return entryNote
+                                if entryEntryNote == dent_ent and dent_ent is not None:
+                                    return entryNote
 
-                            if entryEntryNote == dent_ent and dent_ent is not None:
-                                return entryNote
+                                if issueEntryNote == dueDate and dueDate is not None:
+                                    return entryNote
+                                
+                                if amountAccountEntryNote == amountOriginal and amountOriginal > 0:
+                                    return entryNote
 
-                            if issueEntryNote == dueDate and dueDate is not None:
-                                return entryNote
-                            
-                            if amountAccountEntryNote == amountOriginal and amountOriginal > 0:
-                                return entryNote
-
-                            if amountAccountEntryNote == amountPayment and amountPayment > 0:
-                                return entryNote
+                                if amountAccountEntryNote == amountPayment and amountPayment > 0:
+                                    return entryNote
 
     def returnDataInstallmentsEntryNote(self, dueDate=None, note=0, cgceProvider=None, ddoc_ent = None, dent_ent = None, amountPayment = 0.0, amountOriginal=0.0):
         if dueDate is None:
@@ -289,23 +291,24 @@ class ComparePaymentsFinalWithDataBase(object):
             # o int é pra poder tirar o .0 de quando é exportado os dados
             note = funcoesUteis.treatNumberField(note, True)
 
-            if dueDateEntryNote == dueDate and noteEntryNote == note:
-                return installment
+            if note != 0: # se a nota for válida compara os dados com ela, uma comparação no mínimo tem que ser igual, pq a se a nota tá preenchida ela tem que existir na domínio (mesmo número)
+                if dueDateEntryNote == dueDate and noteEntryNote == note:
+                    return installment
+            else:
+                if dueDateEntryNote == dueDate and cgceProviderEntryNote == cgceProvider:
+                    return installment
 
-            if dueDateEntryNote == dueDate and cgceProviderEntryNote == cgceProvider:
-                return installment
+                if dueDateEntryNote == dueDate and issueEntryNote == ddoc_ent and ddoc_ent is not None:
+                    return installment
 
-            if dueDateEntryNote == dueDate and issueEntryNote == ddoc_ent and ddoc_ent is not None:
-                return installment
+                if dueDateEntryNote == dueDate and entryEntryNote == dent_ent and dent_ent is not None:
+                    return installment
 
-            if dueDateEntryNote == dueDate and entryEntryNote == dent_ent and dent_ent is not None:
-                return installment
-
-            if dueDateEntryNote == dueDate and amountInstallmentEntryNote == amountOriginal and amountOriginal > 0:
-                return installment
-                
-            if dueDateEntryNote == dueDate and amountInstallmentEntryNote == amountPayment and amountPayment > 0:
-                return installment
+                if dueDateEntryNote == dueDate and amountInstallmentEntryNote == amountOriginal and amountOriginal > 0:
+                    return installment
+                    
+                if dueDateEntryNote == dueDate and amountInstallmentEntryNote == amountPayment and amountPayment > 0:
+                    return installment
 
     def process(self):
         countTotal = len(self._payments)
