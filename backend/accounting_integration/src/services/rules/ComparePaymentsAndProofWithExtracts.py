@@ -218,6 +218,7 @@ class ComparePaymentsAndProofWithExtracts(object):
         self.comparePaymentsWithProof()
 
         countPayments = 0 # este campo vai ser usado pra multiplicar por menos 1 o valor do count quando não encontrar o valor pelo agrupamento do lote mas sim ele separado
+        extract = None
         
         # o range de 1 a 3 é pq primeiro vou rodar o typeComparation com mais confiabilidade (igual a 1), depois rodo com média e fraca por último
         for numberSequencial in range(1, 4):            
@@ -244,7 +245,7 @@ class ComparePaymentsAndProofWithExtracts(object):
                     extract = self.returnDataExtract(paymentDate, amountPaidPerLote, operation, bank, account, typeComparation=numberSequencial)
 
                 # se não conseguir retornar nada ele compara só o amountPaid, talvez no extrato o valor não esteja agrupado, e sim individual
-                if extract is None:
+                if extract is None or len(extract) == 0:
                     extract = self.returnDataExtract(paymentDate, amountPaid, operation, bank, account, typeComparation=numberSequencial)
                     # se encontrar o valor individual então trocar o numberLote pra um número negativo pra não causar problemas depois na exportação
                     if extract is not None:
