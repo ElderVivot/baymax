@@ -277,30 +277,39 @@ class ReadGeneral(object):
         else:
             return amountPaid + amountInterest + amountFine - amountDiscount
 
-    def handleLayoutIsPartidaMultipla(self, currentLine, valuesOfFile):
-        previousLine = funcoesUteis.analyzeIfFieldIsValidMatrix(valuesOfFile, -1, {}, True)
-        numberLote = funcoesUteis.analyzeIfFieldIsValid(previousLine, "numberLote", 0)
+    def handleLayoutIsPartidaMultipla(self, valuesOfFile):
+        valuesOfFilePartidaMultipla = []
 
-        # se não houver campos agrupadores de informações cada registro será um lote sequencial
-        if len(self._groupingFields) == 0:
-            numberLote += 1
-            return numberLote
-        
-        currentField = ""
-        for nameField, valueField in currentLine.items():
-            if funcoesUteis.analyzeIfFieldIsValid(self._groupingFields, nameField, False) is True:
-                currentField = currentField + "-" + funcoesUteis.treatTextField(valueField)
+        for key, currentLine in enumerate(valuesOfFile):
+            previousLine = funcoesUteis.analyzeIfFieldIsValidMatrix(valuesOfFile, key-1, {}, True)
+            numberLote = funcoesUteis.analyzeIfFieldIsValid(previousLine, "numberLote", 0)
 
-        previousField = ""
-        for nameField, valueField in previousLine.items():
-            if funcoesUteis.analyzeIfFieldIsValid(self._groupingFields, nameField, False) is True:
-                previousField = previousField + "-" + funcoesUteis.treatTextField(valueField)
+            # se não houver campos agrupadores de informações cada registro será um lote sequencial
+            if len(self._groupingFields) == 0:
+                numberLote += 1
+                currentLine['numberLote'] = numberLote
+                valuesOfFilePartidaMultipla.append(currentLine)
+                continue # não tem pq processar as linhas abaixo pq o layout não tem campo agrupador
+            
+            currentField = ""
+            for nameField, valueField in currentLine.items():
+                if funcoesUteis.analyzeIfFieldIsValid(self._groupingFields, nameField, False) is True:
+                    currentField = currentField + "-" + funcoesUteis.treatTextField(valueField)
 
-        if currentField == previousField:
-            return numberLote
-        else:
-            numberLote += 1
-            return numberLote
+            previousField = ""
+            for nameField, valueField in previousLine.items():
+                if funcoesUteis.analyzeIfFieldIsValid(self._groupingFields, nameField, False) is True:
+                    previousField = previousField + "-" + funcoesUteis.treatTextField(valueField)
+
+            if currentField == previousField:
+                currentLine['numberLote'] = numberLote
+                valuesOfFilePartidaMultipla.append(currentLine)
+            else:
+                numberLote += 1
+                currentLine['numberLote'] = numberLote
+                valuesOfFilePartidaMultipla.append(currentLine)
+    
+        return valuesOfFilePartidaMultipla
 
     # esta função vai filtrar apenas as linhas que possuem o requisito válido pra ser impresso, ou seja, pra gerar a informação
     def isValidLineToPrint(self, data):
@@ -506,7 +515,6 @@ class ReadGeneral(object):
                     if isValid is True and isValidDataThisCompanie is True:
                         valuesOfLine = self.multiplePerLessOneWhenNecessary(valuesOfLine)
                         if layoutType == 'account_paid':
-                            valuesOfLine['numberLote'] = self.handleLayoutIsPartidaMultipla(valuesOfLine, valuesOfFilePayments)
                             valuesOfFilePayments.append(valuesOfLine.copy())
                         elif layoutType == 'extract_bank':
                             valuesOfFileExtracts.append(valuesOfLine.copy())
@@ -514,9 +522,6 @@ class ReadGeneral(object):
                 except Exception as e:
                     print(e.with_traceback())
                     
-        # soma o total pago por lote
-        valuesOfFilePayments = self.sumAmountPaidPerLote(valuesOfFilePayments)
-
         return [valuesOfFilePayments, valuesOfFileExtracts]
 
     def processAll(self):
@@ -529,7 +534,11 @@ class ReadGeneral(object):
                     self._payments.append(process[0])
                     self._extracts.append(process[1])
 
-        return [funcoesUteis.removeAnArrayFromWithinAnother(self._payments), funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)]
+        self._payments = funcoesUteis.removeAnArrayFromWithinAnother(self._payments)
+        self._payments = self.handleLayoutIsPartidaMultipla(self._payments)
+        self._payments = self.sumAmountPaidPerLote(self._payments)
+
+        return [self._payments, funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)]
 
 
 

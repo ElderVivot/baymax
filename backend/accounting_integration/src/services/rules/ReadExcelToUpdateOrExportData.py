@@ -31,7 +31,7 @@ class ReadExcelToUpdateOrExportData(object):
                     self._posionsOfHeaderPayments[nameField] = keyField
                 continue
 
-            numberLote = funcoesUteis.treatNumberFieldInVector(data, 1, self._posionsOfHeaderPayments, "Lote", isInt=True)
+            numberLote = int(funcoesUteis.treatDecimalFieldInVector(data, 1, self._posionsOfHeaderPayments, "Lote"))
             document = funcoesUteis.treatTextFieldInVector(data, 2, self._posionsOfHeaderPayments, "Documento")
 
             findNote = funcoesUteis.treatTextFieldInVector(data, 3, self._posionsOfHeaderPayments, "NF na Domínio?")

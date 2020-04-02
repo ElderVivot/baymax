@@ -38,7 +38,7 @@ class GenerateExportDominio(object):
 
         for key, currentLine in enumerate(valuesOfFile):
             previousLine = funcoesUteis.analyzeIfFieldIsValidMatrix(valuesOfFile, key-1, {}, True)
-            previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousLine, "numberLote")
+            previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousLine, "numberLote", 0)
 
             currentNumberLote = funcoesUteis.analyzeIfFieldIsValid(currentLine, "numberLote")
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(currentLine, "amountPaid")
@@ -180,6 +180,8 @@ class GenerateExportDominio(object):
 
         numberLotesProcessed = []
 
+        print(self._payments)
+
         try:
             payments = sorted(self._payments, key=itemgetter('numberLote'))
         except Exception:
@@ -192,6 +194,7 @@ class GenerateExportDominio(object):
             accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeBank", 0), isInt=True)
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(payment, "amountPaid", 0)
             numberLote = funcoesUteis.analyzeIfFieldIsValid(payment, "numberLote")
+            # print(numberLote, amountPaid, accountCodeDebit, accountCodeCredit, payment)
             if accountCodeDebit > 0 and accountCodeCredit > 0:
 
                 # somente gera o cabeçalho e o total do lote caso ainda não tenha processado aquele 'numberLote'
