@@ -22,6 +22,26 @@ let validationSchema = Yup.object().shape({
         positionInFileEnd: Yup.number(),
         nameColumn: Yup.string(),
         formatDate: Yup.string(),
+        splitField: Yup.string(),
+        positionFieldInTheSplit: Yup.number(),
+        positionFieldInTheSplitEnd: Yup.number(),
+        informationIsOnOneLineBelowTheMain: Yup.boolean(),
+        lineThatTheDataIs: Yup.string()
+    })),
+    validationLineToPrint: Yup.array().of( Yup.object().shape({
+        nameField: String,
+        typeValidation: String,
+        valueValidation: String
+    })),
+    linesOfFile: Yup.array().of( Yup.object().shape({
+        nameOfLine: String,
+        validations: Yup.array().of( Yup.object().shape({
+            positionInFile: Number,
+            positionInFileEnd: Number,
+            typeValidation: String,
+            valueValidation: String,
+            nextValidationOrAnd: String
+        }))    
     }))
 })
 
@@ -35,8 +55,28 @@ let initialValues = {
         positionInFile: "",
         positionInFileEnd: "",
         nameColumn: "",
-        formatDate: ""
-    } ]
+        formatDate: "",
+        splitField: "",
+        positionFieldInTheSplit: 0,
+        positionFieldInTheSplitEnd: 0,
+        informationIsOnOneLineBelowTheMain: false,
+        lineThatTheDataIs: ""
+    } ],
+    validationLineToPrint: [{
+        nameField: "",
+        typeValidation: "",
+        valueValidation: ""
+    }],
+    linesOfFile: [{
+        nameOfLine: "",
+        validations: [{
+            positionInFile: "",
+            positionInFileEnd: "",
+            typeValidation: "",
+            valueValidation: "",
+            nextValidationOrAnd: ""
+        }]        
+    }]
 }
 
 const fileTypes = [
@@ -84,7 +124,12 @@ export default function IntegrattionLayouts({history}){
     }, [id])
     
     if(integrattionLayout._id !== undefined){
+        
         initialValues = integrattionLayout
+
+        for (var [key, value] of Object.entries(integrattionLayout)) {
+            console.log(key + ' ' + value);
+        }
         // initialValues.fields.map()
     } 
 

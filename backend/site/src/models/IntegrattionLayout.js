@@ -13,7 +13,27 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
         positionInFile: Number,
         positionInFileEnd: Number,
         nameColumn: String,
-        formatDate: String
+        formatDate: String,
+        splitField: String,
+        positionFieldInTheSplit: Number,
+        positionFieldInTheSplitEnd: Number,
+        informationIsOnOneLineBelowTheMain: Boolean
+    }],
+    validationLineToPrint: [{
+        nameField: String,
+        typeValidation: String,
+        valueValidation: String
+    }],
+    linesOfFile: [{
+        // _id: new mongoose.Types.ObjectId(),
+        nameOfLine: String,
+        validations: [{
+            positionInFile: Number,
+            positionInFileEnd: Number,
+            typeValidation: String,
+            valueValidation: String,
+            nextValidationOrAnd: String
+        }]        
     }]
 })
 

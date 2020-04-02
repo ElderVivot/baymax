@@ -39,7 +39,7 @@ class extractAccountBalance():
         self._dbMongo = self._connectionMongo.getConnetion()
         self._collection = self._dbMongo['AccountBalance']
 
-    def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2013, filterMonthEnd=0, filterYearEnd=0):
+    def exportData(self, filterCompanie=0, filterMonthStart=1, filterYearStart=2015, filterMonthEnd=0, filterYearEnd=0):
         filterMonthEnd = self._currentMonth if filterMonthEnd == 0 else filterMonthEnd
         filterYearEnd = self._currentYear if filterYearEnd == 0 else filterYearEnd
         
@@ -115,6 +115,7 @@ class extractAccountBalance():
                             "   INNER JOIN bethadba.geempre AS emp"
                                  "   ON    emp.codi_emp = con.codi_emp"     
                       f"   WHERE emp.codi_emp = {codi_emp}"
+                      "      AND saldo <> 0"
                    "   ORDER BY emp.codi_emp, con.clas_cta, con.nome_cta" )
                     
                     self._cursor.execute(sql)
@@ -124,20 +125,14 @@ class extractAccountBalance():
                     data = json.loads(df.to_json(orient='records', date_format='iso'))
                     for accountBalance in data:
                         accountBalance['year'] = year
-                        print(type(accountBalance))
-                        # self._collection.replace_one( {
-                        #         "codi_emp": accountBalance['codi_emp'],
-                        #         "codi_cta": accountBalance['codi_cta'],
-                        #         "year": accountBalance['year']
-                        #     },
-                        #     { "$set": accountBalance },
-                        #     upsert=True
-                        # )
-                        # existsCompanie = self._collection.find_one( { "codi_emp": companie['codi_emp'] } )
-                        # if existsCompanie is None:
-                        #     self._collection.insert_one(companie)
-                        # else:
-                        #     self._collection.update_one( { "codi_emp": companie['codi_emp'] }, { "$set": companie} )
+                        self._collection.update_one( {
+                                "codi_emp": accountBalance['codi_emp'],
+                                "codi_cta": accountBalance['codi_cta'],
+                                "year": accountBalance['year']
+                            },
+                            { "$set": accountBalance },
+                            upsert=True
+                        )
 
 
                     print('')
