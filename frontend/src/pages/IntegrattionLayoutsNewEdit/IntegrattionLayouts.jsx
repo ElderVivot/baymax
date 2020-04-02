@@ -106,7 +106,7 @@ export default function IntegrattionLayouts({history}){
                             let response = undefined
 
                             if(id !== undefined){
-                                response = await api.post(`/integrattion_layouts/${id}`, { ...values } )
+                                response = await api.put(`/integrattion_layouts/${id}`, { ...values } )
                             } else {
                                 response = await api.post('/integrattion_layouts', { ...values } )
                             }

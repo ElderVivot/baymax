@@ -60,5 +60,19 @@ module.exports = {
         } catch (error) {
             return res.status(400).json({error: 'Não foi possível mostrar os dados'})
         } 
+    },
+
+    async delete(req, res) {
+        const _id = req.params.id
+
+        try {
+            const integrattionLayout = await IntegrattionLayout.findByIdAndDelete( { _id })
+
+            console.log(` - IntegrattionLayoutController.delete --> ${_id} - ${system}`)
+
+            return res.json(integrattionLayout)
+        } catch (error) {
+            return res.status(400).json({error: 'Não foi possível deletar os dados'})
+        } 
     }
 }

@@ -15,6 +15,32 @@ const IntegrattionLayoutsList = ( {history} ) => {
         history.push('/integrattion_layouts')
     }
 
+    const deleteIntegrattionLayout = async (id) => {
+        const wishDelete = window.confirm("Deseja deletar?")
+        if(wishDelete === true){
+            try {
+                const response = await api.delete(`/integrattion_layouts/${id}`)
+
+                // if(response.status === 200){
+                //     return(
+                //         <div class="alert alert-primary" role="alert">Layout excluído com sucesso</div>
+                //     )                    
+                // } else {
+                //     return(
+                //         <div class="alert alert-danger" role="alert">Não foi possível deletar. Tente novamente</div>
+                //     )                    
+                // }
+            } catch (error) {
+                console.log(error)
+                // return(
+                //     <div class="alert alert-danger" role="alert">Não foi possível deletar. Tente novamente</div>
+                // )                
+            }
+            
+            history.push('/integrattion_layouts_list')
+        }
+    }
+
     const systemFilter = textFilter({
         placeholder: 'Informe o nome sistema',
         style: { height: 25 }
@@ -70,8 +96,7 @@ const IntegrattionLayoutsList = ( {history} ) => {
                     <button className="btn btn-warning ml-2 btn-sm btn10px btn10px" type="button" onClick={() => editIntegrattionLayout(row.id)}>
                         <i className="fa fa-pencil-alt"></i>
                     </button>
-                    <button className="btn btn-danger ml-2 btn-sm btn10px btn10px" type="button" 
-                        >
+                    <button className="btn btn-danger ml-2 btn-sm btn10px btn10px" type="button" onClick={() => deleteIntegrattionLayout(row.id)}>
                         <i className="fa fa-trash"></i>
                     </button>
                 </div>
