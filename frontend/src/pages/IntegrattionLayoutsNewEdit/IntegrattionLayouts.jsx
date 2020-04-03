@@ -142,7 +142,6 @@ export default function IntegrattionLayouts({history}){
             if( key === "fields" && integrattionLayout[key].length > 0 ){
                 for(let idxFields in integrattionLayout[key]){
                     for(let [keyFields, valueFields] of Object.entries(initialValues[key][0])){
-                        console.log(keyFields, integrattionLayout[key][idxFields][keyFields], valueFields)
                         if( integrattionLayout[key][idxFields][keyFields] === undefined ){
                             integrattionLayout[key][idxFields][keyFields] = valueFields
                         }
