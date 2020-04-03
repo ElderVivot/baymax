@@ -6,7 +6,7 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
     fileType: String,
     layoutType: String,
     header: [{
-        nameField: String
+        nameColumn: String
     }],
     fields: [{
         nameField: String,
@@ -25,7 +25,6 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
         valueValidation: String
     }],
     linesOfFile: [{
-        // _id: new mongoose.Types.ObjectId(),
         nameOfLine: String,
         validations: [{
             positionInFile: Number,

@@ -10,14 +10,16 @@ module.exports = {
     },
 
     async store(req, res) {
-        const { system, fileType, layoutType, header, fields } = req.body
+        const { system, fileType, layoutType, header, fields, validationLineToPrint, linesOfFile } = req.body
 
         const integrattionLayout = await IntegrattionLayout.create({
             system,
             fileType,
             layoutType,
             header,
-            fields
+            fields,
+            validationLineToPrint,
+            linesOfFile
         })
 
         console.log(` - IntegrattionLayoutController.store --> ${system}`)
@@ -28,7 +30,7 @@ module.exports = {
     async update(req, res) {
         const _id = req.params.id
 
-        const { system, fileType, layoutType, header, fields } = req.body
+        const { system, fileType, layoutType, header, fields, validationLineToPrint, linesOfFile } = req.body
 
         try {
             const integrattionLayout = await IntegrattionLayout.findByIdAndUpdate( {_id}, {
@@ -36,7 +38,9 @@ module.exports = {
                 fileType,
                 layoutType,
                 header,
-                fields
+                fields,
+                validationLineToPrint,
+                linesOfFile
             })
 
             console.log(` - IntegrattionLayoutController.update --> ${_id} - ${system}`)

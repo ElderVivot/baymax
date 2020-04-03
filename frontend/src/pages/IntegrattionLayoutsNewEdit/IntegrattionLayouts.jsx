@@ -14,7 +14,7 @@ let validationSchema = Yup.object().shape({
     fileType: Yup.string().required('Selecione uma opção válida'),
     layoutType: Yup.string().required('Selecione uma opção válida'),
     header: Yup.array().of( Yup.object().shape({
-        nameColumn: Yup.string().required('O nome da coluna é obrigatório')
+        nameColumn: Yup.string()
     })),
     fields: Yup.array().of( Yup.object().shape({ 
         nameField: Yup.string().required('Selecione uma opção válida'),
@@ -29,18 +29,18 @@ let validationSchema = Yup.object().shape({
         lineThatTheDataIs: Yup.string()
     })),
     validationLineToPrint: Yup.array().of( Yup.object().shape({
-        nameField: String,
-        typeValidation: String,
-        valueValidation: String
+        nameField: Yup.string(),
+        typeValidation: Yup.string(),
+        valueValidation: Yup.string()
     })),
     linesOfFile: Yup.array().of( Yup.object().shape({
-        nameOfLine: String,
+        nameOfLine: Yup.string(),
         validations: Yup.array().of( Yup.object().shape({
-            positionInFile: Number,
-            positionInFileEnd: Number,
-            typeValidation: String,
-            valueValidation: String,
-            nextValidationOrAnd: String
+            positionInFile: Yup.number(),
+            positionInFileEnd: Yup.number(),
+            typeValidation: Yup.string(),
+            valueValidation: Yup.string(),
+            nextValidationOrAnd: Yup.string()
         }))    
     }))
 })
@@ -53,7 +53,7 @@ let initialValues = {
     fields: [ {
         nameField: "",
         positionInFile: "",
-        positionInFileEnd: "",
+        positionInFileEnd: 0,
         nameColumn: "",
         formatDate: "",
         splitField: "",
@@ -70,11 +70,11 @@ let initialValues = {
     linesOfFile: [{
         nameOfLine: "",
         validations: [{
-            positionInFile: "",
-            positionInFileEnd: "",
+            positionInFile: 0,
+            positionInFileEnd: 0,
             typeValidation: "",
             valueValidation: "",
-            nextValidationOrAnd: ""
+            nextValidationOrAnd: "and"
         }]        
     }]
 }
@@ -124,12 +124,62 @@ export default function IntegrattionLayouts({history}){
     }, [id])
     
     if(integrattionLayout._id !== undefined){
-        
-        initialValues = integrattionLayout
 
-        for (var [key, value] of Object.entries(integrattionLayout)) {
-            console.log(key + ' ' + value);
+        for (let [key, value] of Object.entries(initialValues)) {
+            if( integrattionLayout[key] === undefined ){
+                integrattionLayout[key] = value
+            }
+            // este for pega os campos do header que não existem no mongo e adiciona o valor padrão. Isto é necessário por causa disto daqui do react https://reactjs.org/docs/forms.html#controlled-components
+            if( key === "header" && integrattionLayout[key].length > 0 ){
+                for(let idxHeader in integrattionLayout[key]){
+                    for(let [keyHeader, valueHeader] of Object.entries(initialValues[key][0])){
+                        if( integrattionLayout[key][idxHeader][keyHeader] === undefined ){
+                            integrattionLayout[key][idxHeader][keyHeader] = valueHeader
+                        }
+                    }
+                }
+            }
+            if( key === "fields" && integrattionLayout[key].length > 0 ){
+                for(let idxFields in integrattionLayout[key]){
+                    for(let [keyFields, valueFields] of Object.entries(initialValues[key][0])){
+                        console.log(keyFields, integrattionLayout[key][idxFields][keyFields], valueFields)
+                        if( integrattionLayout[key][idxFields][keyFields] === undefined ){
+                            integrattionLayout[key][idxFields][keyFields] = valueFields
+                        }
+                    }
+                }
+            }
+            if( key === "validationLineToPrint" && integrattionLayout[key].length > 0 ){
+                for(let idxValidationLineToPrint in integrattionLayout[key]){
+                    for(let [keyValidationLineToPrint, valueValidationLineToPrint] of Object.entries(initialValues[key][0])){
+                        if( integrattionLayout[key][idxValidationLineToPrint][keyValidationLineToPrint] === undefined ){
+                            integrattionLayout[key][idxValidationLineToPrint][keyValidationLineToPrint] = valueValidationLineToPrint
+                        }
+                    }
+                }
+            }
+            if( key === "linesOfFile" && integrattionLayout[key].length > 0 ){
+                for(let idxLinesOfFile in integrattionLayout[key]){
+                    for(let [keyLinesOfFile, valueLinesOfFile] of Object.entries(initialValues[key][0])){
+                        if( integrattionLayout[key][idxLinesOfFile][keyLinesOfFile] === undefined ){
+                            integrattionLayout[key][idxLinesOfFile][keyLinesOfFile] = valueLinesOfFile
+                            // este for de baixo pro array de validations que tem dentro do linesOfFile
+                            if( keyLinesOfFile === "validations" && integrattionLayout[key][idxLinesOfFile][keyLinesOfFile].length > 0 ){
+                                for(let idxValidations in integrattionLayout[key][idxLinesOfFile][keyLinesOfFile]){
+                                    for(let [keyValidations, valueValidations] of Object.entries(integrattionLayout[key][0][keyLinesOfFile][0])){
+                                        if( integrattionLayout[key][idxLinesOfFile][keyLinesOfFile][idxValidations][keyValidations] === undefined ){
+                                            integrattionLayout[key][idxLinesOfFile][keyLinesOfFile][idxValidations][keyValidations] = valueValidations
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+        initialValues = integrattionLayout
         // initialValues.fields.map()
     } 
 
@@ -143,7 +193,7 @@ export default function IntegrattionLayouts({history}){
                 <Formik
                     enableReinitialize={true}
                     initialValues={initialValues}
-                    validationSchema={validationSchema}
+                    // validationSchema={validationSchema}
                     onSubmit={ async (values, { setSubmitting, resetForm }) => {
                         setSubmitting(true)
 
@@ -168,8 +218,9 @@ export default function IntegrattionLayouts({history}){
                     }}
                 >
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
-                        <form onSubmit={handleSubmit} className="container-fluid">            
-                            <div className="form-group row mb-0">
+                        <form onSubmit={handleSubmit} className="container-fluid">
+                            <pre>{JSON.stringify(values, null, 2)}</pre>
+                            <div className="form-group row mb-0">                            
                                 <label htmlFor="system" className="col-form-label font-weight-600">Sistema:</label>
                                 <div className="col">
                                     <input 

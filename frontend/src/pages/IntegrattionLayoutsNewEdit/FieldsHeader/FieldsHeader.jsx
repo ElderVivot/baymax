@@ -46,7 +46,6 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
                         <input 
                             type="text"
                             name={`${fieldPosition}.nameColumn`}
-                            id={`${fieldPosition}.nameColumn`}
                             className={`form-control ${validateField("nameColumn") }`}
                             value={fieldsHeader[idx].nameColumn}
                             onChange={handleChange}

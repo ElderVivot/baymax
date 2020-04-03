@@ -36,9 +36,8 @@ const IntegrattionLayoutsList = ( {history} ) => {
                 //     <div class="alert alert-danger" role="alert">Não foi possível deletar. Tente novamente</div>
                 // )                
             }
-            
-            history.push('/integrattion_layouts_list')
         }
+        history.push('/integrattion_layouts_list')
     }
 
     const systemFilter = textFilter({
