@@ -1,8 +1,11 @@
 import './styles.css'
 import React, { useEffect, useState } from 'react'
 import api from '../../services/api'
-import BootstrapTable from 'react-bootstrap-table-next'
-import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
+import MaterialTabel from 'material-table'
+import IconEdit from '../../components/IconEdit'
+import IconDelete from '../../components/IconDelete'
+import IconNew from '../../components/IconNew'
+import IconDownload from '../../components/IconDownload'
 
 const IntegrattionLayoutsList = ( {history} ) => {
     const [integrattionLayouts, setIntegrattionLayouts ] = useState([])
@@ -40,67 +43,32 @@ const IntegrattionLayoutsList = ( {history} ) => {
         history.push('/integrattion_layouts_list')
     }
 
-    const systemFilter = textFilter({
-        placeholder: 'Informe o nome sistema',
-        style: { height: 25 }
-    })
-    const fileTypeFilter = textFilter({
-        placeholder: 'Informe o tipo arquivo',
-        style: { height: 25 }
-    })
-    const filterLenght = textFilter({
-        placeholder: 'Informe a Quantidade',
-        comparator: Comparator.EQ,
-        style: { height: 25 }
-    })
-
-    const columns = [{
-        dataField: 'system',
-        text: 'Sistema',
-        sort: true,
-        filter: systemFilter
+    const columns = [{        
+        field: 'system',
+        title: 'Sistema',
+        cellStyle: {
+            width: 'calc(40%)'
+        }        
     }, {
-        dataField: 'fileType',
-        text: 'Tipo Arquivo',
-        sort: true,
-        filter: fileTypeFilter
-    }, {
-        dataField: 'lenghtHeader',
-        text: 'Qtd Campos Cabeçalho',
-        sort: true,
-        filter: filterLenght
-    }, {
-        dataField: 'lenghtFields',
-        text: 'Qtd Campos do Arquivo',
-        sort: true,
-        filter: filterLenght
-    }, { 
-        dataField: "actions", 
-        isDummyField: true,
-        text: "Ações",
-        sort: false,
-        headerFormatter: (column, colIndex) => {
-            return (
-                <div>
-                    <div style={{"marginBottom": 2}}>{column.text}</div>
-                    <button className="btn btn-success btn-sm btn10px" style={{"marginTop": 1}} type="button" onClick={addIntegrattionLayout}>
-                        <i className="fa fa-plus"></i>
-                    </button>
-                </div>
-            )
-        },
-        formatter: (cellContent, row) => {
-            return (
-                <div>
-                    <button className="btn btn-warning ml-2 btn-sm btn10px btn10px" type="button" onClick={() => editIntegrattionLayout(row.id)}>
-                        <i className="fa fa-pencil-alt"></i>
-                    </button>
-                    <button className="btn btn-danger ml-2 btn-sm btn10px btn10px" type="button" onClick={() => deleteIntegrattionLayout(row.id)}>
-                        <i className="fa fa-trash"></i>
-                    </button>
-                </div>
-            )
+        field: 'fileType',
+        title: 'Tipo Arquivo',
+        cellStyle: {
+            width: 'calc(20%)'
         }
+    }, {
+        field: 'lenghtHeader',
+        title: 'Qtd Campos Cabeçalho',
+        cellStyle: {
+            width: 'calc(15%)'
+        }
+    }, {
+        field: 'lenghtFields',
+        title: 'Qtd Campos do Arquivo',
+        cellStyle: {
+            width: 'calc(15%)'
+        }
+    }, {
+        // este objeto vazio exsit pra largura do header ficar correta
     }]
     
     useEffect(() => {
@@ -130,14 +98,63 @@ const IntegrattionLayoutsList = ( {history} ) => {
 
     return (
         <main className="content card container-fluid pt-3">
-            <div className="container-fluid d-flex text-center justify-content-center header-table border py-1">Layouts</div>
-            <BootstrapTable 
-                keyField='id' 
+            <MaterialTabel
+                options={{
+                    filtering: true,
+                    grouping: true, 
+                    actionsColumnIndex: -1,
+                    exportButton: true,
+                    paging: false
+                }}
+                localization={{
+                    header: {
+                        actions: 'Ações'
+                    },
+                    grouping: {
+                        placeholder: 'Arraste um campo aqui para agrupar'
+                    },
+                    toolbar: {
+                        exportTitle: "Exportar",
+                        exportName: "Exportar para CSV",
+                        searchTooltip: "Pesquisar",
+                        searchPlaceholder: "Pesquisar",
+                        nRowsSelected: '{0} linha(s) selecionada'
+                    },
+                    body: {
+                        emptyDataSourceMessage: 'Não há dados para serem exibidos',
+                        filterRow: {
+                            filterTooltip: 'Filtro'
+                        }
+                    },
+                    pagination: {
+                        labelRowsSelect: "linhas",
+                        labelDisplayedRows: '{from}-{to} de {count}'
+                    }
+                }}
                 data={ integrattionLayoutsListData } 
                 columns={ columns } 
-                filter={ filterFactory() }    
-                bordered
-                hover
+                title="Layouts"
+                actions={[
+                    {
+                        icon: IconNew,
+                        tooltip: 'Adicionar',
+                        isFreeAction: true,
+                        onClick: () => addIntegrattionLayout()
+                    },
+                    _ => ({
+                        icon: IconEdit,
+                        tooltip: 'Editar',
+                        iconProps: {
+                            classes: {label: 'teste'}
+                        },
+                        onClick: (event, rowData) => editIntegrattionLayout(rowData.id)
+                    }),
+                    _ => ({
+                        icon: IconDelete,
+                        tooltip: 'Deletar',
+                        onClick: (event, rowData) => deleteIntegrattionLayout(rowData.id)
+                    })
+                ]}
             />
         </main>
       )

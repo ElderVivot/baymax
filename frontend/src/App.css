@@ -14,7 +14,7 @@
 
 * {
     box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .app {
@@ -55,21 +55,21 @@ footer.footer {
 .text-settings-header {
     color:  #fff !important;
     font-size: 0.95rem !important;
-    font-weight: 530;
+    font-weight: 350 !important;
 }
 
 .text-settings-general {
     font-size: 0.85rem !important;
-    font-weight: 530;
+    font-weight: 350 !important;
 }
 
-.header-table{
+/* .header-table{
     font-size: 1rem !important;
     font-weight: 600;
     border-color: gray !important;
     background-color: rgba(0,0,0,.075) !important;
-}
+} */
 
 .font-weight-600{
-    font-weight: 600 !important;
+    font-weight: 500 !important;
 }

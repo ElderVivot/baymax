@@ -3,7 +3,7 @@ import React from 'react'
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap'
 
 export default props =>
-    <header className="header d-flex align-items-end pl-4 mb-0">
+    <header className="header d-flex align-items-end pl-4 mb-0 sticky-top">
         <Navbar expand="lg pb-1 pl-4">
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">

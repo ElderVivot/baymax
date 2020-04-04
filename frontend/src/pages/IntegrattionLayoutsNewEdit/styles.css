@@ -1,6 +1,6 @@
-input, button, label, select, span, .selected, td, .filter-label > input {
+input, button, label, select, span, .selected, td, tr, .filter-label > input {
     font-size: 0.83rem !important;
-    font-weight: 530;
+    font-weight: 400 !important;
 }
 
 .modal-title {
@@ -12,11 +12,6 @@ input, button, label, select, span, .selected, td, .filter-label > input {
     max-width: none !important;
 }
 
-/* .fields-of-table {
-    font-size: 0.75rem !important;
-    font-weight: 600;
-} */
-
 .has-error, .has-error > div {
     border-color:red !important;
 }
@@ -27,16 +22,20 @@ th, td {
 }
 
 th {
-    font-size: 0.83rem !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
     border-color: rgb(180, 179, 179) !important;
-    background-color: rgba(0,0,0,.075) !important;
+    /* background-color: rgba(0,0,0,.075) !important; */
 }
 
-.filter-label {
+/* header dos cabeçalho das tabelas material-ui-table */
+th > span > div, th > span {
+    font-weight: 500 !important;
+}
+
+/* .filter-label {
     margin-bottom: 2px;
     margin-top: 2px;
-}
+} */
 
 .btn10px {
     font-size: 10px !important;
@@ -56,16 +55,38 @@ th {
     vertical-align: middle;
 }
 
+/* são as configurações das tags react-select questão de altura e posicionamento das setinhas */
 .css-yk16xz-control, .css-1pahdxg-control{
     height: calc(1.5em + .75rem + 2px) !important;
     min-height: calc(1.5em + .75rem + 2px) !important;
 }
-
 .css-1hwfws3 {
     position: initial !important;
 }
-
 .css-tlfecz-indicatorContainer, .css-1gtu0rj-indicatorContainer{
     padding: 6px !important;
     position: initial !important;
 }
+
+/* ------- CONFIGURAÇÕES NECESSÁRIAS PRO DATATABLE-UI ------- */
+
+/* buttons que estão nas linhas */
+td > div > button {
+    padding: 2px 6px !important;
+}
+
+/* centralizar todas as células das colunas */
+.MuiTableCell-root {
+    text-align: center !important;
+}
+
+/* o ações (actions) trás este ícone não sei pra que, pro texto ('ações') ficar alinhado ao centro tiro ele */
+.MuiSvgIcon-root {
+    display: none !important;
+}
+
+/* quando faço agrupamento (grouping) quero alinhar os campos agrupados a esquerda, este é o texto que faz isto */
+.MuiTableCell-paddingNone{
+    text-align: left !important;
+}
+
