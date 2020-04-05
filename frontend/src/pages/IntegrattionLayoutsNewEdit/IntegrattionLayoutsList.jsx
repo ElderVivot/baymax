@@ -5,7 +5,7 @@ import MaterialTabel from 'material-table'
 import IconEdit from '../../components/IconEdit'
 import IconDelete from '../../components/IconDelete'
 import IconNew from '../../components/IconNew'
-import IconDownload from '../../components/IconDownload'
+// import IconDownload from '../../components/IconDownload'
 
 const IntegrattionLayoutsList = ( {history} ) => {
     const [integrattionLayouts, setIntegrattionLayouts ] = useState([])

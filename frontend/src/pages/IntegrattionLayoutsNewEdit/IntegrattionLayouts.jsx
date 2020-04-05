@@ -24,17 +24,21 @@ let validationSchema = Yup.object().shape({
         formatDate: Yup.string(),
         splitField: Yup.string(),
         positionFieldInTheSplit: Yup.number(),
-        positionFieldInTheSplitEnd: Yup.number(),
-        informationIsOnOneLineBelowTheMain: Yup.boolean(),
-        lineThatTheDataIs: Yup.string()
+        positionFieldInTheSplitEnd: Yup.number(),        
+        lineThatTheDataIs: Yup.object().shape({ 
+            value: Yup.string(),
+            label: Yup.string()
+        })
     })),
     validationLineToPrint: Yup.array().of( Yup.object().shape({
         nameField: Yup.string(),
         typeValidation: Yup.string(),
-        valueValidation: Yup.string()
+        valueValidation: Yup.string(),
+        nextValidationOrAnd: Yup.string()
     })),
     linesOfFile: Yup.array().of( Yup.object().shape({
         nameOfLine: Yup.string(),
+        informationIsOnOneLineBelowTheMain: Yup.boolean(),
         validations: Yup.array().of( Yup.object().shape({
             positionInFile: Yup.number(),
             positionInFileEnd: Yup.number(),
@@ -59,16 +63,20 @@ let initialValues = {
         splitField: "",
         positionFieldInTheSplit: 0,
         positionFieldInTheSplitEnd: 0,
-        informationIsOnOneLineBelowTheMain: false,
-        lineThatTheDataIs: ""
+        lineThatTheDataIs: {
+            value: '',
+            label: ''
+        }
     } ],
     validationLineToPrint: [{
         nameField: "",
         typeValidation: "",
-        valueValidation: ""
+        valueValidation: "",
+        nextValidationOrAnd: "and"
     }],
     linesOfFile: [{
         nameOfLine: "",
+        informationIsOnOneLineBelowTheMain: false,
         validations: [{
             positionInFile: 0,
             positionInFileEnd: 0,
@@ -179,7 +187,6 @@ export default function IntegrattionLayouts({history}){
         }
 
         initialValues = integrattionLayout
-        // initialValues.fields.map()
     } 
 
     return (
@@ -337,11 +344,16 @@ export default function IntegrattionLayouts({history}){
                                                 fieldsFile={values.fields}
                                                 setFieldValue={setFieldValue}
                                                 initialValues={values.fields}
+                                                fileType={values.fileType}
                                             /> 
                                         ))
                                     }
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <div className="form row mt-2">
+                                <label className="col-form-label font-weight-600">Os dados deste layout deverão ser gerados apenas se:</label>                                
                             </div>
 
                             <div className="form-row">

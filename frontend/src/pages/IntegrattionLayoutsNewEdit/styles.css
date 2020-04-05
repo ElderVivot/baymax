@@ -1,4 +1,4 @@
-input, button, label, select, span, .selected, td, tr, .filter-label > input {
+input, button, label, select, span, .selected, td, tr, .filter-label > input, div, p {
     font-size: 0.83rem !important;
     font-weight: 400 !important;
 }
@@ -8,7 +8,7 @@ input, button, label, select, span, .selected, td, tr, .filter-label > input {
 }
 
 .width-modal {
-    width: 50rem !important;
+    width: 75rem !important;
     max-width: none !important;
 }
 
@@ -26,16 +26,6 @@ th {
     border-color: rgb(180, 179, 179) !important;
     /* background-color: rgba(0,0,0,.075) !important; */
 }
-
-/* header dos cabeçalho das tabelas material-ui-table */
-th > span > div, th > span {
-    font-weight: 500 !important;
-}
-
-/* .filter-label {
-    margin-bottom: 2px;
-    margin-top: 2px;
-} */
 
 .btn10px {
     font-size: 10px !important;
@@ -70,23 +60,43 @@ th > span > div, th > span {
 
 /* ------- CONFIGURAÇÕES NECESSÁRIAS PRO DATATABLE-UI ------- */
 
+/* header dos cabeçalho das tabelas */
+th > span > div, th > span {
+    font-weight: 500 !important;
+}
 /* buttons que estão nas linhas */
 td > div > button {
     padding: 2px 6px !important;
 }
-
 /* centralizar todas as células das colunas */
 .MuiTableCell-root {
     text-align: center !important;
 }
-
 /* o ações (actions) trás este ícone não sei pra que, pro texto ('ações') ficar alinhado ao centro tiro ele */
-.MuiSvgIcon-root {
+.MuiTableSortLabel-iconDirectionAsc {
     display: none !important;
 }
-
 /* quando faço agrupamento (grouping) quero alinhar os campos agrupados a esquerda, este é o texto que faz isto */
 .MuiTableCell-paddingNone{
     text-align: left !important;
+}
+/* retirado o padding e margin do accord */
+.MuiExpansionPanelSummary-content, .MuiExpansionPanelSummary-root {
+    margin: 0px !important;
+    padding: 0px 3px !important;
+}
+/* diminuído a altura */
+.MuiExpansionPanelSummary-root {
+    min-height: 30px !important;
+}
+/* dando um destaque pro accordion */
+.MuiExpansionPanelSummary-root {
+    border-color: rgba(0,0,0,.075) !important;
+    background-color: rgba(0,0,0,.075) !important;
+    color: #212529 !important;
+}
+/* no accordion tem que ser block pois posso ter vários elementos dentro do destails */
+.MuiExpansionPanelDetails-root {
+    display: block !important;
 }
 

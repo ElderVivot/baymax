@@ -17,15 +17,20 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
         splitField: String,
         positionFieldInTheSplit: Number,
         positionFieldInTheSplitEnd: Number,
-        informationIsOnOneLineBelowTheMain: Boolean
+        lineThatTheDataIs: {
+            value: String,
+            label: String
+        }
     }],
     validationLineToPrint: [{
         nameField: String,
         typeValidation: String,
-        valueValidation: String
+        valueValidation: String,
+        nextValidationOrAnd: String
     }],
     linesOfFile: [{
         nameOfLine: String,
+        informationIsOnOneLineBelowTheMain: Boolean,
         validations: [{
             positionInFile: Number,
             positionInFileEnd: Number,
