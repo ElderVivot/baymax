@@ -36,6 +36,11 @@ th {
     justify-content:center !important;
     align-items: center !important;
 }
+/* os campos select da tabela pra edição de valores tem que ficar com o conteúdo no centro, visto que a tabela é centralizada */
+.select-center > div > div {
+    justify-content:center !important;
+    text-align: center !important;
+}
 
 .table thead th {
     vertical-align: middle;

@@ -105,17 +105,19 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
 
     function handleSave(event, values) {
         event.preventDefault()
-        const nameField = values.nameField
         const positionInFile = parseInt(values.positionInFile)
         const positionInFileEnd = parseInt(values.positionInFileEnd)
-        const nameColumn = values.nameColumn
-        const formatDate = values.formatDate
+        const positionFieldInTheSplit = parseInt(values.positionFieldInTheSplit)
+        const positionFieldInTheSplitEnd = parseInt(values.positionFieldInTheSplitEnd)
         
-        setFieldValueParent(`${fieldPosition}.nameField`, nameField)
+        setFieldValueParent(`${fieldPosition}.nameField`, values.nameField)
         setFieldValueParent(`${fieldPosition}.positionInFile`, positionInFile)
         setFieldValueParent(`${fieldPosition}.positionInFileEnd`, positionInFileEnd)
-        setFieldValueParent(`${fieldPosition}.nameColumn`, nameColumn)
-        setFieldValueParent(`${fieldPosition}.formatDate`, formatDate)
+        setFieldValueParent(`${fieldPosition}.nameColumn`, values.nameColumn)
+        setFieldValueParent(`${fieldPosition}.formatDate`, values.formatDate)
+        setFieldValueParent(`${fieldPosition}.splitField`, values.splitField)
+        setFieldValueParent(`${fieldPosition}.positionFieldInTheSplit`, positionFieldInTheSplit)
+        setFieldValueParent(`${fieldPosition}.positionFieldInTheSplitEnd`, positionFieldInTheSplitEnd)
 
         setShow(false)
     }
@@ -156,7 +158,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                     <Col lg={4}>
                         <Select 
                             id={`${fieldPosition}.formatDate`}
-                            name={`nameField`}
+                            name={`formatDate`}
                             options={formatDateOptions}
                             className={`selected ${touched.formatDate && errors.formatDate ? "has-error" : null }`}
                             isSearchable={true}

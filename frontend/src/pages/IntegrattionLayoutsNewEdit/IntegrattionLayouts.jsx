@@ -7,6 +7,7 @@ import './styles.css'
 import api from '../../services/api'
 import IntegrattionLayoutsHeader from './FieldsHeader/FieldsHeader'
 import IntegrattionLayoutsFieldsList from './FieldsBody/FieldsList'
+import IntegrattionLayoutsFieldsListValidation from './FieldsValidationData/FieldsListValidation'
 import Error from '../../components/Error'
 
 let validationSchema = Yup.object().shape({
@@ -313,14 +314,13 @@ export default function IntegrattionLayouts({history}){
                                 <table className="table ml-3 table-striped table-bordered table-hover">
                                     <thead>
                                         <tr className="d-flex justify-content-center text-center">
-                                        {/* <tr className="flex-container"> */}
                                             <th className="col-4 fields-of-table align-center">Campo</th>
                                             <th className="col-1 fields-of-table align-center">Posição Inicial</th>
                                             <th className="col-1 fields-of-table align-center">Posição Final</th>
                                             <th className="col-3 fields-of-table align-center">Nome Coluna</th>
                                             <th className="col-1 fields-of-table align-center">Formato Data</th>
                                             <th className="col-2 fields-of-table align-center">
-                                                <div className="div">Ações</div>
+                                                <div className="font-weight-600">Ações</div>
                                                 <button className="btn btn-success btn-sm btn10px ml-3" type="button" style={{height:25}}
                                                     onClick={() => {
                                                         setFieldValue("fields", [...values.fields, { 
@@ -352,9 +352,15 @@ export default function IntegrattionLayouts({history}){
                                 </table>
                             </div>
 
-                            <div className="form row mt-2">
-                                <label className="col-form-label font-weight-600">Os dados deste layout deverão ser gerados apenas se:</label>                                
-                            </div>
+                            < IntegrattionLayoutsFieldsListValidation
+                                values={values}
+                                errors={errors}
+                                touched={touched}
+                                handleChange={handleChange}
+                                handleBlur={handleBlur}
+                                setFieldValue={setFieldValue}
+                                setFieldTouched={setFieldTouched}
+                            />
 
                             <div className="form-row">
                                 <div className="col-12">

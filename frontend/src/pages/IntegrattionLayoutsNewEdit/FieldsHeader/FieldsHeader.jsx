@@ -26,14 +26,6 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
             </button>
         )
     }
-
-    function Buttons(){
-        return (
-            <div >
-                {ButtonDelete()}
-            </div>
-        )
-    }
     
     return (
         <>
@@ -54,7 +46,7 @@ function IntegrattionLayoutsHeader({ idx, fieldsHeader, errors, touched, handleC
                     </div>
                 </td>
                 <td>
-                    < Buttons />
+                   {ButtonDelete()}
                 </td>
             </tr>
         </>
