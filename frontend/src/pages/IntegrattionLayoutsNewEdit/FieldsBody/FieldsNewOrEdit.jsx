@@ -136,7 +136,6 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
 
     let lineThatTheDataIsOptions = []
     lineThatTheDataIsOptions.push(...valuesParent.linesOfFile.map( value => value["nameOfLine"] ))
-    console.log(lineThatTheDataIsOptions)
 
     // se o tipo for txt ou pdf não existe "posição variável (valor 0)"
     if(fileType === "txt" || fileType === "pdf"){

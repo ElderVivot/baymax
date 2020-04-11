@@ -57,6 +57,11 @@ hr {
 .table td, .table th {
     vertical-align: middle;
 }
+/* as tags de invalidação por padrão são display none, ou seja, não são demonstradas, a configuração abaixo retira isto */
+.invalid-feedback {
+    display: inline !important;
+    color: red !important;
+}
 /* ajusta item do checkbox pra ficar alinhado na mesma altura do texto */
 .custom-control-label, .custom-control-label::before, .custom-control-label::after {
     top: .10rem !important;

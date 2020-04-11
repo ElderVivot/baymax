@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
+import { Form } from "react-bootstrap"
 import * as Yup from 'yup'
 import { Formik } from 'formik'
 
@@ -9,11 +10,11 @@ import IntegrattionLayoutsHeader from './FieldsHeader/FieldsHeader'
 import IntegrattionLayoutsFieldsList from './FieldsBody/FieldsList'
 import IntegrattionLayoutsFieldsListValidation from './FieldsValidationData/FieldsListValidation'
 import LinesOfFile from './LinesOfFile/LinesOfFile'
-import Error from '../../components/Error'
 
 let validationSchema = Yup.object().shape({
     system: Yup.string().required('O nome do sistema é obrigatório'),
     fileType: Yup.string().required('Selecione uma opção válida'),
+    splitFile: Yup.string(),
     layoutType: Yup.string().required('Selecione uma opção válida'),
     header: Yup.array().of( Yup.object().shape({
         nameColumn: Yup.string()
@@ -51,10 +52,11 @@ let validationSchema = Yup.object().shape({
     }))
 })
 
-let initialValues = {
+const defaultValues = {
     system: "",
     fileType: "",
-    layoutType: "",
+    splitFile: "",
+    layoutType: "account_paid",
     header: [ { nameColumn: ""} ],
     fields: [ {
         nameField: "",
@@ -86,15 +88,48 @@ let initialValues = {
     }]
 }
 
+let initialValues = {
+    system: "",
+    fileType: "",
+    splitFile: "",
+    layoutType: "account_paid",
+    header: [],
+    fields: [ {
+        nameField: "",
+        positionInFile: "",
+        positionInFileEnd: 0,
+        nameColumn: "",
+        formatDate: "",
+        splitField: "",
+        positionFieldInTheSplit: 0,
+        positionFieldInTheSplitEnd: 0,
+        lineThatTheDataIs: ""
+    } ],
+    validationLineToPrint: [{
+        nameField: "paymentDate",
+        typeValidation: "isDate",
+        valueValidation: "",
+        nextValidationOrAnd: "and"
+    }, {
+        nameField: "amountPaid",
+        typeValidation: "isDifferent",
+        valueValidation: "0",
+        nextValidationOrAnd: "and"
+    }],
+    linesOfFile: []
+}
+
 const fileTypes = [
     { value: 'excel', label: 'Excel'},
-    { value: 'txt', label: 'Texto'}
+    { value: 'txt', label: 'Texto'},
+    { value: 'csv', label: 'CSV'},
+    { value: 'pdf', label: 'PDF'}
 ]
 
-const layoutTypes = [
-    { value: 'account_paid', label: 'Contas Pagas'},
-    { value: 'extract', label: 'Extrato Bancário'}
-]
+// const layoutTypes = [
+//     { value: 'account_paid', label: 'Contas Pagas'},
+//     { value: 'extract', label: 'Extrato Bancário'}
+// ]
 
 export default function IntegrattionLayouts({history}){
     const [integrattionLayout, setIntegrattionLayout ] = useState([])
@@ -178,7 +213,29 @@ export default function IntegrattionLayouts({history}){
         }
 
         initialValues = integrattionLayout
-    } 
+    }
+
+    function fieldSplitFile(values, handleChange, handleBlur){
+        if(values.fileType !== "excel" && values.fileType !== ""){
+            return (
+                <>
+                    <label htmlFor="layoutType" className="col-form-label font-weight-600">Separador de campos do arquivo:</label>
+                    <div className="col-3">
+                        <Form.Control 
+                            id="splitFile"
+                            name="splitFile"
+                            type="text" 
+                            className={`form-control`}
+                            placeholder="Informe o separador se houver"
+                            value={values.splitFile}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                        />
+                    </div>
+                </>
+            )
+        }
+    }
 
     return (
         <main className="content card container-fluid">
@@ -190,87 +247,75 @@ export default function IntegrattionLayouts({history}){
                 <Formik
                     enableReinitialize={true}
                     initialValues={initialValues}
-                    // validationSchema={validationSchema}
-                    onSubmit={ async (values, { setSubmitting, resetForm }) => {
-                        setSubmitting(true)
+                    validationSchema={validationSchema}
+                    onSubmit={ 
+                        async (values, { setSubmitting, resetForm }) => {
+                            setSubmitting(true)
 
-                        try {
-                            let response = undefined
+                            try {
+                                let response = undefined
 
-                            if(id !== undefined){
-                                response = await api.put(`/integrattion_layouts/${id}`, { ...values } )
-                            } else {
-                                response = await api.post('/integrattion_layouts', { ...values } )
+                                if(id !== undefined){
+                                    response = await api.put(`/integrattion_layouts/${id}`, { ...values } )
+                                } else {
+                                    response = await api.post('/integrattion_layouts', { ...values } )
+                                }
+
+                                if(response.status !== 200){
+                                    console.log(response)
+                                }
+                            } catch (error) {
+                                console.log(error)
                             }
-
-                            if(response.status !== 200){
-                                console.log(response)
-                            }
-                        } catch (error) {
-                            console.log(error)
-                        }
-                        setSubmitting(false)                        
-                        resetForm()
-                        history.push('/integrattion_layouts_list')
+                            setSubmitting(false)                        
+                            resetForm()
+                            history.push('/integrattion_layouts_list')
                     }}
                 >
-                    { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting, setValues }) => (
+                    { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
                         <form onSubmit={handleSubmit} className="container-fluid">
-                            <pre>{JSON.stringify(values, null, 2)}</pre>
+                            <pre>{JSON.stringify(errors, null, 2)}</pre>
                             <div className="form-group row mb-0">                            
                                 <label htmlFor="system" className="col-form-label font-weight-600">Sistema:</label>
                                 <div className="col">
-                                    <input 
-                                        id="system"
-                                        type="text" 
-                                        className={`form-control ${touched.system && errors.system ? "has-error" : null }`}
-                                        placeholder="Informe o nome do sistema"
-                                        value={values.system}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                    />
+                                    <Form.Group className="mb-0">
+                                        <Form.Control 
+                                            id="system"
+                                            type="text" 
+                                            className={`form-control ${touched.system && errors.system ? "has-error" : null }`}
+                                            placeholder="Informe o nome do sistema"
+                                            value={values.system}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                        />
+                                        <Form.Control.Feedback type="invalid">{errors.system}</Form.Control.Feedback>
+                                    </Form.Group>
                                 </div>
                             </div>
-                            <div className="form-group row mb-0">
-                                <Error touched={touched.system} message={errors.system}/>
-                            </div>
-                            {/* {console.log(document.getElementById('system'))} */}
 
                             <div className="form-group row mt-2 mb-0">
                                 <label htmlFor="fileType" className="col-form-label font-weight-600">Tipo Arquivo:</label>
                                 <div className="col-3">
-                                    <Select 
-                                        id="fileType"
-                                        options={fileTypes}
-                                        className={`selected height-calc ${touched.fileType && errors.fileType ? "has-error" : null }`}
-                                        isSearchable={true}
-                                        placeholder="Selecione"
-                                        value={fileTypes.filter(option => option.value === values.fileType)[0]}
-                                        onChange={selectedOption => handleChange("fileType")(selectedOption.value)}
-                                        onBlur={() => setFieldTouched("fileType", true)}
-                                    />
+                                    <Form.Group className="mb-0">
+                                        <Select 
+                                            id="fileType"
+                                            options={fileTypes}
+                                            className={`selected height-calc ${touched.fileType && errors.fileType ? "has-error" : null }`}
+                                            isSearchable={true}
+                                            placeholder="Selecione"
+                                            value={fileTypes.filter(option => option.value === values.fileType)[0]}
+                                            onChange={selectedOption => handleChange("fileType")(selectedOption.value)}
+                                            onBlur={() => setFieldTouched("fileType", true)}
+                                        />
+                                        <Form.Control.Feedback type="invalid">{errors.fileType}</Form.Control.Feedback>
+                                    </Form.Group>
                                 </div>
 
-                                <label htmlFor="layoutType" className="col-form-label font-weight-600">Tipo Layout:</label>
-                                <div className="col-3">
-                                    <Select 
-                                        id="layoutType"
-                                        options={layoutTypes}
-                                        className={`selected ${touched.layoutType && errors.layoutType ? "has-error" : null }`}
-                                        isSearchable="true"
-                                        placeholder="Selecione"
-                                        value={layoutTypes.filter(option => option.value === values.layoutType)[0]}
-                                        onChange={selectedOption => handleChange("layoutType")(selectedOption.value)}
-                                        onBlur={() => setFieldTouched("layoutType", true)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group row mb-0">
-                                <Error className="m-0 p-0" touched={touched.fileType} message={errors.fileType}/>
+                                {fieldSplitFile(values, handleChange, handleBlur)}
                             </div>
                             
                             <div className="form row mt-3 mb-0">
-                                <label className="col-form-label font-weight-600">Nome dos campos que identifica as colunas do Arquivo (informe 2 ou 3):</label>
+                                <label className="col-form-label font-weight-600">Nome dos campos que identifica as colunas do Arquivo:</label>
                                 <button className="btn btn-success btn-sm btn10px ml-3 mt-1" type="button" style={{height:25}}
                                     onClick={() => setFieldValue("header", [...values.header, { nameColumn: "" }]) }>
                                     <i className="fa fa-plus"></i>
@@ -305,7 +350,6 @@ export default function IntegrattionLayouts({history}){
                                 handleBlur={handleBlur}
                                 setFieldValue={setFieldValue}
                                 setFieldTouched={setFieldTouched}
-                                setValues={setValues}
                             />
 
                             <div className="form row mt-2">

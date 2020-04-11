@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const IntegrattionLayoutSchema = new mongoose.Schema({
     system: String,
     fileType: String,
+    splitFile: String,
     layoutType: String,
     header: [{
         nameColumn: String
@@ -17,10 +18,7 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
         splitField: String,
         positionFieldInTheSplit: Number,
         positionFieldInTheSplitEnd: Number,
-        lineThatTheDataIs: {
-            value: String,
-            label: String
-        }
+        lineThatTheDataIs: String
     }],
     validationLineToPrint: [{
         nameField: String,
@@ -29,7 +27,10 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
         nextValidationOrAnd: String
     }],
     linesOfFile: [{
-        nameOfLine: String,
+        nameOfLine: {
+            value: String,
+            label: String
+        },
         informationIsOnOneLineBelowTheMain: Boolean,
         validations: [{
             positionInFile: Number,

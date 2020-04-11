@@ -41,7 +41,7 @@ const nextValidationOrAndOptions = [
 let positionInFileOptions = [...ClassUtil.createAnObjetOfCount()]
 let positionInFileEndOptions = [...ClassUtil.createAnObjetOfCount()]
 
-function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, setValues } ){
+function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched } ){
 
     function validateField(name, idx){
         try {
@@ -148,7 +148,7 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
     
     return (
         <>
-            <div className="form row mt-4">
+            <div className="form row mt-3">
                 <label className="col-form-label font-weight-600">Os campos deste layout estão distribuídos em várias linhas, ou seja, linhas que armazenam dados diferentes:</label>                
                 {ButtonsCheckOrAddOfLine()}
             </div>
