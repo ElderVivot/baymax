@@ -335,33 +335,49 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
                         {fieldNameColumn(values, errors, touched, handleChange, handleBlur)}
 
                         <ExpansionPanel className="mt-2 ml-0">
-                                <ExpansionPanelSummary
-                                    expandIcon={<ExpandMoreRounded />}
-                                    aria-controls="panel1a-content"
-                                    id="panel1a-header"
-                                >
-                                    <Typography className="font-weight-600">Opções avançadas de configuração:</Typography>
-                                </ExpansionPanelSummary>
-                                <ExpansionPanelDetails className="pl-2 pt-0 pb-2">
-                                    <Form.Row className="mt-2">
-                                        <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Este campo possui o divisor:</Form.Label>
-                                        <Col lg={4}>
-                                            <Form.Control
-                                                id={`${fieldPosition}.splitField`}
-                                                name={`splitField`}
-                                                type="text"
-                                                className={`selected ${touched.splitField && errors.splitField ? "has-error" : null }`}
-                                                placeholder="Exemplo '-' ou '/' ..."
-                                                value={values.splitField}
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                            />
-                                        </Col>
-                                    </Form.Row>
+                            <ExpansionPanelSummary
+                                expandIcon={<ExpandMoreRounded />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Typography className="font-weight-600">Opções avançadas de configuração:</Typography>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails className="pl-2 pt-0 pb-2">
+                                <Form.Row className="mt-2">
+                                    <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Este campo possui o divisor:</Form.Label>
+                                    <Col lg={4}>
+                                        <Form.Control
+                                            id={`${fieldPosition}.splitField`}
+                                            name={`splitField`}
+                                            type="text"
+                                            className={`selected ${touched.splitField && errors.splitField ? "has-error" : null }`}
+                                            placeholder="Exemplo '-' ou '/' ..."
+                                            value={values.splitField}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                        />
+                                    </Col>
+                                </Form.Row>
 
-                                    {fieldPositionsSplit(values, errors, touched, handleChange, setFieldTouched)}
-                                </ExpansionPanelDetails>
-                            </ExpansionPanel>
+                                {fieldPositionsSplit(values, errors, touched, handleChange, setFieldTouched)}
+
+                                <Form.Row className="mt-2">
+                                    <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Este campo está na linha:</Form.Label>
+                                    {/* <Col lg={4}>
+                                        <Form.Control
+                                            id={`${fieldPosition}.splitField`}
+                                            name={`splitField`}
+                                            type="text"
+                                            className={`selected ${touched.splitField && errors.splitField ? "has-error" : null }`}
+                                            placeholder="Exemplo '-' ou '/' ..."
+                                            value={values.splitField}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                        />
+                                    </Col> */}
+                                </Form.Row>
+                            </ExpansionPanelDetails>
+                        </ExpansionPanel>
                         
                     </Modal.Body>
 

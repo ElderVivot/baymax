@@ -63,13 +63,6 @@ footer.footer {
     font-weight: 400 !important;
 }
 
-/* .header-table{
-    font-size: 1rem !important;
-    font-weight: 600;
-    border-color: gray !important;
-    background-color: rgba(0,0,0,.075) !important;
-} */
-
-.font-weight-600{
+.font-weight-600, .font-weight-600 > label{
     font-weight: 500 !important;
 }

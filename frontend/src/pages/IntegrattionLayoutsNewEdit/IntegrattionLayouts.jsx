@@ -8,6 +8,7 @@ import api from '../../services/api'
 import IntegrattionLayoutsHeader from './FieldsHeader/FieldsHeader'
 import IntegrattionLayoutsFieldsList from './FieldsBody/FieldsList'
 import IntegrattionLayoutsFieldsListValidation from './FieldsValidationData/FieldsListValidation'
+import LinesOfFile from './LinesOfFile/LinesOfFile'
 import Error from '../../components/Error'
 
 let validationSchema = Yup.object().shape({
@@ -26,10 +27,7 @@ let validationSchema = Yup.object().shape({
         splitField: Yup.string(),
         positionFieldInTheSplit: Yup.number(),
         positionFieldInTheSplitEnd: Yup.number(),        
-        lineThatTheDataIs: Yup.object().shape({ 
-            value: Yup.string(),
-            label: Yup.string()
-        })
+        lineThatTheDataIs: Yup.string()
     })),
     validationLineToPrint: Yup.array().of( Yup.object().shape({
         nameField: Yup.string(),
@@ -38,7 +36,10 @@ let validationSchema = Yup.object().shape({
         nextValidationOrAnd: Yup.string()
     })),
     linesOfFile: Yup.array().of( Yup.object().shape({
-        nameOfLine: Yup.string(),
+        nameOfLine: Yup.object().shape({
+            value: Yup.string(),
+            label: Yup.string()
+        }),
         informationIsOnOneLineBelowTheMain: Yup.boolean(),
         validations: Yup.array().of( Yup.object().shape({
             positionInFile: Yup.number(),
@@ -64,10 +65,7 @@ let initialValues = {
         splitField: "",
         positionFieldInTheSplit: 0,
         positionFieldInTheSplitEnd: 0,
-        lineThatTheDataIs: {
-            value: '',
-            label: ''
-        }
+        lineThatTheDataIs: ""
     } ],
     validationLineToPrint: [{
         nameField: "",
@@ -76,7 +74,7 @@ let initialValues = {
         nextValidationOrAnd: "and"
     }],
     linesOfFile: [{
-        nameOfLine: "",
+        nameOfLine: { value: '', label: '' },
         informationIsOnOneLineBelowTheMain: false,
         validations: [{
             positionInFile: 0,
@@ -97,14 +95,6 @@ const layoutTypes = [
     { value: 'account_paid', label: 'Contas Pagas'},
     { value: 'extract', label: 'Extrato Bancário'}
 ]
-
-// function getOffset(element){
-//     const rect = element.getBoundingClientRect();
-//     return {
-//         left: rect.left + window.scrollX,
-//         top: rect.top + window.scrollY
-//     };
-// }
 
 export default function IntegrattionLayouts({history}){
     const [integrattionLayout, setIntegrattionLayout ] = useState([])
@@ -279,7 +269,7 @@ export default function IntegrattionLayouts({history}){
                                 <Error className="m-0 p-0" touched={touched.fileType} message={errors.fileType}/>
                             </div>
                             
-                            <div className="form row mt-2 mb-0">
+                            <div className="form row mt-3 mb-0">
                                 <label className="col-form-label font-weight-600">Nome dos campos que identifica as colunas do Arquivo (informe 2 ou 3):</label>
                                 <button className="btn btn-success btn-sm btn10px ml-3 mt-1" type="button" style={{height:25}}
                                     onClick={() => setFieldValue("header", [...values.header, { nameColumn: "" }]) }>
@@ -287,9 +277,10 @@ export default function IntegrattionLayouts({history}){
                                 </button>
                                 
                             </div>
-                            <table className="col-12">
-                                <tbody>
-                                    {
+                            
+                            <div className="form row">
+                                <table className="col-12">
+                                    <tbody>{
                                         values.header.map( (field, idx) => (
                                             < IntegrattionLayoutsHeader
                                                 key={`fieldHeader-${idx}`}
@@ -301,10 +292,21 @@ export default function IntegrattionLayouts({history}){
                                                 handleBlur={handleBlur}
                                                 setFieldValue={setFieldValue}
                                             /> 
-                                        ))
-                                    }
-                                </tbody>
-                            </table>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+
+                            < LinesOfFile
+                                values={values}
+                                errors={errors}
+                                touched={touched}
+                                handleChange={handleChange}
+                                handleBlur={handleBlur}
+                                setFieldValue={setFieldValue}
+                                setFieldTouched={setFieldTouched}
+                            />
 
                             <div className="form row mt-2">
                                 <label className="col-form-label font-weight-600">Configuração dos Campos do Layout:</label>                                

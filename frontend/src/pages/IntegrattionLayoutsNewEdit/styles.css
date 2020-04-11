@@ -46,7 +46,20 @@ th {
     vertical-align: middle;
 }
 
+.div-table-2px {
+    border: 2px solid #dee2e6 !important;
+}
+
+hr {
+    border: 1px solid #dee2e6 !important;
+}
+
 .table td, .table th {
+    vertical-align: middle;
+}
+/* ajusta item do checkbox pra ficar alinhado na mesma altura do texto */
+.custom-control-label, .custom-control-label::before, .custom-control-label::after {
+    top: .10rem !important;
     vertical-align: middle;
 }
 
@@ -103,5 +116,9 @@ td > div > button {
 /* no accordion tem que ser block pois posso ter vários elementos dentro do destails */
 .MuiExpansionPanelDetails-root {
     display: block !important;
+}
+/* ícone da setinha do expansion tem um padding muito alto (12px), diminuo pra 3px. */
+.MuiExpansionPanelSummary-expandIcon {
+    padding: 3px 12px !important;
 }
 
