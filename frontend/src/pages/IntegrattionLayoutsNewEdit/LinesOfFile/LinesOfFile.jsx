@@ -41,7 +41,7 @@ const nextValidationOrAndOptions = [
 let positionInFileOptions = [...ClassUtil.createAnObjetOfCount()]
 let positionInFileEndOptions = [...ClassUtil.createAnObjetOfCount()]
 
-function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched } ){
+function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, setValues } ){
 
     function validateField(name, idx){
         try {
@@ -88,7 +88,7 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
     function HrBetweenOfLines(idx){
         if(( values.linesOfFile.length - 1 ) !== idx ){
             return (
-                <hr/>
+                <hr className="my-2" />
             )
         }
     }
@@ -140,6 +140,11 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
             </Col>
         )
     }
+
+    function handleNameOfLine(event, idx){        
+        setFieldValue(`linesOfFile[${idx}].nameOfLine.label`, event.target.value)     
+        setFieldValue(`linesOfFile[${idx}].nameOfLine.value`, event.target.value.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '').toLowerCase())
+    }
     
     return (
         <>
@@ -147,12 +152,11 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                 <label className="col-form-label font-weight-600">Os campos deste layout estão distribuídos em várias linhas, ou seja, linhas que armazenam dados diferentes:</label>                
                 {ButtonsCheckOrAddOfLine()}
             </div>
-
             
             <div className="form row pb-0 mt-1">
                 <div className="table ml-3 table-bordered div-table-2px">{
                     values.linesOfFile.map( (field, idx) => (
-                        <>
+                        <React.Fragment key={`linesOfFile[${idx}].reactfragment`}>
                             <div key={`linesOfFile[${idx}]`}>
                                 <Form.Row className="my-1 d-flex container col-12" id={`linesOfFile[${idx}]`}> 
                                     <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Nome da Linha:</Form.Label>
@@ -165,11 +169,11 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                                 className={`selected ${validateField('nameOfLine', idx)}`}
                                                 placeholder="Informe o nome que deseja pra linha"
                                                 value={values.linesOfFile[idx].nameOfLine.label}
-                                                onChange={handleChange(`linesOfFile[${idx}].nameOfLine.label`)}
+                                                onChange={(event) => handleNameOfLine(event, idx)}
                                                 onBlur={() => setFieldTouched(`linesOfFile[${idx}].nameOfLine.label`, true)}
                                             />
                                         </Form.Group>
-                                    </Col> 
+                                    </Col>
 
                                     <Col lg={4}>
                                         <Form.Check
@@ -196,7 +200,7 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                     </Col>                                      
                                 </Form.Row>
 
-                                <ExpansionPanel className="mt-1 ml-4 mr-3 mb-2">
+                                <ExpansionPanel key={`linesOfFile[${idx}]`} className="mt-1 ml-4 mr-3 mb-2">
                                     <ExpansionPanelSummary
                                         expandIcon={<ExpandMoreRounded />}
                                         aria-controls="panel1a-content"
@@ -307,10 +311,10 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                 </ExpansionPanel>
                             </div>
                             {HrBetweenOfLines(idx)}
-                        </>
+                        </React.Fragment>
                     ))}               
                 </div>
-            </div>           
+            </div>            
         </>
 
     )

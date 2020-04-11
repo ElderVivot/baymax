@@ -25,7 +25,7 @@ const fieldsOptions = [
     { value: 'typeMoviment', label: 'Tipo Movimento'},
 ]
 
-function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initialValues, fileType } ){
+function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initialValues, fileType, valuesParent } ){
 
     const deleteField = () => {
         const updatedfieldsFile = [...fieldsFile]
@@ -42,6 +42,7 @@ function IntegrattionLayoutsFieldsList( { idx, fieldsFile, setFieldValue, initia
                 fieldsOptions={fieldsOptions}
                 initialValues={initialValues[idx]}
                 fileType={fileType}
+                valuesParent={valuesParent}
             />
         )
     }

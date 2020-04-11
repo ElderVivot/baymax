@@ -214,7 +214,7 @@ export default function IntegrattionLayouts({history}){
                         history.push('/integrattion_layouts_list')
                     }}
                 >
-                    { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
+                    { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting, setValues }) => (
                         <form onSubmit={handleSubmit} className="container-fluid">
                             <pre>{JSON.stringify(values, null, 2)}</pre>
                             <div className="form-group row mb-0">                            
@@ -296,7 +296,6 @@ export default function IntegrattionLayouts({history}){
                                     </tbody>
                                 </table>
                             </div>
-                            
 
                             < LinesOfFile
                                 values={values}
@@ -306,6 +305,7 @@ export default function IntegrattionLayouts({history}){
                                 handleBlur={handleBlur}
                                 setFieldValue={setFieldValue}
                                 setFieldTouched={setFieldTouched}
+                                setValues={setValues}
                             />
 
                             <div className="form row mt-2">
@@ -347,6 +347,7 @@ export default function IntegrattionLayouts({history}){
                                                 setFieldValue={setFieldValue}
                                                 initialValues={values.fields}
                                                 fileType={values.fileType}
+                                                valuesParent={values}
                                             /> 
                                         ))
                                     }

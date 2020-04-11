@@ -68,7 +68,7 @@ let positionInFileEndOptions = ClassUtil.createAnObjetOfCount()
 let positionFieldInTheSplitOptions = ClassUtil.createAnObjetOfCount(1, 10)
 let positionFieldInTheSplitEndOptions = [{value: "0", label: "Até o Final"}, ...ClassUtil.createAnObjetOfCount(1, 10)]
 
-function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsOptions, initialValues, fileType } ){
+function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsOptions, initialValues, fileType, valuesParent } ){
     
     const [show, setShow] = useState(false)
 
@@ -118,6 +118,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
         setFieldValueParent(`${fieldPosition}.splitField`, values.splitField)
         setFieldValueParent(`${fieldPosition}.positionFieldInTheSplit`, positionFieldInTheSplit)
         setFieldValueParent(`${fieldPosition}.positionFieldInTheSplitEnd`, positionFieldInTheSplitEnd)
+        setFieldValueParent(`${fieldPosition}.lineThatTheDataIs`, values.lineThatTheDataIs)
 
         setShow(false)
     }
@@ -132,6 +133,10 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
 
         setShow(false)
     }
+
+    let lineThatTheDataIsOptions = []
+    lineThatTheDataIsOptions.push(...valuesParent.linesOfFile.map( value => value["nameOfLine"] ))
+    console.log(lineThatTheDataIsOptions)
 
     // se o tipo for txt ou pdf não existe "posição variável (valor 0)"
     if(fileType === "txt" || fileType === "pdf"){
@@ -363,18 +368,19 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, setFieldValueParent, fieldsO
 
                                 <Form.Row className="mt-2">
                                     <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Este campo está na linha:</Form.Label>
-                                    {/* <Col lg={4}>
-                                        <Form.Control
-                                            id={`${fieldPosition}.splitField`}
-                                            name={`splitField`}
-                                            type="text"
-                                            className={`selected ${touched.splitField && errors.splitField ? "has-error" : null }`}
-                                            placeholder="Exemplo '-' ou '/' ..."
-                                            value={values.splitField}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
+                                    <Col lg={4}>
+                                        <Select 
+                                            id={`${fieldPosition}.lineThatTheDataIs`}
+                                            name={`lineThatTheDataIs`}
+                                            options={lineThatTheDataIsOptions}
+                                            className={`selected ${touched.lineThatTheDataIs && errors.lineThatTheDataIs ? "has-error" : null }`}
+                                            isSearchable={true}
+                                            placeholder="Selecione"
+                                            value={lineThatTheDataIsOptions.filter(option => option.value === values.lineThatTheDataIs)[0]}
+                                            onChange={selectedOption => handleChange(`lineThatTheDataIs`)(selectedOption.value)}
+                                            onBlur={() => setFieldTouched(`lineThatTheDataIs`, true)}
                                         />
-                                    </Col> */}
+                                    </Col>
                                 </Form.Row>
                             </ExpansionPanelDetails>
                         </ExpansionPanel>
