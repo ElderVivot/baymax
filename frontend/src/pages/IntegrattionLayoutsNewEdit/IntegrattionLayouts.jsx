@@ -20,7 +20,10 @@ let validationSchema = Yup.object().shape({
         nameColumn: Yup.string().required('O nome da coluna é obrigatório')
     })),
     fields: Yup.array().of( Yup.object().shape({ 
-        nameField: Yup.string().required('Selecione uma opção válida'),
+        nameField: Yup.object().shape({
+            value: Yup.string(),
+            label: Yup.string().required('O nome do campo é obrigatório')
+        }),
         positionInFile: Yup.number().integer('Selecione uma opção válida'),
         positionInFileEnd: Yup.number(),
         nameColumn: Yup.string(),
@@ -59,7 +62,7 @@ const defaultValues = {
     layoutType: "account_paid",
     header: [ { nameColumn: ""} ],
     fields: [ {
-        nameField: "",
+        nameField: '',
         positionInFile: "",
         positionInFileEnd: 0,
         nameColumn: "",
@@ -95,7 +98,7 @@ let initialValues = {
     layoutType: "account_paid",
     header: [],
     fields: [ {
-        nameField: "",
+        nameField: '',
         positionInFile: "",
         positionInFileEnd: 0,
         nameColumn: "",
@@ -274,7 +277,7 @@ export default function IntegrattionLayouts({history}){
                 >
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
                         <form onSubmit={handleSubmit} className="container-fluid">
-                            <pre>{JSON.stringify(errors, null, 2)}</pre>
+                            
                             <div className="form-group row mb-0">                            
                                 <label htmlFor="system" className="col-form-label font-weight-600">Sistema:</label>
                                 <div className="col">
@@ -334,10 +337,6 @@ export default function IntegrattionLayouts({history}){
                                 setFieldTouched={setFieldTouched}
                                 defaultValues={defaultValues}
                             />
-
-                            <div className="form row mt-2">
-                                <label className="col-form-label font-weight-600">Configuração dos Campos do Layout:</label>                                
-                            </div>
 
                             < IntegrattionLayoutsFieldsList
                                 values={values}

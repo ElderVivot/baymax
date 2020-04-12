@@ -33,7 +33,7 @@ function IntegrattionLayoutsFieldsList( { values, errors, touched, handleChange,
                     <tbody>{
                         values.fields.map( (field, idx) => (
                             <tr key={`values.fields[${idx}]`} className="d-flex justify-content-center text-center">
-                                <td className="col-4 align-center">{values.fields[idx].nameField}</td>
+                                <td className="col-4 align-center">{values.fields[idx].nameField.label}</td>
                                 <td className="col-1 align-center">{values.fields[idx].positionInFile}</td>
                                 <td className="col-1 align-center">{values.fields[idx].positionInFileEnd}</td>
                                 <td className="col-3 align-center">{values.fields[idx].nameColumn}</td>

@@ -10,7 +10,10 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
         nameColumn: String
     }],
     fields: [{
-        nameField: String,
+        nameField: {
+            value: String,
+            label: String
+        },
         positionInFile: Number,
         positionInFileEnd: Number,
         nameColumn: String,
