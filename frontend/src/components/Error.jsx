@@ -1,11 +1,9 @@
 import React from "react"
-import './Error.css'
 
-const Error = ({ touched, message }) => {
-  if (message) {
-    return <div className="form-message invalid offset-1">{message}</div>;
+const Error = ({ error }) => {
+  if (error) {
+    return <div className="invalid-feedback">{error}</div>;
   }
-  return <div className="form-message valid"></div>;
 }
 
 export default Error

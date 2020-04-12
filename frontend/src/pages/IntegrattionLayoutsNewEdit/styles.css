@@ -61,6 +61,9 @@ hr {
 .invalid-feedback {
     display: inline !important;
     color: red !important;
+    font-weight: 500 !important;
+    font-size: 0.72rem !important;
+    font-style: italic !important;
 }
 /* ajusta item do checkbox pra ficar alinhado na mesma altura do texto */
 .custom-control-label, .custom-control-label::before, .custom-control-label::after {

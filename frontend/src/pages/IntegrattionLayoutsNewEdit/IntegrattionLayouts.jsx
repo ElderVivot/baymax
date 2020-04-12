@@ -17,7 +17,7 @@ let validationSchema = Yup.object().shape({
     splitFile: Yup.string(),
     layoutType: Yup.string().required('Selecione uma opção válida'),
     header: Yup.array().of( Yup.object().shape({
-        nameColumn: Yup.string()
+        nameColumn: Yup.string().required('O nome da coluna é obrigatório')
     })),
     fields: Yup.array().of( Yup.object().shape({ 
         nameField: Yup.string().required('Selecione uma opção válida'),
@@ -314,33 +314,15 @@ export default function IntegrattionLayouts({history}){
                                 {fieldSplitFile(values, handleChange, handleBlur)}
                             </div>
                             
-                            <div className="form row mt-3 mb-0">
-                                <label className="col-form-label font-weight-600">Nome dos campos que identifica as colunas do Arquivo:</label>
-                                <button className="btn btn-success btn-sm btn10px ml-3 mt-1" type="button" style={{height:25}}
-                                    onClick={() => setFieldValue("header", [...values.header, { nameColumn: "" }]) }>
-                                    <i className="fa fa-plus"></i>
-                                </button>
-                                
-                            </div>
-                            
-                            <div className="form row">
-                                <table className="col-12">
-                                    <tbody>{
-                                        values.header.map( (field, idx) => (
-                                            < IntegrattionLayoutsHeader
-                                                key={`fieldHeader-${idx}`}
-                                                idx={idx}
-                                                fieldsHeader={values.header}
-                                                errors={errors}
-                                                touched={touched}
-                                                handleChange={handleChange}
-                                                handleBlur={handleBlur}
-                                                setFieldValue={setFieldValue}
-                                            /> 
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                            < IntegrattionLayoutsHeader
+                                values={values}
+                                errors={errors}
+                                touched={touched}
+                                handleChange={handleChange}
+                                handleBlur={handleBlur}
+                                setFieldValue={setFieldValue}
+                                setFieldTouched={setFieldTouched}
+                            /> 
 
                             < LinesOfFile
                                 values={values}
