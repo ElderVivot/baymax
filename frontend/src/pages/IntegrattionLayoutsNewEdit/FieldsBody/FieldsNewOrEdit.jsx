@@ -99,12 +99,18 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
 
     function messageError(vector){
         try {
+            let message = null
             if(vector.length === 2){
-                return errors.fields[vector[0]][vector[1]]
+                message = errors.fields[vector[0]][vector[1]]
             }
             if(vector.length === 3){
-                return errors.fields[vector[0]][vector[1]][vector[2]]
+                message = errors.fields[vector[0]][vector[1]][vector[2]]
             }
+
+            if(message.indexOf('must be a `string`') >= 0) {
+                message = 'Campo obrigatório'
+            }
+            return message
         } catch (error) {
             return null
         }
@@ -181,38 +187,44 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
     // positionFieldInTheSplitOptions = addOptionInCreatable(positionFieldInTheSplitOptions, initialValues.positionFieldInTheSplit)
     // positionFieldInTheSplitEndOptions = addOptionInCreatable(positionFieldInTheSplitEndOptions, initialValues.positionFieldInTheSplitEnd)
 
-    // function fieldFormatDate(values, errors, touched, handleChange, setFieldTouched, fieldsOptions){
-    //     let nameLabelOfNameField = fieldsOptions.filter(option => option.value === values.nameField)[0]
-    //     nameLabelOfNameField = nameLabelOfNameField || { label: "" }
-    //     nameLabelOfNameField = nameLabelOfNameField.label.toUpperCase().split(' ')
-    //     if(nameLabelOfNameField.indexOf("DATA") >= 0){
-    //         // esta linha faz com que seja obrigado a selecionar este campo quando for uma data
-    //         if(values.formatDate === ""){
-    //             values.formatDate = null
-    //         }
-    //         return (
-    //             <Form.Row className="mt-2">
-    //                 <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Formato Data:</Form.Label>
-    //                 <Col lg={4}>
-    //                     <Select 
-    //                         id={`${fieldPosition}.formatDate`}
-    //                         name={`formatDate`}
-    //                         options={formatDateOptions}
-    //                         className={`selected ${touched.formatDate && errors.formatDate ? "has-error" : null }`}
-    //                         isSearchable={true}
-    //                         placeholder="Selecione"
-    //                         value={formatDateOptions.filter(option => option.value === values.formatDate)[0]}
-    //                         onChange={selectedOption => handleChange(`formatDate`)(selectedOption.value)}
-    //                         onBlur={() => setFieldTouched(`formatDate`, true)}
-    //                     />
-    //                 </Col>
-    //             </Form.Row>
-    //         )
-    //     } else {
-    //         // zera o valor do campo novamente quando muda de informação
-    //         values.formatDate = ""
-    //     }  
-    // }
+    function fieldFormatDate(){
+        let nameLabelOfNameField = ''
+        try {
+            nameLabelOfNameField = values.fields[idx].nameField.label.toUpperCase().split(' ')
+        } catch (error) {
+            nameLabelOfNameField = ''
+        }
+
+        if(nameLabelOfNameField.indexOf("DATA") >= 0){
+            // esta linha faz com que seja obrigado a selecionar este campo quando for uma data
+            if(values.fields[idx].formatDate === ""){
+                values.fields[idx].formatDate = null
+            }
+            return (
+                <Form.Row className="mt-2">
+                    <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Formato Data:</Form.Label>
+                    <Col lg={4}>
+                        <Form.Group className="mb-0">
+                            <Select 
+                                name={`fields[${idx}].formatDate`}
+                                options={formatDateOptions}
+                                className={`selected ${validateField([idx, 'formatDate'])}`}
+                                isSearchable={true}
+                                placeholder="Selecione"
+                                value={formatDateOptions.filter(option => option.value === values.fields[idx].formatDate)[0]}
+                                onChange={selectedOption => handleChange(`fields[${idx}].formatDate`)(selectedOption.value)}
+                                onBlur={() => setFieldTouched(`fields[${idx}].formatDate`, true)}
+                            />
+                            <Form.Control.Feedback type="invalid">{messageError([idx, 'formatDate'])}</Form.Control.Feedback>
+                        </Form.Group>
+                    </Col>
+                </Form.Row>
+            )
+        } else {
+            // zera o valor do campo novamente quando muda de informação
+            values.fields[idx].formatDate = ""
+        }  
+    }
 
     // function fieldPositionInFileEnd(values, errors, touched, handleChange, setFieldTouched){
     //     if(values.positionInFileEnd === null || values.positionInFileEnd === 0){
@@ -357,7 +369,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
                         </Col>
                     </Form.Row>
 
-                    {/* {fieldFormatDate(values, errors, touched, handleChange, setFieldTouched, fieldsOptions)} */}
+                    {fieldFormatDate(values, errors, touched, handleChange, setFieldTouched, fieldsOptions)}
 
                     {/* <Form.Row className="mt-2">
                         <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição que se encontra no Arquivo:</Form.Label>
