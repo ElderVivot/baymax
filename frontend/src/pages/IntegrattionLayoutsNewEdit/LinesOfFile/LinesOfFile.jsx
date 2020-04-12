@@ -41,34 +41,46 @@ const nextValidationOrAndOptions = [
 let positionInFileOptions = [...ClassUtil.createAnObjetOfCount()]
 let positionInFileEndOptions = [...ClassUtil.createAnObjetOfCount()]
 
-function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched } ){
+function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){
 
-    function validateField(name, idx){
+    function validateField(vector){
         try {
-            return touched.linesOfFile[idx][name] && errors.linesOfFile[idx][name] ? "has-error" : null
+            if(vector.length === 2){
+                return errors.linesOfFile[vector[0]][vector[1]] ? "has-error" : null
+            }
+            if(vector.length === 3){
+                return errors.linesOfFile[vector[0]][vector[1]][vector[2]] ? "has-error" : null
+            }
+            if(vector.length === 4){
+                return errors.linesOfFile[vector[0]][vector[1]][vector[2]][vector[3]] ? "has-error" : null
+            }
+        } catch (error) {
+            return null
+        }
+    }
+
+    function messageError(vector){
+        try {
+            if(vector.length === 2){
+                return errors.linesOfFile[vector[0]][vector[1]]
+            }
+            if(vector.length === 3){
+                return errors.linesOfFile[vector[0]][vector[1]][vector[2]]
+            }
+            if(vector.length === 4){
+                return errors.linesOfFile[vector[0]][vector[1]][vector[2]][vector[3]]
+            }
         } catch (error) {
             return null
         }
     }
 
     function ButtonsCheckOrAddOfLine(){
-        const objNewLine = { 
-            nameOfLine: { value: '', label: '' },
-            informationIsOnOneLineBelowTheMain: false,
-            validations: [{
-                positionInFile: 0,
-                positionInFileEnd: 0,
-                typeValidation: "",
-                valueValidation: "",
-                nextValidationOrAnd: "and"
-            }]
-        }
-
         if(values.linesOfFile.length === 0 ){
             return (
                 <button className="btn btn-primary btn-sm btn10px ml-3 mt-1" type="button" style={{height:25}}
                     onClick={() => {
-                        setFieldValue("linesOfFile", [...values.linesOfFile, objNewLine])
+                        setFieldValue("linesOfFile", [...values.linesOfFile, defaultValues.linesOfFile[0]])
                     } } >
                     <i className="fa fa-check"></i>
                 </button>
@@ -77,7 +89,7 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
             return (
                 <button className="btn btn-success btn-sm btn10px ml-3 mt-1" type="button" style={{height:25}}
                     onClick={() => {
-                        setFieldValue("linesOfFile", [...values.linesOfFile, objNewLine ])
+                        setFieldValue("linesOfFile", [...values.linesOfFile, defaultValues.linesOfFile[0] ])
                     } } >
                     <i className="fa fa-plus"></i>
                 </button>
@@ -97,21 +109,28 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
         let disabled = false
         if(values.linesOfFile[idx].validations[idxValidation].typeValidation === "isDate") {
             disabled = true
+            // este campo é pra deixar passar pela validação, visto que o campo é obrigatório
+            values.linesOfFile[idx].validations[idxValidation].valueValidation = 'Data'
+        } else {
+            values.linesOfFile[idx].validations[idxValidation].valueValidation = ''
         }
 
         return(
             <Col >
-                <Form.Control
-                    id={`linesOfFile[${idx}].validations[${idxValidation}].valueValidation`}
-                    name={`valueValidation`}
-                    type="text"
-                    className={`selected ${validateField('valueValidation', idx, idxValidation)} text-center`}
-                    placeholder="Informe a validação"
-                    value={values.linesOfFile[idx].validations[idxValidation].valueValidation}
-                    disabled={disabled}
-                    onChange={handleChange(`linesOfFile[${idx}].validations[${idxValidation}].valueValidation`)}
-                    onBlur={() => setFieldTouched(`linesOfFile[${idx}].validations[${idxValidation}].valueValidation`, true)}
-                />
+                <Form.Group className="mb-0">
+                    <Form.Control
+                        id={`linesOfFile[${idx}].validations[${idxValidation}].valueValidation`}
+                        name={`valueValidation`}
+                        type="text"
+                        className={`selected ${validateField([idx, 'validations', idxValidation, 'valueValidation'])} text-center`}
+                        placeholder="Informe a validação"
+                        value={values.linesOfFile[idx].validations[idxValidation].valueValidation}
+                        disabled={disabled}
+                        onChange={handleChange(`linesOfFile[${idx}].validations[${idxValidation}].valueValidation`)}
+                        onBlur={() => setFieldTouched(`linesOfFile[${idx}].validations[${idxValidation}].valueValidation`, true)}
+                    />
+                    <Form.Control.Feedback type="invalid">{messageError([idx, 'validations', idxValidation, 'valueValidation'])}</Form.Control.Feedback>
+                </Form.Group>
             </Col>
         )
     }
@@ -166,13 +185,14 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                                 id={`linesOfFile[${idx}].nameOfLine.label`}
                                                 name={`nameOfLine`}
                                                 type="text"
-                                                className={`selected ${validateField('nameOfLine', idx)}`}
+                                                className={`selected ${validateField([idx, 'nameOfLine', 'label'])}`}
                                                 placeholder="Informe o nome que deseja pra linha"
                                                 value={values.linesOfFile[idx].nameOfLine.label}
                                                 onChange={(event) => handleNameOfLine(event, idx)}
                                                 onBlur={() => setFieldTouched(`linesOfFile[${idx}].nameOfLine.label`, true)}
                                             />
                                         </Form.Group>
+                                        <Form.Control.Feedback type="invalid">{messageError([idx, 'nameOfLine', 'label'])}</Form.Control.Feedback>
                                     </Col>
 
                                     <Col lg={4}>
@@ -222,13 +242,7 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                                             <div className="font-weight-600">Ações</div>
                                                             <button className="btn btn-success btn-sm btn10px ml-3" type="button" style={{height:25}}
                                                                 onClick={() => {
-                                                                    setFieldValue(`linesOfFile[${idx}].validations`, [...values.linesOfFile[idx].validations, { 
-                                                                        positionInFile: 0,
-                                                                        positionInFileEnd: 0,
-                                                                        typeValidation: "",
-                                                                        valueValidation: "",
-                                                                        nextValidationOrAnd: "and"
-                                                                    }])
+                                                                    setFieldValue(`linesOfFile[${idx}].validations`, [...values.linesOfFile[idx].validations, defaultValues.linesOfFile[0].validations[0]])
                                                                 } } >
                                                                 <i className="fa fa-plus"></i>
                                                             </button>        
@@ -240,18 +254,21 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                                         <tr key={`linesOfFile[${idx}].validations[${idxValidation}]`} className="d-flex justify-content-center text-center">
                                                             <td key={`linesOfFile[${idx}].validations[${idxValidation}].positionInFile`} className="col-2 align-center">
                                                                 <Col>
-                                                                    <Creatable 
-                                                                        id={`linesOfFile[${idx}].validations[${idxValidation}].positionInFile`}
-                                                                        name={`positionInFile`}
-                                                                        options={positionInFileOptions}
-                                                                        className={`selected ${validateField('positionInFile', idx)} select-center`}
-                                                                        isSearchable={true}
-                                                                        placeholder="Selecione"
-                                                                        value={positionInFileOptions.filter(option => option.value === values.linesOfFile[idx].validations[idxValidation].positionInFile)[0]}
-                                                                        onChange={selectedOption => handleChange(`linesOfFile[${idx}].validations[${idxValidation}].positionInFile`)(selectedOption.value)}
-                                                                        onBlur={() => setFieldTouched(`linesOfFile[${idx}].validations[${idxValidation}].positionInFile`, true)}
-                                                                        formatCreateLabel={(string) => `Criar a opção "${string}"`}
-                                                                    />
+                                                                    <Form.Group className="mb-0">
+                                                                        <Creatable 
+                                                                            id={`linesOfFile[${idx}].validations[${idxValidation}].positionInFile`}
+                                                                            name={`positionInFile`}
+                                                                            options={positionInFileOptions}
+                                                                            className={`selected ${validateField([idx, 'validations', idxValidation, 'positionInFile'])} select-center`}
+                                                                            isSearchable={true}
+                                                                            placeholder="Selecione"
+                                                                            value={positionInFileOptions.filter(option => option.value === values.linesOfFile[idx].validations[idxValidation].positionInFile)[0]}
+                                                                            onChange={selectedOption => handleChange(`linesOfFile[${idx}].validations[${idxValidation}].positionInFile`)(selectedOption.value)}
+                                                                            onBlur={() => setFieldTouched(`linesOfFile[${idx}].validations[${idxValidation}].positionInFile`, true)}
+                                                                            formatCreateLabel={(string) => `Criar a opção "${string}"`}
+                                                                        />
+                                                                        <Form.Control.Feedback type="invalid">{messageError([idx, 'validations', idxValidation, 'positionInFile'])}</Form.Control.Feedback>
+                                                                    </Form.Group>
                                                                 </Col>
                                                             </td>
                                                             <td key={`linesOfFile[${idx}].validations[${idxValidation}].positionInFileEnd`} className="col-2 align-center">
@@ -259,17 +276,20 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                                             </td>
                                                             <td key={`linesOfFile[${idx}].validations[${idxValidation}].typeValidation`} className="col-2 align-center">
                                                                 <Col>
-                                                                    <Select 
-                                                                        id={`linesOfFile[${idx}].validations[${idxValidation}].typeValidation`}
-                                                                        name={`typeValidation`}
-                                                                        options={typeValidationOptions}
-                                                                        className={`selected ${validateField('typeValidation', idx)} select-center`}
-                                                                        isSearchable={true}
-                                                                        placeholder="Selecione"
-                                                                        value={typeValidationOptions.filter(option => option.value === values.linesOfFile[idx].validations[idxValidation].typeValidation)[0]}
-                                                                        onChange={selectedOption => handleChange(`linesOfFile[${idx}].validations[${idxValidation}].typeValidation`)(selectedOption.value)}
-                                                                        onBlur={() => setFieldTouched(`linesOfFile[${idx}].validations[${idxValidation}].typeValidation`, true)}
-                                                                    />
+                                                                    <Form.Group className="mb-0">
+                                                                        <Select 
+                                                                            id={`linesOfFile[${idx}].validations[${idxValidation}].typeValidation`}
+                                                                            name={`typeValidation`}
+                                                                            options={typeValidationOptions}
+                                                                            className={`selected ${validateField([idx, 'validations', idxValidation, 'typeValidation'])} select-center`}
+                                                                            isSearchable={true}
+                                                                            placeholder="Selecione"
+                                                                            value={typeValidationOptions.filter(option => option.value === values.linesOfFile[idx].validations[idxValidation].typeValidation)[0]}
+                                                                            onChange={selectedOption => handleChange(`linesOfFile[${idx}].validations[${idxValidation}].typeValidation`)(selectedOption.value)}
+                                                                            onBlur={() => setFieldTouched(`linesOfFile[${idx}].validations[${idxValidation}].typeValidation`, true)}
+                                                                        />
+                                                                        <Form.Control.Feedback type="invalid">{messageError([idx, 'validations', idxValidation, 'typeValidation'])}</Form.Control.Feedback>
+                                                                    </Form.Group>
                                                                 </Col>
                                                             </td>
                                                             <td key={`linesOfFile[${idx}].validations[${idxValidation}].valueValidation`} className="col-3 align-center">

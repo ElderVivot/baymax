@@ -5,7 +5,7 @@ function IntegrattionLayoutsHeader({ values, errors, touched, handleChange, hand
 
     function validateField(idx, nameColumn){
         try {
-            return touched.header[idx][nameColumn] && errors.header[idx][nameColumn] ? "has-error" : null
+            return errors.header[idx][nameColumn] ? "has-error" : null
         } catch (error) {
             return null
         }

@@ -39,15 +39,15 @@ let validationSchema = Yup.object().shape({
     linesOfFile: Yup.array().of( Yup.object().shape({
         nameOfLine: Yup.object().shape({
             value: Yup.string(),
-            label: Yup.string()
+            label: Yup.string().required('O nome da linha é obrigatório')
         }),
         informationIsOnOneLineBelowTheMain: Yup.boolean(),
         validations: Yup.array().of( Yup.object().shape({
-            positionInFile: Yup.number(),
+            positionInFile: Yup.number().required('Campo obrigatório'),
             positionInFileEnd: Yup.number(),
-            typeValidation: Yup.string(),
-            valueValidation: Yup.string(),
-            nextValidationOrAnd: Yup.string()
+            typeValidation: Yup.string().required('Campo obrigatório'),
+            valueValidation: Yup.string().required('Campo obrigatório'),
+            nextValidationOrAnd: Yup.string().required('Campo obrigatório')
         }))    
     }))
 })
@@ -79,7 +79,7 @@ const defaultValues = {
         nameOfLine: { value: '', label: '' },
         informationIsOnOneLineBelowTheMain: false,
         validations: [{
-            positionInFile: 0,
+            positionInFile: "",
             positionInFileEnd: 0,
             typeValidation: "",
             valueValidation: "",
@@ -282,7 +282,7 @@ export default function IntegrattionLayouts({history}){
                                         <Form.Control 
                                             id="system"
                                             type="text" 
-                                            className={`form-control ${touched.system && errors.system ? "has-error" : null }`}
+                                            className={`form-control ${errors.system ? "has-error" : null }`}
                                             placeholder="Informe o nome do sistema"
                                             value={values.system}
                                             onChange={handleChange}
@@ -300,7 +300,7 @@ export default function IntegrattionLayouts({history}){
                                         <Select 
                                             id="fileType"
                                             options={fileTypes}
-                                            className={`selected height-calc ${touched.fileType && errors.fileType ? "has-error" : null }`}
+                                            className={`selected height-calc ${errors.fileType ? "has-error" : null }`}
                                             isSearchable={true}
                                             placeholder="Selecione"
                                             value={fileTypes.filter(option => option.value === values.fileType)[0]}
@@ -332,6 +332,7 @@ export default function IntegrattionLayouts({history}){
                                 handleBlur={handleBlur}
                                 setFieldValue={setFieldValue}
                                 setFieldTouched={setFieldTouched}
+                                defaultValues={defaultValues}
                             />
 
                             <div className="form row mt-2">
