@@ -2,7 +2,7 @@ import React from 'react'
 
 import IntegrattionLayoutsFieldsNewOrEdit from './FieldsNewOrEdit'
 
-function IntegrattionLayoutsFieldsList( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues, initialValues } ){
+function IntegrattionLayoutsFieldsList( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){
 
     return (
         <>
@@ -50,7 +50,7 @@ function IntegrattionLayoutsFieldsList( { values, errors, touched, handleChange,
                                             handleBlur={handleBlur}
                                             setFieldValue={setFieldValue}
                                             setFieldTouched={setFieldTouched}
-                                            initialValues={initialValues}
+                                            initialValues={values}
                                         />
 
                                         <button className="btn btn-danger ml-2 btn-sm btn10px" type="button"

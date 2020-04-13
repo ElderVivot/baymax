@@ -72,11 +72,14 @@ let positionInFileEndOptions = ClassUtil.createAnObjetOfCount()
 let positionFieldInTheSplitOptions = ClassUtil.createAnObjetOfCount(1, 10)
 let positionFieldInTheSplitEndOptions = [{value: "0", label: "Até o Final"}, ...ClassUtil.createAnObjetOfCount(1, 10)]
 
-function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, initialValues } ){
-    
+function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched } ){
+    const [initialValues, setInitialValues] = useState({})
     const [show, setShow] = useState(false)
 
-    const handleShow = () => setShow(true)
+    const handleShow = () => ( 
+        setShow(true),
+        setInitialValues(values.fields[idx]) // quando abrir o modal pega os valores dos fields, pois se o cara clicar em cancelar volta os dados originais antes de abrir o modal
+    )
 
     function validateField(vector){
         try {
@@ -112,68 +115,54 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
         }
     }
     
-    // function ButtonSave(values, errors){
-    //     const existErrors = Object.entries(errors)
-    //     const existValues = Object.values(values)
-    //     let hasValuesValid = 0
-    //     existValues.forEach( 
-    //         function(value){
-    //             if( value !== ""){
-    //                 hasValuesValid++
-    //             }
-    //         }  
-    //     )
-
-    //     if(existErrors.length > 0 || hasValuesValid === 0){
-    //         return(
-    //             <Button disabled variant="primary">
-    //                 Salvar
-    //             </Button>
-    //         )
-    //     } else {
-    //         return(
-    //             <Button variant="primary" onClick={(event, _, attributes=values) => handleSave(event, attributes)}>
-    //                 Salvar
-    //             </Button>
-    //         )
-    //     }
-    // }
-
-    // function handleSave(event, values) {
-    //     event.preventDefault()
-    //     const positionInFile = parseInt(values.positionInFile)
-    //     const positionInFileEnd = parseInt(values.positionInFileEnd)
-    //     const positionFieldInTheSplit = parseInt(values.positionFieldInTheSplit)
-    //     const positionFieldInTheSplitEnd = parseInt(values.positionFieldInTheSplitEnd)
+    function ButtonSave(){
+        let existErrors = {}
+        try {
+            existErrors = Object.entries(errors.fields[idx])
+        } catch (error) {
+            existErrors = {}
+        }
         
-    //     setFieldValueParent(`${fieldPosition}.nameField`, values.nameField)
-    //     setFieldValueParent(`${fieldPosition}.positionInFile`, positionInFile)
-    //     setFieldValueParent(`${fieldPosition}.positionInFileEnd`, positionInFileEnd)
-    //     setFieldValueParent(`${fieldPosition}.nameColumn`, values.nameColumn)
-    //     setFieldValueParent(`${fieldPosition}.formatDate`, values.formatDate)
-    //     setFieldValueParent(`${fieldPosition}.splitField`, values.splitField)
-    //     setFieldValueParent(`${fieldPosition}.positionFieldInTheSplit`, positionFieldInTheSplit)
-    //     setFieldValueParent(`${fieldPosition}.positionFieldInTheSplitEnd`, positionFieldInTheSplitEnd)
-    //     setFieldValueParent(`${fieldPosition}.lineThatTheDataIs`, values.lineThatTheDataIs)
+        const existValues = Object.values(values.fields[idx])
+        let hasValuesValid = 0
+        existValues.forEach( 
+            function(value){
+                if( value !== "" && value !== 0 ){
+                    hasValuesValid++
+                }
+            }  
+        )
 
-    //     setShow(false)
-    // }
+        if(existErrors.length > 0 || hasValuesValid === 0){
+            return(
+                <Button disabled variant="primary">
+                    Salvar
+                </Button>
+            )
+        } else {
+            return(
+                <Button variant="primary" onClick={ () => setShow(false)}>
+                    Salvar
+                </Button>
+            )
+        }
+    }
 
-    // // volta os valores pros iniciais de quando abriu o modal
-    function handleCanceled(event, values){
+    // volta os valores pros iniciais de quando abriu o modal
+    function handleCanceled(event){
         event.preventDefault()
 
-        // for(let value in values){
-        //     values[`${value}`] = initialValues[`${value}`]
-        // }
-
+        for(let value in values.fields[idx]){
+            values.fields[idx][`${value}`] = initialValues[`${value}`]
+        }
+        setFieldValue(`fields[${idx}].positionInFile`, initialValues.positionInFile) // o setFieldValue é obrigatório pra forçar que realmente seja salvo os dados e não considere valores antigos
         setShow(false)
     }
 
     let lineThatTheDataIsOptions = []
     lineThatTheDataIsOptions.push(...values.linesOfFile.map( value => value["nameOfLine"] ))
 
-    // // se o tipo for txt ou pdf não existe "posição variável (valor 0)"
+    // se o tipo for txt ou pdf não existe "posição variável (valor 0)"
     if(values.fileType === "txt" || values.fileType === "pdf"){
         delete positionInFileOptions[0]
     }
@@ -335,7 +324,6 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
     }
 
     function handleNameField(event, idx){
-        console.log(event)   
         setFieldValue(`fields[${idx}].nameField.label`, event.label)
         if( event.__isNew__ !== undefined){
             setFieldValue(`fields[${idx}].nameField.value`, event.value.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '').toLowerCase())
@@ -451,10 +439,10 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={(event, _, attributes=values) => handleCanceled(event, attributes)}>
+                    <Button variant="secondary" onClick={(event) => handleCanceled(event)}>
                         Cancelar
                     </Button>
-                    {/* {ButtonSave(values, errors)} */}
+                    {ButtonSave()}
                 </Modal.Footer>
             </Modal>
         </>
