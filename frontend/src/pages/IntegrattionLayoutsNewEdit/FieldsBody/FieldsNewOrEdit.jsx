@@ -44,25 +44,19 @@ let fieldsOptions = [
     { value: 'typeMoviment', label: 'Tipo Movimento'},
 ]
 
-function addOptionInCreatable(vector, value, isString=false){
-    // o isString serve pra tirar espaços e caracteres especiais que o usuário tiver digitado no Creatable
-
+function addOptionInCreatable(vector, value){
     // se o value for em branco já retorna o próprio vector, pois não deve adicionar nada
-    if(value === "" || value === undefined){
+    if(value === "" || value === undefined || value === 0 || value === null){
         return vector
     }
 
-    let valueFormated = ''
-    if(isString === true){
-        valueFormated = value.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '').toLowerCase()
-    } else {
-        valueFormated = value
-    }
+    let valueFormated = value.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '').toLowerCase()
 
     // adiciona uma nova opção quando é um valor que ainda não existe
     if(vector.filter(option => option.value === valueFormated)[0] === undefined){
         vector.push({
-            value: `${valueFormated}`, label: `${value}`
+            value: `${valueFormated}`, 
+            label: `${value}`
         })
     }
     return vector
@@ -109,6 +103,8 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
 
             if(message.indexOf('must be a `string`') >= 0) {
                 message = 'Campo obrigatório'
+            } else if(message.indexOf('must be a `number`') >= 0) {
+                message = 'Apenas números são válidos.'
             }
             return message
         } catch (error) {
@@ -174,18 +170,18 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
         setShow(false)
     }
 
-    // let lineThatTheDataIsOptions = []
-    // lineThatTheDataIsOptions.push(...values.linesOfFile.map( value => value["nameOfLine"] ))
+    let lineThatTheDataIsOptions = []
+    lineThatTheDataIsOptions.push(...values.linesOfFile.map( value => value["nameOfLine"] ))
 
     // // se o tipo for txt ou pdf não existe "posição variável (valor 0)"
-    // if(values.fileType === "txt" || values.fileType === "pdf"){
-    //     delete positionInFileOptions[0]
-    // }
-    // positionInFileOptions = addOptionInCreatable(positionInFileOptions, initialValues.positionInFile)
-    // positionInFileEndOptions = addOptionInCreatable(positionInFileEndOptions, initialValues.positionInFileEnd)
+    if(values.fileType === "txt" || values.fileType === "pdf"){
+        delete positionInFileOptions[0]
+    }
+    positionInFileOptions = addOptionInCreatable(positionInFileOptions, values.fields[idx].positionInFile)
+    positionInFileEndOptions = addOptionInCreatable(positionInFileEndOptions, values.fields[idx].positionInFileEnd)
     fieldsOptions = addOptionInCreatable(fieldsOptions, values.fields[idx].nameField.value, true)
-    // positionFieldInTheSplitOptions = addOptionInCreatable(positionFieldInTheSplitOptions, initialValues.positionFieldInTheSplit)
-    // positionFieldInTheSplitEndOptions = addOptionInCreatable(positionFieldInTheSplitEndOptions, initialValues.positionFieldInTheSplitEnd)
+    positionFieldInTheSplitOptions = addOptionInCreatable(positionFieldInTheSplitOptions, values.fields[idx].positionFieldInTheSplit)
+    positionFieldInTheSplitEndOptions = addOptionInCreatable(positionFieldInTheSplitEndOptions, values.fields[idx].positionFieldInTheSplitEnd)
 
     function fieldFormatDate(){
         let nameLabelOfNameField = ''
@@ -226,108 +222,117 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
         }  
     }
 
-    // function fieldPositionInFileEnd(values, errors, touched, handleChange, setFieldTouched){
-    //     if(values.positionInFileEnd === null || values.positionInFileEnd === 0){
-    //         values.positionInFileEnd = values.positionInFile
-    //     }
-        
-    //     if(fileType === "txt" || fileType === "pdf"){
-    //         return (
-    //             <Form.Row className="mt-2">
-    //                 <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição final que se encontra no Arquivo:</Form.Label>
-    //                 <Col lg={3}>
-    //                     <Creatable 
-    //                         id={`${fieldPosition}.positionInFileEnd`}
-    //                         name={`positionInFileEnd`}
-    //                         options={positionInFileEndOptions}
-    //                         className={`selected ${touched.positionInFileEnd && errors.positionInFileEnd ? "has-error" : null }`}
-    //                         isSearchable={true}
-    //                         placeholder="Selecione"
-    //                         value={positionInFileEndOptions.filter(option => option.value === `${values.positionInFileEnd}`)[0]}
-    //                         onChange={selectedOption => handleChange(`positionInFileEnd`)(selectedOption.value)}
-    //                         onBlur={() => setFieldTouched(`positionInFileEnd`, true)}
-    //                         formatCreateLabel={(string) => `Criar a opção "${string}"`}
-    //                     />
-    //                 </Col>
-    //             </Form.Row>
-    //         )
-    //     } else {
-    //         // zera o valor do campo novamente quando muda de informação
-    //         values.positionInFileEnd = 0
-    //     }        
-    // }
+    function fieldPositionInFileEnd(){
+        if(values.fileType === "txt" || values.fileType === "pdf"){
+            // esta linha faz com que seja obrigado a selecionar este campo
+            if(values.fields[idx].positionInFileEnd === 0){
+                values.fields[idx].positionInFileEnd = null
+            }
+
+            return (
+                <Form.Row className="mt-2">
+                    <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição final que se encontra no Arquivo:</Form.Label>
+                    <Col lg={3}>
+                        <Form.Group className="mb-0">
+                            <Creatable 
+                                name={`fields[${idx}].positionInFileEnd`}
+                                options={positionInFileEndOptions}
+                                className={`selected ${validateField([idx, 'positionInFileEnd'])}`}
+                                isSearchable={true}
+                                placeholder="Selecione"
+                                value={positionInFileEndOptions.filter(option => option.value === `${values.fields[idx].positionInFileEnd}`)[0]}
+                                onChange={selectedOption => handleChange(`fields[${idx}].positionInFileEnd`)(selectedOption.value)}
+                                onBlur={() => setFieldTouched(`fields[${idx}].positionInFileEnd`, true)}
+                                formatCreateLabel={(string) => `Criar a opção "${string}"`}
+                            />
+                            <Form.Control.Feedback type="invalid">{messageError([idx, 'positionInFileEnd'])}</Form.Control.Feedback>
+                        </Form.Group>
+                    </Col>
+                </Form.Row>
+            )
+        } else {
+            // zera o valor do campo novamente quando muda de informação
+            values.fields[idx].positionInFileEnd = 0
+        }        
+    }
     
-    // function fieldNameColumn(values, errors, touched, handleChange, handleBlur){
-    //     if(fileType !== "txt" && fileType !== "pdf"){
-    //         return (
-    //             <Form.Row className="mt-2">
-    //                 <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Nome da Coluna Correspondente:</Form.Label>
-    //                 <Col lg={6}>
-    //                     <Form.Control
-    //                         id={`${fieldPosition}.nameColumn`}
-    //                         name={`nameColumn`}
-    //                         type="text"
-    //                         className={`selected ${touched.nameColumn && errors.nameColumn ? "has-error" : null }`}
-    //                         placeholder="Informe o nome da coluna que identifica este campo"
-    //                         value={values.nameColumn}
-    //                         onChange={handleChange}
-    //                         onBlur={handleBlur}
-    //                     />
-    //                 </Col>
-    //             </Form.Row>
-    //         )
-    //     } else {
-    //         values.nameColumn = ""
-    //     }        
-    // }
+    function fieldNameColumn(){
+        if(values.fileType !== "txt" && values.fileType !== "pdf"){
+            return (
+                <Form.Row className="mt-2">
+                    <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Nome da Coluna Correspondente:</Form.Label>
+                    <Col lg={6}>
+                        <Form.Control
+                            name={`fields[${idx}].nameColumn`}
+                            type="text"
+                            className={`selected`}
+                            placeholder="Informe o nome da coluna que identifica este campo"
+                            value={values.fields[idx].nameColumn}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                        />
+                    </Col>
+                </Form.Row>
+            )
+        }        
+    }
 
-    // function fieldPositionsSplit(values, errors, touched, handleChange, setFieldTouched){
+    function fieldPositionsSplit(){
         
-    //     if(values.splitField !== ""){
-    //         return (
-    //             <>
-    //                 <Form.Row className="mt-2">
-    //                     <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição <u>inicial</u> que se encontra dentro do campo dividido:</Form.Label>
-    //                     <Col lg={3}>
-    //                         <Creatable 
-    //                             id={`${fieldPosition}.positionFieldInTheSplit`}
-    //                             name={`positionFieldInTheSplit`}
-    //                             options={positionFieldInTheSplitOptions}
-    //                             className={`selected ${touched.positionFieldInTheSplit && errors.positionFieldInTheSplit ? "has-error" : null }`}
-    //                             isSearchable={true}
-    //                             placeholder="Selecione"
-    //                             value={positionFieldInTheSplitOptions.filter(option => option.value === `${values.positionFieldInTheSplit}`)[0]}
-    //                             onChange={selectedOption => handleChange(`positionFieldInTheSplit`)(selectedOption.value)}
-    //                             onBlur={() => setFieldTouched(`positionFieldInTheSplit`, true)}
-    //                             formatCreateLabel={(string) => `Criar a opção "${string}"`}
-    //                         />
-    //                     </Col>
-    //                 </Form.Row>
+        if(values.fields[idx].splitField !== ""){
+            // esta linha faz com que seja obrigado a selecionar este campo
+            if(values.fields[idx].positionFieldInTheSplit === 0){
+                values.fields[idx].positionFieldInTheSplit = null
+            }
 
-    //                 <Form.Row className="mt-2">
-    //                 <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição <u>final</u> que se encontra dentro do campo dividido:</Form.Label>
-    //                 <Col lg={3}>
-    //                     <Creatable 
-    //                         id={`${fieldPosition}.positionFieldInTheSplitEnd`}
-    //                         name={`positionFieldInTheSplitEnd`}
-    //                         options={positionFieldInTheSplitEndOptions}
-    //                         className={`selected ${touched.positionFieldInTheSplitEnd && errors.positionFieldInTheSplitEnd ? "has-error" : null }`}
-    //                         isSearchable={true}
-    //                         placeholder="Selecione"
-    //                         value={positionFieldInTheSplitEndOptions.filter(option => option.value === `${values.positionFieldInTheSplitEnd}`)[0]}
-    //                         onChange={selectedOption => handleChange(`positionFieldInTheSplitEnd`)(selectedOption.value)}
-    //                         onBlur={() => setFieldTouched(`positionFieldInTheSplitEnd`, true)}
-    //                         formatCreateLabel={(string) => `Criar a opção "${string}"`}
-    //                     />
-    //                 </Col>
-    //                 </Form.Row>
-    //             </>
-    //         )
-    //     } else {
-    //         values.positionFieldInTheSplit = 0
-    //         values.positionFieldInTheSplitEnd = 0
-    //     }        
-    // }
+            return (
+                <>
+                    <Form.Row className="mt-2">
+                        <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição <u>inicial</u> que se encontra dentro do campo dividido:</Form.Label>
+                        <Col lg={3}>
+                            <Form.Group className="mb-0">
+                                <Creatable 
+                                    name={`fields[${idx}].positionFieldInTheSplit`}
+                                    options={positionFieldInTheSplitOptions}
+                                    className={`selected ${validateField([idx, 'positionFieldInTheSplit'])}`}
+                                    isSearchable={true}
+                                    placeholder="Selecione"
+                                    value={positionFieldInTheSplitOptions.filter(option => option.value === `${values.fields[idx].positionFieldInTheSplit}`)[0]}
+                                    onChange={selectedOption => handleChange(`fields[${idx}].positionFieldInTheSplit`)(selectedOption.value)}
+                                    onBlur={() => setFieldTouched(`fields[${idx}].positionFieldInTheSplit`, true)}
+                                    formatCreateLabel={(string) => `Criar a opção "${string}"`}
+                                />
+                                <Form.Control.Feedback type="invalid">{messageError([idx, 'positionFieldInTheSplit'])}</Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+
+                    <Form.Row className="mt-2">
+                    <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição <u>final</u> que se encontra dentro do campo dividido:</Form.Label>
+                    <Col lg={3}>
+                        <Form.Group className="mb-0">
+                            <Creatable 
+                                name={`fields[${idx}].positionFieldInTheSplitEnd`}
+                                options={positionFieldInTheSplitEndOptions}
+                                className={`selected ${validateField([idx, 'positionFieldInTheSplitEnd'])}`}
+                                isSearchable={true}
+                                placeholder="Selecione"
+                                value={positionFieldInTheSplitEndOptions.filter(option => option.value === `${values.fields[idx].positionFieldInTheSplitEnd}`)[0]}
+                                onChange={selectedOption => handleChange(`fields[${idx}].positionFieldInTheSplitEnd`)(selectedOption.value)}
+                                onBlur={() => setFieldTouched(`fields[${idx}].positionFieldInTheSplitEnd`, true)}
+                                formatCreateLabel={(string) => `Criar a opção "${string}"`}
+                            />
+                            <Form.Control.Feedback type="invalid">{messageError([idx, 'positionFieldInTheSplitEnd'])}</Form.Control.Feedback>
+                        </Form.Group>
+                    </Col>
+                    </Form.Row>
+                </>
+            )
+        } else {
+            values.positionFieldInTheSplit = 0
+            values.positionFieldInTheSplitEnd = 0
+        }        
+    }
 
     function handleNameField(event, idx){
         console.log(event)   
@@ -347,7 +352,11 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
             </Button>
 
             <Modal show={show} dialogClassName="width-modal" >
-                <pre>{JSON.stringify(values.fields[idx], null, 2)}</pre>
+                <div className="d-flex">
+                    <pre>{JSON.stringify(values.fields[idx], null, 2)}</pre>
+                    <pre className="ml-4">{JSON.stringify(errors, null, 2)}</pre>
+                </div>
+                
                 <Modal.Body>
                     <Form.Row>
                         <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Campo:</Form.Label>
@@ -371,28 +380,30 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
 
                     {fieldFormatDate(values, errors, touched, handleChange, setFieldTouched, fieldsOptions)}
 
-                    {/* <Form.Row className="mt-2">
+                    <Form.Row className="mt-2">
                         <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição que se encontra no Arquivo:</Form.Label>
                         <Col lg={3}>
-                            <Creatable 
-                                id={`${fieldPosition}.positionInFile`}
-                                name={`positionInFile`}
-                                options={positionInFileOptions}
-                                className={`selected ${touched.positionInFile && errors.positionInFile ? "has-error" : null }`}
-                                isSearchable={true}
-                                placeholder="Selecione"
-                                value={positionInFileOptions.filter(option => option.value === `${values.positionInFile}`)[0]}
-                                onChange={selectedOption => handleChange(`positionInFile`)(selectedOption.value)}
-                                onBlur={() => setFieldTouched(`positionInFile`, true)}
-                                formatCreateLabel={(string) => `Criar a opção "${string}"`}
-                            />
+                            <Form.Group className="mb-0">
+                                <Creatable 
+                                    name={`fields[${idx}].positionInFile`}
+                                    options={positionInFileOptions}
+                                    className={`selected ${validateField([idx, 'positionInFile'])}`}
+                                    isSearchable={true}
+                                    placeholder="Selecione"
+                                    value={positionInFileOptions.filter(option => option.value === `${values.fields[idx].positionInFile}`)[0]}
+                                    onChange={selectedOption => handleChange(`fields[${idx}].positionInFile`)(selectedOption.value)}
+                                    onBlur={() => setFieldTouched(`fields[${idx}].positionInFile`, true)}
+                                    formatCreateLabel={(string) => `Criar a opção "${string}"`}
+                                />
+                                <Form.Control.Feedback type="invalid">{messageError([idx, 'positionInFile'])}</Form.Control.Feedback>
+                            </Form.Group>
                         </Col>
-                    </Form.Row> */}
+                    </Form.Row>
 
-                    {/* {fieldPositionInFileEnd(values, errors, touched, handleChange, setFieldTouched)}
-                    {fieldNameColumn(values, errors, touched, handleChange, handleBlur)} */}
+                    {fieldPositionInFileEnd()}
+                    {fieldNameColumn()}
 
-                    {/* <ExpansionPanel className="mt-2 ml-0">
+                    <ExpansionPanel className="mt-2 ml-0">
                         <ExpansionPanelSummary
                             expandIcon={<ExpandMoreRounded />}
                             aria-controls="panel1a-content"
@@ -405,38 +416,37 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
                                 <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Este campo possui o divisor:</Form.Label>
                                 <Col lg={4}>
                                     <Form.Control
-                                        id={`${fieldPosition}.splitField`}
-                                        name={`splitField`}
+                                        name={`fields[${idx}].splitField`}
                                         type="text"
-                                        className={`selected ${touched.splitField && errors.splitField ? "has-error" : null }`}
+                                        className={`selected`}
                                         placeholder="Exemplo '-' ou '/' ..."
-                                        value={values.splitField}
+                                        value={values.fields[idx].splitField}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
                                     />
                                 </Col>
                             </Form.Row>
 
-                            {fieldPositionsSplit(values, errors, touched, handleChange, setFieldTouched)}
+                            {fieldPositionsSplit()}
 
                             <Form.Row className="mt-2">
                                 <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Este campo está na linha:</Form.Label>
-                                <Col lg={4}>
+                                <Col lg={6}>
                                     <Select 
-                                        id={`${fieldPosition}.lineThatTheDataIs`}
-                                        name={`lineThatTheDataIs`}
+                                        name={`fields[${idx}].lineThatTheDataIs`}
                                         options={lineThatTheDataIsOptions}
-                                        className={`selected ${touched.lineThatTheDataIs && errors.lineThatTheDataIs ? "has-error" : null }`}
+                                        className={`selected`}
                                         isSearchable={true}
-                                        placeholder="Selecione"
-                                        value={lineThatTheDataIsOptions.filter(option => option.value === values.lineThatTheDataIs)[0]}
-                                        onChange={selectedOption => handleChange(`lineThatTheDataIs`)(selectedOption.value)}
-                                        onBlur={() => setFieldTouched(`lineThatTheDataIs`, true)}
+                                        placeholder="Selecione uma opção caso este campo esteja em uma linha diferente da principal."
+                                        value={lineThatTheDataIsOptions.filter(option => option.value === values.fields[idx].lineThatTheDataIs)[0]}
+                                        onChange={selectedOption => handleChange(`fields[${idx}].lineThatTheDataIs`)(selectedOption.value)}
+                                        onBlur={() => setFieldTouched(`fields[${idx}].lineThatTheDataIs`, true)}
+                                        noOptionsMessage={() => `Não há nenhuma linha cadastrada.`}
                                     />
                                 </Col>
                             </Form.Row>
                         </ExpansionPanelDetails>
-                    </ExpansionPanel> */}
+                    </ExpansionPanel>
                     
                 </Modal.Body>
 

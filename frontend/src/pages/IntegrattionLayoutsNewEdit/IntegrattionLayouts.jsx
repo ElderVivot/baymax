@@ -24,7 +24,7 @@ let validationSchema = Yup.object().shape({
             value: Yup.string(),
             label: Yup.string().required('O nome do campo é obrigatório')
         }),
-        positionInFile: Yup.number().integer('Selecione uma opção válida'),
+        positionInFile: Yup.number().required('Selecione uma opção.'),
         positionInFileEnd: Yup.number(),
         nameColumn: Yup.string(),
         formatDate: Yup.string(),
@@ -62,7 +62,7 @@ const defaultValues = {
     layoutType: "account_paid",
     header: [ { nameColumn: ""} ],
     fields: [ {
-        nameField: '',
+        nameField: "",
         positionInFile: "",
         positionInFileEnd: 0,
         nameColumn: "",
