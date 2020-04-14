@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form } from "react-bootstrap"
 
-function IntegrattionLayoutsHeader({ values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched }){
+function IntegrattionLayoutsHeader({ values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues }){
 
     function validateField(idx, nameColumn){
         try {
@@ -24,7 +24,7 @@ function IntegrattionLayoutsHeader({ values, errors, touched, handleChange, hand
             <div className="form row mt-3 mb-0">
                 <label className="col-form-label font-weight-600">Nome dos campos que identifica as colunas do Arquivo:</label>
                 <button className="btn btn-success btn-sm btn10px ml-3 mt-1" type="button" style={{height:25}}
-                    onClick={() => setFieldValue("header", [...values.header, { nameColumn: "" }]) }>
+                    onClick={() => setFieldValue("header", [...values.header, defaultValues.header[0]]) }>
                     <i className="fa fa-plus"></i>
                 </button>
                 

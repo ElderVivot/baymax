@@ -11,7 +11,7 @@ function IntegrattionLayoutsFieldsList( { values, errors, touched, handleChange,
             </div>
 
             <div className="form row">
-                <table className="table ml-3 table-striped table-bordered table-hover">
+                <table className="table ml-3 table-bordered table-hover">
                     <thead>
                         <tr className="d-flex justify-content-center text-center">
                             <th className="col-4 fields-of-table align-center">Campo</th>

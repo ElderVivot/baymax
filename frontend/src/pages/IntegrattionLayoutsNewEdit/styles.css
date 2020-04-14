@@ -46,6 +46,10 @@ th {
     vertical-align: middle;
 }
 
+.table thead tr {
+    background-color: rgba(0,0,0,.075);
+}
+
 .div-table-2px {
     border: 2px solid #dee2e6 !important;
 }
