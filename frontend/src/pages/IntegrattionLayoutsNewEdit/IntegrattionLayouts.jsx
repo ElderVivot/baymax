@@ -34,10 +34,10 @@ let validationSchema = Yup.object().shape({
         lineThatTheDataIs: Yup.string()
     })),
     validationLineToPrint: Yup.array().of( Yup.object().shape({
-        nameField: Yup.string(),
-        typeValidation: Yup.string(),
-        valueValidation: Yup.string(),
-        nextValidationOrAnd: Yup.string()
+        nameField: Yup.string().required('Campo obrigatório'),
+        typeValidation: Yup.string().required('Campo obrigatório'),
+        valueValidation: Yup.string().required('Campo obrigatório'),
+        nextValidationOrAnd: Yup.string().required('Campo obrigatório')
     })),
     linesOfFile: Yup.array().of( Yup.object().shape({
         nameOfLine: Yup.object().shape({

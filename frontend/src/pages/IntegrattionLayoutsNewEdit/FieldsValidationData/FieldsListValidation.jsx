@@ -2,28 +2,28 @@ import React from 'react'
 import Select from 'react-select'
 import { Col, Form } from "react-bootstrap"
 
-const fieldsOptions = [
-    { value: 'paymentDate', label: 'Data de Pagamento'},
-    { value: 'document', label: 'NF ou Documento'},
-    { value: 'cgceProvider', label: 'CNPJ Fornedor'},
-    { value: 'nameProvider', label: 'Nome Fornecedor'},
-    { value: 'bank', label: 'Banco/Caixa'},
-    { value: 'account', label: 'Conta Corrente'},
-    { value: 'amountPaid', label: 'Valor Pago'},
-    { value: 'amountOriginal', label: 'Valor Original'},
-    { value: 'amountInterest', label: 'Valor Juros'},
-    { value: 'amountFine', label: 'Valor Multa'},
-    { value: 'amountDiscount', label: 'Valor Desconto'},
-    { value: 'amountDevolution', label: 'Valor Devolução'},
-    { value: 'dueDate', label: 'Data de Vencimento'},
-    { value: 'issueDate', label: 'Data de Emissão'},
-    { value: 'historic', label: 'Histórico'},
-    { value: 'category', label: 'Categoria'},
-    { value: 'accountPlan', label: 'Plano de Contas'},
-    { value: 'parcelNumber', label: 'Número da Parcela'},
-    { value: 'companyBranch', label: 'Filial/Empresa'},
-    { value: 'typeMoviment', label: 'Tipo Movimento'},
-]
+// const fieldsOptions = [
+//     { value: 'paymentDate', label: 'Data de Pagamento'},
+//     { value: 'document', label: 'NF ou Documento'},
+//     { value: 'cgceProvider', label: 'CNPJ Fornedor'},
+//     { value: 'nameProvider', label: 'Nome Fornecedor'},
+//     { value: 'bank', label: 'Banco/Caixa'},
+//     { value: 'account', label: 'Conta Corrente'},
+//     { value: 'amountPaid', label: 'Valor Pago'},
+//     { value: 'amountOriginal', label: 'Valor Original'},
+//     { value: 'amountInterest', label: 'Valor Juros'},
+//     { value: 'amountFine', label: 'Valor Multa'},
+//     { value: 'amountDiscount', label: 'Valor Desconto'},
+//     { value: 'amountDevolution', label: 'Valor Devolução'},
+//     { value: 'dueDate', label: 'Data de Vencimento'},
+//     { value: 'issueDate', label: 'Data de Emissão'},
+//     { value: 'historic', label: 'Histórico'},
+//     { value: 'category', label: 'Categoria'},
+//     { value: 'accountPlan', label: 'Plano de Contas'},
+//     { value: 'parcelNumber', label: 'Número da Parcela'},
+//     { value: 'companyBranch', label: 'Filial/Empresa'},
+//     { value: 'typeMoviment', label: 'Tipo Movimento'},
+// ]
 
 const typeValidationOptions = [
     { value: 'isEqual', label: 'É igual à'},
@@ -44,6 +44,9 @@ const nextValidationOrAndOptions = [
 
 function IntegrattionLayoutsFieldsListValidation( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched } ){
 
+    let fieldsOptions = []
+    fieldsOptions.push(...values.fields.map( value => value["nameField"] ))
+
     function validateField(name, idx){
         try {
             return touched.validationLineToPrint[idx][name] && errors.validationLineToPrint[idx][name] ? "has-error" : null
@@ -62,7 +65,7 @@ function IntegrattionLayoutsFieldsListValidation( { values, errors, touched, han
             <Col >
                 <Form.Control
                     id={`validationLineToPrint[${idx}].valueValidation`}
-                    name={`valueValidation`}
+                    name={`validationLineToPrint[${idx}].valueValidation`}
                     type="text"
                     className={`selected ${validateField('valueValidation', idx)} text-center`}
                     placeholder="Informe a validação"
@@ -112,7 +115,7 @@ function IntegrattionLayoutsFieldsListValidation( { values, errors, touched, han
                                     <Col>
                                         <Select 
                                             id={`validationLineToPrint[${idx}].nameField`}
-                                            name={`nameField`}
+                                            name={`validationLineToPrint[${idx}].nameField`}
                                             options={fieldsOptions}
                                             className={`selected ${validateField('nameField', idx)} select-center`}
                                             isSearchable={true}
@@ -127,7 +130,7 @@ function IntegrattionLayoutsFieldsListValidation( { values, errors, touched, han
                                     <Col>
                                         <Select 
                                             id={`validationLineToPrint[${idx}].typeValidation`}
-                                            name={`typeValidation`}
+                                            name={`validationLineToPrint[${idx}].typeValidation`}
                                             options={typeValidationOptions}
                                             className={`selected ${validateField('typeValidation', idx)} select-center`}
                                             isSearchable={true}
@@ -145,7 +148,7 @@ function IntegrattionLayoutsFieldsListValidation( { values, errors, touched, han
                                     <Col>
                                         <Select 
                                             id={`validationLineToPrint[${idx}].nextValidationOrAnd`}
-                                            name={`nextValidationOrAnd`}
+                                            name={`validationLineToPrint[${idx}].nextValidationOrAnd`}
                                             options={nextValidationOrAndOptions}
                                             className={`selected ${validateField('nextValidationOrAnd', idx)} select-center`}
                                             isSearchable={true}

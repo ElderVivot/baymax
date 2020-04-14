@@ -81,10 +81,10 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
     const [initialValues, setInitialValues] = useState({})
     const [show, setShow] = useState(false)
 
-    const handleShow = () => ( 
-        setShow(true),
+    function handleShow() {
+        setShow(true)
         setInitialValues(values.fields[idx]) // quando abrir o modal pega os valores dos fields, pois se o cara clicar em cancelar volta os dados originais antes de abrir o modal
-    )
+    }
 
     function validateField(vector){
         try {
