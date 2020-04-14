@@ -73,10 +73,10 @@ class PaymentsFaaftech(object):
                 parcelNumber = ""
                 amountPaid = funcoesUteis.treatDecimalFieldInVector(data, 19, posionsOfHeader, "Vlr Baixa")
                 amountDevolution = funcoesUteis.treatDecimalFieldInVector(0.0)
-                amountDiscount = funcoesUteis.treatDecimalFieldInVector(data, 41, posionsOfHeader, "Vlr Desconto")
-                amountInterest = funcoesUteis.treatDecimalFieldInVector(data, 44, posionsOfHeader, "Vlr Juros")
-                amountFine = funcoesUteis.treatDecimalFieldInVector(data, 45, posionsOfHeader, "Vlr Multa")
-                amountOriginal = float(0)
+                amountDiscount = 0.0 # funcoesUteis.treatDecimalFieldInVector(data, 41, posionsOfHeader, "Vlr Desconto")
+                amountInterest = 0.0 # funcoesUteis.treatDecimalFieldInVector(data, 44, posionsOfHeader, "Vlr Juros")
+                amountFine = 0.0 # funcoesUteis.treatDecimalFieldInVector(data, 45, posionsOfHeader, "Vlr Multa")
+                amountOriginal = 0.0
                 paymentType = ""
                 bank = funcoesUteis.treatTextFieldInVector(data, 53, posionsOfHeader, "Conta Bancaria")
                 account = ""

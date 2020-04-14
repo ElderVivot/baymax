@@ -26,6 +26,12 @@ class ExtractsOFX(object):
             return self._banks["BanksNamePerNumber"][str(numberBank)]
         except Exception:
             return ""
+
+    def returnAccount(self, numberBank, account):
+        if numberBank == 748 or numberBank == 341:
+            return str(int(account[4:]))
+        else:
+            return account
     
     def process(self, file):
 
@@ -39,7 +45,7 @@ class ExtractsOFX(object):
             accountData = ofx.account
 
             bankId = int(accountData.routing_number)
-            bankId = self.returnNameBank(bankId)
+            bankName = self.returnNameBank(bankId)
 
             account = accountData.account_id
             account = str(account).replace('-', '')
@@ -68,7 +74,7 @@ class ExtractsOFX(object):
                 historic = funcoesUteis.treatTextField(transaction.memo)
 
                 valuesOfLine = {
-                    "bank": bankId,
+                    "bank": bankName,
                     "account": account,
                     "typeTransaction": typeTransaction,
                     "dateTransaction": dateTransaction,
