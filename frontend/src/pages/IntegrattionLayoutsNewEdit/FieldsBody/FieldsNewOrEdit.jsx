@@ -50,7 +50,12 @@ function addOptionInCreatable(vector, value){
         return vector
     }
 
-    let valueFormated = value.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '').toLowerCase()
+    let valueFormated = ''
+    try {
+        valueFormated = value.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '').toLowerCase()
+    } catch (error) {
+        valueFormated = ''
+    }
 
     // adiciona uma nova opção quando é um valor que ainda não existe
     if(vector.filter(option => option.value === valueFormated)[0] === undefined){
@@ -339,12 +344,7 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
                 <i className="fa fa-pencil-alt"></i>
             </Button>
 
-            <Modal show={show} dialogClassName="width-modal" >
-                <div className="d-flex">
-                    <pre>{JSON.stringify(values.fields[idx], null, 2)}</pre>
-                    <pre className="ml-4">{JSON.stringify(errors, null, 2)}</pre>
-                </div>
-                
+            <Modal show={show} dialogClassName="width-modal" >                
                 <Modal.Body>
                     <Form.Row>
                         <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Campo:</Form.Label>

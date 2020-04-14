@@ -61,15 +61,21 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
 
     function messageError(vector){
         try {
+            let message = null
             if(vector.length === 2){
-                return errors.linesOfFile[vector[0]][vector[1]]
+                message = errors.linesOfFile[vector[0]][vector[1]]
             }
             if(vector.length === 3){
-                return errors.linesOfFile[vector[0]][vector[1]][vector[2]]
+                message = errors.linesOfFile[vector[0]][vector[1]][vector[2]]
             }
             if(vector.length === 4){
-                return errors.linesOfFile[vector[0]][vector[1]][vector[2]][vector[3]]
+                message = errors.linesOfFile[vector[0]][vector[1]][vector[2]][vector[3]]
             }
+
+            if(message.indexOf('must be a') >= 0) {
+                message = 'Campo obrigatório'
+            }
+            return message
         } catch (error) {
             return null
         }
@@ -109,10 +115,7 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
         let disabled = false
         if(values.linesOfFile[idx].validations[idxValidation].typeValidation === "isDate") {
             disabled = true
-            // este campo é pra deixar passar pela validação, visto que o campo é obrigatório
-            values.linesOfFile[idx].validations[idxValidation].valueValidation = 'Data'
-        } else {
-            values.linesOfFile[idx].validations[idxValidation].valueValidation = ''
+            values.linesOfFile[idx].validations[idxValidation].valueValidation = ' '
         }
 
         return(
@@ -137,25 +140,31 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
 
     function fieldPositionInFileEnd(idx, idxValidation){
         let disabled = false
-        if(values.fileType !== "txt") {
+        if(values.fileType !== "txt" && values.fileType !== "pdf") {
             disabled = true
+        } else {
+            if(values.linesOfFile[idx].validations[idxValidation].positionInFileEnd === 0){
+                values.linesOfFile[idx].validations[idxValidation].positionInFileEnd = null
+            }
         }
 
         return(
             <Col >
-                <Creatable 
-                    id={`linesOfFile[${idx}].validations[${idxValidation}].positionInFileEnd`}
-                    name={`positionInFileEnd`}
-                    options={positionInFileEndOptions}
-                    className={`selected ${validateField('positionInFileEnd', idx)} select-center`}
-                    isSearchable={true}
-                    isDisabled={disabled}
-                    placeholder="Selecione"
-                    value={positionInFileEndOptions.filter(option => option.value === values.linesOfFile[idx].validations[idxValidation].positionInFileEnd)[0]}
-                    onChange={selectedOption => handleChange(`linesOfFile[${idx}].validations[${idxValidation}].positionInFileEnd`)(selectedOption.value)}
-                    onBlur={() => setFieldTouched(`linesOfFile[${idx}].validations[${idxValidation}].positionInFileEnd`, true)}
-                    formatCreateLabel={(string) => `Criar a opção "${string}"`}
-                />
+                <Form.Group className="mb-0">
+                    <Creatable 
+                        name={`linesOfFile[${idx}].validations[${idxValidation}].positionInFileEnd`}
+                        options={positionInFileEndOptions}
+                        className={`selected ${validateField([idx, 'validations', idxValidation, 'positionInFileEnd'])} select-center`}
+                        isSearchable={true}
+                        isDisabled={disabled}
+                        placeholder="Selecione"
+                        value={positionInFileEndOptions.filter(option => option.value === `${values.linesOfFile[idx].validations[idxValidation].positionInFileEnd}`)[0]}
+                        onChange={selectedOption => handleChange(`linesOfFile[${idx}].validations[${idxValidation}].positionInFileEnd`)(selectedOption.value)}
+                        onBlur={() => setFieldTouched(`linesOfFile[${idx}].validations[${idxValidation}].positionInFileEnd`, true)}
+                        formatCreateLabel={(string) => `Criar a opção "${string}"`}
+                    />
+                    <Form.Control.Feedback type="invalid">{messageError([idx, 'validations', idxValidation, 'positionInFileEnd'])}</Form.Control.Feedback>
+               </Form.Group>
             </Col>
         )
     }
@@ -191,8 +200,8 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                                 onChange={(event) => handleNameOfLine(event, idx)}
                                                 onBlur={() => setFieldTouched(`linesOfFile[${idx}].nameOfLine.label`, true)}
                                             />
+                                            <Form.Control.Feedback type="invalid">{messageError([idx, 'nameOfLine', 'label'])}</Form.Control.Feedback>
                                         </Form.Group>
-                                        <Form.Control.Feedback type="invalid">{messageError([idx, 'nameOfLine', 'label'])}</Form.Control.Feedback>
                                     </Col>
 
                                     <Col lg={4}>
@@ -262,7 +271,7 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                                                             className={`selected ${validateField([idx, 'validations', idxValidation, 'positionInFile'])} select-center`}
                                                                             isSearchable={true}
                                                                             placeholder="Selecione"
-                                                                            value={positionInFileOptions.filter(option => option.value === values.linesOfFile[idx].validations[idxValidation].positionInFile)[0]}
+                                                                            value={positionInFileOptions.filter(option => option.value === `${values.linesOfFile[idx].validations[idxValidation].positionInFile}`)[0]}
                                                                             onChange={selectedOption => handleChange(`linesOfFile[${idx}].validations[${idxValidation}].positionInFile`)(selectedOption.value)}
                                                                             onBlur={() => setFieldTouched(`linesOfFile[${idx}].validations[${idxValidation}].positionInFile`, true)}
                                                                             formatCreateLabel={(string) => `Criar a opção "${string}"`}

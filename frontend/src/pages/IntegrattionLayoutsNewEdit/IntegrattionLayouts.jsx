@@ -162,14 +162,14 @@ export default function IntegrattionLayouts({history}){
     
     if(integrattionLayout._id !== undefined){
 
-        for (let [key, value] of Object.entries(initialValues)) {
+        for (let [key, value] of Object.entries(defaultValues)) {
             if( integrattionLayout[key] === undefined ){
                 integrattionLayout[key] = value
             }
             // este for pega os campos do header que não existem no mongo e adiciona o valor padrão. Isto é necessário por causa disto daqui do react https://reactjs.org/docs/forms.html#controlled-components
             if( key === "header" && integrattionLayout[key].length > 0 ){
                 for(let idxHeader in integrattionLayout[key]){
-                    for(let [keyHeader, valueHeader] of Object.entries(initialValues[key][0])){
+                    for(let [keyHeader, valueHeader] of Object.entries(defaultValues[key][0])){
                         if( integrattionLayout[key][idxHeader][keyHeader] === undefined ){
                             integrattionLayout[key][idxHeader][keyHeader] = valueHeader
                         }
@@ -178,7 +178,7 @@ export default function IntegrattionLayouts({history}){
             }
             if( key === "fields" && integrattionLayout[key].length > 0 ){
                 for(let idxFields in integrattionLayout[key]){
-                    for(let [keyFields, valueFields] of Object.entries(initialValues[key][0])){
+                    for(let [keyFields, valueFields] of Object.entries(defaultValues[key][0])){
                         if( integrattionLayout[key][idxFields][keyFields] === undefined ){
                             integrattionLayout[key][idxFields][keyFields] = valueFields
                         }
@@ -187,7 +187,7 @@ export default function IntegrattionLayouts({history}){
             }
             if( key === "validationLineToPrint" && integrattionLayout[key].length > 0 ){
                 for(let idxValidationLineToPrint in integrattionLayout[key]){
-                    for(let [keyValidationLineToPrint, valueValidationLineToPrint] of Object.entries(initialValues[key][0])){
+                    for(let [keyValidationLineToPrint, valueValidationLineToPrint] of Object.entries(defaultValues[key][0])){
                         if( integrattionLayout[key][idxValidationLineToPrint][keyValidationLineToPrint] === undefined ){
                             integrattionLayout[key][idxValidationLineToPrint][keyValidationLineToPrint] = valueValidationLineToPrint
                         }
@@ -196,7 +196,7 @@ export default function IntegrattionLayouts({history}){
             }
             if( key === "linesOfFile" && integrattionLayout[key].length > 0 ){
                 for(let idxLinesOfFile in integrattionLayout[key]){
-                    for(let [keyLinesOfFile, valueLinesOfFile] of Object.entries(initialValues[key][0])){
+                    for(let [keyLinesOfFile, valueLinesOfFile] of Object.entries(defaultValues[key][0])){
                         if( integrattionLayout[key][idxLinesOfFile][keyLinesOfFile] === undefined ){
                             integrattionLayout[key][idxLinesOfFile][keyLinesOfFile] = valueLinesOfFile
                             // este for de baixo pro array de validations que tem dentro do linesOfFile
