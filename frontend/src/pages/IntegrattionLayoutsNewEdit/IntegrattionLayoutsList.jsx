@@ -19,7 +19,7 @@ const IntegrattionLayoutsList = ( {history} ) => {
     }
 
     const deleteIntegrattionLayout = async (id) => {
-        const wishDelete = window.confirm("Deseja deletar?")
+        const wishDelete = window.confirm("Tem certeza que deseja deletar este layout?")
         if(wishDelete === true){
             try {
                 const response = await api.delete(`/integrattion_layouts/${id}`)

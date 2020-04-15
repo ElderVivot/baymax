@@ -367,7 +367,15 @@ export default function IntegrattionLayouts({history}){
                             <div className="form-row">
                                 <div className="col-12">
                                     <button className="btn btn-primary mr-2 col-1 offset-4" type="submit" disabled={isSubmitting}>Salvar</button>
-                                    <button className="btn btn-secondary col-1" type="reset">Cancelar</button>
+                                    <button className="btn btn-secondary col-1" type="reset" 
+                                        onClick={
+                                            () => {
+                                                const wishCanceled = window.confirm("Tem certeza que deseja cancelar?")
+                                                if(wishCanceled === true){
+                                                    history.push('/integrattion_layouts_list')
+                                                }
+                                            }}
+                                    >Cancelar</button>
                                 </div>
                             </div>
                         </form>

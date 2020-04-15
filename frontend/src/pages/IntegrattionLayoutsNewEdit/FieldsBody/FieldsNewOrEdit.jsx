@@ -56,6 +56,10 @@ function addOptionInCreatable(vector, value){
     } catch (error) {
         valueFormated = ''
     }
+    // se o valor formato não for válido (não conter letra e nada ele já retorna o próprio vetor)
+    if(valueFormated === ""){
+        return vector
+    }
 
     // adiciona uma nova opção quando é um valor que ainda não existe
     if(vector.filter(option => option.value === valueFormated)[0] === undefined){
@@ -159,8 +163,8 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
 
         for(let value in values.fields[idx]){
             values.fields[idx][`${value}`] = initialValues[`${value}`]
+            setFieldValue(`fields[${idx}][${value}]`, initialValues[`${value}`])
         }
-        setFieldValue(`fields[${idx}].positionInFile`, initialValues.positionInFile) // o setFieldValue é obrigatório pra forçar que realmente seja salvo os dados e não considere valores antigos
         setShow(false)
     }
 
@@ -346,6 +350,10 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
 
             <Modal show={show} dialogClassName="width-modal" >                
                 <Modal.Body>
+                    <div className="d-flex">
+                        <pre>{JSON.stringify(values.fields[idx], null, 2)}</pre>
+                        <pre className="ml-4">{JSON.stringify(errors, null, 2)}</pre>
+                    </div>
                     <Form.Row>
                         <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Campo:</Form.Label>
                         <Col lg={4}>
