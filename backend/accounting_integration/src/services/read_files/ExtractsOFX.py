@@ -49,6 +49,7 @@ class ExtractsOFX(object):
 
             account = accountData.account_id
             account = str(account).replace('-', '')
+            account = self.returnAccount(bankId, account)
 
             transactions = accountData.statement.transactions
             for transaction in transactions:
