@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form } from "react-bootstrap"
 
-function IntegrattionLayoutsHeader({ values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues }){
+function FieldsHeader({ values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues }){
 
     function validateField(idx, nameColumn){
         try {
@@ -71,4 +71,4 @@ function IntegrattionLayoutsHeader({ values, errors, touched, handleChange, hand
     )
 }
 
-export default IntegrattionLayoutsHeader
+export default FieldsHeader

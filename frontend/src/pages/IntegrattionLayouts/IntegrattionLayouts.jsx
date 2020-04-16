@@ -6,9 +6,9 @@ import { Formik } from 'formik'
 
 import './styles.css'
 import api from '../../services/api'
-import IntegrattionLayoutsHeader from './FieldsHeader/FieldsHeader'
-import IntegrattionLayoutsFieldsList from './FieldsBody/FieldsList'
-import IntegrattionLayoutsFieldsListValidation from './FieldsValidationData/FieldsListValidation'
+import FieldsHeader from './FieldsHeader/FieldsHeader'
+import FieldsFileList from './FieldsFile/FieldsFileList'
+import FieldsValidation from './FieldsValidationData/FieldsListValidation'
 import LinesOfFile from './LinesOfFile/LinesOfFile'
 
 let validationSchema = Yup.object().shape({
@@ -320,7 +320,7 @@ export default function IntegrattionLayouts({history}){
                                 {fieldSplitFile(values, handleChange, handleBlur)}
                             </div>
                             
-                            < IntegrattionLayoutsHeader
+                            < FieldsHeader
                                 values={values}
                                 errors={errors}
                                 touched={touched}
@@ -342,7 +342,7 @@ export default function IntegrattionLayouts({history}){
                                 defaultValues={defaultValues}
                             />
 
-                            < IntegrattionLayoutsFieldsList
+                            < FieldsFileList
                                 values={values}
                                 errors={errors}
                                 touched={touched}
@@ -353,7 +353,7 @@ export default function IntegrattionLayouts({history}){
                                 defaultValues={defaultValues}
                             />
 
-                            < IntegrattionLayoutsFieldsListValidation
+                            < FieldsValidation
                                 values={values}
                                 errors={errors}
                                 touched={touched}

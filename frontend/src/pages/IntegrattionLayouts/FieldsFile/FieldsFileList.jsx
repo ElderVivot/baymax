@@ -1,8 +1,8 @@
 import React from 'react'
 
-import IntegrattionLayoutsFieldsNewOrEdit from './FieldsNewOrEdit'
+import FieldsFileEdit from './FieldsFileEdit'
 
-function IntegrattionLayoutsFieldsList( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){
+function FieldsFileList( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){
 
     return (
         <>
@@ -40,7 +40,7 @@ function IntegrattionLayoutsFieldsList( { values, errors, touched, handleChange,
                                 <td className="col-1 align-center">{values.fields[idx].formatDate}</td>
                                 <td className="col-2 align-center">
                                     <div>
-                                        < IntegrattionLayoutsFieldsNewOrEdit
+                                        < FieldsFileEdit
                                             key={`values.fields[${idx}]`}
                                             idx={idx}
                                             values={values}
@@ -75,4 +75,4 @@ function IntegrattionLayoutsFieldsList( { values, errors, touched, handleChange,
     )
 }
 
-export default IntegrattionLayoutsFieldsList
+export default FieldsFileList

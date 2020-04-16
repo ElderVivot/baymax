@@ -81,7 +81,7 @@ let positionInFileEndOptions = ClassUtil.createAnObjetOfCount()
 let positionFieldInTheSplitOptions = ClassUtil.createAnObjetOfCount(1, 10)
 let positionFieldInTheSplitEndOptions = [{value: "0", label: "Até o Final"}, ...ClassUtil.createAnObjetOfCount(1, 10)]
 
-function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched } ){
+function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched } ){
     const [initialValues, setInitialValues] = useState({})
     const [show, setShow] = useState(false)
 
@@ -457,4 +457,4 @@ function IntegrattionLayoutsFieldsNewOrEdit( { idx, values, errors, touched, han
     );
 }
 
-export default IntegrattionLayoutsFieldsNewOrEdit
+export default FieldsFileEdit

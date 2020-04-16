@@ -2,29 +2,6 @@ import React from 'react'
 import Select from 'react-select'
 import { Col, Form } from "react-bootstrap"
 
-// const fieldsOptions = [
-//     { value: 'paymentDate', label: 'Data de Pagamento'},
-//     { value: 'document', label: 'NF ou Documento'},
-//     { value: 'cgceProvider', label: 'CNPJ Fornedor'},
-//     { value: 'nameProvider', label: 'Nome Fornecedor'},
-//     { value: 'bank', label: 'Banco/Caixa'},
-//     { value: 'account', label: 'Conta Corrente'},
-//     { value: 'amountPaid', label: 'Valor Pago'},
-//     { value: 'amountOriginal', label: 'Valor Original'},
-//     { value: 'amountInterest', label: 'Valor Juros'},
-//     { value: 'amountFine', label: 'Valor Multa'},
-//     { value: 'amountDiscount', label: 'Valor Desconto'},
-//     { value: 'amountDevolution', label: 'Valor Devolução'},
-//     { value: 'dueDate', label: 'Data de Vencimento'},
-//     { value: 'issueDate', label: 'Data de Emissão'},
-//     { value: 'historic', label: 'Histórico'},
-//     { value: 'category', label: 'Categoria'},
-//     { value: 'accountPlan', label: 'Plano de Contas'},
-//     { value: 'parcelNumber', label: 'Número da Parcela'},
-//     { value: 'companyBranch', label: 'Filial/Empresa'},
-//     { value: 'typeMoviment', label: 'Tipo Movimento'},
-// ]
-
 const typeValidationOptions = [
     { value: 'isEqual', label: 'É igual à'},
     { value: 'isDifferent', label: 'É diferente de'},
@@ -42,7 +19,7 @@ const nextValidationOrAndOptions = [
     { value: 'or', label: 'OU'}
 ]
 
-function IntegrattionLayoutsFieldsListValidation( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){
+function FieldsValidation( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){
 
     let fieldsOptions = []
     fieldsOptions.push(...values.fields.map( value => value["nameField"] ))
@@ -211,4 +188,4 @@ function IntegrattionLayoutsFieldsListValidation( { values, errors, touched, han
     
 }
 
-export default IntegrattionLayoutsFieldsListValidation
+export default FieldsValidation

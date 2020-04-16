@@ -2,8 +2,8 @@ import React from 'react'
 import {Switch, Route, Redirect} from 'react-router-dom'
 
 import Home from './components/Home'
-import IntegrattionLayoutsList from './pages/IntegrattionLayoutsNewEdit/IntegrattionLayoutsList'
-import IntegrattionLayouts from './pages/IntegrattionLayoutsNewEdit/IntegrattionLayouts'
+import IntegrattionLayoutsList from './pages/IntegrattionLayouts/IntegrattionLayoutsList'
+import IntegrattionLayouts from './pages/IntegrattionLayouts/IntegrattionLayouts'
 
 export default function Routes() {
     return (
