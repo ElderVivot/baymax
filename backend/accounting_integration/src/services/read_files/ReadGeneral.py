@@ -86,7 +86,7 @@ class ReadGeneral(object):
         if countValidationsOK == countValidationsConfigured:
             return True
 
-    # avalia quais configurações são importantes pro processamento de outros campos, tais como _groupingFields, _validationsLineToPrint, etc
+    # avalia quais configurações são importantes pro processamento de outros campos, tais como _groupingFields, etc
     # além disso, ele reagrupa os fields pra trazer primeiro o que tem o atributo dataIsNotLineMain, pra depois trazer os  que não tem
     # isto é necessário afim de que um campo numa linha not_main ele só seja preenchido se de fato ele tiver naquela linha
     def analyzeSettingFields(self, settingFields):
@@ -94,18 +94,12 @@ class ReadGeneral(object):
         fieldsDontHasDataIsNotLineMain = []
 
         for settingField in settingFields:
-            nameField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField')
+            nameField = funcoesUteis.returnDataFieldInDict(settingField, ['nameField', 'value'])
 
             # --- este agrupamento é pra fazer a leitura de quando for um registro com vários débito pra vários créditos
             groupingField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'groupingField', False)
             if groupingField is True:
                 self._groupingFields[nameField] = True
-
-            validationLineToPrint = funcoesUteis.analyzeIfFieldIsValid(settingField, 'validationLineToPrint', None)
-            if validationLineToPrint is not None:
-                objValidationLineToPrint = { nameField: validationLineToPrint }
-                if self._validationsLineToPrint.count(objValidationLineToPrint) == 0:
-                    self._validationsLineToPrint.append(objValidationLineToPrint)
 
             if nameField == "amountPaid":
                 self._sumInterestFineAndDiscount = funcoesUteis.analyzeIfFieldIsValid(settingField, 'sumInterestFineAndDiscount', False)
@@ -129,7 +123,7 @@ class ReadGeneral(object):
         positionsOfHeaderCorrect = positionsOfHeader
 
         for settingField in settingFields:
-            nameField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameField')
+            nameField = funcoesUteis.returnDataFieldInDict(settingField, ['nameField', 'value'])
 
             positionInFile = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionInFile', -1)
             positionInFileEnd = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionInFileEnd', -1)
@@ -216,7 +210,7 @@ class ReadGeneral(object):
 
     def getPositionFieldByNameField(self, settingFields, nameFieldSearch):
         for positionFieldInVector, settingField in enumerate(settingFields):
-            nameField = funcoesUteis.analyzeIfFieldIsValid( settingField, 'nameField' )
+            nameField = funcoesUteis.returnDataFieldInDict(settingField, ['nameField', 'value'])
             if nameField == nameFieldSearch:
                 return positionFieldInVector
 
@@ -317,28 +311,41 @@ class ReadGeneral(object):
         if len(self._validationsLineToPrint) == 0:
             return True
 
-        countValidationsIsTrue = 0
-        countValidations = 0
-        for validationsLineToPrint in self._validationsLineToPrint:
-            for nameField, validations in validationsLineToPrint.items():
-                for validation in validations:
-                    countValidations += 1
+        countValidationsOK = 0
+        countValidationsConfigured = 0
+        for key, validation in enumerate(self._validationsLineToPrint):
+            nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(validation, 'nextValidationOrAnd', 'and')
 
-                    typeValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'typeValidation')
-                    valueValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation')
+            if nextValidationOrAnd == 'and' or key == len(self._validationsLineToPrint)-1:
+                countValidationsConfigured += 1
 
-                    valueFieldData = funcoesUteis.analyzeIfFieldIsValid(data, nameField)
+            nameField = funcoesUteis.analyzeIfFieldIsValid(validation, 'nameField')
+            typeValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'typeValidation')
+            valueValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation')
+            valueValidation = funcoesUteis.treatDecimalField(valueValidation) if nameField.find('amount') >= 0 else valueValidation
 
-                    if typeValidation == "isLessThan" and valueFieldData < valueValidation:
-                        countValidationsIsTrue += 1
-                    elif typeValidation == "isEqual" and valueFieldData == valueValidation:
-                        countValidationsIsTrue += 1
-                    elif typeValidation == "isDate" and str(type(valueFieldData)).count('datetime.date') > 0:
-                        countValidationsIsTrue += 1
-                    elif typeValidation == "isDifferent" and valueFieldData != valueValidation:
-                        countValidationsIsTrue += 1
+            valueFieldData = funcoesUteis.analyzeIfFieldIsValid(data, nameField)
+
+            if typeValidation == "isLessThan" and valueFieldData < valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isLessThanOrEqual" and valueFieldData <= valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isBiggerThan" and valueFieldData > valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isBiggerThanOrEqual" and valueFieldData >= valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isEqual" and valueFieldData == valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isDate" and str(type(valueFieldData)).count('datetime.date') > 0:
+                countValidationsOK += 1
+            elif typeValidation == "isDifferent" and valueFieldData != valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "contains" and valueFieldData.find(valueValidation) >= 0:
+                countValidationsOK += 1
+            elif typeValidation == "notContains" and valueFieldData.find(valueValidation) < 0:
+                countValidationsOK += 1
         
-        if countValidationsIsTrue == countValidations:
+        if countValidationsOK >= countValidationsConfigured:
             return True
 
     # tem alguns sistemas que trás o valor negativo como sendo o pago, tem que multiplicar por menos 1 pra ficar certo
@@ -444,7 +451,7 @@ class ReadGeneral(object):
                 if bankAndAccountInTheCorrelation is True:
                     countValidationsOK += 1
 
-        if countValidationsOK == countValidationsConfigured:
+        if countValidationsOK >= countValidationsConfigured:
             return True
     
     def process(self, file):
@@ -484,6 +491,8 @@ class ReadGeneral(object):
 
             fields = setting['fields']
             fields = self.analyzeSettingFields(fields)
+
+            self._validationsLineToPrint = funcoesUteis.analyzeIfFieldIsValid(setting, 'validationLineToPrint', [])
 
             bankAndAccountCorrelation = funcoesUteis.analyzeIfFieldIsValid(setting, 'bankAndAccountCorrelation')
             validateIfDataIsThisCompanie = funcoesUteis.analyzeIfFieldIsValid(setting, 'validateIfDataIsThisCompanie')
@@ -546,7 +555,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1724
+    codi_emp = 1117
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
