@@ -350,10 +350,10 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
 
             <Modal show={show} dialogClassName="width-modal" >                
                 <Modal.Body>
-                    <div className="d-flex">
+                    {/* <div className="d-flex">
                         <pre>{JSON.stringify(values.fields[idx], null, 2)}</pre>
                         <pre className="ml-4">{JSON.stringify(errors, null, 2)}</pre>
-                    </div>
+                    </div> */}
                     <Form.Row>
                         <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Campo:</Form.Label>
                         <Col lg={4}>

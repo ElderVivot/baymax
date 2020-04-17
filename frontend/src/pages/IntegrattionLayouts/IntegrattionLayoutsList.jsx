@@ -24,20 +24,13 @@ const IntegrattionLayoutsList = ( {history} ) => {
             try {
                 const response = await api.delete(`/integrattion_layouts/${id}`)
 
-                // if(response.status === 200){
-                //     return(
-                //         <div class="alert alert-primary" role="alert">Layout excluído com sucesso</div>
-                //     )                    
-                // } else {
-                //     return(
-                //         <div class="alert alert-danger" role="alert">Não foi possível deletar. Tente novamente</div>
-                //     )                    
-                // }
+                if(response.status === 200){
+                    setIntegrattionLayouts(response.data)
+                } else {
+                    console.log(response)                  
+                }
             } catch (error) {
-                console.log(error)
-                // return(
-                //     <div class="alert alert-danger" role="alert">Não foi possível deletar. Tente novamente</div>
-                // )                
+                console.log(error)                
             }
         }
         history.push('/integrattion_layouts_list')
