@@ -426,6 +426,20 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                             {fieldPositionsSplit()}
 
                             <Form.Row className="mt-2">
+                                <Col lg={10}>
+                                    <Form.Check
+                                        className="font-weight-600"
+                                        type='checkbox'
+                                        id={`fields[${idx}].groupingField`}
+                                        label={`Considerar este campo como "agrupador" pra partidas múltiplas que estão em linhas diferentes!`}
+                                        custom={true}
+                                        value={values.fields[idx].groupingField}
+                                        onChange={handleChange(`fields[${idx}].groupingField`)}
+                                    />
+                                </Col>
+                            </Form.Row>
+
+                            <Form.Row className="mt-2">
                                 <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Este campo está na linha:</Form.Label>
                                 <Col lg={6}>
                                     <Select 

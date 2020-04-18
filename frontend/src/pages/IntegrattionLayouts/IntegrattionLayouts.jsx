@@ -30,7 +30,8 @@ let validationSchema = Yup.object().shape({
         formatDate: Yup.string(),
         splitField: Yup.string(),
         positionFieldInTheSplit: Yup.number(),
-        positionFieldInTheSplitEnd: Yup.number(),        
+        positionFieldInTheSplitEnd: Yup.number(),
+        groupingField: Yup.boolean(),        
         lineThatTheDataIs: Yup.string()
     })),
     validationLineToPrint: Yup.array().of( Yup.object().shape({
@@ -70,6 +71,7 @@ const defaultValues = {
         splitField: "",
         positionFieldInTheSplit: 0,
         positionFieldInTheSplitEnd: 0,
+        groupingField: false,
         lineThatTheDataIs: ""
     } ],
     validationLineToPrint: [{
@@ -106,6 +108,7 @@ let initialValues = {
         splitField: "",
         positionFieldInTheSplit: 0,
         positionFieldInTheSplitEnd: 0,
+        groupingField: false,
         lineThatTheDataIs: ""
     } ],
     validationLineToPrint: [{
