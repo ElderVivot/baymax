@@ -76,7 +76,7 @@ const IntegrattionLayoutsList = ( {history} ) => {
         }
 
         loadIntegrattionLayouts()
-    }, [])
+    }, [integrattionLayouts])
 
     let integrattionLayoutsListData = []
     integrattionLayouts.map( fieldsLayout => (

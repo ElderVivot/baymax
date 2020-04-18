@@ -44,7 +44,7 @@ let fieldsOptions = [
     { value: 'typeMoviment', label: 'Tipo Movimento'},
 ]
 
-function addOptionInCreatable(vector, value){
+function addOptionInCreatable(vector, value, label=undefined){
     // se o value for em branco já retorna o próprio vector, pois não deve adicionar nada
     if(value === "" || value === undefined || value === 0 || value === null){
         return vector
@@ -62,10 +62,10 @@ function addOptionInCreatable(vector, value){
     }
 
     // adiciona uma nova opção quando é um valor que ainda não existe
-    if(vector.filter(option => option.value === valueFormated)[0] === undefined){
+    if(vector.filter(option => option.value.toLowerCase() === valueFormated)[0] === undefined){
         vector.push({
             value: `${valueFormated}`, 
-            label: `${value}`
+            label: label || `${value}`
         })
     }
     return vector
@@ -177,7 +177,7 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
     }
     positionInFileOptions = addOptionInCreatable(positionInFileOptions, values.fields[idx].positionInFile)
     positionInFileEndOptions = addOptionInCreatable(positionInFileEndOptions, values.fields[idx].positionInFileEnd)
-    fieldsOptions = addOptionInCreatable(fieldsOptions, values.fields[idx].nameField.value, true)
+    fieldsOptions = addOptionInCreatable(fieldsOptions, values.fields[idx].nameField.value, values.fields[idx].nameField.label)
     positionFieldInTheSplitOptions = addOptionInCreatable(positionFieldInTheSplitOptions, values.fields[idx].positionFieldInTheSplit)
     positionFieldInTheSplitEndOptions = addOptionInCreatable(positionFieldInTheSplitEndOptions, values.fields[idx].positionFieldInTheSplitEnd)
 
@@ -374,7 +374,7 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                         </Col>
                     </Form.Row>
 
-                    {fieldFormatDate(values, errors, touched, handleChange, setFieldTouched, fieldsOptions)}
+                    {fieldFormatDate()}
 
                     <Form.Row className="mt-2">
                         <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição que se encontra no Arquivo:</Form.Label>
