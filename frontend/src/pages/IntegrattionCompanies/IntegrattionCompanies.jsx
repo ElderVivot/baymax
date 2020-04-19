@@ -34,10 +34,17 @@ let initialValues = {
     }
 }
 
-const codiEmpOptions = [
-    { value: '1', label: '1 - SOMA CONTABILIDADE' },
-    { value: '2', label: '2 - 100 LIMITs'}
-]
+let codiEmpOptions = []
+( async () => {
+    try {
+        const dataCompanies = await api.get(`/extract_companies`)
+        dataCompanies.map(companie => codiEmpOptions.push({
+            value: `${companie['codi_emp']}`, label: `${companie['codi_emp']} - ${companie['nome_emp']}`
+        }))
+    } catch (error) {
+        console.log(error)
+    }
+} )()
 
 export default function IntegrattionCompanies({history}){
     const [integrattionCompanies, setIntegrattionCompanies ] = useState([])
