@@ -113,7 +113,7 @@ def analyzeIfFieldHasPositionInFileEnd(data, positionInFile, positionInFileEnd):
             return data[positionInFile]
         else:
             return ''.join(data[positionInFile:positionInFileEnd])
-    except expression as identifier:
+    except Exception:
         return ""
 
 def treatTextField(value):

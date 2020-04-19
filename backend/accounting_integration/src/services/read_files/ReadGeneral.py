@@ -18,6 +18,7 @@ class ReadGeneral(object):
         self._settings = settings
         self._payments = []
         self._extracts = []
+        self._linesOfFile = []
         self._fieldsRowNotMain = {}
         self._groupingFields = {} # este obj irá gravar todos os campos que são agrupadores, linhas onde for partidas multiplas e será um lançamento só, e o que une elas é este campo
         self._validationsLineToPrint = [] # vai salvar os critérios pra ver se uma linha é válida pra gerar o lançamento ou não
@@ -54,22 +55,31 @@ class ReadGeneral(object):
 
         return posionsOfHeader
 
-    def identifiesIfTheRowCorrect(self, dataIsNotLineMain, data):
-        if len(dataIsNotLineMain) == 0:
+    def identifiesIfTheRowCorrect(self, lineThatTheDataIs, data):
+        if len(lineThatTheDataIs) == 0:
+            return None
+        
+        line = None
+        for lineOfFile in self._linesOfFile:
+            if lineOfFile['nameOfLine']['value'] == lineThatTheDataIs:
+                line = lineOfFile
+                break
+        
+        if line is None:
             return None
 
         countValidationsOK = 0
         countValidationsConfigured = 0
 
-        for key, dataIsNotLineMainValidation in enumerate(dataIsNotLineMain):
-            positionInFile = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'positionInFile', -1)
-            positionInFileEnd = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'positionInFileEnd', -1)
-            typeValidation = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'typeValidation')
-            valueValidation = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'valueValidation'))
-            nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(dataIsNotLineMainValidation, 'nextValidationOrAnd', 'and')
+        for key, validation in enumerate(line['validations']):
+            positionInFile = funcoesUteis.analyzeIfFieldIsValid(validation, 'positionInFile', -1)
+            positionInFileEnd = funcoesUteis.analyzeIfFieldIsValid(validation, 'positionInFileEnd', -1)
+            typeValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'typeValidation')
+            valueValidation = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation'))
+            nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(validation, 'nextValidationOrAnd', 'and')
             valueFieldData = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionInFileEnd=positionInFileEnd)
 
-            if nextValidationOrAnd == 'and' or key == len(dataIsNotLineMain)-1:
+            if nextValidationOrAnd == 'and' or key == len(validation)-1:
                 countValidationsConfigured += 1
             
             if typeValidation == "isDate":
@@ -109,8 +119,10 @@ class ReadGeneral(object):
 
             self._fieldsThatMultiplePerLessOne[nameField] = funcoesUteis.analyzeIfFieldIsValid(settingField, 'multiplePerLessOne', False)
 
-            dataIsNotLineMain = funcoesUteis.analyzeIfFieldIsValid(settingField, 'dataIsNotLineMain', '')
-            if dataIsNotLineMain != "":
+            # estas linhas abaixo faz com que os campos que não estão em linhas principais vão pro 'final' da configuração, visto que
+            # os campos que não estão na principal não devem ser impressos em linhas que são a principal
+            lineThatTheDataIs = funcoesUteis.analyzeIfFieldIsValid(settingField, 'lineThatTheDataIs', '')
+            if lineThatTheDataIs != "":
                 fieldsHasDataIsNotLineMain.append(settingField)
             else:
                 fieldsDontHasDataIsNotLineMain.append(settingField)
@@ -130,13 +142,11 @@ class ReadGeneral(object):
 
             nameColumn = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameColumn'))
             nameColumn = None if nameColumn == "" else nameColumn
-
-            valueDefault = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'valueDefault'))
             
             # esta row é apenas pra identificar se a informação está na linha principal ou não, caso não esteja, vai guardar seu valor
             # na self._fieldsRowNotMain pra serem utilizados na linha principal depois         
-            dataIsNotLineMain = funcoesUteis.analyzeIfFieldIsValid(settingField, 'dataIsNotLineMain', '')
-            isRowCorrect = self.identifiesIfTheRowCorrect(dataIsNotLineMain, data)
+            lineThatTheDataIs = funcoesUteis.analyzeIfFieldIsValid(settingField, 'lineThatTheDataIs', '')
+            isRowCorrect = self.identifiesIfTheRowCorrect(lineThatTheDataIs, data)
             
             rowIsMain = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'row')
             if rowIsMain == "" or rowIsMain == "main":                
@@ -147,7 +157,7 @@ class ReadGeneral(object):
                     rowIsMain = 'main'
             
             # se não for a linha correta mas o campo seja referente a uma linha notMain então ignora, pois este campo não é válido nesta linha
-            if isRowCorrect is None and dataIsNotLineMain != "":
+            if isRowCorrect is None and lineThatTheDataIs != "":
                 continue
 
             # se a linha for "not_main" mas o isRowCorrect não retornar resultado, então quer dizer que aquele campo não é daquela linha not_main. Pode ser de outra.
@@ -225,12 +235,12 @@ class ReadGeneral(object):
                 # pega a posição do campo do vetor do fields da tabela IntegrattionLayouts
                 positionFieldInVector = self.getPositionFieldByNameField(settingFields, nameField)
                 if positionFieldInVector is not None:
-                    dataIsNotLineMain = funcoesUteis.analyzeIfFieldIsValid(settingFields[positionFieldInVector], 'dataIsNotLineMain', None)
+                    lineThatTheDataIs = funcoesUteis.analyzeIfFieldIsValid(settingFields[positionFieldInVector], 'lineThatTheDataIs', None)
                 else:
-                    dataIsNotLineMain = None
+                    lineThatTheDataIs = None
 
                 # faz validação dos campos pra ver se devem ser atualizados as informações ou não
-                if dataIsNotLineMain is not None:
+                if lineThatTheDataIs is not None:
                     self._fieldsRowNotMain[nameField] = valueField                    
 
     def groupsRowData(self, valuesOfLine):
@@ -493,6 +503,7 @@ class ReadGeneral(object):
             fields = self.analyzeSettingFields(fields)
 
             self._validationsLineToPrint = funcoesUteis.analyzeIfFieldIsValid(setting, 'validationLineToPrint', [])
+            self._linesOfFile = funcoesUteis.analyzeIfFieldIsValid(setting, 'linesOfFile', [])
 
             bankAndAccountCorrelation = funcoesUteis.analyzeIfFieldIsValid(setting, 'bankAndAccountCorrelation')
             validateIfDataIsThisCompanie = funcoesUteis.analyzeIfFieldIsValid(setting, 'validateIfDataIsThisCompanie')
@@ -555,7 +566,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1117
+    codi_emp = 1751
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
