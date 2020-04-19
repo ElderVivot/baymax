@@ -46,7 +46,7 @@ let fieldsOptions = [
 
 function addOptionInCreatable(vector, value, label=undefined){
     // se o value for em branco já retorna o próprio vector, pois não deve adicionar nada
-    if(value === "" || value === undefined || value === 0 || value === null){
+    if(value === "" || value === undefined || value === 0 || value === null || value === "0"){
         return vector
     }
 
@@ -76,7 +76,7 @@ const formatDateOptions = [
     { value: 'aaaa-mm-dd', label: 'aaaa-mm-dd'}
 ]
 
-let positionInFileOptions = [{value: "0", label: "Posição Variável"}, ...ClassUtil.createAnObjetOfCount()]
+let positionInFileOptions = ClassUtil.createAnObjetOfCount()
 let positionInFileEndOptions = ClassUtil.createAnObjetOfCount()
 let positionFieldInTheSplitOptions = ClassUtil.createAnObjetOfCount(1, 10)
 let positionFieldInTheSplitEndOptions = [{value: "0", label: "Até o Final"}, ...ClassUtil.createAnObjetOfCount(1, 10)]
@@ -172,8 +172,8 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
     lineThatTheDataIsOptions.push(...values.linesOfFile.map( value => value["nameOfLine"] ))
 
     // se o tipo for txt ou pdf não existe "posição variável (valor 0)"
-    if(values.fileType === "txt" || values.fileType === "pdf"){
-        delete positionInFileOptions[0]
+    if(values.fileType !== "txt" && values.fileType !== "pdf" && values.fileType !== ""){
+        positionInFileOptions = [{value: "0", label: "Posição Variável"}, ...ClassUtil.createAnObjetOfCount()]
     }
     positionInFileOptions = addOptionInCreatable(positionInFileOptions, values.fields[idx].positionInFile)
     positionInFileEndOptions = addOptionInCreatable(positionInFileEndOptions, values.fields[idx].positionInFileEnd)
