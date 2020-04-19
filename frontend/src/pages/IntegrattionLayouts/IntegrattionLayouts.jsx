@@ -4,7 +4,7 @@ import { Form } from "react-bootstrap"
 import * as Yup from 'yup'
 import { Formik } from 'formik'
 
-import './styles.css'
+import '../styles.css'
 import api from '../../services/api'
 import FieldsHeader from './FieldsHeader/FieldsHeader'
 import FieldsFileList from './FieldsFile/FieldsFileList'
