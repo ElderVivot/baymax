@@ -23,7 +23,7 @@ class ReadGeneral(object):
         self._groupingFields = {} # este obj irá gravar todos os campos que são agrupadores, linhas onde for partidas multiplas e será um lançamento só, e o que une elas é este campo
         self._validationsLineToPrint = [] # vai salvar os critérios pra ver se uma linha é válida pra gerar o lançamento ou não
         self._sumInterestFineAndDiscount = False # alguns valores amountPaid não vem com o juros/multa somados, este é pra definir isto
-        self._informationIsOnOneLineBelowTheMain = False # são para informações que estão uma linha abaixo da main
+        # self._informationIsOnOneLineBelowTheMain = False # são para informações que estão uma linha abaixo da main
         self._fieldsThatMultiplePerLessOne = {} # alguns campos vem com valor negativo, tem que multiplicar por menos 1
 
     def identifiesTheHeader(self, data, settingLayout):
@@ -55,9 +55,9 @@ class ReadGeneral(object):
 
         return posionsOfHeader
 
-    def identifiesIfTheRowCorrect(self, lineThatTheDataIs, data):
+    def identifiesTheLineThatTheDataIs(self, lineThatTheDataIs, data):
         if len(lineThatTheDataIs) == 0:
-            return None
+            return {'isRowCorrect': False, 'informationIsOnOneLineBelowTheMain': False}
         
         line = None
         for lineOfFile in self._linesOfFile:
@@ -66,7 +66,7 @@ class ReadGeneral(object):
                 break
         
         if line is None:
-            return None
+            return {'isRowCorrect': False, 'informationIsOnOneLineBelowTheMain': False}
 
         countValidationsOK = 0
         countValidationsConfigured = 0
@@ -94,7 +94,9 @@ class ReadGeneral(object):
                 countValidationsOK += 1
         
         if countValidationsOK == countValidationsConfigured:
-            return True
+            return {'isRowCorrect': True, 'informationIsOnOneLineBelowTheMain': line['informationIsOnOneLineBelowTheMain']}
+        else:
+            return {'isRowCorrect': False, 'informationIsOnOneLineBelowTheMain': False}
 
     # avalia quais configurações são importantes pro processamento de outros campos, tais como _groupingFields, etc
     # além disso, ele reagrupa os fields pra trazer primeiro o que tem o atributo dataIsNotLineMain, pra depois trazer os  que não tem
@@ -114,9 +116,6 @@ class ReadGeneral(object):
             if nameField == "amountPaid":
                 self._sumInterestFineAndDiscount = funcoesUteis.analyzeIfFieldIsValid(settingField, 'sumInterestFineAndDiscount', False)
 
-            if self._informationIsOnOneLineBelowTheMain is False:
-                self._informationIsOnOneLineBelowTheMain = funcoesUteis.analyzeIfFieldIsValid(settingField, 'informationIsOnOneLineBelowTheMain', False)
-
             self._fieldsThatMultiplePerLessOne[nameField] = funcoesUteis.analyzeIfFieldIsValid(settingField, 'multiplePerLessOne', False)
 
             # estas linhas abaixo faz com que os campos que não estão em linhas principais vão pro 'final' da configuração, visto que
@@ -129,8 +128,8 @@ class ReadGeneral(object):
         
         return funcoesUteis.removeAnArrayFromWithinAnother([fieldsHasDataIsNotLineMain, fieldsDontHasDataIsNotLineMain])
 
-    def treatDataLayout(self, data, settingFields, positionsOfHeader, readOnlyRowIsNotMain=False):
-        # o readOnlyRowIsNotMain serve pra ler as linhas que estão uma abaixo da principal, pra poder agrupar com a linha anterior
+    def treatDataLayout(self, data, settingFields, positionsOfHeader, readOnlyIfLineBelowTheMain=False):
+        # o readOnlyIfLineBelowTheMain serve pra ler as linhas que estão uma abaixo da principal, pra poder agrupar com a linha anterior
         valuesOfLine = {}
         positionsOfHeaderCorrect = positionsOfHeader
 
@@ -146,7 +145,13 @@ class ReadGeneral(object):
             # esta row é apenas pra identificar se a informação está na linha principal ou não, caso não esteja, vai guardar seu valor
             # na self._fieldsRowNotMain pra serem utilizados na linha principal depois         
             lineThatTheDataIs = funcoesUteis.analyzeIfFieldIsValid(settingField, 'lineThatTheDataIs', '')
-            isRowCorrect = self.identifiesIfTheRowCorrect(lineThatTheDataIs, data)
+            if lineThatTheDataIs != "":
+                dataLine = self.identifiesTheLineThatTheDataIs(lineThatTheDataIs, data)
+                isRowCorrect = dataLine['isRowCorrect']
+                informationIsOnOneLineBelowTheMain = dataLine['informationIsOnOneLineBelowTheMain']
+            else:
+                isRowCorrect = False
+                informationIsOnOneLineBelowTheMain = False
             
             rowIsMain = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'row')
             if rowIsMain == "" or rowIsMain == "main":                
@@ -157,15 +162,14 @@ class ReadGeneral(object):
                     rowIsMain = 'main'
             
             # se não for a linha correta mas o campo seja referente a uma linha notMain então ignora, pois este campo não é válido nesta linha
-            if isRowCorrect is None and lineThatTheDataIs != "":
+            if isRowCorrect is False and lineThatTheDataIs != "":
                 continue
 
             # se a linha for "not_main" mas o isRowCorrect não retornar resultado, então quer dizer que aquele campo não é daquela linha not_main. Pode ser de outra.
-            if rowIsMain == "not_main" and isRowCorrect is None:
+            if rowIsMain == "not_main" and isRowCorrect is False:
                 continue
             
-            # se o isRowCorrect não for válido e estou exigindo que seja eita apenas uma linha not_main então ignora, visto que isRowCorrect é apenas pra linhas not_main
-            if readOnlyRowIsNotMain is True and isRowCorrect is None:
+            if readOnlyIfLineBelowTheMain is True and ( isRowCorrect is False or informationIsOnOneLineBelowTheMain is False):
                 continue
 
             if nameField.lower().find('date') >= 0:
@@ -517,10 +521,9 @@ class ReadGeneral(object):
                             continue
 
                     # quando as informações complementares estão uma linha abaixo da principal então lê ela primeiro e atualiza os campos notMain
-                    if self._informationIsOnOneLineBelowTheMain is True:
-                        nextData = funcoesUteis.analyzeIfFieldIsValidMatrix(dataFile, key+1, positionOriginal=True)
-                        valuesOfLine = self.treatDataLayout(nextData, fields, posionsOfHeader, readOnlyRowIsNotMain=True)
-                        self.updateFieldsNotMain(valuesOfLine, fields)
+                    nextData = funcoesUteis.analyzeIfFieldIsValidMatrix(dataFile, key+1, positionOriginal=True)
+                    valuesOfLine = self.treatDataLayout(nextData, fields, posionsOfHeader, readOnlyIfLineBelowTheMain=True)
+                    self.updateFieldsNotMain(valuesOfLine, fields)
 
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
@@ -566,7 +569,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1643
+    codi_emp = 425
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
