@@ -7,6 +7,8 @@ import { Formik } from 'formik'
 import '../styles.css'
 import api from '../../services/api'
 
+import AccountPaid from './AccountPaid/AccountPaid'
+
 let validationSchema = Yup.object().shape({
     codi_emp: Yup.number().required('É obrigatório selecionar a empresa'),
     accountPaid: Yup.object().shape({
@@ -16,22 +18,18 @@ let validationSchema = Yup.object().shape({
     })
 })
 
-// const defaultValues = {
-//     codi_emp: Number,
-//     accountPaid: {
-//         layouts: [{
-//             idLayout: [mongoose.Schema.Types.ObjectId]
-//         }]
-//     }
-// }
-
-let initialValues = {
-    codi_emp: '',
+const defaultValues = {
+    codi_emp: Number,
     accountPaid: {
         layouts: [{
             idLayout: ''
         }]
     }
+}
+
+let initialValues = {
+    codi_emp: '',
+    accountPaid: ''
 }
 
 let codiEmpOptions = []
@@ -124,7 +122,7 @@ export default function IntegrattionCompanies({history}){
                             </div> */}
                             <div className="form-group row mb-0">                            
                                 <label htmlFor="system" className="col-form-label font-weight-600">Empresa:</label>
-                                <div className="col-6">
+                                <div className="col-8">
                                     <Form.Group className="mb-0">
                                         <Select 
                                             name={`codi_emp`}
@@ -140,6 +138,17 @@ export default function IntegrattionCompanies({history}){
                                     </Form.Group>
                                 </div>
                             </div>
+
+                            < AccountPaid
+                                values={values}
+                                errors={errors}
+                                touched={touched}
+                                handleChange={handleChange}
+                                handleBlur={handleBlur}
+                                setFieldValue={setFieldValue}
+                                setFieldTouched={setFieldTouched}
+                                defaultValues={defaultValues}
+                            /> 
                             
                             <div className="form-row">
                                 <div className="col-12">
