@@ -332,6 +332,26 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
         }        
     }
 
+    function fieldSumInterestFineAndDiscount(){
+        if(values.fields[idx].nameField.value === "amountPaid"){
+            return (
+                <Form.Row className="mt-2">
+                    <Col lg={10}>
+                        <Form.Check
+                            className="font-weight-600"
+                            type='checkbox'
+                            id={`fields[${idx}].sumInterestFineAndDiscount`}
+                            label={`Somar no "Valor Pago" o valor de "Juros/Multa" e subtrair o "Desconto"`}
+                            custom={true}
+                            value={values.fields[idx].sumInterestFineAndDiscount}
+                            onChange={handleChange(`fields[${idx}].sumInterestFineAndDiscount`)}
+                        />
+                    </Col>
+                </Form.Row>
+            )
+        }        
+    }
+
     function handleNameField(event, idx){
         setFieldValue(`fields[${idx}].nameField.label`, event.label)
         if( event.__isNew__ !== undefined){
@@ -424,6 +444,8 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                             </Form.Row>
 
                             {fieldPositionsSplit()}
+
+                            {fieldSumInterestFineAndDiscount()}
 
                             <Form.Row className="mt-2">
                                 <Col lg={10}>

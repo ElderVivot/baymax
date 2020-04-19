@@ -31,6 +31,7 @@ let validationSchema = Yup.object().shape({
         splitField: Yup.string(),
         positionFieldInTheSplit: Yup.number(),
         positionFieldInTheSplitEnd: Yup.number(),
+        sumInterestFineAndDiscount: Yup.boolean(),
         groupingField: Yup.boolean(),        
         lineThatTheDataIs: Yup.string()
     })),
@@ -71,6 +72,7 @@ const defaultValues = {
         splitField: "",
         positionFieldInTheSplit: 0,
         positionFieldInTheSplitEnd: 0,
+        sumInterestFineAndDiscount: false,
         groupingField: false,
         lineThatTheDataIs: ""
     } ],
@@ -108,6 +110,7 @@ let initialValues = {
         splitField: "",
         positionFieldInTheSplit: 0,
         positionFieldInTheSplitEnd: 0,
+        sumInterestFineAndDiscount: false,
         groupingField: false,
         lineThatTheDataIs: ""
     } ],
