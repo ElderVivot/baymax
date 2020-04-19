@@ -352,6 +352,26 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
         }        
     }
 
+    function fieldMultiplePerLessOne(){
+        if(values.fields[idx].nameField.value === "amountPaid"){
+            return (
+                <Form.Row className="mt-2">
+                    <Col lg={10}>
+                        <Form.Check
+                            className="font-weight-600"
+                            type='checkbox'
+                            id={`fields[${idx}].multiplePerLessOne`}
+                            label={`Transformar o valor negativo deste campo para positivo quando no arquivo o dado está menor que zero.`}
+                            custom={true}
+                            value={values.fields[idx].multiplePerLessOne}
+                            onChange={handleChange(`fields[${idx}].multiplePerLessOne`)}
+                        />
+                    </Col>
+                </Form.Row>
+            )
+        }        
+    }
+
     function handleNameField(event, idx){
         setFieldValue(`fields[${idx}].nameField.label`, event.label)
         if( event.__isNew__ !== undefined){
@@ -446,6 +466,8 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                             {fieldPositionsSplit()}
 
                             {fieldSumInterestFineAndDiscount()}
+
+                            {fieldMultiplePerLessOne()}
 
                             <Form.Row className="mt-2">
                                 <Col lg={10}>

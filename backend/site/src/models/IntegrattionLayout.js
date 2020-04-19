@@ -22,6 +22,7 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
         positionFieldInTheSplit: Number,
         positionFieldInTheSplitEnd: Number,
         sumInterestFineAndDiscount: Boolean,
+        multiplePerLessOne: Boolean,
         groupingField: Boolean,
         lineThatTheDataIs: String
     }],
