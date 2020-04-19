@@ -61,6 +61,10 @@ function FieldsValidation( { values, errors, touched, handleChange, handleBlur, 
         if(values.validationLineToPrint[idx].typeValidation === "isDate") {
             disabled = true
             values.validationLineToPrint[idx].valueValidation = ' '
+        } else {
+            if(values.validationLineToPrint[idx].valueValidation === ' '){
+                values.validationLineToPrint[idx].valueValidation = ''
+            }
         }
 
         return(

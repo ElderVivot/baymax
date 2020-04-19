@@ -116,6 +116,10 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
         if(values.linesOfFile[idx].validations[idxValidation].typeValidation === "isDate") {
             disabled = true
             values.linesOfFile[idx].validations[idxValidation].valueValidation = ' '
+        } else {
+            if(values.linesOfFile[idx].validations[idxValidation].valueValidation === ' '){
+                values.linesOfFile[idx].validations[idxValidation].valueValidation = ''
+            }
         }
 
         return(
@@ -142,6 +146,7 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
         let disabled = false
         if(values.fileType !== "txt" && values.fileType !== "pdf") {
             disabled = true
+            values.linesOfFile[idx].validations[idxValidation].positionInFileEnd = 0
         } else {
             if(values.linesOfFile[idx].validations[idxValidation].positionInFileEnd === 0){
                 values.linesOfFile[idx].validations[idxValidation].positionInFileEnd = null
