@@ -35,16 +35,20 @@ let initialValues = {
 }
 
 let codiEmpOptions = []
-( async () => {
+async function companies() {
     try {
-        const dataCompanies = await api.get(`/extract_companies`)
-        dataCompanies.map(companie => codiEmpOptions.push({
-            value: `${companie['codi_emp']}`, label: `${companie['codi_emp']} - ${companie['nome_emp']}`
-        }))
+        const response = await api.get(`/extract_companies`)
+
+        if(response.statusText === "OK"){
+            response.data.map(companie => codiEmpOptions.push({
+                value: `${companie['codi_emp']}`, label: `${companie['codi_emp']} - ${companie['razao_emp']}`
+            }))
+        }
     } catch (error) {
         console.log(error)
     }
-} )()
+}
+companies()
 
 export default function IntegrattionCompanies({history}){
     const [integrattionCompanies, setIntegrattionCompanies ] = useState([])
@@ -58,13 +62,13 @@ export default function IntegrattionCompanies({history}){
             try {
                 let response = undefined
 
-                if(id !== undefined){
-                    response = await api.get(`/integrattion_companies/${id}`)
-                } else {
-                    response = await api.get(`/integrattion_companies`)
-                }
+                // if(id !== undefined){
+                //     response = await api.get(`/integrattion_companies/${id}`)
+                // } else {
+                //     response = await api.get(`/integrattion_companies`)
+                // }
                 
-                setIntegrattionCompanies(response.data)
+                // setIntegrattionCompanies(response.data)
             } catch (error) {
                 console.log(error)
             }
