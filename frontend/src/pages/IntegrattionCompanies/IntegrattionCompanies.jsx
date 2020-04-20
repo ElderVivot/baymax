@@ -19,7 +19,7 @@ let validationSchema = Yup.object().shape({
 })
 
 const defaultValues = {
-    codi_emp: Number,
+    codi_emp: '',
     accountPaid: {
         layouts: [{
             idLayout: ''
