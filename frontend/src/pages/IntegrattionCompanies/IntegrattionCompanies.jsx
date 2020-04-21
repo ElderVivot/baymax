@@ -33,22 +33,10 @@ let initialValues = {
 }
 
 let codiEmpOptions = []
-async function companies() {
-    try {
-        const response = await api.get(`/extract_companies`)
-
-        if(response.statusText === "OK"){
-            response.data.map(companie => codiEmpOptions.push({
-                value: `${companie['codi_emp']}`, label: `${companie['codi_emp']} - ${companie['razao_emp']}`
-            }))
-        }
-    } catch (error) {
-        console.log(error)
-    }
-}
 
 export default function IntegrattionCompanies({history}){
     const [integrattionCompanies, setIntegrattionCompanies ] = useState([])
+    // const [companies, setCompanies ] = useState([])
 
     // pega da url o id pra poder carregar os dados de edição
     const url = window.location.href
@@ -64,9 +52,16 @@ export default function IntegrattionCompanies({history}){
                 } else {
                     response = await api.get(`/integrattion_companies`)
                 }
+
+                const responseCompanies = await api.get(`/extract_companies`)
+
+                if(responseCompanies.statusText === "OK"){
+                    responseCompanies.data.map(companie => codiEmpOptions.push({
+                        value: `${companie['codi_emp']}`, label: `${companie['codi_emp']} - ${companie['razao_emp']}`
+                    }))
+                }
                 
                 setIntegrattionCompanies(response.data)
-                companies()
             } catch (error) {
                 console.log(error)
             }
@@ -130,7 +125,7 @@ export default function IntegrattionCompanies({history}){
                                             className={`selected ${errors.codi_emp ? "has-error" : null }`}
                                             isSearchable={true}
                                             placeholder="Selecione"
-                                            value={codiEmpOptions.filter(option => option.value === values.codi_emp)[0]}
+                                            value={codiEmpOptions.filter(option => option.value === `${values.codi_emp}`)[0]}
                                             onChange={selectedOption => handleChange(`codi_emp`)(selectedOption.value)}
                                             onBlur={() => setFieldTouched(`codi_emp`, true)}
                                         />
