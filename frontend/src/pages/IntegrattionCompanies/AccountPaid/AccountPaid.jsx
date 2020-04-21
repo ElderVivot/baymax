@@ -10,10 +10,21 @@ import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
 
 import api from '../../../services/api'
 
-const layoutsOptions = [
-    { value: 'line1', label: 'Linha 1' },
-    { value: 'line2', label: 'Linha 2' }
-]
+let layoutsOptions = []
+async function layouts() {
+    try {
+        const response = await api.get(`/integrattion_layouts?layoutType=account_paid`)
+
+        if(response.statusText === "OK"){
+            response.data.map(layout => layoutsOptions.push({
+                value: `${layout['_id']}`, label: `${layout['system']}`
+            }))
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+layouts()
 
 function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){
 
