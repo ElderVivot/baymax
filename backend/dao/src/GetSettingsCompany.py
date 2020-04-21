@@ -46,7 +46,7 @@ class GetSettingsCompany(object):
         try:
             settings = self._collection.find_one( { "codi_emp": self._codiEmp } )
 
-            layouts = funcoesUteis.returnDataFieldInDict(settings, ['financy', 'layouts'])
+            layouts = funcoesUteis.returnDataFieldInDict(settings, ['accountPaid', 'layouts'])
 
             settingsLayouts = self.getSettingsLayout(layouts)
 
@@ -60,5 +60,5 @@ class GetSettingsCompany(object):
 
 
 if __name__ == "__main__":
-    getSettingsCompany = GetSettingsCompany(1342)
+    getSettingsCompany = GetSettingsCompany(118)
     print(getSettingsCompany.getSettingsFinancy())

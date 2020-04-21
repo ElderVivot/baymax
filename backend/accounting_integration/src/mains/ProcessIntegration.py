@@ -42,11 +42,13 @@ class ProcessIntegration(object):
         # self._codiEmp = 220
         # self._inicialDate = '01/10/2019'
         # self._finalDate = '31/10/2019'
+        self._lenghtLayoutsAccountPaid = 0
         self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}.json')
         if os.path.exists(self._waySettings) is False:
             getSettingsCompany = GetSettingsCompany(self._codiEmp)
             self._settings = getSettingsCompany.getSettingsFinancy()
-            self._banksToProof = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "banks", "listNumbers"], [0])
+            self._lenghtLayoutsAccountPaid = len(self._settings['settingsLayouts'])
+            self._banksToProof = funcoesUteis.returnDataFieldInDict(self._settings, ["accountPaid", "banks", "listNumbers"], [0])
         else:
             self._settings = leArquivos.readJson(self._waySettings)
             self._banksToProof = funcoesUteis.returnDataFieldInDict(self._settings, ["banks", "listNumbers"], [0])
@@ -85,7 +87,7 @@ class ProcessIntegration(object):
         # reads the financy
         print(' - Etapa 3: Lendo o financeiro do cliente')
         hasFinancy = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "has"])
-        if hasFinancy is True:
+        if hasFinancy is True or self._lenghtLayoutsAccountPaid > 0:
             systemFinancy = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "system"])
             if systemFinancy == "":
                 readGeneral = ReadGeneral(self._codiEmp, self._wayFilesToRead, self._settings)
