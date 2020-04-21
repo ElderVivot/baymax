@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const IntegrattionCompaniesSchema = new mongoose.Schema({
     codi_emp: Number,
     accountPaid: {
+        isReliable: Boolean,
         layouts: [{
             idLayout: mongoose.Schema.Types.ObjectId
         }]

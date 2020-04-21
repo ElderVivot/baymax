@@ -111,7 +111,21 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
                             </button>
                         </div>
 
-                        <div className="table ml-2 table-bordered">{
+                        <Form.Row className="mt-2">
+                            <Col lg={10}>
+                                <Form.Check
+                                    className="font-weight-600"
+                                    type='checkbox'
+                                    id={`accountPaid.isReliable`}
+                                    label={`Os dados do financeiro do cliente geralmente estão corretos, ou seja, o banco do "pagamento" está correto.`}
+                                    custom={true}
+                                    value={values.accountPaid.isReliable}
+                                    onChange={handleChange(`accountPaid.isReliable`)}
+                                />
+                            </Col>
+                        </Form.Row>
+
+                        <div className="table ml-2 table-bordered mt-2">{
                             values.accountPaid.layouts.map( (_, idx ) => (
                                 <React.Fragment key={`accountPaid[${idx}].reactfragment`}>
                                     <div key={`accountPaid[${idx}]`} className='mt-1'>
