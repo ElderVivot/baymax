@@ -71,7 +71,6 @@ const IntegrattionLayoutsList = ( {history} ) => {
                 const response = await api.get('/integrattion_layouts')
                 
                 setIntegrattionLayouts(response.data)
-                console.log(actionDelete)
             } catch (error) {
                 console.log(error)
             }
