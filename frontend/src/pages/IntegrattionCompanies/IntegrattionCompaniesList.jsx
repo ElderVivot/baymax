@@ -1,4 +1,5 @@
 import '../styles.css'
+import './IntegrattionCompanies.css'
 import React, { useEffect, useState } from 'react'
 import api from '../../services/api'
 import MaterialTabel from 'material-table'
@@ -10,6 +11,7 @@ import IconNew from '../../components/IconNew'
 const IntegrattionCompaniesList = ( {history} ) => {
     const [integrattionCompanies, setIntegrattionCompanies ] = useState([])
     const [actionDelete, setActionDelete] = useState(false)
+    const [companies, setCompanies ] = useState([])
 
     const editIntegrattionCompanie = (id) => {
         history.push(`/integrattion_companies/${id}`)
@@ -39,36 +41,31 @@ const IntegrattionCompaniesList = ( {history} ) => {
 
     const columns = [{        
         field: 'codi_emp',
-        title: 'Código',
-        cellStyle: {
-            width: 'calc(10%)'
-        }        
+        title: 'Código'    
     }, {
         field: 'nome_emp',
         title: 'Nome Empresa',
-        cellStyle: {
-            width: 'calc(30%)'
-        }
-    }, {
-        field: 'cgce_emp',
-        title: 'CNPJ',
-        cellStyle: {
-            width: 'calc(15%)'
-        }
     }, {
         field: 'accountPaid',
-        title: 'Layouts Contas Pagas',
-        cellStyle: {
-            width: 'calc(40%)'
-        }
+        title: 'Layouts Contas Pagas'
     }, {
-        // este objeto vazio exsit pra largura do header ficar correta
+        field: 'proofOfPayments',
+        title: 'Comprovantes de Pagamentos'
+    }, {
+        field: 'extracts',
+        title: 'Extratos Bancários'
     }]
     
     useEffect(() => {
         async function loadIntegrattionCompanies() {
             try {
                 const response = await api.get('/integrattion_companies')
+
+                const responseCompanies = await api.get(`/extract_companies`)
+
+                if(responseCompanies.statusText === "OK"){
+                    setCompanies(responseCompanies.data)
+                }
                 
                 setIntegrattionCompanies(response.data)
             } catch (error) {
@@ -79,16 +76,22 @@ const IntegrattionCompaniesList = ( {history} ) => {
         loadIntegrattionCompanies()
     }, [actionDelete])
 
+    function returnDataEmp(codi_emp){
+        return companies.filter( companie => companie.codi_emp === codi_emp )[0]
+    }
+
     let integrattionCompaniesListData = []
-    integrattionCompanies.map( fieldsCompanie => (
-        integrattionCompaniesListData.push({
+    integrattionCompanies.map( fieldsCompanie => {
+        const dataEmp = returnDataEmp(fieldsCompanie.codi_emp)
+        return integrattionCompaniesListData.push({
             id: fieldsCompanie._id,
             codi_emp: fieldsCompanie.codi_emp,
-            nome_emp: '',
-            cgce_emp: '',
-            accountPaid: ''
+            nome_emp: dataEmp.nome_emp,
+            accountPaid: '',
+            proofsOfPayments: '',
+            extracts: ''
         })
-    ) )
+    } )
 
     return (
         <main className="content card container-fluid pt-3">
@@ -98,7 +101,11 @@ const IntegrattionCompaniesList = ( {history} ) => {
                     grouping: true, 
                     actionsColumnIndex: -1,
                     exportButton: true,
-                    paging: false
+                    paging: false,
+                    doubleHorizontalScroll: true,
+                    headerStyle: {
+                        zIndex: 10
+                    }
                 }}
                 localization={{
                     header: {

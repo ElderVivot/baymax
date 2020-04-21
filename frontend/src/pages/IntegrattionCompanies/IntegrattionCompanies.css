@@ -1,0 +1,30 @@
+table {
+    display: block !important;
+    overflow-x: scroll !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+}
+
+table thead tr th:nth-child(1), table tbody tr td:nth-child(1){
+    width: calc(5%) !important;
+}
+
+table thead tr th:nth-child(2), table tbody tr td:nth-child(2){
+    width: calc(23%) !important;
+}
+
+table thead tr th:nth-child(3), table tbody tr td:nth-child(3){
+    width: calc(23%) !important;
+}
+
+table thead tr th:nth-child(4), table tbody tr td:nth-child(4){
+    width: calc(23%) !important;
+}
+
+table thead tr th:nth-child(5), table tbody tr td:nth-child(5){
+    width: calc(23%) !important;
+}
+
+table thead tr th:nth-child(6), table tbody tr td:nth-child(6){
+    width: calc(5%) !important;
+}
