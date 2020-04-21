@@ -1,13 +1,13 @@
 const IntegrattionCompanies = require('../models/IntegrattionCompanies')
 
 module.exports = {
-    // async index(req, res){
-    //     const integrattionLayout = await IntegrattionLayout.find({})
+    async index(req, res){
+        const integrattionCompanies = await IntegrattionCompanies.find({})
 
-    //     console.log(` - IntegrattionLayoutController.index`)
+        console.log(` - IntegrattionCompaniesController.index`)
 
-    //     return res.json(integrattionLayout)
-    // },
+        return res.json(integrattionCompanies)
+    },
 
     async store(req, res) {
         const { codi_emp, accountPaid } = req.body
@@ -22,56 +22,51 @@ module.exports = {
         return res.json(integrattionCompanies)
     },
 
-    // async update(req, res) {
-    //     const _id = req.params.id
+    async update(req, res) {
+        const _id = req.params.id
 
-    //     const { system, fileType, layoutType, header, fields, validationLineToPrint, linesOfFile } = req.body
+        const { codi_emp, accountPaid } = req.body
 
-    //     try {
-    //         const integrattionLayout = await IntegrattionLayout.findByIdAndUpdate( {_id}, {
-    //             system,
-    //             fileType,
-    //             layoutType,
-    //             header,
-    //             fields,
-    //             validationLineToPrint,
-    //             linesOfFile
-    //         })
+        try {
+            const integrattionCompanies = await IntegrattionCompanies.findByIdAndUpdate( {_id}, {
+                codi_emp,
+                accountPaid
+            })
 
-    //         console.log(` - IntegrattionLayoutController.update --> ${_id} - ${system}`)
+            console.log(` - IntegrattionCompaniesController.update --> ${codi_emp}`)
     
-    //         return res.json(integrattionLayout)
-    //     } catch (error) {
-    //         console.log(error)
-    //         return res.status(400).json({error: 'Não foi possível atualizar os dados'})        
-    //     }        
-    // },
+            return res.json(integrattionCompanies)
+        } catch (error) {
+            console.log(error)
+            return res.status(400).json({error: 'Não foi possível atualizar os dados'})        
+        }        
+    },
 
-    // async show(req, res) {
-    //     const _id = req.params.id
+    async show(req, res) {
+        const _id = req.params.id
 
-    //     try {
-    //         const integrattionLayout = await IntegrattionLayout.findOne( {_id} )
+        try {
+            const integrattionCompanies = await IntegrattionCompanies.findOne( {_id} )
 
-    //         console.log(` - IntegrattionLayoutController.show --> ${_id}`)
+            console.log(` - IntegrattionCompaniesController.show --> ${_id}`)
 
-    //         return res.json(integrattionLayout)
-    //     } catch (error) {
-    //         return res.status(400).json({error: 'Não foi possível mostrar os dados'})
-    //     } 
-    // },
+            return res.json(integrattionCompanies)
+        } catch (error) {
+            return res.status(400).json({error: 'Não foi possível mostrar os dados'})
+        } 
+    },
 
-    // async delete(req, res) {
-    //     const _id = req.params.id
+    async delete(req, res) {
+        const _id = req.params.id
 
-    //     try {
-    //         const integrattionLayout = await IntegrattionLayout.findByIdAndDelete( { _id })
+        try {
+            const integrattionCompanies = await IntegrattionCompanies.findByIdAndDelete( { _id })
 
-    //         console.log(` - IntegrattionLayoutController.delete --> ${_id} - ${system}`)
+            console.log(` - IntegrattionCompaniesController.delete --> ${_id}`)
 
-    //         return res.json(integrattionLayout)
-    //     } catch (error) {
-    //         return res.status(400).json({error: 'Não foi possível deletar os dados'})
-    //     } 
-    // }
+            return res.json(integrattionCompanies)
+        } catch (error) {
+            return res.status(400).json({error: 'Não foi possível deletar os dados'})
+        } 
+    }
 }

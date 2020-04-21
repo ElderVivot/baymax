@@ -15,7 +15,11 @@ routes.put('/integrattion_layouts/:id', IntegrattionLayoutController.update)
 routes.delete('/integrattion_layouts/:id', IntegrattionLayoutController.delete)
 
 // rotas do integrattion_companies
+routes.get('/integrattion_companies', IntegrattionCompaniesController.index)
+routes.get('/integrattion_companies/:id', IntegrattionCompaniesController.show)
 routes.post('/integrattion_companies', IntegrattionCompaniesController.store)
+routes.put('/integrattion_companies/:id', IntegrattionCompaniesController.update)
+routes.delete('/integrattion_companies/:id', IntegrattionCompaniesController.delete)
 
 // rotas do extract_companies
 routes.get('/extract_companies', ExtractCompaniesController.index)
