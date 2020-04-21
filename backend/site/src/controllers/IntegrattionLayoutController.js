@@ -2,7 +2,15 @@ const IntegrattionLayout = require('../models/IntegrattionLayout')
 
 module.exports = {
     async index(req, res){
-        const integrattionLayout = await IntegrattionLayout.find({})
+        let integrattionLayout
+
+        let layoutType = req.query.layoutType
+
+        if(layoutType === undefined){
+            integrattionLayout = await IntegrattionLayout.find({})
+        } else {
+            integrattionLayout = await IntegrattionLayout.find({layoutType})
+        }
 
         console.log(` - IntegrattionLayoutController.index`)
 
