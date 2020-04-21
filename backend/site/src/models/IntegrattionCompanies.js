@@ -5,7 +5,7 @@ const IntegrattionCompaniesSchema = new mongoose.Schema({
     codi_emp: Number,
     accountPaid: {
         layouts: [{
-            idLayout: [mongoose.Schema.Types.ObjectId]
+            idLayout: mongoose.Schema.Types.ObjectId
         }]
     }
 })
