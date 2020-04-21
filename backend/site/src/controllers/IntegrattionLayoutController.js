@@ -80,7 +80,7 @@ module.exports = {
         try {
             const integrattionLayout = await IntegrattionLayout.findByIdAndDelete( { _id })
 
-            console.log(` - IntegrattionLayoutController.delete --> ${_id} - ${system}`)
+            console.log(` - IntegrattionLayoutController.delete --> ${_id}`)
 
             return res.json(integrattionLayout)
         } catch (error) {

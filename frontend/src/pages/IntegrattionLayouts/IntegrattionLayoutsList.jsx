@@ -9,6 +9,7 @@ import IconNew from '../../components/IconNew'
 
 const IntegrattionLayoutsList = ( {history} ) => {
     const [integrattionLayouts, setIntegrattionLayouts ] = useState([])
+    const [actionDelete, setActionDelete] = useState(false)
 
     const editIntegrattionLayout = (id) => {
         history.push(`/integrattion_layouts/${id}`)
@@ -24,8 +25,8 @@ const IntegrattionLayoutsList = ( {history} ) => {
             try {
                 const response = await api.delete(`/integrattion_layouts/${id}`)
 
-                if(response.status === 200){
-                    setIntegrattionLayouts(response.data)
+                if(response.statusText === "OK"){
+                    setActionDelete(true)
                 } else {
                     console.log(response)                  
                 }
@@ -70,13 +71,14 @@ const IntegrattionLayoutsList = ( {history} ) => {
                 const response = await api.get('/integrattion_layouts')
                 
                 setIntegrattionLayouts(response.data)
+                console.log(actionDelete)
             } catch (error) {
                 console.log(error)
             }
         }
 
         loadIntegrattionLayouts()
-    }, [integrattionLayouts])
+    }, [actionDelete])
 
     let integrattionLayoutsListData = []
     integrattionLayouts.map( fieldsLayout => (
