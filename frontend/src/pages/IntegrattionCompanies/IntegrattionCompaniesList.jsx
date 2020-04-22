@@ -48,13 +48,13 @@ const IntegrattionCompaniesList = ( {history} ) => {
     }, {
         field: 'accountPaid',
         title: 'Layouts Contas Pagas'
-    }, {
-        field: 'proofOfPayments',
-        title: 'Comprovantes de Pagamentos'
-    }, {
-        field: 'extracts',
-        title: 'Extratos Bancários'
-    }]
+    }, 
+    // {    field: 'proofOfPayments',
+    //     title: 'Comprovantes de Pagamentos'
+    // }, {
+    //     field: 'extracts',
+    //     title: 'Extratos Bancários' }
+    ]
     
     useEffect(() => {
         async function loadIntegrattionCompanies() {
@@ -88,8 +88,8 @@ const IntegrattionCompaniesList = ( {history} ) => {
             codi_emp: fieldsCompanie.codi_emp,
             nome_emp: dataEmp.nome_emp,
             accountPaid: '',
-            proofsOfPayments: '',
-            extracts: ''
+            // proofsOfPayments: '',
+            // extracts: ''
         })
     } )
 
