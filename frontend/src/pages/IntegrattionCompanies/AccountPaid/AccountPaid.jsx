@@ -1,6 +1,5 @@
 import React from 'react'
 import Select from 'react-select'
-import Creatable from 'react-select/creatable'
 import { Col, Form } from "react-bootstrap"
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -117,9 +116,11 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
                                     className="font-weight-600"
                                     type='checkbox'
                                     id={`accountPaid.isReliable`}
-                                    label={`Os dados do financeiro do cliente geralmente estão corretos, ou seja, o banco do "pagamento" está correto.`}
+                                    name={`accountPaid.isReliable`}
+                                    label={`A informação do banco onde foi feito o "pagamento" que vem dos arquivos financeiros do cliente geralmente estão corretos.`}
                                     custom={true}
-                                    value={values.accountPaid.isReliable}
+                                    value={false}
+                                    checked={values.accountPaid.isReliable}
                                     onChange={handleChange(`accountPaid.isReliable`)}
                                 />
                             </Col>
@@ -133,16 +134,16 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
                                             <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Nome do Layout:</Form.Label>
                                             <Col lg={5}>
                                                 <Form.Group as={Col} className="pl-0 m-0">
-                                                <Select 
-                                                    name={`accountPaid.layouts[${idx}].idLayout`}
-                                                    options={layoutsOptions}
-                                                    className={`selected ${validateField(['layouts', idx, 'idLayout'])}`}
-                                                    isSearchable={true}
-                                                    placeholder="Selecione"
-                                                    value={layoutsOptions.filter(option => option.value === values.accountPaid.layouts[idx].idLayout)[0]}
-                                                    onChange={selectedOption => handleChange(`accountPaid.layouts[${idx}].idLayout`)(selectedOption.value)}
-                                                    onBlur={() => setFieldTouched(`accountPaid.layouts[${idx}].idLayout`, true)}
-                                                />
+                                                    <Select 
+                                                        name={`accountPaid.layouts[${idx}].idLayout`}
+                                                        options={layoutsOptions}
+                                                        className={`selected ${validateField(['layouts', idx, 'idLayout'])}`}
+                                                        isSearchable={true}
+                                                        placeholder="Selecione"
+                                                        value={layoutsOptions.filter(option => option.value === values.accountPaid.layouts[idx].idLayout)[0]}
+                                                        onChange={selectedOption => handleChange(`accountPaid.layouts[${idx}].idLayout`)(selectedOption.value)}
+                                                        onBlur={() => setFieldTouched(`accountPaid.layouts[${idx}].idLayout`, true)}
+                                                    />
                                                     <Form.Control.Feedback type="invalid">{messageError(['layouts', idx, 'idLayout'])}</Form.Control.Feedback>
                                                 </Form.Group>
                                             </Col>

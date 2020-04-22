@@ -78,7 +78,6 @@ export default function IntegrattionCompanies({history}){
                 integrattionCompanies[key] = value
             }
             
-            // este for pega os campos do header que não existem no mongo e adiciona o valor padrão. Isto é necessário por causa disto daqui do react https://reactjs.org/docs/forms.html#controlled-components
             if( key === "accountPaid" && integrattionCompanies[key].layouts.length > 0 ){
                 for(let [keyAccountPaid, valueAccountPaid] of Object.entries(defaultValues['accountPaid'])){
                     if( integrattionCompanies[key][keyAccountPaid] === undefined ){
@@ -128,10 +127,10 @@ export default function IntegrattionCompanies({history}){
                 >
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
                         <form onSubmit={handleSubmit} className="container-fluid">
-                            {/* <div className="d-flex">
+                            <div className="d-flex">
                                 <pre>{JSON.stringify(values, null, 2)}</pre>
                                 <pre className="ml-4">{JSON.stringify(errors, null, 2)}</pre>
-                            </div> */}
+                            </div>
                             <div className="form-group row mb-0">                            
                                 <label htmlFor="system" className="col-form-label font-weight-600">Empresa:</label>
                                 <div className="col-8">
