@@ -216,7 +216,8 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
                                             id={`linesOfFile[${idx}].informationIsOnOneLineBelowTheMain`}
                                             label={`Esta linha está abaixo da linha principal`}
                                             custom={true}
-                                            value={values.linesOfFile[idx].informationIsOnOneLineBelowTheMain}
+                                            value={false}
+                                            checked={values.linesOfFile[idx].informationIsOnOneLineBelowTheMain}
                                             onChange={handleChange(`linesOfFile[${idx}].informationIsOnOneLineBelowTheMain`)}
                                         />
                                     </Col>

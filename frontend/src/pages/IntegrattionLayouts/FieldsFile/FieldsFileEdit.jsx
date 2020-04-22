@@ -343,7 +343,8 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                             id={`fields[${idx}].sumInterestFineAndDiscount`}
                             label={`Somar no "Valor Pago" o valor de "Juros/Multa" e subtrair o "Desconto"`}
                             custom={true}
-                            value={values.fields[idx].sumInterestFineAndDiscount}
+                            value={false}
+                            checked={values.fields[idx].sumInterestFineAndDiscount}
                             onChange={handleChange(`fields[${idx}].sumInterestFineAndDiscount`)}
                         />
                     </Col>
@@ -363,7 +364,8 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                             id={`fields[${idx}].multiplePerLessOne`}
                             label={`Transformar o valor negativo deste campo para positivo quando no arquivo o dado está menor que zero.`}
                             custom={true}
-                            value={values.fields[idx].multiplePerLessOne}
+                            value={false}
+                            checked={values.fields[idx].multiplePerLessOne}
                             onChange={handleChange(`fields[${idx}].multiplePerLessOne`)}
                         />
                     </Col>
@@ -477,7 +479,8 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                                         id={`fields[${idx}].groupingField`}
                                         label={`Considerar este campo como "agrupador" pra partidas múltiplas que estão em linhas diferentes!`}
                                         custom={true}
-                                        value={values.fields[idx].groupingField}
+                                        value={false}
+                                        checked={values.fields[idx].groupingField}
                                         onChange={handleChange(`fields[${idx}].groupingField`)}
                                     />
                                 </Col>
