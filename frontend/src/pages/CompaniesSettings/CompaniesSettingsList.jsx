@@ -4,9 +4,10 @@ import api from '../../services/api'
 import ReactDataGrid from 'react-data-grid'
 
 const CompaniesSettingsList = ( {history} ) => {
-    const [integrattionCompanies, setIntegrattionCompanies ] = useState([])
+    const [integrattionCompanies, setIntegrattionCompanies ] = useState([{'codi_emp': 0, 'nome:emp': '', 'cgce_emp': ''}])
     const [actionDelete, setActionDelete] = useState(false)
     const [companies, setCompanies ] = useState([])
+    let rows = 0
 
     // const editIntegrattionCompanie = (id) => {
     //     history.push(`/companies_settings/${id}`)
@@ -44,6 +45,10 @@ const CompaniesSettingsList = ( {history} ) => {
         key: 'cgce_emp',
         title: 'CNPJ'
     }]
+
+    const rowGetter = (i) => {
+        return rows[i];
+    };
     
     useEffect(() => {
         async function loadCompaniesSettings() {
@@ -55,6 +60,7 @@ const CompaniesSettingsList = ( {history} ) => {
                 if(responseCompanies.statusText === "OK"){
                     setCompanies(responseCompanies.data)
                 }
+                console.log(companies)
                 
                 // setIntegrattionCompanies(response.data)
             } catch (error) {
@@ -79,7 +85,7 @@ const CompaniesSettingsList = ( {history} ) => {
         <main className="content card container-fluid pt-3">
             {console.log(companies)}
             <ReactDataGrid
-                rowGetter={ i => companies[i] } 
+                rowGetter={rowGetter} 
                 columns={ columns } 
                 rowsCount={3}
                 minHeight={150}
