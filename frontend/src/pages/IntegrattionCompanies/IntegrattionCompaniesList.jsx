@@ -12,6 +12,7 @@ const IntegrattionCompaniesList = ( {history} ) => {
     const [integrattionCompanies, setIntegrattionCompanies ] = useState([])
     const [actionDelete, setActionDelete] = useState(false)
     const [companies, setCompanies ] = useState([])
+    const [integrattionLayouts, setIntegrattionLayouts ] = useState([])
 
     const editIntegrattionCompanie = (id) => {
         history.push(`/integrattion_companies/${id}`)
@@ -60,11 +61,15 @@ const IntegrattionCompaniesList = ( {history} ) => {
         async function loadIntegrattionCompanies() {
             try {
                 const response = await api.get('/integrattion_companies')
-
                 const responseCompanies = await api.get(`/extract_companies`)
+                const responseLayouts = await api.get(`/integrattion_layouts`)
 
                 if(responseCompanies.statusText === "OK"){
                     setCompanies(responseCompanies.data)
+                }
+
+                if(responseLayouts.statusText === "OK"){
+                    setIntegrattionLayouts(responseLayouts.data)
                 }
                 
                 setIntegrattionCompanies(response.data)
@@ -77,7 +82,30 @@ const IntegrattionCompaniesList = ( {history} ) => {
     }, [actionDelete])
 
     function returnDataEmp(codi_emp){
-        return companies.filter( companie => companie.codi_emp === codi_emp )[0]
+        try {
+            return companies.filter( companie => companie.codi_emp === codi_emp )[0]
+        } catch (error) {
+            return {nome_emp: ''}
+        }
+    }
+
+    function returnDataLayoutAccountPaid(accountPaid){
+        let system = ''
+        try {
+            for(let layoutAccountPaid of accountPaid.layouts){
+                // console.log(integrattionLayouts)
+                system += `${integrattionLayouts.filter( layout => layout._id === layoutAccountPaid.idLayout )[0].system}, `
+                return {system}
+            }
+        } catch (error) {
+            return {system: ''}
+        }
+        // let system = ''
+        // try {
+        //     return integrattionLayouts.filter( layout => layout.idLayout === idLayout ).map(layout => system += `${layout.system}, `)
+        // } catch (error) {
+        //     return {system: ''}
+        // }
     }
 
     let integrattionCompaniesListData = []
@@ -87,7 +115,7 @@ const IntegrattionCompaniesList = ( {history} ) => {
             id: fieldsCompanie._id,
             codi_emp: fieldsCompanie.codi_emp,
             nome_emp: dataEmp.nome_emp,
-            accountPaid: '',
+            accountPaid: returnDataLayoutAccountPaid(fieldsCompanie.accountPaid).system
             // proofsOfPayments: '',
             // extracts: ''
         })
