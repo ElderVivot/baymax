@@ -12,6 +12,7 @@ import AccountPaid from './AccountPaid/AccountPaid'
 let validationSchema = Yup.object().shape({
     codi_emp: Yup.number().required('É obrigatório selecionar a empresa'),
     accountPaid: Yup.object().shape({
+        isReliable: Yup.boolean(),
         layouts: Yup.array().of( Yup.object().shape({ 
             idLayout: Yup.string().required('É obrigatório selecionar o layout'),
         }))
@@ -21,6 +22,7 @@ let validationSchema = Yup.object().shape({
 const defaultValues = {
     codi_emp: '',
     accountPaid: {
+        isReliable: true,
         layouts: [{
             idLayout: ''
         }]
@@ -70,6 +72,21 @@ export default function IntegrattionCompanies({history}){
     }, [id])
     
     if(integrattionCompanies._id !== undefined){
+
+        for (let [key, value] of Object.entries(defaultValues)) {
+            if( integrattionCompanies[key] === undefined ){
+                integrattionCompanies[key] = value
+            }
+            
+            // este for pega os campos do header que não existem no mongo e adiciona o valor padrão. Isto é necessário por causa disto daqui do react https://reactjs.org/docs/forms.html#controlled-components
+            if( key === "accountPaid" && integrattionCompanies[key].layouts.length > 0 ){
+                for(let [keyAccountPaid, valueAccountPaid] of Object.entries(defaultValues['accountPaid'])){
+                    if( integrattionCompanies[key][keyAccountPaid] === undefined ){
+                        integrattionCompanies[key][keyAccountPaid] = valueAccountPaid
+                    }
+                }
+            }
+        }
 
         initialValues = integrattionCompanies
     }
