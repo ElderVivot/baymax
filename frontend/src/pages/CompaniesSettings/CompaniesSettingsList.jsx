@@ -1,5 +1,4 @@
 import '../styles.css'
-import './IntegrattionCompanies.css'
 import React, { useEffect, useState } from 'react'
 import api from '../../services/api'
 import ReactDataGrid from 'react-data-grid'
@@ -43,14 +42,13 @@ const CompaniesSettingsList = ( {history} ) => {
         title: 'Nome Empresa',
     }, {
         key: 'cgce_emp',
-        title: 'Layouts Contas Pagas'
-    }, 
-    ]
+        title: 'CNPJ'
+    }]
     
     useEffect(() => {
         async function loadCompaniesSettings() {
             try {
-                const response = await api.get('/integrattion_companies')
+                // const response = await api.get('/integrattion_companies')
 
                 const responseCompanies = await api.get(`/extract_companies`)
 
@@ -58,24 +56,33 @@ const CompaniesSettingsList = ( {history} ) => {
                     setCompanies(responseCompanies.data)
                 }
                 
-                setIntegrattionCompanies(response.data)
+                // setIntegrattionCompanies(response.data)
             } catch (error) {
                 console.log(error)
             }
         }
 
         loadCompaniesSettings()
-    }, [actionDelete])
+    }, [])
 
     // function returnDataEmp(codi_emp){
     //     return companies.filter( companie => companie.codi_emp === codi_emp )[0]
     // }
 
+    // const rows = [
+    //     { id: 0, title: "Task 1", complete: 20 },
+    //     { id: 1, title: "Task 2", complete: 40 },
+    //     { id: 2, title: "Task 3", complete: 60 }
+    //   ];
+    
     return (
         <main className="content card container-fluid pt-3">
+            {console.log(companies)}
             <ReactDataGrid
-                data={ i => companies[i] } 
+                rowGetter={ i => companies[i] } 
                 columns={ columns } 
+                rowsCount={3}
+                minHeight={150}
             />
         </main>
       )
