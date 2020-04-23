@@ -23,7 +23,7 @@ class ReadGeneral(object):
         self._groupingFields = {} # este obj irá gravar todos os campos que são agrupadores, linhas onde for partidas multiplas e será um lançamento só, e o que une elas é este campo
         self._validationsLineToPrint = [] # vai salvar os critérios pra ver se uma linha é válida pra gerar o lançamento ou não
         self._sumInterestFineAndDiscount = False # alguns valores amountPaid não vem com o juros/multa somados, este é pra definir isto
-        # self._informationIsOnOneLineBelowTheMain = False # são para informações que estão uma linha abaixo da main
+        self._calcDifferencePaidOriginalAsInterestDiscount = False # alguns layouts não tem campo de juros/desconto, este serve pra calcular
         self._fieldsThatMultiplePerLessOne = {} # alguns campos vem com valor negativo, tem que multiplicar por menos 1
 
     def identifiesTheHeader(self, data, settingLayout):
@@ -115,6 +115,7 @@ class ReadGeneral(object):
 
             if nameField == "amountPaid":
                 self._sumInterestFineAndDiscount = funcoesUteis.analyzeIfFieldIsValid(settingField, 'sumInterestFineAndDiscount', False)
+                self._calcDifferencePaidOriginalAsInterestDiscount = funcoesUteis.analyzeIfFieldIsValid(settingField, 'calcDifferencePaidOriginalAsInterestDiscount', False)
 
             self._fieldsThatMultiplePerLessOne[nameField] = funcoesUteis.analyzeIfFieldIsValid(settingField, 'multiplePerLessOne', False)
 
@@ -285,6 +286,22 @@ class ReadGeneral(object):
         else:
             return amountPaid + amountInterest + amountFine - amountDiscount
 
+    # tem alguns sistemas que o valor do pagamento não está considerando o juros/multa/desconto, esta função faz isto
+    def calcDifferencePaidOriginalAsInterestDiscount(self, valuesOfLine):
+        amountPaid = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, "amountPaid", 0.0)
+        amountOriginal = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, "amountOriginal", 0.0)
+
+        if self._calcDifferencePaidOriginalAsInterestDiscount is False:
+            return valuesOfLine
+        else:
+            if amountPaid == amountOriginal:
+                return valuesOfLine
+            elif amountPaid > amountOriginal:
+                valuesOfLine['amountInterest'] = amountPaid - amountOriginal
+            else:
+                valuesOfLine['amountDiscount'] = amountOriginal - amountPaid
+            return valuesOfLine
+    
     def handleLayoutIsPartidaMultipla(self, valuesOfFile):
         valuesOfFilePartidaMultipla = []
 
@@ -532,6 +549,8 @@ class ReadGeneral(object):
                     valuesOfLine = self.correlationBankAndAccountBetweenSettingsAndClient(valuesOfLine, bankAndAccountCorrelation)
                     # ele verifica se é necessário somar juros/multa e subtrair o desconto no valor pago
                     valuesOfLine['amountPaid'] = self.sumInterestFineAndDiscountInAmountPaid(valuesOfLine)
+                    # verifica se é necessário calcular juros/desconto
+                    valuesOfLine = self.calcDifferencePaidOriginalAsInterestDiscount(valuesOfLine)
 
                     isValid = self.isValidLineToPrint(valuesOfLine)
                     isValidDataThisCompanie = self.isValidDataThisCompanie(valuesOfLine, validateIfDataIsThisCompanie, bankAndAccountCorrelation)              
