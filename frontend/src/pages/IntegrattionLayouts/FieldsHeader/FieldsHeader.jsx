@@ -40,7 +40,6 @@ function FieldsHeader({ values, errors, touched, handleChange, handleBlur, setFi
                             <div className="col p-0">
                                 <Form.Group className="mb-0">
                                     <Form.Control 
-                                        id="nameColumn"
                                         type="text"
                                         name={`header[${idx}].nameColumn`}
                                         className={`form-control ${validateField(idx, 'nameColumn')}`}

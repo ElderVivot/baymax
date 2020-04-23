@@ -332,29 +332,56 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
         }        
     }
 
-    function fieldSumInterestFineAndDiscount(){
+    function fieldSpecificOfAmountPaid(){
         if(values.fields[idx].nameField.value === "amountPaid"){
             return (
-                <Form.Row className="mt-2">
-                    <Col lg={10}>
-                        <Form.Check
-                            className="font-weight-600"
-                            type='checkbox'
-                            id={`fields[${idx}].sumInterestFineAndDiscount`}
-                            label={`Somar no "Valor Pago" o valor de "Juros/Multa" e subtrair o "Desconto"`}
-                            custom={true}
-                            value={false}
-                            checked={values.fields[idx].sumInterestFineAndDiscount}
-                            onChange={handleChange(`fields[${idx}].sumInterestFineAndDiscount`)}
-                        />
-                    </Col>
-                </Form.Row>
+                <>
+                    <Form.Row className="mt-2">
+                        <Col lg={10}>
+                            <Form.Check
+                                className="font-weight-600"
+                                type='checkbox'
+                                id={`fields[${idx}].sumInterestFineAndDiscount`}
+                                label={`Somar no "Valor Pago" o valor de "Juros/Multa" e subtrair o "Desconto"`}
+                                custom={true}
+                                value={false}
+                                checked={values.fields[idx].sumInterestFineAndDiscount}
+                                onChange={handleChange(`fields[${idx}].sumInterestFineAndDiscount`)}
+                            />
+                        </Col>
+                    </Form.Row>
+
+                    <Form.Row className="mt-2">
+                        <Col lg={10}>
+                            <Form.Check
+                                className="font-weight-600"
+                                type='checkbox'
+                                id={`fields[${idx}].calcDifferencePaidOriginalAsInterestDiscount`}
+                                label={`Calcular a diferença entre o "Valor Pago" e o "Valor Original" como "Juros" ou "Desconto".`}
+                                custom={true}
+                                value={false}
+                                checked={values.fields[idx].calcDifferencePaidOriginalAsInterestDiscount}
+                                onChange={handleChange(`fields[${idx}].calcDifferencePaidOriginalAsInterestDiscount`)}
+                            />
+                        </Col>
+                    </Form.Row>
+                </>
             )
-        }        
+        } else {
+            values.fields[idx].sumInterestFineAndDiscount = false
+            values.fields[idx].calcDifferencePaidOriginalAsInterestDiscount = false
+        }       
     }
 
     function fieldMultiplePerLessOne(){
-        if(values.fields[idx].nameField.value === "amountPaid"){
+        let isFieldAmount = -1
+        try {
+            isFieldAmount = values.fields[idx].nameField.value.indexOf("amount")
+        } catch (error) {
+            isFieldAmount = -1
+        }
+
+        if(isFieldAmount >= 0){
             return (
                 <Form.Row className="mt-2">
                     <Col lg={10}>
@@ -371,7 +398,9 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                     </Col>
                 </Form.Row>
             )
-        }        
+        } else {
+            values.fields[idx].multiplePerLessOne = false
+        }       
     }
 
     function handleNameField(event, idx){
@@ -467,7 +496,7 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
 
                             {fieldPositionsSplit()}
 
-                            {fieldSumInterestFineAndDiscount()}
+                            {fieldSpecificOfAmountPaid()}
 
                             {fieldMultiplePerLessOne()}
 

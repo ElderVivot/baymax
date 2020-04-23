@@ -6,3 +6,6 @@ const arrayTest = ['a', 'b', 'c']
 let test = ''
 arrayTest.map(letter => test += letter)
 console.log(test)
+
+const test2 = 'abc'
+console.log(test2.indexOf("b"))
