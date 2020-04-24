@@ -44,8 +44,9 @@ class ReadGeneral(object):
         countNumberHeader = 0
         for field in header:
             nameColumn = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(field, 'nameColumn'))
+            nameColumn = None if nameColumn == "" else nameColumn
 
-            if dataManipulate.count(nameColumn) > 0:
+            if dataManipulate.count(nameColumn) > 0 and nameColumn is not None:
                 countNumberHeader += 1
 
         if countNumberHeader == len(header):
@@ -142,6 +143,7 @@ class ReadGeneral(object):
 
             nameColumn = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameColumn'))
             nameColumn = None if nameColumn == "" else nameColumn
+            print(nameField, positionInFile, nameColumn)
             
             # esta row é apenas pra identificar se a informação está na linha principal ou não, caso não esteja, vai guardar seu valor
             # na self._fieldsRowNotMain pra serem utilizados na linha principal depois         
@@ -183,11 +185,11 @@ class ReadGeneral(object):
                     formatDate = 1
                 
                 valueField = funcoesUteis.treatDateFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, formatDate, rowIsMain, positionInFileEnd=positionInFileEnd)
-                valueField = None if positionInFile == -1 and nameColumn is None else valueField
+                valueField = None if positionInFile <= 0 and nameColumn is None else valueField
 
             elif nameField.lower().find('amount') >= 0:
                 valueField = funcoesUteis.treatDecimalFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
-                valueField = 0 if positionInFile == -1 and nameColumn is None else round(valueField,2)
+                valueField = 0 if positionInFile <= 0 and nameColumn is None else round(valueField,2)
 
             else:
                 splitField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'splitField')
@@ -195,7 +197,7 @@ class ReadGeneral(object):
                 positionFieldInTheSplitEnd = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionFieldInTheSplitEnd', 0) # o zero determina que não tem fim, é daquele campo pra frente
 
                 valueField = funcoesUteis.treatTextFieldInVector(data, positionInFile, positionsOfHeaderCorrect, nameColumn, positionInFileEnd=positionInFileEnd)
-                valueField = "" if positionInFile == -1 and nameColumn is None else valueField
+                valueField = "" if positionInFile <= 0 and nameColumn is None else valueField
 
                 if splitField != "":
                     valueField = valueField.split(splitField)
@@ -588,7 +590,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1724
+    codi_emp = 1480
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
