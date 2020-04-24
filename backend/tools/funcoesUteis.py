@@ -130,7 +130,7 @@ def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
     :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
     :return: retorna um campo como texto, retirando acentos, espaços excessivos, etc
     """
-    if len(fieldsHeader) > 0:
+    if len(fieldsHeader) > 0 and nameFieldHeader is not None and nameFieldHeader != "":
         try:
             return treatTextField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
         except Exception:
@@ -179,7 +179,7 @@ def treatNumberFieldInVector(data, numberOfField=-1, fieldsHeader=[], nameFieldH
     :param nameFieldHeader: nome do cabeçalho que é pra buscar (opcional)
     :return: retorna um campo apenas como número
     """
-    if len(fieldsHeader) > 0:
+    if len(fieldsHeader) > 0 and nameFieldHeader is not None and nameFieldHeader != "":
         try:
             return treatNumberField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)], isInt)
         except Exception:
@@ -231,7 +231,7 @@ def treatDecimalFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldH
     :param row: este serve pra caso não seja um pagamento que esteja na linha principal (que não tem cabeçalho, então pegar apenas pelo número do campo). O valor 'main' quer dizer que tá numa linha que pode ter cabeçalho
     :return: retorna um campo como decimal
     """
-    if len(fieldsHeader) > 0:
+    if len(fieldsHeader) > 0 and nameFieldHeader is not None and nameFieldHeader != "":
         try:
             if row == 'main':
                 return treatDecimalField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
@@ -286,7 +286,7 @@ def treatDateFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
     :param row: este serve pra caso não seja um pagamento que esteja na linha principal (que não tem cabeçalho, então pegar apenas pelo número do campo). O valor 'main' quer dizer que tá numa linha que pode ter cabeçalho
     :return: retorna um campo como decimal
     """
-    if len(fieldsHeader) > 0:
+    if len(fieldsHeader) > 0 and nameFieldHeader is not None and nameFieldHeader != "":
         try:
             if row == 'main':
                 return retornaCampoComoData(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)], formatoData)

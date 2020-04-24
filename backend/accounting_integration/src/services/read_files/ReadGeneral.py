@@ -142,8 +142,7 @@ class ReadGeneral(object):
             positionInFileEnd = funcoesUteis.analyzeIfFieldIsValid(settingField, 'positionInFileEnd', -1)
 
             nameColumn = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(settingField, 'nameColumn'))
-            nameColumn = None if nameColumn == "" else nameColumn
-            print(nameField, positionInFile, nameColumn)
+            nameColumn = None if nameColumn == "" else nameColumn            
             
             # esta row é apenas pra identificar se a informação está na linha principal ou não, caso não esteja, vai guardar seu valor
             # na self._fieldsRowNotMain pra serem utilizados na linha principal depois         
@@ -222,6 +221,7 @@ class ReadGeneral(object):
             
             valuesOfLine['row'] = rowIsMain
             valuesOfLine[nameField] = valueField
+            print(nameField, positionInFile, nameColumn, valueField)
         
         return valuesOfLine
 
