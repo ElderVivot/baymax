@@ -221,7 +221,6 @@ class ReadGeneral(object):
             
             valuesOfLine['row'] = rowIsMain
             valuesOfLine[nameField] = valueField
-            print(nameField, positionInFile, nameColumn, valueField)
         
         return valuesOfLine
 
