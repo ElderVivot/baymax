@@ -95,17 +95,12 @@ const IntegrattionCompaniesList = ( {history} ) => {
             for(let layoutAccountPaid of accountPaid.layouts){
                 // console.log(integrattionLayouts)
                 system += `${integrattionLayouts.filter( layout => layout._id === layoutAccountPaid.idLayout )[0].system}, `
-                return {system}
             }
+            system = system.substring(0, system.length - 2)
+            return {system}
         } catch (error) {
             return {system: ''}
         }
-        // let system = ''
-        // try {
-        //     return integrattionLayouts.filter( layout => layout.idLayout === idLayout ).map(layout => system += `${layout.system}, `)
-        // } catch (error) {
-        //     return {system: ''}
-        // }
     }
 
     let integrattionCompaniesListData = []
