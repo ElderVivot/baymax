@@ -63,6 +63,10 @@ class PaymentsLysPorMoeda(object):
                     bank = "DINHEIRO"
                     accountBank = ""
 
+                idCentroCusto = funcoesUteis.treatTextFieldInVector(data, 17, posionsOfHeader, "idCentroDeCustoPagamento")
+
+                bank = f'{bank}-{idCentroCusto}'
+
                 if paymentDate is not None:
                     valuesOfLine = {
                         "idAccountPaid": idAccountPaid,
