@@ -282,10 +282,10 @@ class CompareWithSettings(object):
             except Exception:
                 pass
 
-    def returnDataBanks(self, nameBank=None, account=None, compareWith=None):
+    def returnDataBanks(self, nameBank="", account=None, compareWith=None):
 
-        if nameBank == "":
-            nameBank = None
+        if nameBank is None:
+            nameBank = ""
 
         if compareWith == "":
             compareWith = None
