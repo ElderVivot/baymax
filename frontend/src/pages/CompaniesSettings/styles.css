@@ -1,0 +1,33 @@
+/* tbody > tr > th, tbody > tr > td {
+    height: 22px !important;
+} */
+
+input, button, label, select, span, .selected, td, tr, .filter-label > input, div, p {
+    font-size: 0.70rem !important;
+    font-weight: 420 !important;
+}
+
+th, td {
+    padding: 1px !important;
+    text-align: center;
+}
+
+.handsontable span.colHeader, th > div > span {
+    word-wrap: normal;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    font-weight: 700 !important;
+}
+
+tr > th {
+    background-color: rgb(224, 208, 255) !important;
+    vertical-align: middle !important;
+    font-weight: 700 !important;
+    width: 10px !important;
+}
+
+tr {
+    width: 10px !important;
+}
+

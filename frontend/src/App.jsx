@@ -3,6 +3,7 @@ import 'bootstrap/dist/js/bootstrap.min.js'
 import 'jquery/dist/jquery.min.js'
 import 'popper.js/dist/umd/popper.min.js'
 import '@fortawesome/fontawesome-free/css/all.css'
+import 'handsontable/dist/handsontable.full.css'
 import 'typeface-roboto'
 import React from 'react';
 import './App.css';
