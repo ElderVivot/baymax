@@ -6,7 +6,7 @@ const columns = [
         filter: true,
         readOnly: true
     }, {
-        data: 'nome_emp',
+        data: 'razao_emp',
         title: 'Nome Empresa',
         type: 'text',
         filter: true,
@@ -20,6 +20,24 @@ const columns = [
     }, {
         data: 'stat_emp',
         title: 'Status',
+        type: 'text',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'group_emp',
+        title: 'Grupo',
+        type: 'text',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'regime_emp',
+        title: 'Regime',
+        type: 'text',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'regime_caixa_emp',
+        title: 'Reg. Caixa?',
         type: 'text',
         filter: true,
         readOnly: true
@@ -92,10 +110,62 @@ const columns = [
     }, {
         data: 'dateReceivedTraining',
         title: 'Explicação',
-        type: 'date',
+        type: 'text',
+        filter: true
+    }, {
+        data: 'fiscalTeam',
+        title: 'Equipe Fiscal',
+        type: 'text',
         filter: true,
-        dateFormat: 'DD/MM/YYYY',
-        correctFormat: true
+        readOnly: true
+    }, {
+        data: 'fiscalResponsible',
+        title: 'Responsável Fiscal',
+        type: 'text',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'accountingTeam',
+        title: 'Equipe Contábil',
+        type: 'text',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'accountingResponsible',
+        title: 'Responsável Contábil',
+        type: 'text',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'qtdEntryNotes',
+        title: 'NF Ent.',
+        type: 'numeric',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'qtdOutputNotes',
+        title: 'NF Sai.',
+        type: 'numeric',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'qtdServiceNotes',
+        title: 'NF Ser.',
+        type: 'numeric',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'qtdLancManual',
+        title: 'Lan. Man.',
+        type: 'numeric',
+        filter: true,
+        readOnly: true
+    }, {
+        data: 'qtdLancImported',
+        title: 'Lan. Imp.',
+        type: 'numeric',
+        filter: true,
+        readOnly: true
     }
 ]
 

@@ -5,52 +5,7 @@ import { HotTable } from '@handsontable/react'
 
 const columns = require('./settingColumns').columns
 const util = require('../../utils/util')
-
-function statEmp(status){
-    if(status === 'A'){
-        return 'Ativa'
-    } else if(status === 'I'){
-        return 'Inativa'
-    } else if(status === 'M'){
-        return 'Sem Movimento'
-    } else if(status === 'C'){
-        return 'Em Constituição'
-    } else if(status === 'B'){
-        return 'Em Processo Baixa'
-    } else {
-        return status
-    }
-}
-
-function isCompanyBranch(tins_emp, cgce_emp){
-    try {
-        if(tins_emp !== 1){
-            return 'Não'
-        } else {
-            if(cgce_emp.substring(8, 12) === '0001'){
-                return 'Não'
-            } else {
-                return 'Sim'
-            }
-        }
-    } catch (error) {
-        return 'Não'
-    }
-}
-
-function formatCgceEmp(tins_emp, cgce_emp){
-    try {
-        if(tins_emp === 1){
-            return `${cgce_emp.substring(0, 2)}.${cgce_emp.substring(2, 5)}.${cgce_emp.substring(5, 8)}/${cgce_emp.substring(8, 12)}-${cgce_emp.substring(12)}`
-        } else if(tins_emp === 2){
-            return `${cgce_emp.substring(0, 3)}.${cgce_emp.substring(3, 6)}.${cgce_emp.substring(6, 9)}-${cgce_emp.substring(9)}`
-        } else {
-            return cgce_emp
-        }
-    } catch (error) {
-        return 'Não'
-    }
-}
+const settingsCompanies = require('../../utils/settingsCompanies')
 
 const CompaniesSettingsList = ( {history} ) => {
     const hotTableComponent = useRef(null)
@@ -97,6 +52,9 @@ const CompaniesSettingsList = ( {history} ) => {
                     setExtractCompanies(responseExtractCompanies.data)                    
                     setActionUpdate(true)                 
                 }
+
+                hotTableComponent.current.hotInstance.getPlugin('filters').addHook('teste', () => console.log('teste'))
+                console.log(hotTableComponent.current.hotInstance.getPlugin('filters'))
             } catch (error) {
                 console.log(error)
             }
@@ -109,21 +67,22 @@ const CompaniesSettingsList = ( {history} ) => {
     extractCompanies.map( companie => (
         dataSheet.push({
             codi_emp: companie.codi_emp,
-            nome_emp: companie.nome_emp,
-            cgce_emp: formatCgceEmp(companie.tins_emp, companie.cgce_emp),
-            stat_emp: statEmp(companie.stat_emp),
+            razao_emp: companie.razao_emp,
+            cgce_emp: settingsCompanies.formatCgceEmp(companie.tins_emp, companie.cgce_emp),
+            stat_emp: settingsCompanies.statEmp(companie.stat_emp),
             dcad_emp: util.transformToDate(companie.dcad_emp),
             dina_emp: util.transformToDate(companie.dina_emp),
             telefone_emp: `${companie.dddf_emp}-${companie.fone_emp}`,
             email_emp: companie.email_emp,
-            isCompanyBranch: isCompanyBranch(companie.tins_emp, companie.cgce_emp),
+            isCompanyBranch: settingsCompanies.isCompanyBranch(companie.tins_emp, companie.cgce_emp),
             layoutsAccountPaid: returnDataLayoutAccountPaid(companie.codi_emp).system
         })
     ))
     
     const handleChanges = () => {
         try {
-            console.log(hotTableComponent.current.hotInstance.getData())
+            console.log('')
+            // console.log(hotTableComponent)
         } catch (error) {
             return
         }
@@ -139,7 +98,7 @@ const CompaniesSettingsList = ( {history} ) => {
                     colHeaders: true,
                     // width: '100%',
                     // height: 1000,
-                    colWidths: [70, 300, 130, 70, 100, 100, 60, 180, 180, 80, 200, 300, 200, 100, 180, 100],
+                    colWidths: [70, 270, 130, 70, 170, 130, 80, 100, 100, 60, 180, 180, 80, 200, 300, 200, 100, 180, 100, 150, 150, 150, 150, 70, 70, 70, 70, 70,],
                     // autoColumnSize: {syncLimit: 300},
                     autoRowSize: {syncLimit: 300},
                     // rowHeights: 23,
@@ -159,7 +118,7 @@ const CompaniesSettingsList = ( {history} ) => {
                         // columns: [2, 3],
                         indicators: true
                     },
-                    // fixedColumnsLeft: 2,
+                    fixedColumnsLeft: 2,
                     manualColumnFreeze: true,
                     licenseKey: 'non-commercial-and-evaluation',
                 }}
