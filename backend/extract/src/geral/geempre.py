@@ -38,7 +38,7 @@ class extractGeempre():
     def exportData(self):
         try:
             self._cursor = self._connection.cursor()
-            sql = ("  SELECT emp.codi_emp, emp.apel_emp, emp.razao_emp, emp.cgce_emp, emp.tins_emp, emp.stat_emp, emp.dcad_emp, emp.dina_emp,"
+            sql = ("  SELECT emp.codi_emp, emp.apel_emp, emp.nome_emp, emp.razao_emp, emp.cgce_emp, emp.tins_emp, emp.stat_emp, emp.dcad_emp, emp.dina_emp,"
                    "         emp.dtinicio_emp, emp.dddf_emp, emp.fone_emp, emp.email_emp, emp.i_cnae20, emp.ramo_emp, emp.rleg_emp, emp.esta_emp,"
                    "         COALESCE( mun.nome_municipio, '' ) AS nome_municipio_emp,"
                    "         COALESCE( vig.rfed_par, 0 ) AS regime_emp,"
