@@ -269,6 +269,22 @@ def leTxt(caminho, encoding='utf-8', treatAsText=False, removeBlankLines=False):
 
     return lista_linha
 
+def readSql(wayFile, nameSql, *args):
+    sql = ''
+    argSequencial = 0
+    try:
+        with open(os.path.join(wayFile, nameSql), 'rt') as sqlfile:
+            for row in sqlfile:
+                positionArg = row.find('#')
+                if positionArg >= 0:
+                    row = f'{row[:positionArg]} {args[argSequencial]}'
+                    argSequencial += 1
+                sql += row
+    except Exception:
+        sql = ''
+    
+    return sql
+
 def readJson(caminho):
     try:
         with open(caminho) as file:
