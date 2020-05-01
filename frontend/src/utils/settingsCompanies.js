@@ -46,3 +46,47 @@ function formatCgceEmp(tins_emp, cgce_emp){
     }
 }
 module.exports.formatCgceEmp = formatCgceEmp
+
+function regimeEmp(code_regime){
+    try {
+        if(code_regime === 1){
+            return 'Lucro Real'
+        } else if(code_regime === 2){
+            return 'Simples - ME'
+        } else if(code_regime === 3){
+            return 'Estimativa'
+        } else if(code_regime === 4){
+            return 'Simples - EPP'
+        } else if(code_regime === 5){
+            return 'Lucro Presumido'
+        } else if(code_regime === 6){
+            return 'Reg. Exp. Trib.'
+        } else if(code_regime === 7){
+            return 'Lucro Arbitrado'
+        } else if(code_regime === 8){
+            return 'Imune do IRPJ'
+        } else if(code_regime === 9){
+            return 'Isenta do IRPJ'
+        } else {
+            return ''
+        }
+    } catch (error) {
+        return ''
+    }
+}
+module.exports.regimeEmp = regimeEmp
+
+function regimeCaixaEmp(code_regime){
+    try {
+        if(code_regime === 'C'){
+            return 'Competência'
+        } else if(code_regime === 'X'){
+            return 'Caixa'
+        } else {
+            return ''
+        }
+    } catch (error) {
+        return ''
+    }
+}
+module.exports.regimeCaixaEmp = regimeCaixaEmp

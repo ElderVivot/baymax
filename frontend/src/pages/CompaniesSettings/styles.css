@@ -13,10 +13,10 @@ th, td {
 }
 
 .handsontable span.colHeader, th > div > span {
-    word-wrap: normal;
+    /* word-wrap: normal;
     word-break: break-all;
     -webkit-box-orient: vertical;
-    white-space: normal;
+    white-space: normal; */
     font-weight: 700 !important;
 }
 

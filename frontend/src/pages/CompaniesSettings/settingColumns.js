@@ -1,169 +1,158 @@
 const columns = [
-    {
-        data: 'codi_emp',
+    {   data: 'codi_emp',
         title: 'Código',
         type: 'numeric',
         filter: true,
         readOnly: true
-    }, {
-        data: 'razao_emp',
+    }, { data: 'nome_emp',
         title: 'Nome Empresa',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'cgce_emp',
+    }, { data: 'cgce_emp',
         title: 'CNPJ Empresa',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'stat_emp',
+    }, { data: 'stat_emp',
         title: 'Status',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'group_emp',
+    }, { data: 'group_emp',
         title: 'Grupo',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'regime_emp',
+    }, { data: 'regime_emp',
         title: 'Regime',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'regime_caixa_emp',
+    }, { data: 'regime_caixa_emp',
         title: 'Reg. Caixa?',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'dcad_emp',
+    }, { data: 'dcad_emp',
         title: 'Cliente Desde',
         type: 'date',
         filter: true,
         dateFormat: 'DD/MM/YYYY',
         correctFormat: true,
         readOnly: true
-    }, {
-        data: 'dina_emp',
+    }, { data: 'dina_emp',
         title: 'Inativo',
         type: 'date',
         filter: true,
         dateFormat: 'DD/MM/YYYY',
         correctFormat: true,
         readOnly: true
-    }, {
-        data: 'isCompanyBranch',
+    }, { data: 'isCompanyBranch',
         title: 'Filial?',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'statusAccountPaid',
+    }, { data: 'statusAccountPaid',
         title: 'Status Integração',
         type: 'dropdown',
         filter: true,
-        source: ['Pendente', 'Enviado Email', 'Analisando', 'Não é possível Realizar', 'Explicar pro Contábil', 'Concluída', 'Concluída - Modelo Antigo']
-    }, {
-        data: 'responsibleFinancialClient',
+        source: ['Pendente', 'Enviado Email', 'Analisando', 'Não tem Financeiro', 'Não é possível Realizar', 'Cliente não vai Enviar Dados', 'Explicar pro Contábil', 'Concluída', 'Concluída - Modelo Antigo', 'É Filial', 'Sem Movimento']
+    }, { data: 'responsibleFinancialClient',
         title: 'Com quem Falar no Cliente?',
         type: 'text',
         filter: true,
         wordWrap: true
-    }, {
-        data: 'telefone_emp',
+    }, { data: 'telefone_emp',
         title: 'Telefone',
         type: 'text',
         filter: true
-    }, {
-        data: 'email_emp',
+    }, { data: 'email_emp',
         title: 'Email',
         type: 'text',
         filter: true
-    }, {
-        data: 'obsAccountPaid',
+    }, { data: 'obsAccountPaid',
         title: 'Observações',
         type: 'text',
         filter: true
-    }, {
-        data: 'layoutsAccountPaid',
+    }, { data: 'layoutsAccountPaid',
         title: 'Layouts Contas Pagas',
         type: 'text',
         filter: true
-    }, {
-        data: 'dateAccountPaid',
+    }, { data: 'dateAccountPaid',
         title: 'Integração',
         type: 'date',
         filter: true,
         dateFormat: 'DD/MM/YYYY',
         correctFormat: true
-    }, {
-        data: 'analystReceivedTraining',
+    }, { data: 'analystReceivedTraining',
         title: 'Quem Recebeu Treinamento?',
         type: 'text',
         filter: true
-    }, {
-        data: 'dateReceivedTraining',
+    }, { data: 'dateReceivedTraining',
         title: 'Explicação',
-        type: 'text',
-        filter: true
-    }, {
-        data: 'fiscalTeam',
+        type: 'date',
+        filter: true,
+        dateFormat: 'DD/MM/YYYY',
+        correctFormat: true
+    }, { data: 'fiscalTeam',
         title: 'Equipe Fiscal',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'fiscalResponsible',
+    }, { data: 'fiscalResponsible',
         title: 'Responsável Fiscal',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'accountingTeam',
+    }, { data: 'accountingTeam',
         title: 'Equipe Contábil',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'accountingResponsible',
+    }, { data: 'accountingResponsible',
         title: 'Responsável Contábil',
         type: 'text',
         filter: true,
         readOnly: true
-    }, {
-        data: 'qtdEntryNotes',
+    }, { data: 'qtdEntryNotes',
         title: 'NF Ent.',
         type: 'numeric',
         filter: true,
         readOnly: true
-    }, {
-        data: 'qtdOutputNotes',
+    }, { data: 'qtdOutputNotes',
         title: 'NF Sai.',
         type: 'numeric',
         filter: true,
         readOnly: true
-    }, {
-        data: 'qtdServiceNotes',
+    }, { data: 'qtdServiceNotes',
         title: 'NF Ser.',
         type: 'numeric',
         filter: true,
         readOnly: true
-    }, {
-        data: 'qtdLancManual',
+    }, { data: 'qtdLancManual',
         title: 'Lan. Man.',
         type: 'numeric',
         filter: true,
         readOnly: true
-    }, {
-        data: 'qtdLancImported',
+    }, { data: 'qtdLancImported',
         title: 'Lan. Imp.',
         type: 'numeric',
+        filter: true,
+        readOnly: true
+    }, { data: 'nome_municipio_emp',
+        title: 'Cidade',
+        type: 'text',
+        filter: true,
+        readOnly: true
+    }, { data: 'esta_emp',
+        title: 'UF',
+        type: 'text',
+        filter: true,
+        readOnly: true
+    }, { data: 'ramo_emp',
+        title: 'Ramo',
+        type: 'text',
         filter: true,
         readOnly: true
     }

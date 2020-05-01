@@ -67,15 +67,20 @@ const CompaniesSettingsList = ( {history} ) => {
     extractCompanies.map( companie => (
         dataSheet.push({
             codi_emp: companie.codi_emp,
-            razao_emp: companie.razao_emp,
+            nome_emp: companie.nome_emp,
             cgce_emp: settingsCompanies.formatCgceEmp(companie.tins_emp, companie.cgce_emp),
             stat_emp: settingsCompanies.statEmp(companie.stat_emp),
+            regime_emp: settingsCompanies.regimeEmp(companie.regime_emp),
+            regime_caixa_emp: settingsCompanies.regimeCaixaEmp(companie.regime_caixa_emp),
             dcad_emp: util.transformToDate(companie.dcad_emp),
             dina_emp: util.transformToDate(companie.dina_emp),
             telefone_emp: `${companie.dddf_emp}-${companie.fone_emp}`,
             email_emp: companie.email_emp,
             isCompanyBranch: settingsCompanies.isCompanyBranch(companie.tins_emp, companie.cgce_emp),
-            layoutsAccountPaid: returnDataLayoutAccountPaid(companie.codi_emp).system
+            layoutsAccountPaid: returnDataLayoutAccountPaid(companie.codi_emp).system,
+            nome_municipio_emp: companie.nome_municipio_emp,
+            esta_emp: companie.esta_emp,
+            ramo_emp: companie.ramo_emp
         })
     ))
     
@@ -98,10 +103,10 @@ const CompaniesSettingsList = ( {history} ) => {
                     colHeaders: true,
                     // width: '100%',
                     // height: 1000,
-                    colWidths: [70, 270, 130, 70, 170, 130, 80, 100, 100, 60, 180, 180, 80, 200, 300, 200, 100, 180, 100, 150, 150, 150, 150, 70, 70, 70, 70, 70,],
+                    colWidths: [70, 270, 130, 70, 170, 130, 90, 100, 100, 60, 180, 180, 80, 200, 300, 170, 100, 180, 100, 150, 150, 150, 150, 70, 70, 70, 70, 70, 100, 60, 350],
                     // autoColumnSize: {syncLimit: 300},
                     autoRowSize: {syncLimit: 300},
-                    // rowHeights: 23,
+                    rowHeights: 23,
                     // columnHeaderHeight: 23,
                     rowHeaderWidth: 30,
                     afterChange: () => handleChanges(),
@@ -115,7 +120,7 @@ const CompaniesSettingsList = ( {history} ) => {
                     // contextMenu: contextMenu,
                     // contextMenu: true,
                     hiddenColumns: {
-                        // columns: [2, 3],
+                        columns: [2, 6, 7, 8, 19, 20, 24, 25],
                         indicators: true
                     },
                     fixedColumnsLeft: 2,
