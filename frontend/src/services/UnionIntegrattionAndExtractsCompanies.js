@@ -1,7 +1,7 @@
-const { api } = require('../../services/api')
+const { api } = require('./api')
 
-const util = require('../../utils/util')
-const settingsCompanies = require('../../utils/settingsCompanies')
+const util = require('../utils/util')
+const settingsCompanies = require('../utils/settingsCompanies')
 
 class GetDataIntegrattionAndExtractsCompanies{
     constructor(){

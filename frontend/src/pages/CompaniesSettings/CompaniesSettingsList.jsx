@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { HotTable } from '@handsontable/react'
 
 const { columns } = require('./SettingsColumns')
-const { ManipulateIntegrattionAndExtractsCompanies } = require('./DataIntegrattionAndExtractsCompanies')
+const { ManipulateIntegrattionAndExtractsCompanies } = require('../../services/UnionIntegrattionAndExtractsCompanies')
 
 const CompaniesSettingsList = ( {history} ) => {
     const hotTableComponent = useRef(null)
