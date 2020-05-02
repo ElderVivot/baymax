@@ -7,7 +7,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
 
-import api from '../../../services/api'
+const { api } = require('../../../services/api')
 
 let layoutsOptions = []
 async function layouts() {
