@@ -18,19 +18,11 @@ from dao.src.ConnectMongo import ConnectMongo
 from tools.leArquivos import readSql
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayDefaultToSave = wayDefault['wayDefaultToSaveFiles']
-wayToSaveFiles.close()
-if os.path.exists(wayDefaultToSave) is False:
-    os.makedirs(wayDefaultToSave)
-
 class extractGeempre():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
         self._cursor = None
-        self._wayToSave = os.path.join(wayDefaultToSave, 'empresas.json') 
         self._columns = []
 
         self._connectionMongo = ConnectMongo()
