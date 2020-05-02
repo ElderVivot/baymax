@@ -5,11 +5,11 @@ import * as Yup from 'yup'
 import { Formik } from 'formik'
 
 import '../styles.css'
-import api from '../../services/api'
 import FieldsHeader from './FieldsHeader/FieldsHeader'
 import FieldsFileList from './FieldsFile/FieldsFileList'
 import FieldsValidation from './FieldsValidationData/FieldsListValidation'
 import LinesOfFile from './LinesOfFile/LinesOfFile'
+const { api } = require('../../services/api')
 
 let validationSchema = Yup.object().shape({
     system: Yup.string().required('O nome do sistema é obrigatório'),

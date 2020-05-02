@@ -3,11 +3,9 @@ import Select from 'react-select'
 import { Form } from "react-bootstrap"
 import * as Yup from 'yup'
 import { Formik } from 'formik'
-
 import '../styles.css'
-import api from '../../services/api'
-
 import AccountPaid from './AccountPaid/AccountPaid'
+const { api } = require('../../services/api')
 
 let validationSchema = Yup.object().shape({
     codi_emp: Yup.number().required('É obrigatório selecionar a empresa'),

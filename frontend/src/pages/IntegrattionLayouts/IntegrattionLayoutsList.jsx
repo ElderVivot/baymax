@@ -1,11 +1,11 @@
 import '../styles.css'
 import React, { useEffect, useState } from 'react'
-import api from '../../services/api'
 import MaterialTabel from 'material-table'
 import IconEdit from '../../components/IconEdit'
 import IconDelete from '../../components/IconDelete'
 import IconNew from '../../components/IconNew'
 // import IconDownload from '../../components/IconDownload'
+const { api } = require('../../services/api')
 
 const IntegrattionLayoutsList = ( {history} ) => {
     const [integrattionLayouts, setIntegrattionLayouts ] = useState([])
