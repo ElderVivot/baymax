@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import api from '../../services/api'
 import { HotTable } from '@handsontable/react'
 
-const columns = require('./settingColumns').columns
+const columns = require('./SettingsColumns').columns
 const util = require('../../utils/util')
 const settingsCompanies = require('../../utils/settingsCompanies')
 
