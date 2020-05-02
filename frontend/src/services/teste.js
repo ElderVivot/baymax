@@ -1,11 +1,25 @@
-const str = 'ÁÉÍÓÚáéíóúâêîôûàèìòùÇç/.,~!@#$%&_-12345';
-const parsed = str.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '');
-// console.log(parsed);
+const axios = require('axios')
 
-const arrayTest = ['a', 'b', 'c']
-let test = ''
-arrayTest.map(letter => test += letter)
-console.log(test)
+const api = axios.create({
+    baseURL: 'http://localhost:3001'
+})
 
-const test2 = 'abc'
-console.log(test2.indexOf("b"))
+async function testeAsyn(){
+    try {
+        const responseLayouts = await api.get(`/integrattion_layouts`)
+        if(responseLayouts.statusText === "OK"){
+            console.log('consegui pegar os layous primeiro')
+        }
+
+        const responseIntegrattionCompanies = await api.get(`/integrattion_companies`)
+        if(responseIntegrattionCompanies.statusText === "OK"){
+            console.log('consegui pegar as empresas primeiro')
+        }
+
+        console.log('eu depois')
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+testeAsyn()
