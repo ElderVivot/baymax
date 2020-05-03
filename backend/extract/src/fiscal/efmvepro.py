@@ -96,7 +96,7 @@ class extractEfmvepro():
                         # tem que deletar os dados mensais, pois não dá pra atualizar as informações, visto que o codi_ent que seria
                         # o item a ser atualizado pode mudar na domínio. Antes uma nota que era 100 pode ser excluída, e a 100 ser 
                         # outra nota totalmente diferente
-                        self._collection.delete_many( {"$and": [{'monthFilter': month}, {'yearFilter': year}] } )
+                        self._collection.delete_many( {"$and": [{'codi_emp': companie['codi_emp']}, {'monthFilter': month}, {'yearFilter': year}] } )
 
                         self._cursor = self._connection.cursor()
                         sql = readSql(os.path.dirname(os.path.abspath(__file__)), 'efmvepro.sql', year, month, companie['codi_emp'], year, month)
