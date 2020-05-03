@@ -23,7 +23,7 @@ wayToSaveFiles.close()
 if os.path.exists(wayDefaultToSave) is False:
     os.makedirs(wayDefaultToSave)
 
-class extractGeempre():
+class ExtractGeempre():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
@@ -34,6 +34,25 @@ class extractGeempre():
         self._connectionMongo = ConnectMongo()
         self._dbMongo = self._connectionMongo.getConnetion()
         self._collection = self._dbMongo['ExtractCompanies']
+
+    def getCompanies(self):
+        try:
+            self._cursor = self._connection.cursor()
+            sql = "SELECT codi_emp, nome_emp FROM bethadba.geempre WHERE stat_emp = 'A' ORDER BY codi_emp"
+            self._cursor.execute(sql)
+
+            df = pd.read_sql_query(sql, self._connection)
+
+            data = json.loads(df.to_json(orient='records', date_format='iso'))
+
+            return data
+
+        except Exception as e:
+            print(f"Erro ao executar a consulta. O erro é: {e}")
+        finally:
+            if self._cursor is not None:
+                self._cursor.close()
+            self._DB.closeConnection()
 
     def exportData(self):
         try:
@@ -73,10 +92,10 @@ class extractGeempre():
             if self._cursor is not None:
                 self._cursor.close()
             self._DB.closeConnection()
-            # self._connectionMongo.closeConnection()
+            self._connectionMongo.closeConnection()
 
 
 if __name__ == "__main__":
-    geempre = extractGeempre()
+    geempre = ExtractGeempre()
     geempre.exportData()
 

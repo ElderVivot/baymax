@@ -104,6 +104,7 @@ class extractCtlancto():
             if self._cursor is not None:
                 self._cursor.close()
             self._DB.closeConnection()
+            self._connectionMongo.closeConnection()
 
 
 if __name__ == "__main__":
