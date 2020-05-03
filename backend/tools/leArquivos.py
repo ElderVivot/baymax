@@ -270,15 +270,31 @@ def leTxt(caminho, encoding='utf-8', treatAsText=False, removeBlankLines=False):
     return lista_linha
 
 def readSql(wayFile, nameSql, *args):
+    # esta função lê um SQL e retorna como string com os *args aplicados. Pro arg ser aplicado tem que colocar um '#' no lugar, 
+    # que ele deve fazer a substituição
     sql = ''
     argSequencial = 0
     try:
         with open(os.path.join(wayFile, nameSql), 'rt') as sqlfile:
             for row in sqlfile:
-                positionArg = row.find('#')
-                if positionArg >= 0:
-                    row = f'{row[:positionArg]} {args[argSequencial]}'
-                    argSequencial += 1
+                positionInicialSearchNewHashtag = 0
+                rowWithArguments = ''
+                positionFindHashtag = row.find('#')
+                rowSplit = row
+                if positionFindHashtag >= 0:
+                    while True:
+                        rowWithArguments += f'{rowSplit[:positionFindHashtag]}{args[argSequencial]}'
+                        positionInicialSearchNewHashtag = positionFindHashtag+1
+                        rowSplit = rowSplit[positionInicialSearchNewHashtag:]
+                        positionFindHashtag = rowSplit.find('#')
+                        if positionFindHashtag < 0:
+                            rowWithArguments += rowSplit                            
+                            argSequencial += 1
+                            break
+                        else:
+                            argSequencial += 1
+                
+                row = rowWithArguments if rowWithArguments != "" else row
                 sql += row
     except Exception:
         sql = ''
