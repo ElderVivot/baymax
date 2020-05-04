@@ -1,6 +1,6 @@
 SELECT pro.codi_emp, codigo_nota = pro.codi_ent, numero = ent.nume_ent, cli_for = forn.nome_for, chave_nfe = ent.chave_nfe_ent, 
        emissao = ent.ddoc_ent, saida_entrada = ent.dent_ent, codi_pdi = pro.codi_pdi, desc_pdi = procad.desc_pdi, cfop = pro.cfop_mep, 
-       qtd = pro.qtde_mep, vunit = pro.valor_unit_mep, vtot = pro.vlor_mep , pro.vipi_mep, pro.bcal_mep, pro.cst_mep, pro.vpro_mep, 
+       qtd = pro.qtde_mep, vunit = pro.valor_unit_mep, vtot = pro.vpro_mep , pro.vipi_mep, pro.bcal_mep, pro.cst_mep, 
        pro.vdes_mep, pro.bicms_mep, pro.bicmsst_mep, pro.aliicms_mep, pro.valor_icms_mep, pro.valor_subtri_mep, 
        pro.vfre_mep, pro.vseg_mep, pro.vdesace_mep,
        --estes dois campos sao apenas pra filtros na hora de deletar dados daquele ano-mes
