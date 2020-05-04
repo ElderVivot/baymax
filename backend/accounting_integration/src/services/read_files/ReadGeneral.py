@@ -430,6 +430,12 @@ class ReadGeneral(object):
                 correlationAccountNew = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountNew', isInt=True)).replace('-', '')
                 correlationAccountNew = "" if correlationAccountNew == "0" else correlationAccountNew
 
+                if correlationAccountFile == "":
+                    if bankFinancy.find(correlationBankFile) >= 0:
+                        valuesOfLine['bank'] = correlationBankNew
+                        valuesOfLine['account'] = correlationAccountNew
+                        break
+
                 if bankFinancy.find(correlationBankFile) >= 0 and accountFinancy == correlationAccountFile:
                     valuesOfLine['bank'] = correlationBankNew
                     valuesOfLine['account'] = correlationAccountNew
@@ -589,7 +595,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1480
+    codi_emp = 1822
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()

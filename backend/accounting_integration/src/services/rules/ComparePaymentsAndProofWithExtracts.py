@@ -28,7 +28,7 @@ class ComparePaymentsAndProofWithExtracts(object):
         self._extractsFinal = []
         self._numberOfDaysInterval = 3
         self._numberOfDaysIntervalPaymentWithProof = 3
-        self._financyIsReliable = funcoesUteis.returnDataFieldInDict(self._settings, ['financy', 'isReliable'], True)
+        self._financyIsReliable = funcoesUteis.returnDataFieldInDict(self._settings, ['accountPaid', 'isReliable'], True)
 
     def findsLessDifferenceBetweenDatesInArrayOfObject(self, arrayObjects, nameFieldOfDate, baseDate):
         objReturn = None
