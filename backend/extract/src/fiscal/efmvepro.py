@@ -66,7 +66,7 @@ class extractEfmvepro():
             for companie in companies:
                 codi_emp = companie['codi_emp']
 
-                if filterCompanie != 0 and filterCompanie != codi_emp:
+                if ( filterCompanie != 0 and filterCompanie != codi_emp ) or codi_emp < 1008:
                     continue # ignora as empresas que não estão no filtro
 
                 print(f"- Exportando produtos das NF de entradas da empresa {codi_emp} - {companie['nome_emp']}")
