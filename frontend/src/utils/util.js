@@ -12,3 +12,12 @@ function transformToDate(date){
     return `${zeroLeft(newDate.getDay(), 2)}/${zeroLeft(newDate.getMonth(), 2)}/${newDate.getFullYear()}`
 }
 module.exports.transformToDate = transformToDate
+
+function implementsFilterInURL(baseURL='', filter={}){
+    let url = `${baseURL}?`
+    for (let [key, value] of Object.entries(filter)) {
+        url += `${key}=${value}&`
+    }
+    return url
+}
+module.exports.implementsFilterInURL = implementsFilterInURL
