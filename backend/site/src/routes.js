@@ -3,6 +3,7 @@ const express = require('express')
 const IntegrattionLayoutController = require('./controllers/IntegrattionLayoutController')
 const IntegrattionCompaniesController = require('./controllers/IntegrattionCompaniesController')
 const ExtractCompaniesController = require('./controllers/ExtractCompaniesController')
+const ExtractCompaniesMovementsController = require('./controllers/ExtractCompaniesMovementsController')
 
 // routes cria as rotas
 const routes = express.Router()
@@ -23,6 +24,9 @@ routes.delete('/integrattion_companies/:id', IntegrattionCompaniesController.del
 
 // rotas do extract_companies
 routes.get('/extract_companies', ExtractCompaniesController.index)
+
+// rotas do extract_companies_movements
+routes.get('/extract_companies_movements', ExtractCompaniesMovementsController.index)
 
 // exportando as rotas
 module.exports = routes
