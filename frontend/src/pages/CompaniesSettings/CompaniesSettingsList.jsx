@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { HotTable } from '@handsontable/react'
 
 const { columns } = require('./SettingsColumns')
-const { ManipulateIntegrattionAndExtractsCompanies } = require('../../services/UnionIntegrattionAndExtractsCompanies')
+const UnionIntegrattionAndExtractsCompanies = require('../../services/UnionIntegrattionAndExtractsCompanies')
 
 const CompaniesSettingsList = ( {history} ) => {
     const hotTableComponent = useRef(null)
@@ -13,9 +13,10 @@ const CompaniesSettingsList = ( {history} ) => {
     useEffect(() => {
         async function loadCompaniesSettings() {
             try {
-                const manipulateIntegrattionAndExtractsCompanies = new ManipulateIntegrattionAndExtractsCompanies()
+                const unionIntegrattionAndExtractsCompanies = new UnionIntegrattionAndExtractsCompanies()
 
-                const dataIntegrattionAndExtractsCompanies = await manipulateIntegrattionAndExtractsCompanies.process()
+                const dataIntegrattionAndExtractsCompanies = await unionIntegrattionAndExtractsCompanies.process()
+                console.log(dataIntegrattionAndExtractsCompanies)
                 setDataSheet(dataIntegrattionAndExtractsCompanies)
                 
                 setActionUpdate(true)
