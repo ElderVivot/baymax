@@ -375,7 +375,7 @@ def returnBankForName(nameBank):
         nameBank = 'BRASIL'
     elif nameBank.count('BRADESCO') > 0:
         nameBank = 'BRADESCO'
-    elif ( nameBank.count('CAIXA') > 0 and ( nameBank.count('ECON') > 0 or nameBank.count('AG.') > 0 ) ) or nameBank.count('CEF') > 0:
+    elif ( nameBank.count('CAIXA') > 0 and ( nameBank.count('ECON') > 0 or nameBank.count('AG.') > 0 or nameBank.count('FEDERAL') > 0 ) ) or nameBank.count('CEF') > 0:
         nameBank = 'CEF'
     elif nameBank.count('SICOOB') > 0:
         nameBank = 'SICOOB'
