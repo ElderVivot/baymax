@@ -4,12 +4,12 @@ module.exports = {
     async index(req, res){
         let integrattionLayout
 
-        let layoutType = req.query.layoutType
+        let queries = req.query
 
-        if(layoutType === undefined){
+        if(queries === {}){
             integrattionLayout = await IntegrattionLayout.find({})
         } else {
-            integrattionLayout = await IntegrattionLayout.find({layoutType})
+            integrattionLayout = await IntegrattionLayout.find({... req.query})
         }
 
         console.log(` - IntegrattionLayoutController.index`)
