@@ -2,7 +2,15 @@ const IntegrattionCompanies = require('../models/IntegrattionCompanies')
 
 module.exports = {
     async index(req, res){
-        const integrattionCompanies = await IntegrattionCompanies.find({})
+        let integrattionCompanies
+
+        let queries = req.query
+
+        if(queries === {}){
+            integrattionCompanies = await IntegrattionCompanies.find({})
+        } else{
+            integrattionCompanies = await IntegrattionCompanies.find({...req.query})
+        }
 
         console.log(` - IntegrattionCompaniesController.index`)
 
