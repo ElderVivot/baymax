@@ -20,14 +20,14 @@ th, td {
     font-weight: 700 !important;
 }
 
-tr > th {
+.htCore tr > th {
     background-color: rgb(224, 208, 255) !important;
     vertical-align: middle !important;
     font-weight: 700 !important;
     width: 10px !important;
 }
 
-tr {
+/* tr {
     width: 10px !important;
-}
+} */
 
