@@ -26,7 +26,7 @@ class extractGeempre():
 
         self._connectionMongo = ConnectMongo()
         self._dbMongo = self._connectionMongo.getConnetion()
-        self._collection = self._dbMongo['ExtractCompaniesMovements']
+        self._collection = self._dbMongo['ExtractCompanies'] # vai adicionar na tabela de empresas os dados
 
     def getCompanies(self):
         try:

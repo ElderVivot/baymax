@@ -27,7 +27,7 @@ class extractGeempre():
 
         self._connectionMongo = ConnectMongo()
         self._dbMongo = self._connectionMongo.getConnetion()
-        self._collection = self._dbMongo['ExtractCompaniesUsersAcess']
+        self._collection = self._dbMongo['ExtractCompanies']
 
     def getCompanies(self):
         try:
