@@ -2,12 +2,23 @@ const util = require('../utils/util')
 const settingsCompanies = require('../utils/settingsCompanies')
 const GetExtractsCompanies = require('./GetExtractsCompanies')
 const UnionIntegrattionLayoutsAndCompanie = require('./UnionIntegrattionLayoutsAndCompanie')
+const GetExtractsCompaniesMovements = require('./GetExtractsCompaniesMovements')
 
 class UnionIntegrattionAndExtractsCompanies{
     constructor(){
         this.getExtractsCompanies = new GetExtractsCompanies()
         this.extract_companies = []
         this.dataIntegrattionAndExtractsCompanies = []
+    }
+
+    async getExtractsCompaniesMovements(codi_emp){
+        try {
+            const unionExtractsCompaniesMovements = new GetExtractsCompaniesMovements({codi_emp: codi_emp})
+            const extractsCompaniesMovements = await unionExtractsCompaniesMovements.getData()
+            return extractsCompaniesMovements[0]
+        } catch (error) {
+            return {}
+        }
     }
     
     async process(){
@@ -16,6 +27,8 @@ class UnionIntegrattionAndExtractsCompanies{
         for( let companie of this.extract_companies ) {
             let unionIntegrattionLayoutsAndCompanie = new UnionIntegrattionLayoutsAndCompanie({codi_emp: companie.codi_emp})
             let integrattionLayoutsAndCompanie = await unionIntegrattionLayoutsAndCompanie.process()
+
+            let extractsCompaniesMovements = await this.getExtractsCompaniesMovements(companie.codi_emp)
 
             this.dataIntegrattionAndExtractsCompanies.push({
                 codi_emp: companie.codi_emp,
@@ -32,7 +45,14 @@ class UnionIntegrattionAndExtractsCompanies{
                 layoutsAccountPaid: integrattionLayoutsAndCompanie.system,
                 nome_municipio_emp: companie.nome_municipio_emp,
                 esta_emp: companie.esta_emp,
-                ramo_emp: companie.ramo_emp
+                ramo_emp: companie.ramo_emp,
+                fiscalTeam: extractsCompaniesMovements.grupos_fiscal,
+                accountingTeam: extractsCompaniesMovements.grupos_contabil,
+                qtdEntryNotes: extractsCompaniesMovements.entradas,
+                qtdOutputNotes: extractsCompaniesMovements.saidas,
+                qtdServiceNotes: extractsCompaniesMovements.servicos,
+                qtdLancManual: extractsCompaniesMovements.lan_manual,
+                qtdLancImported: extractsCompaniesMovements.lan_importado
             })
         }
         return this.dataIntegrattionAndExtractsCompanies
