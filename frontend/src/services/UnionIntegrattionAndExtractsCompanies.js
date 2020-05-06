@@ -2,7 +2,7 @@ const util = require('../utils/util')
 const settingsCompanies = require('../utils/settingsCompanies')
 const GetExtractsCompanies = require('./GetExtractsCompanies')
 const UnionIntegrattionLayoutsAndCompanie = require('./UnionIntegrattionLayoutsAndCompanie')
-// const GetExtractsCompaniesMovements = require('./GetExtractsCompaniesMovements')
+const StatusIntegrattionOfCompanie = require('./StatusIntegrattionOfCompanie')
 
 class UnionIntegrattionAndExtractsCompanies{
     constructor(){
@@ -11,26 +11,14 @@ class UnionIntegrattionAndExtractsCompanies{
         this.dataIntegrattionAndExtractsCompanies = []
     }
 
-    // async getExtractsCompaniesMovements(codi_emp){
-    //     try {
-    //         const unionExtractsCompaniesMovements = new GetExtractsCompaniesMovements({codi_emp: codi_emp})
-    //         const extractsCompaniesMovements = await unionExtractsCompaniesMovements.getData()
-    //         return extractsCompaniesMovements[0]
-    //     } catch (error) {
-    //         return {}
-    //     }
-    // }
-    
     async process(){
         this.extract_companies = await this.getExtractsCompanies.getData()
 
         for( let companie of this.extract_companies ) {
-            let unionIntegrattionLayoutsAndCompanie = new UnionIntegrattionLayoutsAndCompanie({codi_emp: companie.codi_emp})
-            let integrattionLayoutsAndCompanie = await unionIntegrattionLayoutsAndCompanie.process()
+            const unionIntegrattionLayoutsAndCompanie = new UnionIntegrattionLayoutsAndCompanie({codi_emp: companie.codi_emp})
+            const integrattionLayoutsAndCompanie = await unionIntegrattionLayoutsAndCompanie.process()
 
-            // let extractsCompaniesMovements = await this.getExtractsCompaniesMovements(companie.codi_emp)
-
-            this.dataIntegrattionAndExtractsCompanies.push({
+            let dataIntegrattionAndExtractsCompanies = {
                 codi_emp: companie.codi_emp,
                 nome_emp: companie.nome_emp,
                 cgce_emp: settingsCompanies.formatCgceEmp(companie.tins_emp, companie.cgce_emp),
@@ -54,7 +42,12 @@ class UnionIntegrattionAndExtractsCompanies{
                 qtdLancManual: companie.lan_manual,
                 qtdLancImported: companie.lan_importado,
                 groupCompanie: companie.groupCompanie
-            })
+            }
+
+            const statusIntegrattionOfCompanie = new StatusIntegrattionOfCompanie(dataIntegrattionAndExtractsCompanies)
+            dataIntegrattionAndExtractsCompanies.statusAccountPaid = statusIntegrattionOfCompanie.identifiesTheStatus()
+
+            this.dataIntegrattionAndExtractsCompanies.push(dataIntegrattionAndExtractsCompanies)
         }
         return this.dataIntegrattionAndExtractsCompanies
     }
