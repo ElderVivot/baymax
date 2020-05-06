@@ -2,7 +2,7 @@ const util = require('../utils/util')
 const settingsCompanies = require('../utils/settingsCompanies')
 const GetExtractsCompanies = require('./GetExtractsCompanies')
 const UnionIntegrattionLayoutsAndCompanie = require('./UnionIntegrattionLayoutsAndCompanie')
-const GetExtractsCompaniesMovements = require('./GetExtractsCompaniesMovements')
+// const GetExtractsCompaniesMovements = require('./GetExtractsCompaniesMovements')
 
 class UnionIntegrattionAndExtractsCompanies{
     constructor(){
@@ -11,15 +11,15 @@ class UnionIntegrattionAndExtractsCompanies{
         this.dataIntegrattionAndExtractsCompanies = []
     }
 
-    async getExtractsCompaniesMovements(codi_emp){
-        try {
-            const unionExtractsCompaniesMovements = new GetExtractsCompaniesMovements({codi_emp: codi_emp})
-            const extractsCompaniesMovements = await unionExtractsCompaniesMovements.getData()
-            return extractsCompaniesMovements[0]
-        } catch (error) {
-            return {}
-        }
-    }
+    // async getExtractsCompaniesMovements(codi_emp){
+    //     try {
+    //         const unionExtractsCompaniesMovements = new GetExtractsCompaniesMovements({codi_emp: codi_emp})
+    //         const extractsCompaniesMovements = await unionExtractsCompaniesMovements.getData()
+    //         return extractsCompaniesMovements[0]
+    //     } catch (error) {
+    //         return {}
+    //     }
+    // }
     
     async process(){
         this.extract_companies = await this.getExtractsCompanies.getData()
@@ -28,7 +28,7 @@ class UnionIntegrattionAndExtractsCompanies{
             let unionIntegrattionLayoutsAndCompanie = new UnionIntegrattionLayoutsAndCompanie({codi_emp: companie.codi_emp})
             let integrattionLayoutsAndCompanie = await unionIntegrattionLayoutsAndCompanie.process()
 
-            let extractsCompaniesMovements = await this.getExtractsCompaniesMovements(companie.codi_emp)
+            // let extractsCompaniesMovements = await this.getExtractsCompaniesMovements(companie.codi_emp)
 
             this.dataIntegrattionAndExtractsCompanies.push({
                 codi_emp: companie.codi_emp,
@@ -46,13 +46,14 @@ class UnionIntegrattionAndExtractsCompanies{
                 nome_municipio_emp: companie.nome_municipio_emp,
                 esta_emp: companie.esta_emp,
                 ramo_emp: companie.ramo_emp,
-                fiscalTeam: extractsCompaniesMovements.grupos_fiscal,
-                accountingTeam: extractsCompaniesMovements.grupos_contabil,
-                qtdEntryNotes: extractsCompaniesMovements.entradas,
-                qtdOutputNotes: extractsCompaniesMovements.saidas,
-                qtdServiceNotes: extractsCompaniesMovements.servicos,
-                qtdLancManual: extractsCompaniesMovements.lan_manual,
-                qtdLancImported: extractsCompaniesMovements.lan_importado
+                fiscalTeam: companie.grupos_fiscal,
+                accountingTeam: companie.grupos_contabil,
+                qtdEntryNotes: companie.entradas,
+                qtdOutputNotes: companie.saidas,
+                qtdServiceNotes: companie.servicos,
+                qtdLancManual: companie.lan_manual,
+                qtdLancImported: companie.lan_importado,
+                groupCompanie: companie.groupCompanie
             })
         }
         return this.dataIntegrattionAndExtractsCompanies
