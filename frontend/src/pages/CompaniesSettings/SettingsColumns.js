@@ -57,7 +57,7 @@ const columns = [
         title: 'Status Integração',
         type: 'dropdown',
         filter: true,
-        source: ['Pendente', 'Enviado Email', 'Analisando', 'Não tem Financeiro', 'Não é possível Realizar', 'Cliente não vai Enviar Dados', 'Explicar pro Contábil', 'Concluída', 'Concluída - Modelo Antigo', 'É Filial', 'Sem Movimento']
+        source: ['Pendente', 'Enviado Email', 'Analisando', 'Não tem Financeiro', 'Não é possível Realizar', 'Cliente não vai Enviar Dados', 'Explicar pro Contábil', 'Concluída', 'Concluída - Modelo Antigo', 'Empresa Inativa', 'É Filial', 'Sem Movimento']
     }, { data: 'responsibleFinancialClient',
         title: 'Com quem Falar no Cliente?',
         type: 'text',
