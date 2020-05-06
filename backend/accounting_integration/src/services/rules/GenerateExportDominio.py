@@ -95,10 +95,14 @@ class GenerateExportDominio(object):
         elif paymentOrExtract == "P":
             exportDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.analyzeIfFieldIsValid(data, "dateOfImport", None))
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaid", 0.0)
+            amountPaidPerLote = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaidPerLote", 0.0)
+            amountPaidPerLoteOriginal = amountPaidPerLote
             if amountPaid < 0: # quando negativo multipla por menos 1, geralmente são os descontos
                 amountPaid *= -1
+            if amountPaidPerLote < 0:
+                amountPaidPerLote *= -1
             if isAmountPaidPerLote is True:
-                amountPaid = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaidPerLote", 0.0)
+                amountPaid = amountPaidPerLote
             amountDiscount = funcoesUteis.analyzeIfFieldIsValid(data, "amountDiscount", 0.0)
             amountInterest = funcoesUteis.analyzeIfFieldIsValid(data, "amountInterest", 0.0)
             amountFine = funcoesUteis.analyzeIfFieldIsValid(data, "amountFine", 0.0)
@@ -109,8 +113,11 @@ class GenerateExportDominio(object):
                     accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCode", "")
                     amount = amountLiquid
                 else:
-                    if isAmountPaidPerLote is True: # se for o total do lote então o crédito é o banco
-                        accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeBank", "")
+                    if isAmountPaidPerLote is True: 
+                        if amountPaidPerLoteOriginal < 0: # se for o total do lote então o crédito é o banco se o valor for maior que zero, se não é débito
+                            accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeBank", "")
+                        else:
+                            accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeBank", "")
                     else: # se não for o total do lote e for lançamento de crédito então provavelmente são os descontos
                         accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCode", "")
                     amount = amountPaid
