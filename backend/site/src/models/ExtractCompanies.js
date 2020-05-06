@@ -16,7 +16,17 @@ const ExtractCompaniesSchema = new mongoose.Schema({
     email_emp: String,
     i_cnae20: String,
     ramo_emp: String,
-    rleg_emp: String
+    rleg_emp: String,
+    dini: String,
+    dfin: String,
+    entradas: Number,
+    saidas: Number,
+    servidos: Number,
+    lan_importado: Number,
+    lan_manual: Number,
+    grupos_contabil: String,
+    grupos_fiscal: String,
+    groupCompanie: String
 })
 
 // cria a 'tabela' de fato
