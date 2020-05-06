@@ -19,7 +19,7 @@ const columns = [
         type: 'text',
         filter: true,
         readOnly: true
-    }, { data: 'group_emp',
+    }, { data: 'groupCompanie',
         title: 'Grupo',
         type: 'text',
         filter: true,
