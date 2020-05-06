@@ -33,7 +33,7 @@ class StatusIntegrattionOfCompanie {
 
     isCompletedOldModel(){
         try {
-            if( ( this.dataCompanie.layoutsAccountPaid === "" || this.dataCompanie.layoutsAccountPaid === undefined ) && this.dataCompanie.layoutsAccountPaidOldModel !== "" && this.dataCompanie.layoutsAccountPaidOldModel !== undefined){
+            if( ( this.dataCompanie.layoutsAccountPaid === "" || this.dataCompanie.layoutsAccountPaid === undefined ) && this.dataCompanie.dateAccountPaidOld !== undefined){
                 this.status = 'Concluída - Modelo Antigo'
             }
         } catch (error) {
