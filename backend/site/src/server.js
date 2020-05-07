@@ -14,7 +14,7 @@ mongoose.connect('mongodb://localhost/baymax', {
     useCreateIndex: true
 })
 
-app.use(cors())
+app.use(cors('*'))
 // app.use(cors('http://localhost:3001'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
