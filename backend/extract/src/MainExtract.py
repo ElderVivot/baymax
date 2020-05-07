@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import os
-from geral.geempre import extractGeempre
+from geral.geempre import ExtractGeempre
 from fiscal.efentradas import extractEfentradas
 from fiscal.efmvepro import extractEfmvepro
 from fiscal.effornece import extractEffornece
@@ -9,7 +9,7 @@ from fiscal.efentradaspar import extractEfentradaspar
 
 class MainExtract:
 
-    geempre = extractGeempre()
+    geempre = ExtractGeempre()
     geempre.exportData()
 
     effornece = extractEffornece()
