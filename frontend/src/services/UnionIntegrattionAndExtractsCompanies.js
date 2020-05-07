@@ -3,6 +3,7 @@ const settingsCompanies = require('../utils/settingsCompanies')
 const GetExtractsCompanies = require('./GetExtractsCompanies')
 const UnionIntegrattionLayoutsAndCompanie = require('./UnionIntegrattionLayoutsAndCompanie')
 const StatusIntegrattionOfCompanie = require('./StatusIntegrattionOfCompanie')
+const IsIntegrattionLayoutCompanieOld = require('./IsIntegrattionLayoutCompanieOld')
 
 class UnionIntegrattionAndExtractsCompanies{
     constructor(){
@@ -41,11 +42,22 @@ class UnionIntegrattionAndExtractsCompanies{
                 qtdServiceNotes: companie.servicos,
                 qtdLancManual: companie.lan_manual,
                 qtdLancImported: companie.lan_importado,
-                groupCompanie: companie.groupCompanie
+                groupCompanie: companie.groupCompanie,
+                dateAccountPaidOld: companie.dateAccountPaidOld
             }
 
             const statusIntegrattionOfCompanie = new StatusIntegrattionOfCompanie(dataIntegrattionAndExtractsCompanies)
             dataIntegrattionAndExtractsCompanies.statusAccountPaid = statusIntegrattionOfCompanie.identifiesTheStatus()
+            
+            if(dataIntegrattionAndExtractsCompanies.layoutsAccountPaid === "" || dataIntegrattionAndExtractsCompanies.layoutsAccountPaid === undefined){
+                const isIntegrattionLayoutCompanieOld = new IsIntegrattionLayoutCompanieOld(companie)
+                if(isIntegrattionLayoutCompanieOld.process() === true){
+                    dataIntegrattionAndExtractsCompanies.layoutsAccountPaid = companie.layoutsAccountPaidOld
+                    dataIntegrattionAndExtractsCompanies.dateAccountPaid = companie.dateAccountPaidOld
+                    dataIntegrattionAndExtractsCompanies.obsAccountPaid = companie.obsAccountPaidOld
+                    dataIntegrattionAndExtractsCompanies.responsibleFinancialClient = companie.responsibleFinancialClientOld
+                }
+            }
 
             this.dataIntegrattionAndExtractsCompanies.push(dataIntegrattionAndExtractsCompanies)
         }
@@ -54,9 +66,9 @@ class UnionIntegrattionAndExtractsCompanies{
 }
 module.exports = UnionIntegrattionAndExtractsCompanies
 
-const unionIntegrattionAndExtractsCompanies = new UnionIntegrattionAndExtractsCompanies()
-async function process(){
-    const getdata = await unionIntegrattionAndExtractsCompanies.process()
-    console.log(getdata)
-}
-process()
+// const unionIntegrattionAndExtractsCompanies = new UnionIntegrattionAndExtractsCompanies()
+// async function process(){
+//     const getdata = await unionIntegrattionAndExtractsCompanies.process()
+//     console.log(getdata)
+// }
+// process()
