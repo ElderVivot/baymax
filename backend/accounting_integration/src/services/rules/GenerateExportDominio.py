@@ -38,8 +38,9 @@ class GenerateExportDominio(object):
 
         for key, currentLine in enumerate(valuesOfFile):
             previousLine = funcoesUteis.analyzeIfFieldIsValidMatrix(valuesOfFile, key-1, {}, True)
+            previousLine = {} if key == 0 else previousLine
             previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousLine, "numberLote", 0)
-
+            
             currentNumberLote = funcoesUteis.analyzeIfFieldIsValid(currentLine, "numberLote")
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(currentLine, "amountPaid")
 
