@@ -27,6 +27,10 @@ th, td {
     width: 10px !important;
 }
 
+.htCore tr, .htCore tr > th {
+    max-height: 30px !important;
+}
+
 /* tr {
     width: 10px !important;
 } */

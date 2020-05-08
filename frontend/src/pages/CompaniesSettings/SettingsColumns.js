@@ -158,4 +158,4 @@ const columns = [
     }
 ]
 
-module.exports.columns = columns
+module.exports = columns
