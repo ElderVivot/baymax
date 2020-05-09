@@ -566,6 +566,7 @@ class ReadGeneral(object):
                         if layoutType == 'account_paid':
                             valuesOfFilePayments.append(valuesOfLine.copy())
                         elif layoutType == 'extract_bank':
+                            valuesOfLine = self.handleExtracts(valuesOfLine)
                             valuesOfFileExtracts.append(valuesOfLine.copy())
 
                 except Exception as e:
@@ -595,11 +596,11 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1822
+    codi_emp = 1762
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
 
     readFiles = ReadGeneral(codi_emp, f"C:/integracao_contabil/{codi_emp}/arquivos_originais", settings)
-    print(readFiles.processAll()[0])
+    print(readFiles.processAll()[1])
 
