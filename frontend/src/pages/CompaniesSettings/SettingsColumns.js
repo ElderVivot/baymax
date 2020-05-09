@@ -18,7 +18,11 @@ const columns = [
         title: 'Status',
         type: 'text',
         filter: true,
-        readOnly: true
+        readOnly: true,
+        // filters: {
+        //     conditions: [['eq', 'Ativa']],
+        //     operation: 'disjunction'
+        // }
     }, { data: 'groupCompanie',
         title: 'Grupo',
         type: 'text',
