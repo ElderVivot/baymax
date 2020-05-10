@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Select from 'react-select'
 import { Col, Form } from "react-bootstrap"
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -10,22 +10,25 @@ import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
 const { api } = require('../../../services/api')
 
 let layoutsOptions = []
-async function layouts() {
-    try {
-        const response = await api.get(`/integrattion_layouts?layoutType=account_paid`)
-
-        if(response.statusText === "OK"){
-            response.data.map(layout => layoutsOptions.push({
-                value: `${layout['_id']}`, label: `${layout['system']}`
-            }))
-        }
-    } catch (error) {
-        console.log(error)
-    }
-}
-layouts()
 
 function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){
+
+    useEffect(() => {
+        async function loadLayouts() {
+            try {
+                const response = await api.get(`/integrattion_layouts?layoutType=account_paid`)
+
+                if(response.statusText === "OK"){
+                    response.data.map(layout => layoutsOptions.push({
+                        value: `${layout['_id']}`, label: `${layout['system']}`
+                    }))
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        loadLayouts()
+    }, [])
 
     function validateField(vector){
         try {
