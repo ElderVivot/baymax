@@ -54,3 +54,23 @@ function getDataInObjectOrArray(data, vector=[], defaultReturn=undefined){
     }
 }
 module.exports.getDataInObjectOrArray = getDataInObjectOrArray
+
+function handleTelefone(ddd=undefined, fone=undefined){
+    try {
+        let dddManipulate = ""
+        if(ddd !== undefined && ddd !== null && ddd !== ""){
+            dddManipulate = `${ddd}-`
+        }
+        
+        let foneManipulate = ""
+        if(fone !== undefined && fone !== null && fone !== ""){
+            foneManipulate = fone
+            return `${dddManipulate}${foneManipulate}`
+        } else {
+            return ""
+        }
+    } catch (error) {
+        return ""
+    }
+}
+module.exports.handleTelefone = handleTelefone
