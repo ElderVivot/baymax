@@ -1,21 +1,31 @@
 const { api } = require('./api')
-const util = require('../utils/util')
 const settingsColumns = require('../pages/CompaniesSettings/SettingsColumns')
 
 class PostCompaniesSettings{
-    constructor(filter={}){
-        this.companies_settings = []
-        this.filter = filter
-        this.url = util.implementsFilterInURL('/companies_settings', this.filter)
+    constructor(companieSetting=[]){
+        this.companieSetting = companieSetting
     }
 
-    async postData(values={}){
+    async postData(){
         try {
-            await api.post(this.url, { ...values })
+            const dataCompanie = this.getColumnsIsNecessary(this.companieSetting)
+            let companieAlreadyExist = false
+            
+            const findCompanie = await api.get(`/companies_settings/${dataCompanie['codi_emp']}`)
+            if(findCompanie.statusText === "OK"){
+                if(findCompanie.data !== null){
+                    companieAlreadyExist = true
+                }
+            }
+
+            if(companieAlreadyExist === true){
+                await api.put(`/companies_settings/${dataCompanie['codi_emp']}`, { ...dataCompanie })
+            } else {
+                await api.post('/companies_settings', { ...dataCompanie })
+            }
         } catch (error) {
-            console.log('')
+            console.log(error)
         }
-        return this.companies_settings
     }
 
     getColumnsIsNecessary(companieSetting={}){
@@ -35,17 +45,6 @@ class PostCompaniesSettings{
             return dataCompanie
         } catch (error) {
             return {}
-        }
-    }
-
-    async process(companiesSettings){
-        try {
-            for(let companieSetting of companiesSettings){
-                const dataCompanie = this.getColumnsIsNecessary(companieSetting)
-                await this.postData(dataCompanie)
-            }
-        } catch (error) {
-            
         }
     }
 }
