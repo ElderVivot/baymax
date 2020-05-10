@@ -31,7 +31,9 @@ routes.get('/extract_companies_movements', ExtractCompaniesMovementsController.i
 
 // rotas do companies_settings
 routes.get('/companies_settings', CompaniesSettingsController.index)
+routes.get('/companies_settings/:codi_emp', CompaniesSettingsController.show)
 routes.post('/companies_settings', CompaniesSettingsController.store)
+routes.put('/companies_settings/:codi_emp', CompaniesSettingsController.update)
 
 // exportando as rotas
 module.exports = routes

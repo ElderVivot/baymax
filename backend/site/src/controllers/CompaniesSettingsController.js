@@ -36,14 +36,26 @@ module.exports = {
             }
         ])
 
-        console.log(` - CompaniesSettings.index`)
+        console.log(` - CompaniesSettingsController.index`)
 
         return res.json(companiesSettings)
     },
 
-    async store(req, res) {
-        // const { codi_emp, accountPaid } = req.body
+    async show(req, res) {
+        const { codi_emp } = req.params
 
+        try {
+            const companiesSettings = await CompaniesSettings.findOne( { codi_emp } )
+
+            console.log(` - CompaniesSettingsController.show --> ${ codi_emp }`)
+
+            return res.json(companiesSettings)
+        } catch (error) {
+            return res.status(400).json({error: 'Não foi possível mostrar os dados'})
+        } 
+    },
+
+    async store(req, res) {
         const companiesSettings = await CompaniesSettings.create({
             ...req.body
         })
@@ -53,23 +65,20 @@ module.exports = {
         return res.json(companiesSettings)
     },
 
-    // async update(req, res) {
-    //     const _id = req.params.id
+    async update(req, res) {
+        const { codi_emp } = req.params
 
-    //     const { codi_emp, accountPaid } = req.body
+        try {
+            const companiesSettings = await CompaniesSettings.findOneAndUpdate( { codi_emp }, {
+                ...req.body
+            })
 
-    //     try {
-    //         const integrattionCompanies = await IntegrattionCompanies.findByIdAndUpdate( {_id}, {
-    //             codi_emp,
-    //             accountPaid
-    //         })
-
-    //         console.log(` - IntegrattionCompaniesController.update --> ${codi_emp}`)
+            console.log(` - CompaniesSettingsController.update --> ${codi_emp}`)
     
-    //         return res.json(integrattionCompanies)
-    //     } catch (error) {
-    //         console.log(error)
-    //         return res.status(400).json({error: 'Não foi possível atualizar os dados'})        
-    //     }        
-    // },
+            return res.json(companiesSettings)
+        } catch (error) {
+            console.log(error)
+            return res.status(400).json({error: 'Não foi possível atualizar os dados'})        
+        }        
+    },
 }
