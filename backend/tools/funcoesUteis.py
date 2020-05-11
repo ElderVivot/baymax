@@ -412,6 +412,8 @@ def returnBankForNumber(numberBank):
         nameBank = 'SANTANDER'
     elif numberBank == 341:
         nameBank = 'ITAU'
+    elif numberBank == 743:
+        nameBank = 'SEMEAR'
     elif numberBank == 422:
         nameBank = 'SAFRA'
     else:
