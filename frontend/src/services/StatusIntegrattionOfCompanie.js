@@ -53,6 +53,7 @@ class StatusIntegrattionOfCompanie {
 
     identifiesTheStatus(){
         if(this.dataCompanie.statusAccountPaid !== "" && this.dataCompanie.statusAccountPaid !== undefined && this.dataCompanie.statusAccountPaid !== null){
+            this.status = this.dataCompanie.statusAccountPaid
             return this.status
         }
 

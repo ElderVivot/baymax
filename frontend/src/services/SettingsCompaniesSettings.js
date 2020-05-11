@@ -28,6 +28,7 @@ class SettingsCompaniesSettings{
                 dina_emp: util.transformToDate(companie.dina_emp),
                 telefone_emp: companiesSettings.telefone_emp || util.handleTelefone(companie.dddf_emp, companie.fone_emp),
                 email_emp: companiesSettings.email_emp || companie.email_emp,
+                statusAccountPaid: companiesSettings.statusAccountPaid,
                 isCompanyBranch: SettingsCompanies.isCompanyBranch(companie.tins_emp, companie.cgce_emp),
                 layoutsAccountPaid: integrattionLayouts.system || companie.layoutsAccountPaidOld,
                 layoutsAccountPaidNewModel: integrattionLayouts.system,
@@ -52,6 +53,7 @@ class SettingsCompaniesSettings{
 
             const statusIntegrattionOfCompanie = new StatusIntegrattionOfCompanie(dataSettingsCompaniesSettings)
             dataSettingsCompaniesSettings.statusAccountPaid = statusIntegrattionOfCompanie.identifiesTheStatus()
+            console.log(dataSettingsCompaniesSettings.statusAccountPaid)
 
             this.dataSettingsCompaniesSettings.push(dataSettingsCompaniesSettings)
         }
