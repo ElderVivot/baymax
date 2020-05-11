@@ -48,23 +48,26 @@ const CompaniesSettingsList = ( {history} ) => {
         }
     }
 
-    function handleAfterLoadData(initialLoad) {
+    function handleAfterLoadData() {
         try {
-            const filtersPlugin = hotTableComponent.current.hotInstance.getPlugin('filters')
-            console.log(filtersPlugin)
-            
-            filtersPlugin.addCondition(3, 'by_value', [['Ativa']]);
-            filtersPlugin.filter();
-
-            filtersPlugin.addCondition(0, 'by_value', [[1]]);
-            filtersPlugin.filter();
+            // o setTimeout serve pra aplicar os filtros no final depois de renderizado os dados, se tirar ele, o filtro se aplica mas some
+            // sozinho depois
+            setTimeout( () => {
+                const filtersPlugin = hotTableComponent.current.hotInstance.getPlugin('filters')
+                
+                filtersPlugin.addCondition(3, 'by_value', [['Ativa']])
+                filtersPlugin.addCondition(9, 'by_value', [['Não']])
+                filtersPlugin.addCondition(10, 'not_contains', ['Sem Movimento'])
+                filtersPlugin.addCondition(10, 'not_contains', ['Empresa Inativa'])
+                filtersPlugin.filter()
+            }, 500)
         } catch (error) {
             return
         }
     }
 
     return (
-        <main className="content card container-fluid pt-3">
+        <main className="content card container-fluid pt-3 handsontable">
             <HotTable
                 ref={hotTableComponent}
                 language={'pt-BR'}
@@ -72,8 +75,8 @@ const CompaniesSettingsList = ( {history} ) => {
                     data: dataSheet,
                     rowHeaders: true,
                     colHeaders: true,
-                    width: '100vw',
-                    // height: 1000,
+                    width: '100%',
+                    height: '100%',
                     colWidths: [70, 270, 130, 70, 170, 130, 90, 100, 100, 60, 180, 180, 80, 200, 300, 170, 100, 180, 100, 150, 150, 150, 150, 70, 70, 70, 70, 70, 100, 60, 350],
                     // autoColumnSize: {syncLimit: 300},
                     autoRowSize: true,
@@ -82,14 +85,12 @@ const CompaniesSettingsList = ( {history} ) => {
                     // rowHeights: 23,
                     // columnHeaderHeight: 23,
                     rowHeaderWidth: 30,
-                    afterLoadData: (initialLoad) => handleAfterLoadData(initialLoad),
-                    // afterLoadData: (initialLoad) => console.log(initialLoad),
-                    afterInit: () => console.log('teste 2'),
+                    afterLoadData: () => handleAfterLoadData(),
                     afterChange: (changes) => handleChanges(changes),
                     columns: columns,
                     dropdownMenu: true,
                     filters: true,
-                    multiColumnSorting: true,
+                    // multiColumnSorting: true,
                     className: "htCenter htMiddle",
                     manualColumnResize: true,
                     manualRowResize: true,
@@ -97,6 +98,12 @@ const CompaniesSettingsList = ( {history} ) => {
                     hiddenColumns: {
                         columns: [2, 6, 7, 8, 19, 20, 24, 25, 30],
                         indicators: true
+                    },
+                    columnSorting: {
+                        initialConfig: {
+                            column: 0,
+                            sortOrder: 'asc'
+                        }
                     },
                     // fixedColumnsLeft: 2,
                     manualColumnFreeze: true,
