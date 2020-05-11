@@ -33,7 +33,7 @@ class StatusIntegrattionOfCompanie {
 
     isCompletedOldModel(){
         try {
-            if( ( this.dataCompanie.layoutsAccountPaid === "" || this.dataCompanie.layoutsAccountPaid === undefined ) && this.dataCompanie.dateAccountPaidOld !== undefined){
+            if( ( this.dataCompanie.layoutsAccountPaidNewModel === "" || this.dataCompanie.layoutsAccountPaidNewModel === undefined ) && this.dataCompanie.dateAccountPaidOld !== undefined){
                 this.status = 'Concluída - Modelo Antigo'
             }
         } catch (error) {
@@ -43,7 +43,7 @@ class StatusIntegrattionOfCompanie {
 
     isCompleted(){
         try {
-            if(this.dataCompanie.layoutsAccountPaid !== "" && this.dataCompanie.layoutsAccountPaid !== undefined){
+            if(this.dataCompanie.layoutsAccountPaidNewModel !== "" && this.dataCompanie.layoutsAccountPaidNewModel !== undefined){
                 this.status = 'Concluída'
             }
         } catch (error) {
@@ -52,7 +52,7 @@ class StatusIntegrattionOfCompanie {
     }
 
     identifiesTheStatus(){
-        if(this.dataCompanie.statusAccountPaid !== "" && this.dataCompanie.statusAccountPaid !== undefined){
+        if(this.dataCompanie.statusAccountPaid !== "" && this.dataCompanie.statusAccountPaid !== undefined && this.dataCompanie.statusAccountPaid !== null){
             return this.status
         }
 

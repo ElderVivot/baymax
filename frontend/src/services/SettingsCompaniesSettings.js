@@ -30,6 +30,7 @@ class SettingsCompaniesSettings{
                 email_emp: companiesSettings.email_emp || companie.email_emp,
                 isCompanyBranch: SettingsCompanies.isCompanyBranch(companie.tins_emp, companie.cgce_emp),
                 layoutsAccountPaid: integrattionLayouts.system || companie.layoutsAccountPaidOld,
+                layoutsAccountPaidNewModel: integrattionLayouts.system,
                 dateAccountPaid: companiesSettings.dateAccountPaid || companie.dateAccountPaidOld,
                 obsAccountPaid: companiesSettings.obsAccountPaid || companie.obsAccountPaidOld,
                 responsibleFinancialClient: companiesSettings.responsibleFinancialClient || companie.responsibleFinancialClientOld,
