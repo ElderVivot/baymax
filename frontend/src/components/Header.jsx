@@ -12,6 +12,7 @@ export default props =>
                     <NavDropdown title={ <span className="text-settings-header pl-3">Configurações</span> } id="basic-nav-dropdown">
                         <NavDropdown.Item href="/integrattion_layouts_list" className="text-settings-general">Layouts</NavDropdown.Item>
                         <NavDropdown.Item href="/integrattion_companies_list" className="text-settings-general">Vincular Layouts nas Empresas</NavDropdown.Item>
+                        <NavDropdown.Item href="/companies_settings" className="text-settings-general">Empresas Integração</NavDropdown.Item>
                     </NavDropdown>
                 </Nav>
             </Navbar.Collapse>

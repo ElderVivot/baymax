@@ -53,7 +53,6 @@ class SettingsCompaniesSettings{
 
             const statusIntegrattionOfCompanie = new StatusIntegrattionOfCompanie(dataSettingsCompaniesSettings)
             dataSettingsCompaniesSettings.statusAccountPaid = statusIntegrattionOfCompanie.identifiesTheStatus()
-            console.log(dataSettingsCompaniesSettings.statusAccountPaid)
 
             this.dataSettingsCompaniesSettings.push(dataSettingsCompaniesSettings)
         }
