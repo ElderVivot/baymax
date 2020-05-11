@@ -1,6 +1,6 @@
-/* tbody > tr > th, tbody > tr > td {
-    height: 22px !important;
-} */
+main.handsontable{
+    overflow: hidden;
+}
 
 input, button, label, select, span, .selected, td, tr, .filter-label > input, div, p {
     font-size: 0.70rem !important;
