@@ -67,11 +67,11 @@ const columns = [
         type: 'text',
         filter: true,
         wordWrap: true
-    }, { data: 'telefone_emp',
+    }, { data: 'telefoneAccountPaid',
         title: 'Telefone',
         type: 'text',
         filter: true
-    }, { data: 'email_emp',
+    }, { data: 'emailAccountPaid',
         title: 'Email',
         type: 'text',
         filter: true
