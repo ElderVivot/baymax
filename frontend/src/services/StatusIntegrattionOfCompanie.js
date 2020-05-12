@@ -44,7 +44,7 @@ class StatusIntegrattionOfCompanie {
     isCompleted(){
         try {
             if(this.dataCompanie.layoutsAccountPaidNewModel !== "" && this.dataCompanie.layoutsAccountPaidNewModel !== undefined){
-                this.status = 'Concluída'
+                this.status = 'Concluída - ERP'
             }
         } catch (error) {
             return
