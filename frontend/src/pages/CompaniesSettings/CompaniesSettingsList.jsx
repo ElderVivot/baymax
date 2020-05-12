@@ -50,15 +50,16 @@ const CompaniesSettingsList = ( {history} ) => {
 
     function handleAfterLoadData() {
         try {
+            const filtersPlugin = hotTableComponent.current.hotInstance.getPlugin('filters')
             // o setTimeout serve pra aplicar os filtros no final depois de renderizado os dados, se tirar ele, o filtro se aplica mas some
             // sozinho depois
             setTimeout( () => {
-                const filtersPlugin = hotTableComponent.current.hotInstance.getPlugin('filters')
-                
-                filtersPlugin.addCondition(3, 'by_value', [['Ativa']])
-                filtersPlugin.addCondition(9, 'by_value', [['Não']])
-                filtersPlugin.addCondition(10, 'not_contains', ['Sem Movimento'])
-                filtersPlugin.addCondition(10, 'not_contains', ['Empresa Inativa'])
+                filtersPlugin.clearConditions(0)
+                filtersPlugin.filter()
+                filtersPlugin.addCondition(3, 'by_value', [['Ativa']], 'conjunction')
+                filtersPlugin.addCondition(9, 'by_value', [['Não']], 'conjunction')
+                filtersPlugin.addCondition(10, 'neq', ['Sem Movimento'], 'conjunction')
+                filtersPlugin.addCondition(10, 'neq', ['Empresa Inativa'], 'conjunction')
                 filtersPlugin.filter()
             }, 500)
         } catch (error) {
