@@ -36,6 +36,9 @@ class PostCompaniesSettings{
                     const nameField = settingsColumns[i].data
                     const readOnly = settingsColumns[i].readOnly      
                     if(readOnly === undefined || readOnly === false || nameField === "codi_emp"){
+                        if(companieSetting[i] === null){
+                            companieSetting[i] = ""
+                        }
                         dataCompanie[nameField] = companieSetting[i]
                     }
                 } catch (error) {

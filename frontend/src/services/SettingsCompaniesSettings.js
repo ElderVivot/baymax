@@ -53,6 +53,11 @@ class SettingsCompaniesSettings{
 
             const statusIntegrattionOfCompanie = new StatusIntegrattionOfCompanie(dataSettingsCompaniesSettings)
             dataSettingsCompaniesSettings.statusAccountPaid = statusIntegrattionOfCompanie.identifiesTheStatus()
+            if(dataSettingsCompaniesSettings.statusAccountPaid !== "Concluída - Modelo Antigo"){
+                dataSettingsCompaniesSettings.dateAccountPaid = companiesSettings.dateAccountPaid
+                dataSettingsCompaniesSettings.obsAccountPaid = companiesSettings.obsAccountPaid
+                dataSettingsCompaniesSettings.responsibleFinancialClient = companiesSettings.responsibleFinancialClient
+            }
 
             this.dataSettingsCompaniesSettings.push(dataSettingsCompaniesSettings)
         }
