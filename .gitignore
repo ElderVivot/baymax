@@ -208,3 +208,4 @@ typings/
 /backend/accounting_integration/data/temp
 /backend/fiscal/data
 /.vscode/
+ip.json

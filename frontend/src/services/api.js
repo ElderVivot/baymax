@@ -1,14 +1,15 @@
 const axios = require('axios')
-const prepareUrls = require('local-ip-url/prepareUrls');
+const ipSetting = require('./ip.json')
 
-const urls = prepareUrls({
-  protocol: 'http',
-  host: '0.0.0.0',
-  port: 3001
-})
+let ip = 'localhost'
+try {
+  ip = ipSetting.ip
+} catch (error) {
+  ip = 'localhost'
+}
 
 const api = axios.create({
-    baseURL: urls.lanUrl
+    baseURL: `http://${ip}:3001`
 })
 
 module.exports.api = api
