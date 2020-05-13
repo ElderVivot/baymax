@@ -88,7 +88,7 @@ class ExtractsOFX(object):
 
                 valuesOfFile.append(valuesOfLine.copy())
         except Exception as e:
-            print(e.with_traceback())
+            pass
         
         return valuesOfFile
 
