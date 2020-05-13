@@ -61,7 +61,7 @@ const columns = [
         title: 'Status Integração',
         type: 'dropdown',
         filter: true,
-        source: ['Pendente', 'Analisando', 'Enviado Email', 'Não tem Financeiro', 'Não é possível Realizar', 'Cliente não vai Enviar Dados', 'Explicar pro Contábil', 'Concluída - ERP', 'Concluída - Excel', 'Concluída - Modelo Antigo', 'Empresa Inativa', 'É Filial', 'Sem Movimento', 'Feito em Outro Sistema', 'Mov. Pequena - Ñ Compensa']
+        source: ['Pendente', 'Analisando', 'Enviado Email', 'Não tem Financeiro', 'Não é possível Realizar', 'Cliente não vai Enviar Dados', 'Explicar pro Contábil', 'Concluída - ERP', 'Concluída - Excel', 'Concluída - Comp. Pagto', 'Concluída - Modelo Antigo', 'Empresa Inativa', 'É Filial', 'Sem Movimento', 'Feito em Outro Sistema', 'Mov. Pequena - Ñ Compensa']
     }, { data: 'responsibleFinancialClient',
         title: 'Com quem Falar no Cliente?',
         type: 'text',
