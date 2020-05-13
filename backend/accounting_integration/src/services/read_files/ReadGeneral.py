@@ -475,9 +475,14 @@ class ReadGeneral(object):
         countValidationsOK = 0
         countValidationsConfigured = 0
 
-        for key, validate in enumerate(validateIfDataIsThisCompanie):
-            typeValidation = funcoesUteis.analyzeIfFieldIsValid(validate, 'typeValidation')
+        for key, validation in enumerate(validateIfDataIsThisCompanie):
+            nameField = funcoesUteis.analyzeIfFieldIsValid(validation, 'nameField')
+            typeValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'typeValidation')
+            valueValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation')
+            valueValidation = funcoesUteis.treatDecimalField(valueValidation) if nameField.find('amount') >= 0 else valueValidation
             nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(validateIfDataIsThisCompanie, 'nextValidationOrAnd', 'and')
+
+            valueFieldData = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, nameField)
 
             if nextValidationOrAnd == 'and' or key == len(validateIfDataIsThisCompanie)-1:
                 countValidationsConfigured += 1
@@ -488,6 +493,24 @@ class ReadGeneral(object):
                 bankAndAccountInTheCorrelation = self.bankAndAccountInTheCorrelation(bank, account, bankAndAccountCorrelation)
                 if bankAndAccountInTheCorrelation is True:
                     countValidationsOK += 1
+            elif typeValidation == "isLessThan" and valueFieldData < valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isLessThanOrEqual" and valueFieldData <= valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isBiggerThan" and valueFieldData > valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isBiggerThanOrEqual" and valueFieldData >= valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isEqual" and valueFieldData == valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isDate" and str(type(valueFieldData)).count('datetime.date') > 0:
+                countValidationsOK += 1
+            elif typeValidation == "isDifferent" and valueFieldData != valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "contains" and valueFieldData.find(valueValidation) >= 0:
+                countValidationsOK += 1
+            elif typeValidation == "notContains" and valueFieldData.find(valueValidation) < 0:
+                countValidationsOK += 1
 
         if countValidationsOK >= countValidationsConfigured:
             return True
