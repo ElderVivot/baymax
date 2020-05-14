@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
 import { Col, Form } from "react-bootstrap"
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -6,22 +6,20 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
+import FieldsValidation from './FieldsValidateIfThisCompanie'
 
 const { api } = require('../../../services/api')
 
-let layoutsOptions = []
-
 function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){
-
+    const [integrattionLayouts, setIntegrattionLayouts ] = useState([])
+    
     useEffect(() => {
         async function loadLayouts() {
             try {
                 const response = await api.get(`/integrattion_layouts?layoutType=account_paid`)
 
                 if(response.statusText === "OK"){
-                    response.data.map(layout => layoutsOptions.push({
-                        value: `${layout['_id']}`, label: `${layout['system']}`
-                    }))
+                    setIntegrattionLayouts(response.data)                    
                 }
             } catch (error) {
                 console.log(error)
@@ -29,6 +27,11 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
         }
         loadLayouts()
     }, [])
+
+    let layoutsOptions = []
+    integrattionLayouts.map(layout => layoutsOptions.push({
+        value: `${layout['_id']}`, label: `${layout['system']}`
+    }))
 
     function validateField(vector){
         try {
@@ -173,6 +176,20 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
                                                 <Typography className="font-weight-600">Opções Avançadas:</Typography>
                                             </ExpansionPanelSummary>
                                             <ExpansionPanelDetails className="pl-2 pt-0 pb-2">
+
+                                                < FieldsValidation
+                                                    values={values}
+                                                    errors={errors}
+                                                    touched={touched}
+                                                    handleChange={handleChange}
+                                                    handleBlur={handleBlur}
+                                                    setFieldValue={setFieldValue}
+                                                    setFieldTouched={setFieldTouched}
+                                                    defaultValues={defaultValues}
+                                                    idxAccountPaid={idx}
+                                                    integrattionLayouts={integrattionLayouts}
+                                                />
+
                                             </ExpansionPanelDetails>
                                         </ExpansionPanel>
                                     </div>

@@ -6,7 +6,13 @@ const IntegrattionCompaniesSchema = new mongoose.Schema({
     accountPaid: {
         isReliable: Boolean,
         layouts: [{
-            idLayout: mongoose.Schema.Types.ObjectId
+            idLayout: mongoose.Schema.Types.ObjectId,
+            validateIfDataIsThisCompanie: [{
+                nameField: String,
+                typeValidation: String,
+                valueValidation: String,
+                nextValidationOrAnd: String
+            }]
         }]
     }
 })

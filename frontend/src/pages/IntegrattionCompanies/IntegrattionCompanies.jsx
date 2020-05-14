@@ -13,6 +13,12 @@ let validationSchema = Yup.object().shape({
         isReliable: Yup.boolean(),
         layouts: Yup.array().of( Yup.object().shape({ 
             idLayout: Yup.string().required('É obrigatório selecionar o layout'),
+            validateIfDataIsThisCompanie: Yup.array().of( Yup.object().shape({
+                nameField: Yup.string().required('Campo obrigatório'),
+                typeValidation: Yup.string().required('Campo obrigatório'),
+                valueValidation: Yup.string().required('Campo obrigatório'),
+                nextValidationOrAnd: Yup.string().required('Campo obrigatório')
+            }))
         }))
     })
 })
@@ -22,7 +28,13 @@ const defaultValues = {
     accountPaid: {
         isReliable: true,
         layouts: [{
-            idLayout: ''
+            idLayout: '',
+            validateIfDataIsThisCompanie: [{
+                nameField: "",
+                typeValidation: "",
+                valueValidation: "",
+                nextValidationOrAnd: "and"
+            }]
         }]
     }
 }
@@ -81,6 +93,26 @@ export default function IntegrattionCompanies({history}){
                     if( integrattionCompanies[key][keyAccountPaid] === undefined ){
                         integrattionCompanies[key][keyAccountPaid] = valueAccountPaid
                     }
+
+                    if(keyAccountPaid === 'layouts'){
+                        for(let keyLayout in Object.entries(integrattionCompanies[key][keyAccountPaid])){
+                            for(let [keyFieldLayout, valueFieldLayout] of Object.entries(defaultValues[key][keyAccountPaid][0])){
+                                if(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] === undefined && keyFieldLayout !== 'validateIfDataIsThisCompanie'){
+                                    integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] = valueFieldLayout
+                                }
+
+                                if(keyFieldLayout === 'validateIfDataIsThisCompanie' && integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] !== undefined){
+                                    for(let keyValidateIfDataIsThisCompanie in Object.entries(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout])){
+                                        for(let [keyFieldValidateIfDataIsThisCompanie, valueFieldkeyValidateIfDataIsThisCompanie] of Object.entries(defaultValues[key][keyAccountPaid][0][keyFieldLayout][0])){
+                                            if(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout][keyValidateIfDataIsThisCompanie][keyFieldValidateIfDataIsThisCompanie] === undefined){
+                                                integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout][keyValidateIfDataIsThisCompanie][keyFieldValidateIfDataIsThisCompanie] = valueFieldkeyValidateIfDataIsThisCompanie
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -125,10 +157,10 @@ export default function IntegrattionCompanies({history}){
                 >
                     { ({ values, errors, touched, handleChange, handleBlur, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
                         <form onSubmit={handleSubmit} className="container-fluid">
-                            {/* <div className="d-flex">
+                            <div className="d-flex">
                                 <pre>{JSON.stringify(values, null, 2)}</pre>
                                 <pre className="ml-4">{JSON.stringify(errors, null, 2)}</pre>
-                            </div> */}
+                            </div>
                             <div className="form-group row mb-0">                            
                                 <label htmlFor="system" className="col-form-label font-weight-600">Empresa:</label>
                                 <div className="col-8">
