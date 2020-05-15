@@ -80,6 +80,7 @@ export default function IntegrattionCompanies({history}){
                 const responseCompanies = await api.get(`/extract_companies`)
 
                 if(responseCompanies.statusText === "OK"){
+                    codiEmpOptions = []
                     responseCompanies.data.map(companie => codiEmpOptions.push({
                         value: `${companie['codi_emp']}`, label: `${companie['codi_emp']} - ${companie['razao_emp']}`
                     }))
