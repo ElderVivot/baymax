@@ -469,7 +469,7 @@ class ReadGeneral(object):
         :param valuesOfLine: valores normais da linha onde a verificação será será feita
         :parm validateIfDataIsThisCompanie: configurações do IntegrattionCompanies onde tem as verificações pra ver é uma linha válida ou não
         """
-        if validateIfDataIsThisCompanie is None:
+        if validateIfDataIsThisCompanie is None or len(validateIfDataIsThisCompanie) == 0:
             return True
         
         countValidationsOK = 0
@@ -571,7 +571,7 @@ class ReadGeneral(object):
                     nextData = funcoesUteis.analyzeIfFieldIsValidMatrix(dataFile, key+1, positionOriginal=True)
                     valuesOfLine = self.treatDataLayout(nextData, fields, posionsOfHeader, readOnlyIfLineBelowTheMain=True)
                     self.updateFieldsNotMain(valuesOfLine, fields)
-
+                    
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
@@ -602,7 +602,7 @@ class ReadGeneral(object):
             for file in files:
                 wayFile = os.path.join(root, file)
 
-                if file.lower().endswith(('.xls', '.xlsx', '.csv', '.html')):
+                if file.lower().endswith(('.xls', '.xlsx', '.csv', '.html', '.txt')):
                     process = self.process(wayFile)
                     self._payments.append(process[0])
                     self._extracts.append(process[1])
@@ -619,11 +619,11 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1762
+    codi_emp = 894
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
 
     readFiles = ReadGeneral(codi_emp, f"C:/integracao_contabil/{codi_emp}/arquivos_originais", settings)
-    print(readFiles.processAll()[1])
+    print(readFiles.processAll()[0])
 
