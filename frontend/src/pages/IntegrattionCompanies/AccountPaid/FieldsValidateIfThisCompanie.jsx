@@ -33,10 +33,10 @@ function FieldsValidation( { values, errors, touched, handleChange, handleBlur, 
     function validateField(vector){
         try {
             if(vector.length === 2){
-                return errors.accountPaid.layouts[idxAccountPaid][vector[0]][vector[1]] ? "has-error" : null
+                return errors.accountPaid.layouts[idxAccountPaid].validateIfDataIsThisCompanie[vector[0]][vector[1]] ? "has-error" : null
             }
             if(vector.length === 3){
-                return errors.accountPaid.layouts[idxAccountPaid][vector[0]][vector[1]][vector[2]] ? "has-error" : null
+                return errors.accountPaid.layouts[idxAccountPaid].validateIfDataIsThisCompanie[vector[0]][vector[1]][vector[2]] ? "has-error" : null
             }
         } catch (error) {
             return null
@@ -47,10 +47,10 @@ function FieldsValidation( { values, errors, touched, handleChange, handleBlur, 
         try {
             let message = null
             if(vector.length === 2){
-                message = errors.accountPaid.layouts[idxAccountPaid][vector[0]][vector[1]]
+                message = errors.accountPaid.layouts[idxAccountPaid].validateIfDataIsThisCompanie[vector[0]][vector[1]]
             }
             if(vector.length === 3){
-                message = errors.accountPaid.layouts[idxAccountPaid][vector[0]][vector[1]][vector[2]]
+                message = errors.accountPaid.layouts[idxAccountPaid].validateIfDataIsThisCompanie[vector[0]][vector[1]][vector[2]]
             }
 
             if(message.indexOf('must be a') >= 0) {
@@ -198,7 +198,7 @@ function FieldsValidation( { values, errors, touched, handleChange, handleBlur, 
             </div>
 
             <div className="form row">
-                <table className="table ml-3 table-bordered table-hover">
+                <table className="table ml-3 table-bordered table-hover mb-2">
                     <thead>
                         <tr className="d-flex justify-content-center text-center">
                             <th className="col-3 fields-of-table align-center">Campo</th>

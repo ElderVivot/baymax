@@ -13,6 +13,12 @@ let validationSchema = Yup.object().shape({
         isReliable: Yup.boolean(),
         layouts: Yup.array().of( Yup.object().shape({ 
             idLayout: Yup.string().required('É obrigatório selecionar o layout'),
+            bankAndAccountCorrelation: Yup.array().of( Yup.object().shape({
+                bankFile: Yup.string().required('Campo obrigatório'),
+                accountFile: Yup.string(),
+                bankNew: Yup.string().required('Campo obrigatório'),
+                accountNew: Yup.string()
+            })),
             validateIfDataIsThisCompanie: Yup.array().of( Yup.object().shape({
                 nameField: Yup.string().required('Campo obrigatório'),
                 typeValidation: Yup.string().required('Campo obrigatório'),
@@ -29,6 +35,12 @@ const defaultValues = {
         isReliable: true,
         layouts: [{
             idLayout: '',
+            bankAndAccountCorrelation: [{
+                bankFile: "",
+                accountFile: "",
+                bankNew: "",
+                accountNew: ""
+            }],
             validateIfDataIsThisCompanie: [{
                 nameField: "",
                 typeValidation: "",
@@ -97,11 +109,11 @@ export default function IntegrattionCompanies({history}){
                     if(keyAccountPaid === 'layouts'){
                         for(let keyLayout in Object.entries(integrattionCompanies[key][keyAccountPaid])){
                             for(let [keyFieldLayout, valueFieldLayout] of Object.entries(defaultValues[key][keyAccountPaid][0])){
-                                if(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] === undefined && keyFieldLayout !== 'validateIfDataIsThisCompanie'){
+                                if(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] === undefined && keyFieldLayout !== 'validateIfDataIsThisCompanie' && keyFieldLayout !== 'bankAndAccountCorrelation'){
                                     integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] = valueFieldLayout
                                 }
 
-                                if(keyFieldLayout === 'validateIfDataIsThisCompanie' && integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] !== undefined){
+                                if( ( keyFieldLayout === 'validateIfDataIsThisCompanie' || keyFieldLayout === 'bankAndAccountCorrelation' ) && integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] !== undefined){
                                     for(let keyValidateIfDataIsThisCompanie in Object.entries(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout])){
                                         for(let [keyFieldValidateIfDataIsThisCompanie, valueFieldkeyValidateIfDataIsThisCompanie] of Object.entries(defaultValues[key][keyAccountPaid][0][keyFieldLayout][0])){
                                             if(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout][keyValidateIfDataIsThisCompanie][keyFieldValidateIfDataIsThisCompanie] === undefined){

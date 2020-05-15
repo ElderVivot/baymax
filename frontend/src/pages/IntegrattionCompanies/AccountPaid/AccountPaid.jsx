@@ -7,6 +7,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
 import FieldsValidation from './FieldsValidateIfThisCompanie'
+import BanksCorrelation from './BanksAndAccountCorrelation'
 
 const { api } = require('../../../services/api')
 
@@ -132,7 +133,7 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
                             </Col>
                         </Form.Row>
 
-                        <div className="table ml-2 table-bordered mt-2">{
+                        <div className="table ml-2 table-bordered mt-2 mb-2">{
                             values.accountPaid.layouts.map( (_, idx ) => (
                                 <React.Fragment key={`accountPaid[${idx}].reactfragment`}>
                                     <div key={`accountPaid[${idx}]`} className='mt-1'>
@@ -176,6 +177,20 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
                                                 <Typography className="font-weight-600">Opções Avançadas:</Typography>
                                             </ExpansionPanelSummary>
                                             <ExpansionPanelDetails className="pl-2 pt-0 pb-2">
+
+                                                < BanksCorrelation
+                                                    values={values}
+                                                    errors={errors}
+                                                    touched={touched}
+                                                    handleChange={handleChange}
+                                                    handleBlur={handleBlur}
+                                                    setFieldValue={setFieldValue}
+                                                    setFieldTouched={setFieldTouched}
+                                                    defaultValues={defaultValues}
+                                                    idxAccountPaid={idx}
+                                                />
+
+                                                <hr className="form row ml-1 mt-1 mb-0 p-0"></hr>
 
                                                 < FieldsValidation
                                                     values={values}

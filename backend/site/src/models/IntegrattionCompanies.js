@@ -7,6 +7,12 @@ const IntegrattionCompaniesSchema = new mongoose.Schema({
         isReliable: Boolean,
         layouts: [{
             idLayout: mongoose.Schema.Types.ObjectId,
+            bankAndAccountCorrelation: [{
+                bankFile: String,
+                accountFile: String,
+                bankNew: String,
+                accountNew: String
+            }],
             validateIfDataIsThisCompanie: [{
                 nameField: String,
                 typeValidation: String,
