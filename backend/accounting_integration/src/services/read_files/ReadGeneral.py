@@ -420,7 +420,7 @@ class ReadGeneral(object):
         bankFinancy = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'bank')
         accountFinancy = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, 'account')
 
-        if bankAndAccountCorrelation is not None:
+        if bankAndAccountCorrelation is not None and len(bankAndAccountCorrelation) > 0:
             for correlation in bankAndAccountCorrelation:
                 correlationBankFile = funcoesUteis.treatTextFieldInDictionary(correlation, 'bankFile').replace('-', '')
                 correlationAccountFile = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountFile', isInt=True)).replace('-', '')
