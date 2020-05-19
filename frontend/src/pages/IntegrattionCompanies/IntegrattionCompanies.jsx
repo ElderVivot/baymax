@@ -110,10 +110,10 @@ export default function IntegrattionCompanies({history}){
                     if(keyAccountPaid === 'layouts'){
                         for(let keyLayout in Object.entries(integrattionCompanies[key][keyAccountPaid])){
                             for(let [keyFieldLayout, valueFieldLayout] of Object.entries(defaultValues[key][keyAccountPaid][0])){
-                                if(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] === undefined && ( keyFieldLayout !== 'validateIfDataIsThisCompanie' || keyFieldLayout !== 'bankAndAccountCorrelation' ) ){
+                                if(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] === undefined && keyFieldLayout !== 'validateIfDataIsThisCompanie' && keyFieldLayout !== 'bankAndAccountCorrelation' ){
                                     integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] = valueFieldLayout
                                 }
-
+                                
                                 if( ( keyFieldLayout === 'validateIfDataIsThisCompanie' || keyFieldLayout === 'bankAndAccountCorrelation' ) && integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout] !== undefined){
                                     for(let keyValidateIfDataIsThisCompanie in Object.entries(integrattionCompanies[key][keyAccountPaid][keyLayout][keyFieldLayout])){
                                         for(let [keyFieldValidateIfDataIsThisCompanie, valueFieldkeyValidateIfDataIsThisCompanie] of Object.entries(defaultValues[key][keyAccountPaid][0][keyFieldLayout][0])){

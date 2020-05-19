@@ -148,7 +148,7 @@ function BanksCorrelation( { values, errors, touched, handleChange, handleBlur, 
             </div>
 
             <div className="form row">
-                <table className="table ml-3 table-bordered table-hover mb-2">
+                <table className="table ml-3 table-bordered table-hover mb-0">
                     <thead>
                         <tr className="d-flex justify-content-center text-center">
                             <th className="col-4 fields-of-table align-center">Banco do Arquivo</th>

@@ -84,7 +84,14 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
             return (
                 <button className="btn btn-primary btn-sm btn10px ml-3 mt-1" type="button" style={{height:25}}
                     onClick={() => {
-                        setFieldValue("accountPaid", defaultValues.accountPaid)
+                        setFieldValue("accountPaid", {
+                            isReliable: true,
+                            layouts: [{
+                                idLayout: '',
+                                bankAndAccountCorrelation: [],
+                                validateIfDataIsThisCompanie: []
+                            }]
+                        })
                     } } >
                     <i className="fa fa-check"></i>
                 </button>
@@ -101,6 +108,14 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
         }
     }
 
+    function HrBetweenOfLines(idx){
+        if(( values.accountPaid.layouts.length - 1 ) !== idx ){
+            return (
+                <hr className="my-2" />
+            )
+        }
+    }
+
     function fieldLayouts(){
         
         if(hasLayouts > 0){
@@ -111,7 +126,14 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
                             <label className="col-form-label font-weight-600">Layouts:</label>                
                             <button className="btn btn-success btn-sm btn10px ml-3" type="button" style={{height:25}}
                                 onClick={() => {
-                                    setFieldValue("accountPaid.layouts", [...values.accountPaid.layouts, defaultValues.accountPaid.layouts[0] ])
+                                    setFieldValue("accountPaid.layouts", [...values.accountPaid.layouts, {
+                                        isReliable: true,
+                                        layouts: [{
+                                            idLayout: '',
+                                            bankAndAccountCorrelation: [],
+                                            validateIfDataIsThisCompanie: []
+                                        }]
+                                    } ])
                                 } } >
                                 <i className="fa fa-plus"></i>
                             </button>
@@ -189,8 +211,8 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
                                                     defaultValues={defaultValues}
                                                     idxAccountPaid={idx}
                                                 />
-
-                                                <hr className="form row ml-1 mt-1 mb-0 p-0"></hr>
+                                                
+                                                <hr className="form row my-2 ml-1" />
 
                                                 < FieldsValidation
                                                     values={values}
@@ -208,6 +230,7 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
                                             </ExpansionPanelDetails>
                                         </ExpansionPanel>
                                     </div>
+                                    {HrBetweenOfLines(idx)}
                                 </React.Fragment>
                             ))
                         }</div>

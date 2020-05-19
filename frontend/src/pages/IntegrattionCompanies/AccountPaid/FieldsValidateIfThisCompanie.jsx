@@ -193,12 +193,12 @@ function FieldsValidation( { values, errors, touched, handleChange, handleBlur, 
     
     return (
         <>
-            <div className="form row ml-2 mt-1">
+            <div className="form row ml-2 mt-0">
                 <label className="col-form-label font-weight-600">Os dados desta empresa deverão ser gerados apenas se:</label>                
             </div>
 
             <div className="form row">
-                <table className="table ml-3 table-bordered table-hover mb-2">
+                <table className="table ml-3 table-bordered table-hover mb-0">
                     <thead>
                         <tr className="d-flex justify-content-center text-center">
                             <th className="col-3 fields-of-table align-center">Campo</th>
