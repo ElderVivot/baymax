@@ -13,7 +13,11 @@ import tools.funcoesUteis as funcoesUteis
 from services.rules.ReturnFilesDontFindForm import ReturnFilesDontFindForm
 
 # arquivos que podem ter ser um pagamento. Ideal depois é ver se consegue abstrair isto pra apenas implementar o modelo
+from DefaultSispag import DefaultSispag
 from Transferencia import Transferencia
+from PagamentoBoleto import PagamentoBoleto
+from TedC import TedC
+from Agendamento import Agendamento
 
 
 class ProofsItau(object):
@@ -31,23 +35,46 @@ class ProofsItau(object):
     def process(self, file):
         dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
 
-        valuesOfFile = []
+        defaultSispag = DefaultSispag(dataFile)
+        proofDefaultSispag = defaultSispag.process()
+        if proofDefaultSispag is not None:
+            funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-DefaultSispag')
+            return proofDefaultSispag
 
         transferencia = Transferencia(dataFile)
         proofTransferencia = transferencia.process()
         if proofTransferencia is not None:
-            valuesOfFile.append(proofTransferencia)
+            funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Transferencia')
+            return proofTransferencia
 
-        return valuesOfFile
+        pagamentoBoleto = PagamentoBoleto(dataFile)
+        proofPagamentoBoleto = pagamentoBoleto.process()
+        if proofPagamentoBoleto is not None:
+            funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-PagtoBoleto')
+            return proofPagamentoBoleto
+
+        tedC = TedC(dataFile)
+        proofTedC = tedC.process()
+        if proofTedC is not None:
+            funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-TedC')
+            return proofTedC
+
+        agendamento = Agendamento(dataFile)
+        proofAgendamento = agendamento.process()
+        if proofAgendamento is not None:
+            funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Agendamento')
+            return proofAgendamento
 
     def processAll(self):
         for root, dirs, files in os.walk(self._wayTemp):
             for file in files:
                 if file.lower().endswith(('.txt')):
                     wayFile = os.path.join(root, file)
-                    self._proofs.append(self.process(wayFile))
+                    resultProcess = self.process(wayFile)
+                    if resultProcess is not None:
+                        self._proofs.append(resultProcess)
 
-        return funcoesUteis.removeAnArrayFromWithinAnother(self._proofs)
+        return self._proofs
 
 
 if __name__ == "__main__":
