@@ -64,7 +64,7 @@ class Transferencia(object):
                         valuesOfLine = {
                             "paymentDate": paymentDate,
                             "nameProvider": nameProvider,
-                            "cnpjProvider": '',
+                            "cgceProvider": '',
                             "dueDate": '',
                             "bank": 'ITAU',
                             "account": account,

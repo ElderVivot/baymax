@@ -11,7 +11,7 @@ class Agendamento(object):
     def __init__(self, dataFile):
         self._dataFile = dataFile
         self._valuesOfLineDatePayment = ["AGENDAMENTO EFETUADO EM"]
-        self._accountDebitOrCredit = ''
+        self._typeLineRead = ''
 
     def process(self):
         valuesOfLine = {}
