@@ -21,19 +21,10 @@ class CallReadFileProofs(object):
     def process(self):        
         if self._banksList.count(341) > 0:
             print(f'\t - Processando comprovantes de pagamento do Itaú')
-            from read_files.ProofsPaymentsItau import ProofsPaymentsItau, SispagItauExcel
+            from read_files.ProofsItau.Main import ProofsItau
 
-            try:
-                isSispagExcel = self._settings["proofsPayments"]["341"]["model"]
-            except Exception:
-                isSispagExcel = None
-
-            if isSispagExcel is not None:
-                proofsPaymentsItau = SispagItauExcel(self._wayOriginal)
-            else: 
-                proofsPaymentsItau = ProofsPaymentsItau(self._wayTemp)
-                
-            self._proofs.append(proofsPaymentsItau.processAll())
+            proofsItau = ProofsItau(self._wayTemp)                
+            self._proofs.append(proofsItau.processAll())
         
         if self._banksList.count(33) > 0:
             print(f'\t - Processando comprovantes de pagamento do Santander')
