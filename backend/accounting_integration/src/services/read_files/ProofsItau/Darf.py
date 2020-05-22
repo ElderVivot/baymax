@@ -25,6 +25,7 @@ class Darf(object):
         amountDiscount = float(0)
         amountInterest = float(0)
         amountFine = float(0)
+        paymentDate = None
         
         for data in self._dataFile:
             if isDarf == False and data.find('PAGAMENTO DARF') >= 0:
