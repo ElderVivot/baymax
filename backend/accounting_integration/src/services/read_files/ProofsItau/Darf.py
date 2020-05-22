@@ -7,7 +7,7 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 
 import tools.funcoesUteis as funcoesUteis
 
-class TedC(object):
+class Darf(object):
     def __init__(self, dataFile):
         self._dataFile = dataFile
         self._accountDebitOrCredit = ''

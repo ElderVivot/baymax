@@ -41,6 +41,11 @@ class DefaultSispag(object):
 
             if fieldOne.count('COMPROVANTE DE OPERACAO') > 0:
                 category = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(data.split('-'), 2))
+            if fieldOne.count('PAGAMENTO COM CODIGO DE BARRAS') > 0:
+                category = 'Pagto Cod. Barra'
+            if fieldOne.count("GUIA DE RECOLHIMENTO") > 0:
+                category = 'Pagto GRF'
+                historic = funcoesUteis.treatTextField(data)
 
             if fieldOne.count('CONTA A SER DEBITADA') > 0:
                 self._accountDebitOrCredit = 'DEBIT'
@@ -58,9 +63,6 @@ class DefaultSispag(object):
                 if fieldOne == "NOME DO FAVORECIDO":
                     nameProvider = fieldTwo
                     namePayee = nameProvider
-                
-                if fieldOne.count("GUIA DE RECOLHIMENTO") > 0:
-                    historic = funcoesUteis.treatTextField(data)
                     
                 if fieldOne == "INFORMACOES FORNECIDAS PELO PAGADOR":
                     historic = fieldTwo
