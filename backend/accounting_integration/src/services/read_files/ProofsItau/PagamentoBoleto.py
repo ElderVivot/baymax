@@ -41,7 +41,7 @@ class PagamentoBoleto(object):
 
             if fieldOne.count('AGENCIA/CONTA') > 0:
                 account = funcoesUteis.analyzeIfFieldIsValidMatrix(fieldTwo.split('/'), 2)
-                account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1))
+                account = int(funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1)))
             
             # faço esta separação pra poder identificar o que deve ser lido, pois os dados estão na linha abaixo e não onde 'BENEFICIARIO' por exemplo
             if fieldOne == 'BENEFICIARIO':
@@ -52,8 +52,10 @@ class PagamentoBoleto(object):
                 self._typeLineRead = 'desconto'
             elif fieldOne.count('MORA/MULTA') > 0 and fieldOne.count('(+)') > 0:
                 self._typeLineRead = 'juros'
-            elif fieldOne.count('VALOR DO PAGAMENTO') > 0 or ( data.count('VALOR DO PAGAMENTO') > 0 and data.count('R$') > 0 ):
+            if data.count('VALOR DO PAGAMENTO') > 0 and data.count('R$') > 0:
                 self._typeLineRead = 'valor_pago'
+            elif data.count('DATA DE PAGAMENTO') > 0:
+                self._typeLineRead = 'data_pagamento'
 
             # dados da linha do BENEFICIARIO
             if self._typeLineRead == 'beneficiario' and fieldOne.count('BENEFICIARIO') == 0:
