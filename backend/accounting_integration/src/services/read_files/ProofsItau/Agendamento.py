@@ -26,6 +26,7 @@ class Agendamento(object):
         amountDiscount = float(0)
         amountInterest = float(0)
         amountFine = float(0)
+        paymentDate = None
         
         for data in self._dataFile:
             if isProofAgendamento == False and data.find('COMPROVANTE DE AGENDAMENTO') >= 0:
