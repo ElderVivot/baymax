@@ -60,9 +60,14 @@ class Agendamento(object):
                     nameProvider = fieldTwo
                 if fieldOne.count('CNPJ') > 0 or fieldOne.count('CPF') > 0:
                     cgceProvider = funcoesUteis.treatNumberField(fieldTwo)
+            if self._typeLineRead == 'pagador':
+                if fieldOne.count('CNPJ') > 0 or fieldOne.count('CPF') > 0:
+                    cgcePaying = funcoesUteis.treatNumberField(fieldTwo)
             elif self._typeLineRead == 'dados_boleto':
                 if fieldOne == "DATA DE VENCIMENTO":
                     dueDate = funcoesUteis.retornaCampoComoData(fieldTwo)
+                if fieldOne == "DATA DO PAGAMENTO":
+                    paymentDate = funcoesUteis.retornaCampoComoData(fieldTwo)
                 if fieldOne == "VALOR DO DOCUMENTO":
                     amountOriginal = funcoesUteis.treatDecimalField(fieldTwo)
                 if fieldOne == "DESCONTO":
@@ -76,11 +81,12 @@ class Agendamento(object):
 
             for valueOfLineDatePayment in self._valuesOfLineDatePayment:
                 if data[0 : len(valueOfLineDatePayment) ] == valueOfLineDatePayment:
-                    paymentDate = funcoesUteis.treatTextField(data[len(valueOfLineDatePayment)+1:len(valueOfLineDatePayment)+11])
-                    if paymentDate.find('.') >= 0:
-                        paymentDate = funcoesUteis.retornaCampoComoData(paymentDate.replace('.', '/'))
-                    else:
-                        paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)  
+                    if paymentDate is None: # apenas se for None, pq o de agendamento tem um campo especifico pra data
+                        paymentDate = funcoesUteis.treatTextField(data[len(valueOfLineDatePayment)+1:len(valueOfLineDatePayment)+11])
+                        if paymentDate.find('.') >= 0:
+                            paymentDate = funcoesUteis.retornaCampoComoData(paymentDate.replace('.', '/'))
+                        else:
+                            paymentDate = funcoesUteis.retornaCampoComoData(paymentDate)  
 
                     if paymentDate is not None and amountPaid > 0 and isProofAgendamento is True:
                         valuesOfLine = {
@@ -97,7 +103,7 @@ class Agendamento(object):
                             "amountOriginal": round(amountOriginal, 2),
                             "historic": historic,
                             "category": 'AGENDAMENTO',
-                            "cgcePaying": '',
+                            "cgcePaying": cgcePaying,
                             "foundProof": True,
                             "amountPaidPerLote": round(amountPaid, 2)
                         }

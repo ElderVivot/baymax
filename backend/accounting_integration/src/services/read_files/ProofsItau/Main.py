@@ -18,6 +18,7 @@ from Transferencia import Transferencia
 from PagamentoBoleto import PagamentoBoleto
 from TedC import TedC
 from Agendamento import Agendamento
+from Darf import Darf
 
 
 class ProofsItau(object):
@@ -29,8 +30,8 @@ class ProofsItau(object):
         self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
 
         # deleta os arquivos da pasta temp que já tenham sido processados, pra não processar duas vezes
-        returnFilesDontFindForm = ReturnFilesDontFindForm(0, self._wayTemp)
-        returnFilesDontFindForm.removeAlreadyProcessed()
+        # returnFilesDontFindForm = ReturnFilesDontFindForm(0, self._wayTemp)
+        # returnFilesDontFindForm.removeAlreadyProcessed()
 
     def process(self, file):
         dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
@@ -65,6 +66,12 @@ class ProofsItau(object):
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Agendamento')
             return proofAgendamento
 
+        darf = Darf(dataFile)
+        proofDarf = darf.process()
+        if proofDarf is not None:
+            funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Darf')
+            return proofDarf
+
     def processAll(self):
         for root, dirs, files in os.walk(self._wayTemp):
             for file in files:
@@ -78,5 +85,5 @@ class ProofsItau(object):
 
 
 if __name__ == "__main__":
-    proofsPaymentsItau = ProofsItau("C:/programming/baymax/backend/accounting_integration/data/temp/224")
+    proofsPaymentsItau = ProofsItau("C:/programming/baymax/backend/accounting_integration/data/temp/224/pdfs/teste")
     print(proofsPaymentsItau.processAll())

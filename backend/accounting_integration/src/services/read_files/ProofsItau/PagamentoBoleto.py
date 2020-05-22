@@ -42,6 +42,8 @@ class PagamentoBoleto(object):
             if fieldOne.count('AGENCIA/CONTA') > 0:
                 account = funcoesUteis.analyzeIfFieldIsValidMatrix(fieldTwo.split('/'), 2)
                 account = int(funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1)))
+
+                cgcePaying = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplitTwoPoints, 3))
             
             # faço esta separação pra poder identificar o que deve ser lido, pois os dados estão na linha abaixo e não onde 'BENEFICIARIO' por exemplo
             if fieldOne == 'BENEFICIARIO':
@@ -103,7 +105,7 @@ class PagamentoBoleto(object):
                             "amountOriginal": round(amountOriginal, 2),
                             "historic": historic,
                             "category": 'PAGTO DE BOLETO',
-                            "cgcePaying": '',
+                            "cgcePaying": cgcePaying,
                             "foundProof": True,
                             "amountPaidPerLote": round(amountPaid, 2)
                         }

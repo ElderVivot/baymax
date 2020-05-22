@@ -400,6 +400,8 @@ def returnBankForNumber(numberBank):
     nameBank = ""
     if numberBank == 1:
         nameBank = 'BRASIL'
+    elif numberBank == 3:
+        nameBank = 'AMAZONIA'
     elif numberBank == 237:
         nameBank = 'BRADESCO'
     elif numberBank == 104:

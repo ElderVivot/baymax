@@ -69,10 +69,10 @@ class DefaultSispag(object):
                     dueDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.retornaCampoComoData(fieldTwo))
 
                 if ( fieldOne.count("CPF") > 0 or fieldOne.count("CNPJ") > 0 ) and fieldOne.count("PAGADOR") > 0:
-                    cgcePaying = str(funcoesUteis.treatNumberField(fieldTwo))
+                    cgcePaying = funcoesUteis.treatNumberField(fieldTwo)
 
                 if ( fieldOne.count("CPF") > 0 or fieldOne.count("CNPJ") > 0 ) and fieldOne.count("PAGADOR") == 0:
-                    cnpjProvider = fieldTwo
+                    cnpjProvider = funcoesUteis.treatNumberField(fieldTwo)
 
                 if fieldOne.count("VALOR") > 0:
                     amountPaid = funcoesUteis.treatDecimalField(fieldTwo)
