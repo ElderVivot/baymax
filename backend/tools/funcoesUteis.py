@@ -418,6 +418,8 @@ def returnBankForNumber(numberBank):
         nameBank = 'SEMEAR'
     elif numberBank == 422:
         nameBank = 'SAFRA'
+    elif numberBank == 637:
+        nameBank = 'SOFISA'
     else:
         nameBank = numberBankOriginal
 

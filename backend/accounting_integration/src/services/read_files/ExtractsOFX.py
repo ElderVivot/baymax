@@ -45,7 +45,7 @@ class ExtractsOFX(object):
             accountData = ofx.account
 
             bankId = int(accountData.routing_number)
-            bankName = self.returnNameBank(bankId)
+            bankName = funcoesUteis.returnBankForNumber(bankId) #self.returnNameBank(bankId)
 
             account = accountData.account_id
             account = str(account).replace('-', '')
@@ -102,5 +102,5 @@ class ExtractsOFX(object):
         return funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
 
 if __name__ == "__main__":
-    extractOFX = ExtractsOFX("C:/integracao_contabil/1752/arquivos_originais")
+    extractOFX = ExtractsOFX("C:/integracao_contabil/656/arquivos_originais/teste")
     print(extractOFX.processAll())
