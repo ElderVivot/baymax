@@ -19,6 +19,7 @@ from PagamentoBoleto import PagamentoBoleto
 from TedC import TedC
 from Agendamento import Agendamento
 from Darf import Darf
+from Gps import Gps
 
 
 class ProofsItau(object):
@@ -71,6 +72,12 @@ class ProofsItau(object):
         if proofDarf is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Darf')
             return proofDarf
+
+        gps = Gps(dataFile)
+        proofGps = gps.process()
+        if proofGps is not None:
+            funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Gps')
+            return proofGps
 
     def processAll(self):
         for root, dirs, files in os.walk(self._wayTemp):
