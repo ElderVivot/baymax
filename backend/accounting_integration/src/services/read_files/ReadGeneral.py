@@ -200,7 +200,7 @@ class ReadGeneral(object):
 
                 if splitField != "":
                     valueField = valueField.split(splitField)
-                    if len(valueField) >= positionFieldInTheSplit and positionFieldInTheSplit != 0:
+                    if len(valueField) >= positionFieldInTheSplit:
                         if positionFieldInTheSplitEnd != 0:
                             valueField = ''.join(valueField[positionFieldInTheSplit-1:positionFieldInTheSplitEnd])
                         else:

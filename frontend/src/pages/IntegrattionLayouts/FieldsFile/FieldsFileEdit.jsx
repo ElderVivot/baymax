@@ -78,7 +78,7 @@ const formatDateOptions = [
 
 let positionInFileOptions = ClassUtil.createAnObjetOfCount()
 let positionInFileEndOptions = ClassUtil.createAnObjetOfCount()
-let positionFieldInTheSplitOptions = ClassUtil.createAnObjetOfCount(1, 10)
+let positionFieldInTheSplitOptions = [{value: "0", label: "Última Posição"}, ...ClassUtil.createAnObjetOfCount(1, 10)]
 let positionFieldInTheSplitEndOptions = [{value: "0", label: "Até o Final"}, ...ClassUtil.createAnObjetOfCount(1, 10)]
 
 function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched } ){
@@ -278,9 +278,15 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
     function fieldPositionsSplit(){
         
         if(values.fields[idx].splitField !== ""){
+            let positionFieldInTheSplitDisabled = false
+
             // esta linha faz com que seja obrigado a selecionar este campo
-            if(values.fields[idx].positionFieldInTheSplit === 0){
+            if(values.fields[idx].positionFieldInTheSplit === ""){
                 values.fields[idx].positionFieldInTheSplit = null
+            }
+
+            if(values.fields[idx].positionFieldInTheSplit === "0"){
+                positionFieldInTheSplitDisabled = true
             }
 
             return (
@@ -306,23 +312,24 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                     </Form.Row>
 
                     <Form.Row className="mt-2">
-                    <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição <u>final</u> que se encontra dentro do campo dividido:</Form.Label>
-                    <Col lg={3}>
-                        <Form.Group className="mb-0">
-                            <Creatable 
-                                name={`fields[${idx}].positionFieldInTheSplitEnd`}
-                                options={positionFieldInTheSplitEndOptions}
-                                className={`selected ${validateField([idx, 'positionFieldInTheSplitEnd'])}`}
-                                isSearchable={true}
-                                placeholder="Selecione"
-                                value={positionFieldInTheSplitEndOptions.filter(option => option.value === `${values.fields[idx].positionFieldInTheSplitEnd}`)[0]}
-                                onChange={selectedOption => handleChange(`fields[${idx}].positionFieldInTheSplitEnd`)(selectedOption.value)}
-                                onBlur={() => setFieldTouched(`fields[${idx}].positionFieldInTheSplitEnd`, true)}
-                                formatCreateLabel={(string) => `Criar a opção "${string}"`}
-                            />
-                            <Form.Control.Feedback type="invalid">{messageError([idx, 'positionFieldInTheSplitEnd'])}</Form.Control.Feedback>
-                        </Form.Group>
-                    </Col>
+                        <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Posição <u>final</u> que se encontra dentro do campo dividido:</Form.Label>
+                        <Col lg={3}>
+                            <Form.Group className="mb-0">
+                                <Creatable 
+                                    name={`fields[${idx}].positionFieldInTheSplitEnd`}
+                                    options={positionFieldInTheSplitEndOptions}
+                                    className={`selected ${validateField([idx, 'positionFieldInTheSplitEnd'])}`}
+                                    isSearchable={true}
+                                    isDisabled={positionFieldInTheSplitDisabled}
+                                    placeholder="Selecione"
+                                    value={positionFieldInTheSplitEndOptions.filter(option => option.value === `${values.fields[idx].positionFieldInTheSplitEnd}`)[0]}
+                                    onChange={selectedOption => handleChange(`fields[${idx}].positionFieldInTheSplitEnd`)(selectedOption.value)}
+                                    onBlur={() => setFieldTouched(`fields[${idx}].positionFieldInTheSplitEnd`, true)}
+                                    formatCreateLabel={(string) => `Criar a opção "${string}"`}
+                                />
+                                <Form.Control.Feedback type="invalid">{messageError([idx, 'positionFieldInTheSplitEnd'])}</Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
                     </Form.Row>
                 </>
             )
