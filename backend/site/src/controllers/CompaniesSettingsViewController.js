@@ -3,9 +3,7 @@ const CompaniesSettingsView = require('../models/CompaniesSettingsView')
 module.exports = {
     async store(req, res) {
         try {
-            const companiesSettingsView = await CompaniesSettingsView.create({
-                ...req.body
-            })
+            const companiesSettingsView = await CompaniesSettingsView.insertMany( req.body )
     
             console.log(` - CompaniesSettingsViewController.store --> empresa ${req.body.codi_emp}`)
     
