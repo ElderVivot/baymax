@@ -5,6 +5,7 @@ const IntegrattionCompaniesController = require('./controllers/IntegrattionCompa
 const ExtractCompaniesController = require('./controllers/ExtractCompaniesController')
 const ExtractCompaniesMovementsController = require('./controllers/ExtractCompaniesMovementsController')
 const CompaniesSettingsController = require('./controllers/CompaniesSettingsController')
+const CompaniesSettingsViewController = require('./controllers/CompaniesSettingsViewController')
 
 // routes cria as rotas
 const routes = express.Router()
@@ -34,6 +35,10 @@ routes.get('/companies_settings', CompaniesSettingsController.index)
 routes.get('/companies_settings/:codi_emp', CompaniesSettingsController.show)
 routes.post('/companies_settings', CompaniesSettingsController.store)
 routes.put('/companies_settings/:codi_emp', CompaniesSettingsController.update)
+
+// rotas do companies_settings_view
+routes.post('/companies_settings_view', CompaniesSettingsViewController.store)
+routes.delete('/companies_settings_view', CompaniesSettingsViewController.destroy)
 
 // exportando as rotas
 module.exports = routes
