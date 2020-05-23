@@ -39,15 +39,13 @@ class Darf(object):
 
             if fieldOne.count('CONTA DEBITADA') > 0:
                 self._accountDebitOrCredit = 'DEBIT'
-            elif fieldOne.count('AGENTE ARRECADOR') > 0:
+            elif fieldOne.count('AGENTE ARRECADADOR') > 0:
                 self._accountDebitOrCredit = 'CREDIT'
 
             if self._accountDebitOrCredit == 'DEBIT':
                 if fieldOne.count('AGENCIA/CONTA') > 0:
                     account = fieldTwo.split()
-                    account = funcoesUteis.analyzeIfFieldIsValidMatrix(account, 2)
-                if fieldOne.count('CPF OU CNPJ') > 0:
-                    nameProvider = f"DARF - {fieldTwo}"
+                    account = funcoesUteis.analyzeIfFieldIsValidMatrix(account, 2)                
             elif self._accountDebitOrCredit == 'CREDIT':
                 if fieldOne == "DATA DO PAGAMENTO":
                     paymentDate = funcoesUteis.retornaCampoComoData(fieldTwo)
@@ -59,8 +57,10 @@ class Darf(object):
                     amountInterest = funcoesUteis.treatDecimalField(fieldTwo)
                 if fieldOne == "VALOR DA MULTA":
                     amountFine = funcoesUteis.treatDecimalField(fieldTwo)
-                if fieldOne == "VALOR TOTA":
-                    amountPaid = funcoesUteis.treatDecimalField(fieldTwo)       
+                if fieldOne == "VALOR TOTAL":
+                    amountPaid = funcoesUteis.treatDecimalField(fieldTwo)
+                if fieldOne.count('CPF OU CNPJ') > 0:
+                    nameProvider = f"DARF - {fieldTwo}"    
 
             if fieldOne.count('AGENCIA/CONTA') > 0:
                 if paymentDate is not None and amountPaid > 0 and isDarf is True:

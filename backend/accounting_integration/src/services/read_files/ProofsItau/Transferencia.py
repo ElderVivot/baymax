@@ -45,6 +45,8 @@ class Transferencia(object):
                 if fieldOne.count('AGENCIA') > 0:
                     account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplit, 3))
                     account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1))
+                    if account.find(' ') > 0:
+                        account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split(' '), 1))
             elif self._accountDebitOrCredit == 'CREDIT':
                 if fieldOne == "NOME":
                     nameProvider = fieldTwo

@@ -30,8 +30,8 @@ class ProofsItau(object):
         self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
 
         # deleta os arquivos da pasta temp que já tenham sido processados, pra não processar duas vezes
-        # returnFilesDontFindForm = ReturnFilesDontFindForm(0, self._wayTemp)
-        # returnFilesDontFindForm.removeAlreadyProcessed()
+        returnFilesDontFindForm = ReturnFilesDontFindForm(0, self._wayTemp)
+        returnFilesDontFindForm.removeAlreadyProcessed()
 
     def process(self, file):
         dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
@@ -85,5 +85,5 @@ class ProofsItau(object):
 
 
 if __name__ == "__main__":
-    proofsPaymentsItau = ProofsItau("C:/programming/baymax/backend/accounting_integration/data/temp/224/pdfs/teste")
+    proofsPaymentsItau = ProofsItau("C:/programming/baymax/backend/accounting_integration/data/temp/1657/pdfs/teste")
     print(proofsPaymentsItau.processAll())

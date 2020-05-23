@@ -42,12 +42,17 @@ class DefaultSispag(object):
             if fieldOne.count('COMPROVANTE DE OPERACAO') > 0:
                 category = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(data.split('-'), 2))
             if fieldOne.count('PAGAMENTO COM CODIGO DE BARRAS') > 0:
-                category = 'Pagto Cod. Barra'
+                category = 'PAGTO COD BARRA'
+            if fieldOne.count("PAGAMENTO DE CONCESSIONARIAS") > 0:
+                category = 'PAGTO CONCESSIONARIA'
             if fieldOne.count("GUIA DE RECOLHIMENTO") > 0:
-                category = 'Pagto GRF'
+                category = 'PAGTO GRF'
                 historic = funcoesUteis.treatTextField(data)
+            
+            if fieldOne.count("IDENTIFICACAO NO EXTRATO") > 0:
+                historic = fieldTwo
 
-            if fieldOne.count('CONTA A SER DEBITADA') > 0:
+            if fieldOne.count('CONTA') > 0 and fieldOne.count('DEBITADA') > 0:
                 self._accountDebitOrCredit = 'DEBIT'
             elif fieldOne.count('CONTA A SER CREDITADA') > 0 or fieldOne.count('DADOS DO PAGAMENTO') > 0:
                 self._accountDebitOrCredit = 'CREDIT'
@@ -56,6 +61,8 @@ class DefaultSispag(object):
                 if fieldOne.count('AGENCIA') > 0:
                     account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplit, 3))
                     account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1))
+                    if account.find(' ') > 0:
+                        account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split(' '), 1))
             elif self._accountDebitOrCredit == 'CREDIT':
                 if fieldOne == "NOME":
                     nameProvider = fieldTwo
