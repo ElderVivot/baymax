@@ -1,18 +1,20 @@
 import React from 'react'
 import Creatable from 'react-select/creatable'
 import { Col, Form } from "react-bootstrap"
+import { addOptionInCreatable } from '../../../utils/util'
 
-const bankNewOptions = [
-    { value: 'ITAU', label: 'ITAÚ' }, 
-    { value: 'BRASIL', label: 'BANCO DO BRASIL' },
-    { value: 'CEF', label: 'CAIXA ECONÔMICA FEDERAL' },
-    { value: 'DINHEIRO', label: 'DINHEIRO' },
-    { value: 'SANTANDER', label: 'SANTANDER' },
-    { value: 'BRADESCO', label: 'BRADESCO' },
-    { value: 'SICOOB', label: 'SICOOB' },
-    { value: 'SICREDI', label: 'SICREDI' },
-    { value: 'BANPARA', label: 'BANPARÁ' },
-    { value: 'SAFRA', label: 'SAFRA' }
+let bankNewOptions = [
+    { value: 'itau', label: 'ITAÚ' }, 
+    { value: 'brasil', label: 'BANCO DO BRASIL' },
+    { value: 'cef', label: 'CAIXA ECONÔMICA FEDERAL' },
+    { value: 'dinheiro', label: 'DINHEIRO' },
+    { value: 'santander', label: 'SANTANDER' },
+    { value: 'bradesco', label: 'BRADESCO' },
+    { value: 'sicoob', label: 'SICOOB' },
+    { value: 'sicredi', label: 'SICREDI' },
+    { value: 'banpara', label: 'BANPARÁ' },
+    { value: 'safra', label: 'SAFRA' },
+    { value: 'amazonia', label: 'AMAZÔNIA' }
 ]
 
 function BanksCorrelation( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues, idxAccountPaid } ){
@@ -47,6 +49,14 @@ function BanksCorrelation( { values, errors, touched, handleChange, handleBlur, 
         } catch (error) {
             return null
         }
+    }
+
+    try {
+        for(let [idx, ] of Object.entries(values.accountPaid.layouts[idxAccountPaid].bankAndAccountCorrelation)){
+            bankNewOptions = addOptionInCreatable(bankNewOptions, values.accountPaid.layouts[idxAccountPaid].bankAndAccountCorrelation[idx].bankNew)
+        }
+    } catch (error) {
+        console.log(error)
     }
 
     function bankAndAccountCorrelation(){
@@ -99,7 +109,7 @@ function BanksCorrelation( { values, errors, touched, handleChange, handleBlur, 
                                     className={`selected ${validateField('bankNew', idx)} select-center`}
                                     isSearchable={true}
                                     placeholder="Selecione"
-                                    value={bankNewOptions.filter(option => option.value === values.accountPaid.layouts[idxAccountPaid].bankAndAccountCorrelation[idx].bankNew)[0]}
+                                    value={bankNewOptions.filter(option => option.value === values.accountPaid.layouts[idxAccountPaid].bankAndAccountCorrelation[idx].bankNew.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '').toLowerCase())[0]}
                                     onChange={selectedOption => handleChange(`accountPaid.layouts[${idxAccountPaid}].bankAndAccountCorrelation[${idx}].bankNew`)(selectedOption.value)}
                                     onBlur={() => setFieldTouched(`accountPaid.layouts[${idxAccountPaid}].bankAndAccountCorrelation[${idx}].bankNew`, true)}
                                     formatCreateLabel={(string) => `Criar a opção "${string}"`}

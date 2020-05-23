@@ -74,3 +74,31 @@ function handleTelefone(ddd=undefined, fone=undefined){
     }
 }
 module.exports.handleTelefone = handleTelefone
+
+function addOptionInCreatable(vector, value, label=undefined){
+    // se o value for em branco já retorna o próprio vector, pois não deve adicionar nada
+    if(value === "" || value === undefined || value === 0 || value === null || value === "0"){
+        return vector
+    }
+
+    let valueFormated = ''
+    try {
+        valueFormated = value.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '').toLowerCase()
+    } catch (error) {
+        valueFormated = ''
+    }
+    // se o valor formato não for válido (não conter letra e nada ele já retorna o próprio vetor)
+    if(valueFormated === ""){
+        return vector
+    }
+
+    // adiciona uma nova opção quando é um valor que ainda não existe
+    if(vector.filter(option => option.value.toLowerCase() === valueFormated)[0] === undefined){
+        vector.push({
+            value: `${valueFormated}`, 
+            label: label || `${value}`
+        })
+    }
+    return vector
+}
+module.exports.addOptionInCreatable = addOptionInCreatable
