@@ -5,7 +5,7 @@ module.exports = {
         try {
             const companiesSettingsView = await CompaniesSettingsView.insertMany( req.body )
     
-            console.log(` - CompaniesSettingsViewController.store --> empresa ${req.body.codi_emp}`)
+            console.log(` - CompaniesSettingsViewController.store`)
     
             return res.json(companiesSettingsView)
         } catch (error) {
