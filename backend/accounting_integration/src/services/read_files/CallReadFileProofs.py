@@ -18,15 +18,18 @@ class CallReadFileProofs(object):
         self._wayOriginal = wayOriginal
         self._banksList = banksList
 
-    def process(self):        
-        if self._banksList.count(341) > 0:
+    def process(self):
+        banksNumberList = []
+        list(map(lambda proofPayment: banksNumberList.append(proofPayment['value']), self._banksList))
+
+        if banksNumberList.count(341) > 0:
             print(f'\t - Processando comprovantes de pagamento do Itaú')
             from read_files.ProofsItau.Main import ProofsItau
 
             proofsItau = ProofsItau(self._wayTemp)                
             self._proofs.append(proofsItau.processAll())
         
-        if self._banksList.count(33) > 0:
+        if banksNumberList.count(33) > 0:
             print(f'\t - Processando comprovantes de pagamento do Santander')
             from read_files.ProofsPaymentsSantander import ProofsPaymentsSantander
             proofsPaymentsSantander = ProofsPaymentsSantander(self._wayTemp)

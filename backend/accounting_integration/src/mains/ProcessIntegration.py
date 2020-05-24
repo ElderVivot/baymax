@@ -48,7 +48,7 @@ class ProcessIntegration(object):
             getSettingsCompany = GetSettingsCompany(self._codiEmp)
             self._settings = getSettingsCompany.getSettingsFinancy()
             self._lenghtLayoutsAccountPaid = len(self._settings['settingsLayouts'])
-            self._banksToProof = funcoesUteis.returnDataFieldInDict(self._settings, ["accountPaid", "banks", "listNumbers"], [0])
+            self._banksToProof = funcoesUteis.returnDataFieldInDict(self._settings, ["proofPayment"], [])
         else:
             self._settings = leArquivos.readJson(self._waySettings)
             self._banksToProof = funcoesUteis.returnDataFieldInDict(self._settings, ["banks", "listNumbers"], [0])
