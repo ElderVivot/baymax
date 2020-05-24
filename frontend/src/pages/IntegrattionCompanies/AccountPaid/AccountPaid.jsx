@@ -100,7 +100,7 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
             return (
                 <button className="btn btn-danger btn-sm btn10px ml-3 mt-1" type="button" style={{height:25}}
                     onClick={() => {
-                        setFieldValue("accountPaid", '')
+                        setFieldValue("accountPaid", {})
                     } } >
                     <i className="fa fa-trash"></i>
                 </button>
