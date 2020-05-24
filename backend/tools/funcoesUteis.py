@@ -1,5 +1,12 @@
 import os
 import sys
+import unicodedata
+import re
+import datetime
+import hashlib
+import json
+import shutil
+from validate_docbr import CNPJ, CPF
 
 absPath = os.path.dirname(os.path.abspath(__file__))
 fileDir = absPath[:absPath.find('backend')]
@@ -7,12 +14,6 @@ sys.path.append(fileDir)
 sys.path.append(os.path.join(fileDir, 'backend'))
 sys.path.append(os.path.dirname(__file__))
 
-import unicodedata
-import re
-import datetime
-import hashlib
-import json
-import shutil
 import leArquivos
 
 def removerAcentosECaracteresEspeciais(palavra):
@@ -444,3 +445,11 @@ def handleNote(nota, lista_char=["-","/"]):
             nota = nota[0]
             break
     return treatNumberField(nota)
+
+def validateCPF(value):
+    cpf = CPF()
+    return cpf.validate(value)
+
+def validateCNPJ(value):
+    cnpj = CNPJ()
+    return cnpj.validate(value)

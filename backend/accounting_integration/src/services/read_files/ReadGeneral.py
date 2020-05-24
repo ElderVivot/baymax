@@ -25,6 +25,7 @@ class ReadGeneral(object):
         self._sumInterestFineAndDiscount = False # alguns valores amountPaid não vem com o juros/multa somados, este é pra definir isto
         self._calcDifferencePaidOriginalAsInterestDiscount = False # alguns layouts não tem campo de juros/desconto, este serve pra calcular
         self._fieldsThatMultiplePerLessOne = {} # alguns campos vem com valor negativo, tem que multiplicar por menos 1
+        self._validateIfCnpjOrCpfIsValid = False
 
     def identifiesTheHeader(self, data, settingLayout):
         # :data são os valores de cada "linha" dos arquivos processados
@@ -117,6 +118,9 @@ class ReadGeneral(object):
             if nameField == "amountPaid":
                 self._sumInterestFineAndDiscount = funcoesUteis.analyzeIfFieldIsValid(settingField, 'sumInterestFineAndDiscount', False)
                 self._calcDifferencePaidOriginalAsInterestDiscount = funcoesUteis.analyzeIfFieldIsValid(settingField, 'calcDifferencePaidOriginalAsInterestDiscount', False)
+
+            if nameField == "cgceProvider":
+                self._validateIfCnpjOrCpfIsValid = funcoesUteis.analyzeIfFieldIsValid(settingField, 'validateIfCnpjOrCpfIsValid', False)
 
             self._fieldsThatMultiplePerLessOne[nameField] = funcoesUteis.analyzeIfFieldIsValid(settingField, 'multiplePerLessOne', False)
 
@@ -286,6 +290,20 @@ class ReadGeneral(object):
             return amountPaid
         else:
             return amountPaid + amountInterest + amountFine - amountDiscount
+
+    def validateIfCnpjOrCpfIsValid(self, cgce):
+        if cgce is None:
+            return cgce
+
+        if self._validateIfCnpjOrCpfIsValid is False:
+            return cgce
+        else:
+            cgceValid = False
+            if len(cgce) <= 11:
+                cgceValid = funcoesUteis.validateCPF(cgce)
+            else:
+                cgceValid = funcoesUteis.validateCNPJ(cgce)
+            return None if cgceValid is False else cgce
 
     # tem alguns sistemas que o valor do pagamento não está considerando o juros/multa/desconto, esta função faz isto
     def calcDifferencePaidOriginalAsInterestDiscount(self, valuesOfLine):
@@ -581,6 +599,8 @@ class ReadGeneral(object):
                     valuesOfLine['amountPaid'] = self.sumInterestFineAndDiscountInAmountPaid(valuesOfLine)
                     # verifica se é necessário calcular juros/desconto
                     valuesOfLine = self.calcDifferencePaidOriginalAsInterestDiscount(valuesOfLine)
+
+                    valuesOfLine['cgceProvider'] = self.validateIfCnpjOrCpfIsValid(funcoesUteis.returnDataFieldInDict(valuesOfLine, ['cgceProvider']))
 
                     isValid = self.isValidLineToPrint(valuesOfLine)
                     isValidDataThisCompanie = self.isValidDataThisCompanie(valuesOfLine, validateIfDataIsThisCompanie, bankAndAccountCorrelation)              
