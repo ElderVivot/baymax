@@ -2,46 +2,50 @@ const IntegrattionCompanies = require('../models/IntegrattionCompanies')
 
 module.exports = {
     async index(req, res){
-        let integrattionCompanies
+        try {
+            let integrattionCompanies
 
-        let queries = req.query
+            let queries = req.query
 
-        if(queries === {}){
-            integrattionCompanies = await IntegrattionCompanies.find({})
-        } else{
-            integrattionCompanies = await IntegrattionCompanies.find({...req.query})
+            if(queries === {}){
+                integrattionCompanies = await IntegrattionCompanies.find({})
+            } else{
+                integrattionCompanies = await IntegrattionCompanies.find({...req.query})
+            }
+
+            console.log(` - IntegrattionCompaniesController.index`)
+
+            return res.json(integrattionCompanies)
+        } catch (error) {
+            console.log(error)
+            return res.status(400).json({error: 'Não foi possível buscar os dados'})  
         }
-
-        console.log(` - IntegrattionCompaniesController.index`)
-
-        return res.json(integrattionCompanies)
     },
 
     async store(req, res) {
-        const { codi_emp, accountPaid } = req.body
-
-        const integrattionCompanies = await IntegrattionCompanies.create({
-            codi_emp,
-            accountPaid
-        })
-
-        console.log(` - IntegrattionCompaniesController.store --> ${codi_emp}`)
-
-        return res.json(integrattionCompanies)
+        try {
+            const integrattionCompanies = await IntegrattionCompanies.create({
+                ...req.body
+            })
+    
+            console.log(` - IntegrattionCompaniesController.store --> ${req.body}`)
+    
+            return res.json(integrattionCompanies)
+        } catch (error) {
+            console.log(error)
+            return res.status(400).json({error: 'Não foi possível cadastrar os dados'})  
+        }
     },
 
     async update(req, res) {
         const _id = req.params.id
 
-        const { codi_emp, accountPaid } = req.body
-
         try {
             const integrattionCompanies = await IntegrattionCompanies.findByIdAndUpdate( {_id}, {
-                codi_emp,
-                accountPaid
+                ...req.body
             })
 
-            console.log(` - IntegrattionCompaniesController.update --> ${codi_emp}`)
+            console.log(` - IntegrattionCompaniesController.update --> ${req.body}`)
     
             return res.json(integrattionCompanies)
         } catch (error) {

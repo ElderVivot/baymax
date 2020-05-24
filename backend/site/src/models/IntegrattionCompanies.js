@@ -20,7 +20,11 @@ const IntegrattionCompaniesSchema = new mongoose.Schema({
                 nextValidationOrAnd: String
             }]
         }]
-    }
+    },
+    proofPayment: [{
+        value: Number,
+        label: String
+    }]
 })
 
 // cria a 'tabela' de fato

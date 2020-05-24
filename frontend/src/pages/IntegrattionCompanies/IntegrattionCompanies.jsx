@@ -5,6 +5,7 @@ import * as Yup from 'yup'
 import { Formik } from 'formik'
 import '../styles.css'
 import AccountPaid from './AccountPaid/AccountPaid'
+import ProofPayment from './ProofPayment/ProofPayment'
 const { api } = require('../../services/api')
 
 let validationSchema = Yup.object().shape({
@@ -26,7 +27,11 @@ let validationSchema = Yup.object().shape({
                 nextValidationOrAnd: Yup.string().required('Campo obrigatório')
             }))
         }))
-    })
+    }),
+    proofPayment: Yup.array().of( Yup.object().shape({
+        value: Yup.number(),
+        label: Yup.string()
+    }))
 })
 
 const defaultValues = {
@@ -48,12 +53,17 @@ const defaultValues = {
                 nextValidationOrAnd: "and"
             }]
         }]
-    }
+    },
+    proofPayment: [{
+        value: "",
+        label: ""
+    }]
 }
 
 let initialValues = {
     codi_emp: '',
-    accountPaid: ''
+    accountPaid: '',
+    proofPayment: []
 }
 
 let codiEmpOptions = []
@@ -203,8 +213,19 @@ export default function IntegrattionCompanies({history}){
                                 setFieldTouched={setFieldTouched}
                                 defaultValues={defaultValues}
                             /> 
+
+                            < ProofPayment
+                                values={values}
+                                errors={errors}
+                                touched={touched}
+                                handleChange={handleChange}
+                                handleBlur={handleBlur}
+                                setFieldValue={setFieldValue}
+                                setFieldTouched={setFieldTouched}
+                                defaultValues={defaultValues}
+                            /> 
                             
-                            <div className="form-row">
+                            <div className="form-row mt-2">
                                 <div className="col-12">
                                     <button className="btn btn-primary mr-2 col-1 offset-4" type="submit" disabled={isSubmitting}>Salvar</button>
                                     <button className="btn btn-secondary col-1" type="reset" 
