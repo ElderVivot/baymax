@@ -28,7 +28,7 @@ module.exports = {
                 ...req.body
             })
     
-            console.log(` - IntegrattionCompaniesController.store --> ${req.body}`)
+            console.log(` - IntegrattionCompaniesController.store --> ${JSON.stringify(req.body)}`)
     
             return res.json(integrattionCompanies)
         } catch (error) {
@@ -45,7 +45,7 @@ module.exports = {
                 ...req.body
             })
 
-            console.log(` - IntegrattionCompaniesController.update --> ${req.body}`)
+            console.log(` - IntegrattionCompaniesController.update --> ${JSON.stringify(req.body)}`)
     
             return res.json(integrattionCompanies)
         } catch (error) {
