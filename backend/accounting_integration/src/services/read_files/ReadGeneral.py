@@ -293,17 +293,17 @@ class ReadGeneral(object):
 
     def validateIfCnpjOrCpfIsValid(self, cgce):
         if cgce is None:
-            return cgce
+            return ""
 
         if self._validateIfCnpjOrCpfIsValid is False:
-            return cgce
+            return ""
         else:
             cgceValid = False
             if len(cgce) <= 11:
                 cgceValid = funcoesUteis.validateCPF(cgce)
             else:
                 cgceValid = funcoesUteis.validateCNPJ(cgce)
-            return None if cgceValid is False else cgce
+            return "" if cgceValid is False else cgce
 
     # tem alguns sistemas que o valor do pagamento não está considerando o juros/multa/desconto, esta função faz isto
     def calcDifferencePaidOriginalAsInterestDiscount(self, valuesOfLine):
@@ -639,7 +639,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 894
+    codi_emp = 118
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
