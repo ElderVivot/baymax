@@ -292,7 +292,9 @@ class ReadGeneral(object):
             return amountPaid + amountInterest + amountFine - amountDiscount
 
     def validateIfCnpjOrCpfIsValid(self, cgce):
-        if cgce is None:
+        cgce = funcoesUteis.treatNumberField(cgce)
+
+        if cgce is None or cgce == 0:
             return ""
 
         if self._validateIfCnpjOrCpfIsValid is False:
