@@ -60,7 +60,7 @@ const defaultValues = {
     }]
 }
 
-let initialValues = {
+const initialValuesStruct = {
     codi_emp: '',
     accountPaid: '',
     proofPayment: []
@@ -69,6 +69,8 @@ let initialValues = {
 let codiEmpOptions = []
 
 export default function IntegrattionCompanies({history}){
+    let initialValues = { ...initialValuesStruct }
+
     const [integrattionCompanies, setIntegrattionCompanies ] = useState([])
     // const [companies, setCompanies ] = useState([])
 

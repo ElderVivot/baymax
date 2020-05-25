@@ -101,7 +101,7 @@ const defaultValues = {
     }]
 }
 
-let initialValues = {
+const initialValuesStruct = {
     system: "",
     fileType: "",
     splitFile: "",
@@ -150,6 +150,8 @@ const fileTypes = [
 // ]
 
 export default function IntegrattionLayouts({history}){
+    let initialValues = { ...initialValuesStruct }
+    
     const [integrattionLayout, setIntegrattionLayout ] = useState([])
 
     // pega da url o id pra poder carregar os dados de edição
