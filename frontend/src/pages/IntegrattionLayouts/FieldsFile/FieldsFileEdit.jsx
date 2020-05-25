@@ -380,6 +380,29 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
         }       
     }
 
+    function fieldValidateIfCnpjOrCpfIsValid(){
+        if(values.fields[idx].nameField.value === "cgceProvider"){
+            return (
+                <Form.Row className="mt-2">
+                    <Col lg={10}>
+                        <Form.Check
+                            className="font-weight-600"
+                            type='checkbox'
+                            id={`fields[${idx}].validateIfCnpjOrCpfIsValid`}
+                            label={`Validar se o CPF ou CNPJ é válido`}
+                            custom={true}
+                            value={true}
+                            checked={values.fields[idx].validateIfCnpjOrCpfIsValid}
+                            onChange={handleChange(`fields[${idx}].validateIfCnpjOrCpfIsValid`)}
+                        />
+                    </Col>
+                </Form.Row>
+            )
+        } else {
+            values.fields[idx].validateIfCnpjOrCpfIsValid = false
+        }       
+    }
+
     function fieldMultiplePerLessOne(){
         let isFieldAmount = -1
         try {
@@ -506,6 +529,8 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                             {fieldSpecificOfAmountPaid()}
 
                             {fieldMultiplePerLessOne()}
+
+                            {fieldValidateIfCnpjOrCpfIsValid()}
 
                             <Form.Row className="mt-2">
                                 <Col lg={10}>

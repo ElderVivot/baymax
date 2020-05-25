@@ -33,6 +33,7 @@ let validationSchema = Yup.object().shape({
         positionFieldInTheSplitEnd: Yup.number(),
         sumInterestFineAndDiscount: Yup.boolean(),
         calcDifferencePaidOriginalAsInterestDiscount: Yup.boolean(),
+        validateIfCnpjOrCpfIsValid: Yup.boolean(),
         multiplePerLessOne: Yup.boolean(),
         groupingField: Yup.boolean(),        
         lineThatTheDataIs: Yup.string()
@@ -76,6 +77,7 @@ const defaultValues = {
         positionFieldInTheSplitEnd: 0,
         sumInterestFineAndDiscount: false,
         calcDifferencePaidOriginalAsInterestDiscount: false,
+        validateIfCnpjOrCpfIsValid: false,
         multiplePerLessOne: false,
         groupingField: false,
         lineThatTheDataIs: ""
@@ -116,6 +118,7 @@ let initialValues = {
         positionFieldInTheSplitEnd: 0,
         sumInterestFineAndDiscount: false,
         calcDifferencePaidOriginalAsInterestDiscount: false,
+        validateIfCnpjOrCpfIsValid: false,
         multiplePerLessOne: false,
         groupingField: false,
         lineThatTheDataIs: ""

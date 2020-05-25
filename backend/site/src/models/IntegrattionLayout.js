@@ -23,6 +23,7 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
         positionFieldInTheSplitEnd: Number,
         sumInterestFineAndDiscount: Boolean,
         calcDifferencePaidOriginalAsInterestDiscount: Boolean,
+        validateIfCnpjOrCpfIsValid: Boolean,
         multiplePerLessOne: Boolean,
         groupingField: Boolean,
         lineThatTheDataIs: String
