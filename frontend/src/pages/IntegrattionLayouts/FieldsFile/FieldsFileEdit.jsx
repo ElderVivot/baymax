@@ -334,8 +334,8 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                 </>
             )
         } else {
-            values.positionFieldInTheSplit = 0
-            values.positionFieldInTheSplitEnd = 0
+            values.fields[idx].positionFieldInTheSplit = 0
+            values.fields[idx].positionFieldInTheSplitEnd = 0
         }        
     }
 
