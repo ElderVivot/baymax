@@ -11,7 +11,8 @@ const typeValidationOptions = [
     { value: 'isBiggerThan', label: 'É maior que'},
     { value: 'isBiggerThanOrEqual', label: 'É maior ou igual à'},
     { value: 'contains', label: 'Contém'},
-    { value: 'notContains', label: 'Não Contém'}
+    { value: 'notContains', label: 'Não Contém'},
+    { value: 'isEmpty', label: 'For Vazio (Sem Inf. no Campo)'}
 ]
 
 const nextValidationOrAndOptions = [
@@ -58,7 +59,7 @@ function FieldsValidation( { values, errors, touched, handleChange, handleBlur, 
 
     function fieldValueValidation(idx){
         let disabled = false
-        if(values.validationLineToPrint[idx].typeValidation === "isDate") {
+        if(values.validationLineToPrint[idx].typeValidation === "isDate" || values.validationLineToPrint[idx].typeValidation === "isEmpty") {
             disabled = true
             values.validationLineToPrint[idx].valueValidation = ' '
         } else {

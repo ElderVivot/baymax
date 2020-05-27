@@ -30,7 +30,8 @@ const typeValidationOptions = [
     { value: 'isBiggerThan', label: 'É maior que'},
     { value: 'isBiggerThanOrEqual', label: 'É maior ou igual à'},
     { value: 'contains', label: 'Contém'},
-    { value: 'notContains', label: 'Não Contém'}
+    { value: 'notContains', label: 'Não Contém'},
+    { value: 'isEmpty', label: 'For Vazio (Sem Inf. no Campo)'}
 ]
 
 const nextValidationOrAndOptions = [
@@ -113,7 +114,7 @@ function LinesOfFile( { values, errors, touched, handleChange, handleBlur, setFi
 
     function fieldValueValidation(idx, idxValidation){
         let disabled = false
-        if(values.linesOfFile[idx].validations[idxValidation].typeValidation === "isDate") {
+        if(values.linesOfFile[idx].validations[idxValidation].typeValidation === "isDate" || values.linesOfFile[idx].validations[idxValidation].typeValidation === "isEmpty") {
             disabled = true
             values.linesOfFile[idx].validations[idxValidation].valueValidation = ' '
         } else {

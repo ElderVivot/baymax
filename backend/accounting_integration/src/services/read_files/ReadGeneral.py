@@ -93,6 +93,18 @@ class ReadGeneral(object):
             elif typeValidation == "contains" and valueFieldData.find(valueValidation) >= 0:
                 countValidationsOK += 1
             elif typeValidation == "notContains" and valueFieldData.find(valueValidation) == -1:
+                countValidationsOK += 1            
+            elif typeValidation == "isLessThan" and valueFieldData < valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isLessThanOrEqual" and valueFieldData <= valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isBiggerThan" and valueFieldData > valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isBiggerThanOrEqual" and valueFieldData >= valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isDifferent" and valueFieldData != valueValidation:
+                countValidationsOK += 1
+            elif typeValidation == "isEmpty" and valueFieldData == "":
                 countValidationsOK += 1
         
         if countValidationsOK == countValidationsConfigured:
@@ -395,6 +407,8 @@ class ReadGeneral(object):
             elif typeValidation == "contains" and valueFieldData.find(valueValidation) >= 0:
                 countValidationsOK += 1
             elif typeValidation == "notContains" and valueFieldData.find(valueValidation) < 0:
+                countValidationsOK += 1
+            elif typeValidation == "isEmpty" and valueFieldData == "":
                 countValidationsOK += 1
         
         if countValidationsOK >= countValidationsConfigured:
