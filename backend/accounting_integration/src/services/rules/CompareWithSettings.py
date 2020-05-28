@@ -296,7 +296,7 @@ class CompareWithSettings(object):
             accountComparation = funcoesUteis.analyzeIfFieldIsValid(bank, "accountComparation")
             accountDominio = funcoesUteis.analyzeIfFieldIsValid(bank, "accountDominio")
 
-            if ( compareWithComparation == compareWith or compareWithComparation == "" ) and nameBank.find(bankComparation) >= 0 and (account.count(accountComparation) > 0 or account == accountComparation):
+            if ( compareWithComparation == compareWith or compareWithComparation == "" or compareWithComparation == "FINANCEIRO OU EXTRATO" ) and nameBank.find(bankComparation) >= 0 and (account.count(accountComparation) > 0 or account == accountComparation):
                 return accountDominio
 
     def returnDataExtract(self, historic=None, operation=None):
