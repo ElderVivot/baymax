@@ -5,7 +5,13 @@ SELECT emp.codi_emp, emp.apel_emp, emp.nome_emp, emp.razao_emp, emp.cgce_emp, em
        COALESCE( CASE WHEN regime_emp IS NULL THEN ''
                       WHEN regime_emp IN (2,4) THEN vig.simplesn_regime_par
                       ELSE federais_regime_par
-                 END, 'C' ) AS regime_caixa_emp
+                 END, 'C' ) AS regime_caixa_emp,
+       ( SELECT count()
+           FROM bethadba.geempre AS emp2
+          WHERE SUBSTR(emp2.cgce_emp, 1, 8) = SUBSTR(emp.cgce_emp, 1, 8)
+            AND emp2.stat_emp = 'A'
+            AND emp2.cgce_emp <> ''
+            AND emp2.cgce_emp IS NOT NULL ) AS qtd_fiais_e_matriz
   FROM bethadba.geempre AS emp
        LEFT OUTER JOIN bethadba.gemunicipio AS mun
                  ON    mun.codigo_municipio = emp.codigo_municipio

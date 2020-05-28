@@ -10,6 +10,7 @@ const SchemaCollection = new mongoose.Schema({
     regime_caixa_emp: String,
     dcad_emp: String,
     dina_emp: String,
+    qtd_fiais_e_matriz: Number,
     telefoneAccountPaid: String,
     emailAccountPaid: String,
     statusAccountPaid: String,

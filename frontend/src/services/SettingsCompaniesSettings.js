@@ -26,6 +26,7 @@ class SettingsCompaniesSettings{
                 regime_caixa_emp: SettingsCompanies.regimeCaixaEmp(companie.regime_caixa_emp),
                 dcad_emp: util.transformToDate(companie.dcad_emp),
                 dina_emp: util.transformToDate(companie.dina_emp),
+                qtd_fiais_e_matriz: companie.qtd_fiais_e_matriz,
                 telefoneAccountPaid: companiesSettings.telefoneAccountPaid || util.handleTelefone(companie.dddf_emp, companie.fone_emp),
                 emailAccountPaid: companiesSettings.emailAccountPaid || companie.email_emp,
                 statusAccountPaid: companiesSettings.statusAccountPaid,

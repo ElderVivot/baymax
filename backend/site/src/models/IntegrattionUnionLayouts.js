@@ -4,10 +4,14 @@ const mongoose = require('mongoose')
 const IntegrattionUnionLayoutsSchema = new mongoose.Schema({
     codi_emp: Number,
     layouts: [{
-        idLayout: String
+        idLayout: mongoose.Schema.Types.ObjectId
     }],
     relationship: [{
-        
+        idLayoutOne: mongoose.Schema.Types.ObjectId,
+        fieldLayoutOne: String,
+        idLayoutTwo: mongoose.Schema.Types.ObjectId,
+        fieldLayoutTwo: String,
+        typeComparation: String
     }]
 })
 
