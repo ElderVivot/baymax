@@ -45,6 +45,8 @@ class DefaultSispag(object):
                 category = 'PAGTO COD BARRA'
             if fieldOne.count("PAGAMENTO DE CONCESSIONARIAS") > 0:
                 category = 'PAGTO CONCESSIONARIA'
+            if fieldOne.count("FGTS") > 0 or fieldOne.count("GRRF") > 0:
+                category = 'PAGTO FGTS-GRRF'
             if fieldOne.count("GUIA DE RECOLHIMENTO") > 0:
                 category = 'PAGTO GRF'
                 historic = funcoesUteis.treatTextField(data)
