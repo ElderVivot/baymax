@@ -218,12 +218,12 @@ class ComparePaymentsAndProofWithExtracts(object):
         self.comparePaymentsWithProof()
 
         countPayments = 0 # este campo vai ser usado pra multiplicar por menos 1 o valor do count quando não encontrar o valor pelo agrupamento do lote mas sim ele separado
-        extract = None
-        
+                
         # o range de 1 a 3 é pq primeiro vou rodar o typeComparation com mais confiabilidade (igual a 1), depois rodo com média e fraca por último
         for numberSequencial in range(1, 4):            
             for key, paymentWithProofAndFinancy in enumerate(self._paymentsWithProofAndFinancy):
                 countPayments += 1
+                extract = None
 
                 # se for um pagamento que já tiver lido e encontrado o financeiro dele então ignora a leitura
                 if funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, 'alreadyFoundTheExtract', False) is True:
