@@ -10,7 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "expect-puppeteer": "^4.3.0",
-    "i": "^0.3.6",
     "puppeteer": "^1.20.0",
     "puppeteer-core": "^2.0.0",
     "request": "^2.88.0",
