@@ -4,7 +4,10 @@ const createFolderToSaveData = require('../utils/CreateFolderToSaveData')
 const ClickToOpenContentXML = async(page, settingsProcessing) => {
     try {
         await page.waitFor('a[href]')
-        await page.click('a[href]')
+        await Promise.all([
+            page.click('a[href]'),
+            page.waitForNavigation({waitUntil: 'load'})
+        ])
     } catch (error) {
         console.log('\t[Final-Empresa] - Erro ao abrir o conteúdo do XML')
         console.log('\t-------------------------------------------------')
