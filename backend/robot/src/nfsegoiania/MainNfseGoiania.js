@@ -66,19 +66,22 @@ const MainNfseGoiania = async(settingsPrincipal) => {
                 await pageEmpresa.goto(urlActual)
 
                 // 8 - Seleciona a empresa
+                console.log(`\t[6] - Realizando a troca pra empresa atual`)
                 await pageEmpresa.waitFor('#GoianiaTheme_wtTelaPrincipal_block_wtActions_SISEGIntegration_wt104_block_wtAcessos')
                 await pageEmpresa.select('#GoianiaTheme_wtTelaPrincipal_block_wtActions_SISEGIntegration_wt104_block_wtAcessos', option.value)
-                // esperar aparecer o nome da empresa
+                
+                // 9 - Aguardando troca
+                console.log(`\t[7] - Checando se a troca foi realizada com sucesso`)
                 await pageEmpresa.waitForFunction(
                     `document.querySelector('#GoianiaTheme_wtTelaPrincipal_block_wtTitle_wtDadosCAE').textContent.includes(${option.codigoPrefeitura})`
                 )
-                await pageEmpresa.waitFor(2000) // espera mais dois segundos pra terminar de carregar os dados do novo select
+                await pageEmpresa.waitFor(2500) // espera mais 2,5 segundos pra terminar de carregar os dados do novo select
                 
-                // 9 - Verificando se o "Contribuinte está com a situação Baixa"
-                console.log(`\t[6] - Verificando se o "Contribuinte está com a situação Baixa"`)
+                // 10 - Verificando se o "Contribuinte está com a situação Baixa"
+                console.log(`\t[8] - Verificando se o "Contribuinte está com a situação Baixa"`)
                 const avisoEmpresaBaixada = await CheckIfEmpresaEstaBaixada(pageEmpresa, settingsProcessing)
-                if(avisoEmpresaBaixada.toUpperCase().indexOf('SITUACAO BAIXA') >= 0){
-                    console.log(`\t[7] - Esta empresa está com situação "Baixada" na prefeitura`)
+                if(avisoEmpresaBaixada.indexOf('SITUACAO BAIXA') >= 0 || avisoEmpresaBaixada.indexOf('SITUACAO SUSPENSAO') >= 0){
+                    console.log(`\t[9] - Esta empresa está com situação "Baixada/Suspensa" na prefeitura`)
                     const settings = { ...settingsProcessing, type: 'warning' }
                     let pathImg = createFolderToSaveData(settings)
                     pathImg = path.join(pathImg, 'CheckIfEmpresaEstaBaixada.png')
@@ -87,19 +90,19 @@ const MainNfseGoiania = async(settingsPrincipal) => {
                     continue
                 }
 
-                // 10 - Clicando no botão NF-e Eletrônica
-                console.log(`\t[7] - Clicando no botão "NF-e Eletrônica"`)
+                // 11 - Clicando no botão NF-e Eletrônica
+                console.log(`\t[9] - Clicando no botão "NF-e Eletrônica"`)
                 await ClickNFeEletronica(pageEmpresa, settingsProcessing)
 
-                // 11 - Abre o link do botão "Entrar"
-                console.log(`\t[8] - Clicando no botão "Entrar"`)
+                // 12 - Abre o link do botão "Entrar"
+                console.log(`\t[10] - Clicando no botão "Entrar"`)
                 await GotoLinkNFeEletrotinaEntrar(pageEmpresa, settingsProcessing)
 
-                // 12 - Aviso depois do botão "Entrar" --> caso tenha aviso para o processamento desta
+                // 13 - Aviso depois do botão "Entrar" --> caso tenha aviso para o processamento desta
                 // empresa, pois geralmente quando tem é empresa sem atividade de serviço ou usuário inválido        
                 const avisoFrameMnuAfterEntrar = await CheckIfAvisoFrameMnuAfterEntrar(pageEmpresa, settingsProcessing)
                 if( avisoFrameMnuAfterEntrar.trim() !== "" ){
-                    console.log(`\t[9] - Empresa não habilitada pra emitir NFS-e. O aviso é ${avisoFrameMnuAfterEntrar}`)
+                    console.log(`\t[11] - Empresa não habilitada pra emitir NFS-e. O aviso é ${avisoFrameMnuAfterEntrar}`)
                     const settings = { ...settingsProcessing, type: 'warning' }
                     let pathImg = createFolderToSaveData(settings)
                     pathImg = path.join(pathImg, 'CheckIfAvisoFrameMnuAfterEntrar.png')
@@ -108,19 +111,19 @@ const MainNfseGoiania = async(settingsPrincipal) => {
                     continue
                 }
 
-                // 13 - Passa pelo Alerta do Simples Nacional
-                console.log(`\t[9] - Passando pelo alerta do simples nacional.`)
+                // 14 - Passa pelo Alerta do Simples Nacional
+                console.log(`\t[11] - Passando pelo alerta do simples nacional.`)
                 await AlertSimplesNacional(pageEmpresa, settingsProcessing)
 
-                // 14 - Clica no botão "Download de XML de Notas Fiscais por período"
-                console.log(`\t[10] - Clicando no botão "Download de XML de Notas Fiscais por período"`)
+                // 15 - Clica no botão "Download de XML de Notas Fiscais por período"
+                console.log(`\t[12] - Clicando no botão "Download de XML de Notas Fiscais por período"`)
                 await ClickDownloadXML(pageEmpresa, settingsProcessing)
 
-                // 15 - Analisa se o CNPJ é de cliente válido
-                console.log(`\t[11] - Analisando se o CNPJ/CPF do Prestador é cliente desta Contabilidade`)
+                // 16 - Analisa se o CNPJ é de cliente válido
+                console.log(`\t[13] - Analisando se o CNPJ/CPF do Prestador é cliente desta Contabilidade`)
                 const cpfCnpj = await GetCNPJPrestador(pageEmpresa, settingsProcessing)
                 if(companies.indexOf(cpfCnpj) < 0){
-                    console.log(`\t[12] - Empresa não é cliente desta Contabilidade neste período`)
+                    console.log(`\t[14] - Empresa não é cliente desta Contabilidade neste período`)
                     const settings = { ...settingsProcessing, type: 'warning' }
                     let pathImg = createFolderToSaveData(settings)
                     pathImg = path.join(pathImg, 'GetCNPJPrestador.png')
@@ -131,21 +134,21 @@ const MainNfseGoiania = async(settingsPrincipal) => {
 
                 settingsProcessing['cpfCnpj'] = cpfCnpj
 
-                // 16 - Seleciona o Período pra download
-                console.log(`\t[12] - Seleciona o período desejado pra baixar os XMLs`)
+                // 17 - Seleciona o Período pra download
+                console.log(`\t[14] - Seleciona o período desejado pra baixar os XMLs`)
                 await SelectPeriodToDownload(pageEmpresa, settingsProcessing)
 
-                // 17 - Clica no botão "Listar"
-                console.log(`\t[13] - Clicando no botão "Listar"`)
+                // 18 - Clica no botão "Listar"
+                console.log(`\t[15] - Clicando no botão "Listar"`)
                 const newPagePromise = new Promise(resolve => {
                     browser.once('targetcreated', target => resolve(target.page()))
                 })
                 await ClickListarXML(pageEmpresa, newPagePromise, settingsProcessing)
                 
-                // 18 - Verifica se tem notas no período solicitado, caso não, para o processamento
+                // 19 - Verifica se tem notas no período solicitado, caso não, para o processamento
                 const existNotes = await CheckIfExistNoteInPeriod(pageEmpresa, settingsProcessing)
                 if(existNotes.toUpperCase().indexOf('NENHUMA NFS-E ENCONTRADA') >= 0){
-                    console.log(`\t[14] - Não há nenhuma nota no filtro passado`)
+                    console.log(`\t[16] - Não há nenhuma nota no filtro passado`)
                     const settings = { ...settingsProcessing, type: 'warning' }
                     let pathImg = createFolderToSaveData(settings)
                     pathImg = path.join(pathImg, 'CheckIfExistNoteInPeriod.png')
@@ -154,16 +157,16 @@ const MainNfseGoiania = async(settingsPrincipal) => {
                     continue
                 }
                 
-                // 19 - Abre o conteúdo do XML
-                console.log(`\t[14] - Abrindo os dados das notas`)
+                // 20 - Abre o conteúdo do XML
+                console.log(`\t[16] - Abrindo os dados das notas`)
                 await ClickToOpenContentXML(pageEmpresa, settingsProcessing)
 
-                // 20 - Pega conteúdo do XML
-                console.log(`\t[15] - Obtendo conteúdo das notas`)
+                // 21 - Pega conteúdo do XML
+                console.log(`\t[17] - Obtendo conteúdo das notas`)
                 const contentXML = await GetContentXML(pageEmpresa, settingsProcessing)
 
-                // 21 - Salva o XML
-                console.log(`\t[16] - Salvando XML das notas`)
+                // 22 - Salva o XML
+                console.log(`\t[18] - Salvando XML das notas`)
                 await SaveXML(contentXML, settingsProcessing)
 
                 // Fecha a aba da empresa afim de que possa abrir outra
