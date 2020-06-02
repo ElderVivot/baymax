@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.2",
     "expect-puppeteer": "^4.3.0",
+    "moment": "^2.26.0",
     "puppeteer": "^1.20.0",
     "puppeteer-core": "^2.0.0",
     "request": "^2.88.0",

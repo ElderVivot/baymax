@@ -22,11 +22,9 @@ const CloseOnePage = require('./CloseOnePage')
 
 // loguin='02319085122', password='3771814'
 // loguin='73470384134', password='soma100'
-const searchNFSeGoiania = async(loguin='73470384134', password='soma100') => {
-    let dateHourProcessing = new Date().toLocaleString('pt-BR', {timezone: "America/Sao_Paulo"})
-    dateHourProcessing = dateHourProcessing.replace(/:/g, '-').replace(/ /g, '_')
-
-    const settingsProcessing = { loguin, dateHourProcessing }
+const MainNfseGoiania = async(settingsPrincipal) => {
+    const { loguin, password, companies } = settingsPrincipal
+    const settingsProcessing = { ...settingsPrincipal }
 
     try {
         console.log(`[0] - Abrindo loguin ${loguin}`)
@@ -121,6 +119,15 @@ const searchNFSeGoiania = async(loguin='73470384134', password='soma100') => {
                 // 15 - Analisa se o CNPJ é de cliente válido
                 console.log(`\t[11] - Analisando se o CNPJ/CPF do Prestador é cliente desta Contabilidade`)
                 const cpfCnpj = await GetCNPJPrestador(pageEmpresa, settingsProcessing)
+                if(companies.indexOf(cpfCnpj) < 0){
+                    console.log(`\t[12] - Empresa não é cliente desta Contabilidade neste período`)
+                    const settings = { ...settingsProcessing, type: 'warning' }
+                    let pathImg = createFolderToSaveData(settings)
+                    pathImg = path.join(pathImg, 'GetCNPJPrestador.png')
+                    await pageEmpresa.screenshot( { path: pathImg } )
+                    await CloseOnePage(pageEmpresa)
+                    continue
+                }
 
                 settingsProcessing['cpfCnpj'] = cpfCnpj
 
@@ -173,4 +180,4 @@ const searchNFSeGoiania = async(loguin='73470384134', password='soma100') => {
     }
 }
 
-searchNFSeGoiania()
+module.exports = MainNfseGoiania

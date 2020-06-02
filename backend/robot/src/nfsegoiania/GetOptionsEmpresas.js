@@ -16,7 +16,7 @@ const GetOptionsEmpresas = async(page, browser, settingsProcessing) => {
                         const nameEmpresaSplit = labelSplit.slice(1, labelSplit.length)
                         codigoPrefeitura = labelSplit[0].replace(/[^\d]+/g,'')
 
-                        const nameEmpresa = nameEmpresaSplit.join('').trim().toUpperCase().substring(0, 70)
+                        const nameEmpresa = nameEmpresaSplit.join('').trim().replace(/([\u0300-\u036f]|[^0-9a-zA-Z\ ])/g, '').toUpperCase().substring(0, 50)
 
                         label = `${nameEmpresa} - ${codigoPrefeitura}`
                     } else {
