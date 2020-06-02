@@ -5,6 +5,7 @@ const OpenSiteGoiania = require('./OpenSiteGoiania')
 const Loguin = require('./Loguin')
 const ClickPortalContribuinte = require('./ClickPortalContribuinte')
 const GetOptionsEmpresas = require('./GetOptionsEmpresas')
+const CheckIfSelectLoaded = require('./CheckIfSelectLoaded')
 const CheckIfEmpresaEstaBaixada = require('./CheckIfEmpresaEstaBaixada')
 const ClickNFeEletronica = require('./ClickNFeEletronica')
 const GotoLinkNFeEletrotinaEntrar = require('./GotoLinkNFeEletrotinaEntrar')
@@ -31,7 +32,7 @@ const MainNfseGoiania = async(settingsPrincipal) => {
         
         const browser = await puppeteer.launch({headless: true, args: ['--start-maximized']})
         const page = await browser.newPage()
-        await page.setViewport({ width:0, height:0 })  
+        await page.setViewport({ width:1366, height:768 })  
 
         // 1 - Acessa página de Goiânia
         console.log(`[1] - Abrindo site da prefeitura`)
@@ -58,6 +59,7 @@ const MainNfseGoiania = async(settingsPrincipal) => {
 
             settingsProcessing['valueEmpresa'] = option.value
             settingsProcessing['labelEmpresa'] = option.label
+            settingsProcessing['codigoPrefeitura'] = option.codigoPrefeitura
                         
             try {        
                 // 7 - Abre uma nova aba no navegador e navega pra página atual
@@ -72,11 +74,8 @@ const MainNfseGoiania = async(settingsPrincipal) => {
                 
                 // 9 - Aguardando troca
                 console.log(`\t[7] - Checando se a troca foi realizada com sucesso`)
-                await pageEmpresa.waitForFunction(
-                    `document.querySelector('#GoianiaTheme_wtTelaPrincipal_block_wtTitle_wtDadosCAE').textContent.includes(${option.codigoPrefeitura})`
-                )
-                await pageEmpresa.waitFor(2500) // espera mais 2,5 segundos pra terminar de carregar os dados do novo select
-                
+                await CheckIfSelectLoaded(pageEmpresa, settingsProcessing)
+
                 // 10 - Verificando se o "Contribuinte está com a situação Baixa"
                 console.log(`\t[8] - Verificando se o "Contribuinte está com a situação Baixa"`)
                 const avisoEmpresaBaixada = await CheckIfEmpresaEstaBaixada(pageEmpresa, settingsProcessing)

@@ -7,7 +7,7 @@ const ClickListarXML = async(page, newPagePromise, settingsProcessing) => {
         await frame.waitFor('[value=Listar]')
         await frame.click('[value=Listar]')
         const popup = await newPagePromise;
-        await page.goto(popup.url())
+        await page.goto(popup.url(), {waitUntil: 'load'})
     } catch (error) {
         console.log('\t[Final-Empresa] - Erro ao listar os XMLs')
         console.log('\t-------------------------------------------------')
