@@ -6,7 +6,7 @@ const ClickToOpenContentXML = async(page, settingsProcessing) => {
         await page.waitFor('a[href]')
         await Promise.all([
             page.click('a[href]'),
-            page.waitForNavigation({waitUntil: 'load', timeout: 600000}) // aguarda até 10 minutos carregar a página pra fazer o download
+            page.waitForNavigation({waitUntil: 'load', timeout: 1200000}) // aguarda até 20 minutos carregar a página pra fazer o download
         ])
     } catch (error) {
         console.log('\t[Final-Empresa] - Erro ao abrir o conteúdo do XML')
