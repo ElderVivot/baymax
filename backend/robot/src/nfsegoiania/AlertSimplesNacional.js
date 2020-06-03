@@ -15,7 +15,7 @@ const AlertSimplesNacional = async(page, settingsProcessing) => {
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'AlertSimplesNacional.png')
         await page.screenshot( { path: pathImg } )
-        page.close()
+        await page.close()
         throw 'Error-AlertSimplesNacional'
     }
 }

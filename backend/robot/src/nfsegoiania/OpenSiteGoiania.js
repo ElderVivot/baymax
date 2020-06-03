@@ -10,7 +10,7 @@ const OpenSiteGoiania = async(page, browser, settingsProcessing) => {
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'OpenSiteGoiania.png')
         await page.screenshot( { path: pathImg } )
-        browser.close()
+        await browser.close()
         throw 'Error-OpenSiteGoiania'
     }
 }

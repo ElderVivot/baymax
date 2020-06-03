@@ -14,7 +14,7 @@ const CheckIfSelectLoaded = async(page, settingsProcessing) => {
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'CheckIfSelectLoaded.png')
         await page.screenshot( { path: pathImg } )
-        page.close()
+        await page.close()
         throw 'Error-CheckIfSelectLoaded'
     }
 }

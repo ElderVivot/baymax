@@ -12,7 +12,7 @@ const ClickNFeEletronica = async(page, settingsProcessing) => {
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'ClickNFeEletronica.png')
         await page.screenshot( { path: pathImg } )
-        page.close()
+        await page.close()
         throw 'Error-ClickNFeEletronica'
     }
 }

@@ -39,7 +39,7 @@ const GetOptionsEmpresas = async(page, browser, settingsProcessing) => {
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'GetOptionsEmpresas.png')
         await page.screenshot( { path: pathImg } )
-        browser.close()
+        await browser.close()
         throw 'Error-GetOptionsEmpresas'
     }
 }

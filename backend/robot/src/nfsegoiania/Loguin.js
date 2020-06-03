@@ -31,7 +31,7 @@ const Loguin = async(page, loguin, password, browser, settingsProcessing) => {
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'Loguin.png')
         await page.screenshot( { path: pathImg } )
-        browser.close()
+        await browser.close()
         throw 'Error-Loguin'
     }
 }

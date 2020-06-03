@@ -22,7 +22,7 @@ const GotoLinkNFeEletrotinaEntrar = async(page, settingsProcessing) => {
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'GotoLinkNFeEletrotinaEntrar.png')
         await page.screenshot( { path: pathImg } )
-        page.close()
+        await page.close()
         throw 'Error-GotoLinkNFeEletrotinaEntrar'
     }
 }

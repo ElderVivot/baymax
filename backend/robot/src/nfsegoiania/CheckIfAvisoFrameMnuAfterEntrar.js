@@ -3,23 +3,37 @@ const createFolderToSaveData = require('../utils/CreateFolderToSaveData')
 const checkIfLoadedThePage = require('../utils/CheckIfLoadedThePage')
 
 const CheckIfAvisoFrameMnuAfterEntrar = async(page, settingsProcessing) => {
+    let aviso = ''
     try {
         await checkIfLoadedThePage(page, 'mnu', isAFrame=true)
         const frame = page.frames().find(frame => frame.name() === 'mnu')
         await frame.waitFor('tr[bgcolor=beige] > td > table > tbody > tr > td[align=center] > span')
-        const aviso = await frame.evaluate( () => {
+        aviso = await frame.evaluate( () => {
             return document.querySelector('tr[bgcolor=beige] > td > table > tbody > tr > td[align=center] > span').textContent
         })
-        return aviso
+        aviso = aviso.normalize("NFD").replace(/[^a-zA-Z/ ]/g, "").toUpperCase()
+        if( aviso.trim() !== "" ){
+            throw "NAO_HABILITADA_EMITIR_NFSE"
+        }
     } catch (error) {
-        console.log('\t[Final-Empresa] - Erro ao verificar se a empresa está habilitada pra emitir NFS-e Serviço')
+        let msgError = ''
+        let type = 'error'
+        if( error === "NAO_HABILITADA_EMITIR_NFSE"){
+            console.log(`\t[Final-Empresa] - Empresa não habilitada pra emitir NFS-e. O aviso é "${aviso}". Fechando aba.`)
+            type = 'warning'            
+            msgError = 'Warning-CheckIfAvisoFrameMnuAfterEntrar'
+        } else {
+            console.log('\t[Final-Empresa] - Erro ao verificar se a empresa está habilitada pra emitir NFS-e Serviço')            
+            type = 'error'            
+            msgError = 'Error-CheckIfAvisoFrameMnuAfterEntrar'
+        }
         console.log('\t-------------------------------------------------')
-        const settings = { ...settingsProcessing, type: 'error' }
+        const settings = { ...settingsProcessing, type }
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'CheckIfAvisoFrameMnuAfterEntrar.png')
         await page.screenshot( { path: pathImg } )
-        page.close()
-        throw 'Error-CheckIfAvisoFrameMnuAfterEntrar'
+        await page.close()
+        throw msgError
     }
 }
 

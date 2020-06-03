@@ -7,19 +7,34 @@ const GetCNPJPrestador = async(page, settingsProcessing) => {
         await checkIfLoadedThePage(page, 'cpo', isAFrame=true)
         const frame = page.frames().find(frame => frame.name() === 'cpo');
         await frame.waitFor('#nr_cnpj')
-        const cnpjCpf = await frame.evaluate( () => {
+        let cpfCnpj = await frame.evaluate( () => {
             return document.querySelector('#nr_cnpj').textContent
         })
-        return cnpjCpf.replace(/[^\d]+/g,'')
+        cpfCnpj = cpfCnpj.replace(/[^\d]+/g,'')
+        const { companies } = settingsProcessing
+        if(companies.indexOf(cpfCnpj) < 0){
+            throw 'IS_NOT_CLIENTE'
+        }
+        return cpfCnpj
     } catch (error) {
-        console.log('\t[Final-Empresa] - Erro ao pegar o CNPJ/CPF')
+        let msgError = ''
+        let type = 'error'
+        if( error === "IS_NOT_CLIENTE"){
+            console.log(`\t[14] - Empresa não é cliente desta Contabilidade neste período`)
+            type = 'warning'            
+            msgError = 'Warning-GetCNPJPrestador'
+        } else {
+            console.log('\t[Final-Empresa] - Erro ao checar o CNPJ/CPF')
+            type = 'error'            
+            msgError = 'Error-GetCNPJPrestador'
+        }
         console.log('\t-------------------------------------------------')
-        const settings = { ...settingsProcessing, type: 'error' }
+        const settings = { ...settingsProcessing, type }
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'GetCNPJPrestador.png')
         await page.screenshot( { path: pathImg } )
-        page.close()
-        throw 'Error-GetCNPJPrestador'
+        await page.close()
+        throw msgError
     }
 }
 

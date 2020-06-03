@@ -12,7 +12,7 @@ const GetContentXML = async(page, settingsProcessing) => {
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'GetContentXML.png')
         await page.screenshot( { path: pathImg } )
-        page.close()
+        await page.close()
         throw 'Error-GetContentXML'
     }
 }

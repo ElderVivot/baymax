@@ -22,7 +22,7 @@ const ClickPortalContribuinte = async(page, browser) => {
         let pathImg = createFolderToSaveData(settings)
         pathImg = path.join(pathImg, 'ClickPortalContribuinte.png')
         await page.screenshot( { path: pathImg } )
-        browser.close()
+        await browser.close()
         throw 'Error-ClickPortalContribuinte'
     }
 }
