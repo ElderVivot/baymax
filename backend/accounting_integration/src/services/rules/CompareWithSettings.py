@@ -315,10 +315,10 @@ class CompareWithSettings(object):
 
             if fieldComparation == 1: # comparação pelo fornecedor
                 if typeComparation == 1: # comparação caso o valor seja idêntico
-                    if historic == valueComparation and operationComparation == operation and historic is not None:
+                    if historic is not None and historic == valueComparation and operationComparation == operation:
                         return accountDominio
                 else:
-                    if historic.count(valueComparation) > 0 and operationComparation == operation and historic is not None: # comparação caso contenha o texto
+                    if historic is not None and historic.count(valueComparation) > 0 and operationComparation == operation: # comparação caso contenha o texto
                         return accountDominio
 
     def showWarningsPayments(self, payment, key):
