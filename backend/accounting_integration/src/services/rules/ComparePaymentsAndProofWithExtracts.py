@@ -220,10 +220,11 @@ class ComparePaymentsAndProofWithExtracts(object):
         countPayments = 0 # este campo vai ser usado pra multiplicar por menos 1 o valor do count quando não encontrar o valor pelo agrupamento do lote mas sim ele separado
                 
         # o range de 1 a 3 é pq primeiro vou rodar o typeComparation com mais confiabilidade (igual a 1), depois rodo com média e fraca por último
-        for numberSequencial in range(1, 4):            
+        for numberSequencial in range(1, 4):
+            extract = None
+
             for key, paymentWithProofAndFinancy in enumerate(self._paymentsWithProofAndFinancy):
-                countPayments += 1
-                extract = None
+                countPayments += 1              
 
                 # se for um pagamento que já tiver lido e encontrado o financeiro dele então ignora a leitura
                 if funcoesUteis.analyzeIfFieldIsValid(paymentWithProofAndFinancy, 'alreadyFoundTheExtract', False) is True:
@@ -241,9 +242,12 @@ class ComparePaymentsAndProofWithExtracts(object):
                 # caso contrário ele retorna só no primeiro, pois depois o valor do extratc é retirado
                 previousPaymentWithProofAndFinancy = self._paymentsWithProofAndFinancy[key-1]
                 previousNumberLote = funcoesUteis.analyzeIfFieldIsValid(previousPaymentWithProofAndFinancy, "numberLote")
+
+                extract = None if previousNumberLote != numberLote else extract # se for uma linha nova (que não processou ainda o número do lote) seta o extract como None
+
                 if previousNumberLote != numberLote or len(self._paymentsWithProofAndFinancy) == 1:
                     extract = self.returnDataExtract(paymentDate, amountPaidPerLote, operation, bank, account, typeComparation=numberSequencial)
-
+                
                 # se não conseguir retornar nada ele compara só o amountPaid, talvez no extrato o valor não esteja agrupado, e sim individual
                 if extract is None or len(extract) == 0:
                     extract = self.returnDataExtract(paymentDate, amountPaid, operation, bank, account, typeComparation=numberSequencial)
