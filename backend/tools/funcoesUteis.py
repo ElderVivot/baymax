@@ -123,7 +123,7 @@ def treatTextField(value):
     except Exception:
         return ""
 
-def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', positionInFileEnd=0):
+def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHeader='', positionInFileEnd=0, keepTextOriginal=True):
     """
     :param data: Informar o array de dados que quer ler
     :param numberOfField: numero do campo na planilha (opcional)
@@ -133,15 +133,18 @@ def treatTextFieldInVector(data, numberOfField=0, fieldsHeader=[], nameFieldHead
     """
     if len(fieldsHeader) > 0 and nameFieldHeader is not None and nameFieldHeader != "":
         try:
-            return treatTextField(data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)])
+            value = data[searchPositionFieldForName(fieldsHeader, nameFieldHeader)]
+            return treatTextField(value) if keepTextOriginal is True else value
         except Exception:
             try:
-                return treatTextField(analyzeIfFieldHasPositionInFileEnd(data, numberOfField, positionInFileEnd))
+                value = analyzeIfFieldHasPositionInFileEnd(data, numberOfField, positionInFileEnd)
+                return treatTextField(value) if keepTextOriginal is True else value
             except Exception:
                 return ""
     else:
         try:
-            return treatTextField(analyzeIfFieldHasPositionInFileEnd(data, numberOfField, positionInFileEnd))
+            value = analyzeIfFieldHasPositionInFileEnd(data, numberOfField, positionInFileEnd)
+            return treatTextField(value) if keepTextOriginal is True else value
         except Exception:
             return ""
 

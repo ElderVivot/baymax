@@ -474,9 +474,9 @@ class ReadGeneral(object):
                     valuesOfLine['bank'] = correlationBankNew
                     valuesOfLine['account'] = correlationAccountNew
                     break
-                else:
-                    valuesOfLine['bank'] = bankFinancy
-                    valuesOfLine['account'] = accountFinancy
+                
+                valuesOfLine['bank'] = bankFinancy
+                valuesOfLine['account'] = accountFinancy
         else:
             valuesOfLine['bank'] = funcoesUteis.returnBankForNumber(funcoesUteis.returnBankForName(bankFinancy))
             valuesOfLine['account'] = accountFinancy

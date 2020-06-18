@@ -228,10 +228,16 @@ class CompareWithSettings(object):
 
                 if fieldComparation != "" and fieldOthers != "" and valueDominio != "":
                     self._valuesAccountAndHistoricOthers[fieldComparation, fieldOthers] = valueDominio
+
+                whenColumnDocumento = funcoesUteis.treatTextFieldInVector(data, 7, self._posionsOfHeaderAccountAndHistoricOthers, "Quando na Coluna Documento")
+
+                compositionHistoric = funcoesUteis.treatTextFieldInVector(data, 8, self._posionsOfHeaderAccountAndHistoricOthers, "Composição Histórico", keepTextOriginal=False)
+                
+                if whenColumnDocumento != "" and compositionHistoric != "":
+                    self._valuesAccountAndHistoricOthers[whenColumnDocumento] = compositionHistoric
+                
             except Exception as e:
                 pass
-
-        return self._valuesAccountAndHistoricOthers
 
     def returnDataProviderOrExpense(self, nameProvider=None, account=None, category=None, historic=None):
 
@@ -344,6 +350,7 @@ class CompareWithSettings(object):
     def processPayments(self):
         
         for key, payment in enumerate(self._payments):
+            document = funcoesUteis.analyzeIfFieldIsValid(payment, "document", None)
             nameProvider = funcoesUteis.analyzeIfFieldIsValid(payment, "nameProvider", None)
             accountPlan = funcoesUteis.analyzeIfFieldIsValid(payment, "accountPlan", None)
             category = funcoesUteis.analyzeIfFieldIsValid(payment, "category", None)
@@ -368,19 +375,40 @@ class CompareWithSettings(object):
             payment["accountCode"] = accountCode
             payment["accountCodeBank"] = accountCodeBank
 
-            payment["historicCodeDiscount"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "DESCONTO", 28, "HISTORICO")
-            payment["historicCodeInterest"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "JUROS", 25, "HISTORICO")
-            payment["historicCodeFine"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "MULTA", 26, "HISTORICO")
-            payment["accountCodeDiscount"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "DESCONTO", 434, "CONTA CONTABIL")
-            payment["accountCodeInterest"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "JUROS", 372, "CONTA CONTABIL")
-            payment["accountCodeFine"] = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "MULTA", 352, "CONTA CONTABIL")
+            # print(self._valuesAccountAndHistoricOthers)
+            payment["historicCodeDiscount"] = funcoesUteis.returnDataFieldInDict(self._valuesAccountAndHistoricOthers, [("DESCONTO", "HISTORICO")], 0)
+            payment["historicCodeInterest"] = funcoesUteis.returnDataFieldInDict(self._valuesAccountAndHistoricOthers, [("JUROS", "HISTORICO")], 0)
+            payment["historicCodeFine"] = funcoesUteis.returnDataFieldInDict(self._valuesAccountAndHistoricOthers, [("MULTA", "HISTORICO")], 0)
+            payment["historicCodePagamento"] = funcoesUteis.returnDataFieldInDict(self._valuesAccountAndHistoricOthers, [("PAGAMENTO", "HISTORICO")], 0)
+            payment["accountCodeDiscount"] = funcoesUteis.returnDataFieldInDict(self._valuesAccountAndHistoricOthers, [("DESCONTO", "CONTA CONTABIL")], 434)
+            payment["accountCodeInterest"] = funcoesUteis.returnDataFieldInDict(self._valuesAccountAndHistoricOthers, [("JUROS", "CONTA CONTABIL")], 372)
+            payment["accountCodeFine"] = funcoesUteis.returnDataFieldInDict(self._valuesAccountAndHistoricOthers, [("MULTA", "CONTA CONTABIL")], 352)
+            
+            compositionHistoricPrimeiraPalavraNumero = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "PRIMEIRA PALAVRA E UM NUMERO")
+            compositionHistoricPrimeiraPalavraNaoNumero = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "PRIMEIRA PALAVRA NAO E UM NUMERO")
+            compositionHistoricDiferenteVazio = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "FOR DIFERENTE DE VAZIO")
+            compositionHistoricVazio = funcoesUteis.analyzeIfFieldIsValid(self._valuesAccountAndHistoricOthers, "FOR VAZIO")
+            
+            if document is not None and document != "":
+                documentSplit = str(document).split()
+
+                if funcoesUteis.treatNumberField(documentSplit[0], True) > 0 and compositionHistoricPrimeiraPalavraNumero != "":
+                    payment["compositionHistoric"] = compositionHistoricPrimeiraPalavraNumero
+                if funcoesUteis.treatNumberField(documentSplit[0], True) == 0 and compositionHistoricPrimeiraPalavraNaoNumero != "":
+                    payment["compositionHistoric"] = compositionHistoricPrimeiraPalavraNaoNumero
+                if document != "" and compositionHistoricDiferenteVazio != "":
+                    payment["compositionHistoric"] = compositionHistoricDiferenteVazio
+            else:
+                payment["compositionHistoric"] = compositionHistoricVazio
+            
+            # print(payment)
 
             self._paymentsWithNewAccountCode.append(payment)
 
             # show de warnings
             if self._updateOrExtract is True:
                 self.showWarningsPayments(payment, key)
-        
+
         return self._paymentsWithNewAccountCode
 
     def processExtracts(self):

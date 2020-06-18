@@ -122,7 +122,7 @@ class GenerateExportDominio(object):
                     else: # se não for o total do lote e for lançamento de crédito então provavelmente são os descontos
                         accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCode", "")
                     amount = amountPaid
-                historicCode = 15
+                historicCode = funcoesUteis.analyzeIfFieldIsValid(data, "historicCodePagamento", 0)
             elif typeEntry == 'J':
                 accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeInterest", 372)
                 historicCode = funcoesUteis.analyzeIfFieldIsValid(data, "historicCodeInterest", 26)
@@ -148,17 +148,32 @@ class GenerateExportDominio(object):
             historicTemp = funcoesUteis.analyzeIfFieldIsValid(data, "historic")
             historicTemp = f" / {historicTemp}" if historicTemp != "" else accountPlan
 
-            if document != "" and document != "0":
-                historic = f"CFE. DUP {document} DO FORNECEDOR {nameProvider}{historicTemp}"
+            historic = ""
+            compositionHistoric = funcoesUteis.analyzeIfFieldIsValid(data, "compositionHistoric")
+            compositionHistoricSplit = compositionHistoric.split('-')
+            if compositionHistoric == "":
+                if document != "" and document != "0":
+                    historic = f"PAGAMENTO CFE. NF/DUP {document} REFERENTE {nameProvider}{historicTemp}"
+                else:
+                    historic = f"PAGAMENTO REFERENTE {nameProvider}{historicTemp}"
             else:
-                historic = f"DO FORNECEDOR {nameProvider}{historicTemp}"
+                for value in compositionHistoricSplit:
+                    if value.find('historicCode') >= 0:
+                        continue
+
+                    historic += f'{funcoesUteis.analyzeIfFieldIsValid(data, value)} '
+                historic = historic.strip()
 
             # mudo o histórico pois num pagamento em lote (diferentes fornecedores e mesmo banco) não pode vir a informação do fornecedor, pois cada pagamento é um diferente
             amountPaidOriginal = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaid", 0.0)
             amountPaidPerLote = funcoesUteis.analyzeIfFieldIsValid(data, "amountPaidPerLote", 0.0)
             if isAmountPaidPerLote is True and amountPaidOriginal != amountPaidPerLote:
-                historicCode = 15
-                historic = ""
+                historicCode = funcoesUteis.analyzeIfFieldIsValid(data, "historicCodePagamento", 0)
+                historic = "PAGAMENTO" if historicCode == 0 else ""
+
+            # se não achar na configuração o código do histórico mas estiver configurado pra impotar histórico manipulado seta como zero
+            if compositionHistoricSplit != "" and compositionHistoricSplit.count('historicCodePagamento') == 0 and typeEntry == 'N':
+                historicCode = 0
 
         idRecord = '6100'
         user = ""
