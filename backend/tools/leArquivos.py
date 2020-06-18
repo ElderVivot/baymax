@@ -118,7 +118,7 @@ def leXls_Xlsx(arquivo, nameSheetToFilter='filterAll'):
                         valor_celula = funcoesUteis.removerAcentosECaracteresEspeciais(str(planilha.cell_value(rowx=i, colx=j)))
                         if tipo_valor == 2:
                             valor_casas_decimais = valor_celula.split('.')
-                            valor_casas_decimais = valor_casas_decimais[1]
+                            valor_casas_decimais = funcoesUteis.treatNumberFieldInVector(valor_casas_decimais, 1, isInt=True)
                             try:
                                 if int(valor_casas_decimais) == 0:
                                     valor_celula = valor_celula.split('.')
