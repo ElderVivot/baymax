@@ -180,8 +180,8 @@ def readCsv(arquivo,separadorCampos=';'):
     # retorna uma lista dos dados
     return lista_dados
 
-def ImageToText(file, wayToSaveFile):
-    nameFile = funcoesUteis.getOnlyNameFile(os.path.basename(file))
+def ImageToText(file, wayToSaveFile, nameFileArgument=''):
+    nameFile = nameFileArgument if nameFileArgument != "" else funcoesUteis.getOnlyNameFile(os.path.basename(file))
     wayToSave = f"{wayToSaveFile}/{nameFile}.txt"
     wayToSave = open(wayToSave, "w", encoding='utf-8')
     content = ocr.image_to_string(Image.open(file), lang='por')
@@ -213,7 +213,7 @@ def PDFToText(file, wayToSaveFile, mode="simple"):
         if funcoesUteis.treatTextField(textPdf) == "":
             PDFImgToText(file, wayToSaveFile)
         else:
-            command = f'{fileDir}/exe/pdftotext64.exe -{mode} "{file}" "{wayToSave}"'
+            command = f'{absPath}/exe/pdftotext64.exe -{mode} "{file}" "{wayToSave}"'
             os.system(command)
 
     except Exception as ex:
