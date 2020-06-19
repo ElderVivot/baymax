@@ -23,8 +23,11 @@ warnings.filterwarnings("ignore")
 logging.propagate = False 
 logging.getLogger().setLevel(logging.ERROR)
 
-fileDir = os.path.dirname(__file__)
+absPath = os.path.dirname(os.path.abspath(__file__))
+fileDir = absPath[:absPath.find('backend')]
 sys.path.append(fileDir)
+sys.path.append(os.path.join(fileDir, 'backend'))
+sys.path.append(os.path.dirname(__file__))
 
 import funcoesUteis
 
@@ -118,9 +121,9 @@ def leXls_Xlsx(arquivo, nameSheetToFilter='filterAll'):
                         valor_celula = funcoesUteis.removerAcentosECaracteresEspeciais(str(planilha.cell_value(rowx=i, colx=j)))
                         if tipo_valor == 2:
                             valor_casas_decimais = valor_celula.split('.')
-                            valor_casas_decimais = funcoesUteis.treatNumberFieldInVector(valor_casas_decimais, 1, isInt=True)
+                            valor_casas_decimais = funcoesUteis.treatNumberFieldInVector(valor_casas_decimais, 2, isInt=True)
                             try:
-                                if int(valor_casas_decimais) == 0:
+                                if valor_casas_decimais == 0:
                                     valor_celula = valor_celula.split('.')
                                     valor_celula = valor_celula[0]
                             except Exception:
@@ -129,7 +132,6 @@ def leXls_Xlsx(arquivo, nameSheetToFilter='filterAll'):
                             valor_celula = float(planilha.cell_value(rowx=i, colx=j))
                             valor_celula = xlrd.xldate.xldate_as_datetime(valor_celula, datemode=0)
                             valor_celula = valor_celula.strftime("%d/%m/%Y")
-
                         # retira espaços e quebra de linha da célula
                         valor_celula = str(valor_celula).strip().replace('\n', '')
 
@@ -149,8 +151,6 @@ def leXls_Xlsx(arquivo, nameSheetToFilter='filterAll'):
 def readCsv(arquivo,separadorCampos=';'):
     lista_dados = []
     dados_linha = []
-    
-    nome_arquivo = os.path.basename(arquivo)
 
     with open(arquivo, 'rt') as csvfile:
         csvreader = csv.reader(csvfile, delimiter=separadorCampos)
@@ -202,10 +202,13 @@ def PDFToText(file, wayToSaveFile, mode="simple"):
     wayToSave = f"{wayToSaveFile}/{nameFile}.txt"
     try:
         textPdf = ""
-        with open(file, 'rb') as filePdf:
-            documents = slate.PDF(filePdf)
-            for document in documents:
-                textPdf += document
+        try:
+            with open(file, 'rb') as filePdf:
+                documents = slate.PDF(filePdf)
+                for document in documents:
+                    textPdf += document
+        except Exception as err:
+            pass        
             
         if funcoesUteis.treatTextField(textPdf) == "":
             PDFImgToText(file, wayToSaveFile)
@@ -215,8 +218,6 @@ def PDFToText(file, wayToSaveFile, mode="simple"):
 
     except Exception as ex:
         print(f"Nao foi possivel transformar o arquivo \"{file}\". O erro é: {str(ex)}")
-
-# PDFToText('C:/Programming/baymax/backend/accounting_integration/data/temp/1428/pdfs/01-10-19 placo 20747-005 - diviart/1.pdf', 'C:/Programming/baymax/backend/accounting_integration/data/temp/1428/pdfs/01-10-19 placo 20747-005 - diviart')
 
 def splitPdfOnePageEach(file, wayToSaveFiles, sequential=0):
     try:
