@@ -245,10 +245,10 @@ class ComparePaymentsAndProofWithExtracts(object):
 
                 extract = None if previousNumberLote != numberLote else extract # se for uma linha nova (que não processou ainda o número do lote) seta o extract como None
 
-                if previousNumberLote != numberLote or len(self._paymentsWithProofAndFinancy) == 1:
+                if ( previousNumberLote != numberLote or len(self._paymentsWithProofAndFinancy) == 1 ) and extract is None:
                     extract = self.returnDataExtract(paymentDate, amountPaidPerLote, operation, bank, account, typeComparation=numberSequencial)
                 
-                # se não conseguir retornar nada ele compara só o amountPaid, talvez no extrato o valor não esteja agrupado, e sim individual
+                # se não conseguir retornar nada ele compara só o amountPaid, talvez no financeiro o valor não esteja agrupado, e sim individual
                 if extract is None or len(extract) == 0:
                     extract = self.returnDataExtract(paymentDate, amountPaid, operation, bank, account, typeComparation=numberSequencial)
                     # se encontrar o valor individual então trocar o numberLote pra um número negativo pra não causar problemas depois na exportação
