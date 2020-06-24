@@ -152,30 +152,33 @@ def readCsv(arquivo,separadorCampos=';'):
     lista_dados = []
     dados_linha = []
 
-    with open(arquivo, 'rt') as csvfile:
-        csvreader = csv.reader(csvfile, delimiter=separadorCampos)
-        for row in csvreader:
-            
-            existe_valor_linha = ""
-            for campo in row:
-                valor_celula = funcoesUteis.treatTextField(campo)
-                existe_valor_linha += valor_celula
-            
-            # se não existir nenhum valor na linha passa pra próxima
-            if existe_valor_linha == "":
-                continue
+    try:
+        with open(arquivo, 'rt') as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=separadorCampos)
+            for row in csvreader:
+                
+                existe_valor_linha = ""
+                for campo in row:
+                    valor_celula = funcoesUteis.treatTextField(campo)
+                    existe_valor_linha += valor_celula
+                
+                # se não existir nenhum valor na linha passa pra próxima
+                if existe_valor_linha == "":
+                    continue
 
-            for campo in row:
-                valor_celula = funcoesUteis.treatTextField(campo)
+                for campo in row:
+                    valor_celula = funcoesUteis.treatTextField(campo)
 
-                # adiciona o valor da célula na lista de dados_linha
-                dados_linha.append(valor_celula)
+                    # adiciona o valor da célula na lista de dados_linha
+                    dados_linha.append(valor_celula)
 
-            # copia os dados da linha para o vetor de lista_dados
-            lista_dados.append(dados_linha[:])
+                # copia os dados da linha para o vetor de lista_dados
+                lista_dados.append(dados_linha[:])
 
-            # limpa os dados da linha para ler a próxima
-            dados_linha.clear()
+                # limpa os dados da linha para ler a próxima
+                dados_linha.clear()
+    except Exception:
+        pass
 
     # retorna uma lista dos dados
     return lista_dados
