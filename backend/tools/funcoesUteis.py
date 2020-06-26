@@ -55,11 +55,9 @@ def minimalizeSpaces(text):
 def searchPositionFieldForName(header, nameField=''):
     nameField = treatTextField(nameField)
     try:
-        positionOfField = header[nameField]
+        return header[nameField]
     except Exception:
-        positionOfField = -1
-
-    return positionOfField
+        return None
 
 def analyzeIfFieldIsValid(data, name, returnDefault="", otherComparationName=""):
     try:

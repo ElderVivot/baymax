@@ -164,7 +164,7 @@ class GenerateExcel(object):
             amountFine = funcoesUteis.analyzeIfFieldIsValid(payment, "amountFine", 0.0)
             amountOriginal = funcoesUteis.analyzeIfFieldIsValid(payment, "amountOriginal", 0.0)
             accountCode = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode")
-            codiEmp = funcoesUteis.analyzeIfFieldIsValid(payment, "codiEmp", None)
+            codiEmp = funcoesUteis.analyzeIfFieldIsValid(payment, "companyBranch", None)
             codiEmp = self._codiEmp if codiEmp is None else codiEmp
             historic = funcoesUteis.analyzeIfFieldIsValid(payment, "historic")
             category = funcoesUteis.analyzeIfFieldIsValid(payment, "category")
