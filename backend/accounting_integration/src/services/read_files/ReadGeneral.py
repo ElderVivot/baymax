@@ -218,9 +218,9 @@ class ReadGeneral(object):
                     valueField = valueField.split(splitField)
                     if len(valueField) >= positionFieldInTheSplit:
                         if positionFieldInTheSplitEnd != 0:
-                            valueField = ''.join(valueField[positionFieldInTheSplit-1:positionFieldInTheSplitEnd])
+                            valueField = ' '.join(valueField[positionFieldInTheSplit-1:positionFieldInTheSplitEnd])
                         else:
-                            valueField = ''.join(valueField[positionFieldInTheSplit-1:])
+                            valueField = ' '.join(valueField[positionFieldInTheSplit-1:])
                     else:
                         valueField = ""
                     valueField = funcoesUteis.minimalizeSpaces(valueField)
@@ -655,7 +655,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 589
+    codi_emp = 1035
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
