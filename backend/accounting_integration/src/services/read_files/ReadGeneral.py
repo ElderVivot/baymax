@@ -385,7 +385,7 @@ class ReadGeneral(object):
 
             nameField = funcoesUteis.analyzeIfFieldIsValid(validation, 'nameField')
             typeValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'typeValidation')
-            valueValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation')
+            valueValidation = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation'))
             valueValidation = funcoesUteis.treatDecimalField(valueValidation) if nameField.find('amount') >= 0 else valueValidation
 
             valueFieldData = funcoesUteis.analyzeIfFieldIsValid(data, nameField)
@@ -512,7 +512,7 @@ class ReadGeneral(object):
         for key, validation in enumerate(validateIfDataIsThisCompanie):
             nameField = funcoesUteis.analyzeIfFieldIsValid(validation, 'nameField')
             typeValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'typeValidation')
-            valueValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation')
+            valueValidation = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation'))
             valueValidation = funcoesUteis.treatDecimalField(valueValidation) if nameField.find('amount') >= 0 else valueValidation
             nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(validateIfDataIsThisCompanie, 'nextValidationOrAnd', 'and')
 
@@ -655,7 +655,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1059
+    codi_emp = 589
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
