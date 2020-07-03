@@ -119,7 +119,7 @@ class ReadExcelToUpdateOrExportData(object):
                     "amountFine": amountFine,
                     "amountOriginal": amountOriginal,
                     "accountCode": accountCode,
-                    "codiEmp": codiEmp,
+                    "companyBranch": codiEmp,
                     "historic": historic,
                     "category": category,
                     "accountPlan": accountPlan,

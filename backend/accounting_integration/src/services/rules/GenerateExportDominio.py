@@ -175,9 +175,10 @@ class GenerateExportDominio(object):
             if compositionHistoricSplit != "" and compositionHistoricSplit.count('historicCodePagamento') == 0 and typeEntry == 'N':
                 historicCode = 0
 
+        branch = funcoesUteis.analyzeIfFieldIsValid(data, "companyBranch", self._codiEmp)
+
         idRecord = '6100'
         user = ""
-        branch = ""
         scp = ""
 
         if amountFloat > 0:
