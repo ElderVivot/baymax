@@ -81,7 +81,7 @@ class ProcessIntegration(object):
 
         # reads the txts
         print(' - Etapa 2: Lendo os OFXs ')
-        extractsOFX = ExtractsOFX(self._wayFilesToRead)
+        extractsOFX = ExtractsOFX(self._codiEmp, self._wayFilesToRead, self._wayFilesTemp)
         self._extracts.append(extractsOFX.processAll())
 
         # reads the financy

@@ -11,7 +11,7 @@ class ConnectMongo(object):
     def getConnetion(self):
         if self._connection is None:
             try:
-                self._connection = MongoClient() # conecta num cliente do MongoDB rodando na sua máquina
+                self._connection = MongoClient('mongodb://192.168.254.227:27017/') # conecta num cliente do MongoDB rodando na sua máquina
                 self._selectDB = self._connection[self._nameDB]
             except Exception as e:
                 print(f"** Não foi possível realizar a conexão. O erro é: {e}")
@@ -28,3 +28,8 @@ class ConnectMongo(object):
     def testFunctionPymongo(self):
         self._collection = self._selectDB.teste
         self._collection.aggregate()
+
+
+if __name__ == "__main__":
+    connect = ConnectMongo()
+    connect.getConnetion()

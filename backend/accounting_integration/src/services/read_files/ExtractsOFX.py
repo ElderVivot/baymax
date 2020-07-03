@@ -11,15 +11,21 @@ from ofxparse import OfxParser
 from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
 import datetime
+from accounting_integration.src.services.read_files.SanitizeOFX import SanitizeOFX
 
 
 class ExtractsOFX(object):
 
-    def __init__(self, wayOriginal):
+    def __init__(self, codiEmp, wayOriginal, wayTemp):
         self._extracts = []
+        self._codiEmp = codiEmp
         self._wayOriginal = wayOriginal
+        self._wayTemp = wayTemp
         self._banks = readJson(os.path.join(fileDir, f'backend/accounting_integration/data/banks.json'))
         # print(self._banks["BanksNamePerNumber"])
+
+        sanitizeOFX = SanitizeOFX(self._codiEmp, self._wayOriginal, self._wayTemp)
+        sanitizeOFX.processAll()
 
     def returnNameBank(self, numberBank):
         try:
@@ -93,7 +99,7 @@ class ExtractsOFX(object):
         return valuesOfFile
 
     def processAll(self):
-        for root, dirs, files in os.walk(self._wayOriginal):
+        for root, dirs, files in os.walk(self._wayTemp):
             for file in files:
                 if file.lower().endswith(('.ofx', '.ofc', '.txt')):
                     wayFile = os.path.join(root, file)
@@ -102,5 +108,10 @@ class ExtractsOFX(object):
         return funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
 
 if __name__ == "__main__":
-    extractOFX = ExtractsOFX("C:/integracao_contabil/656/arquivos_originais/teste")
+    codi_emp = str(293)
+
+    # extractOFX = SanitizeOFX(codi_emp, f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}", f"C:/integracao_contabil/{codi_emp}/arquivos_originais")
+    # extractOFX.processAll()
+
+    extractOFX = ExtractsOFX(codi_emp, f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}/ofxs", f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}")
     print(extractOFX.processAll())

@@ -261,6 +261,7 @@ def leTxt(caminho, encoding='utf-8', treatAsText=False, removeBlankLines=False):
                         continue
                 lista_linha.append(linha)
     except Exception as e:
+        lista_linha.clear()
         with open(caminho, 'rt', encoding='Windows-1252') as txtfile:
             for linha in txtfile:
                 linha = str(linha).replace("\n", "")
