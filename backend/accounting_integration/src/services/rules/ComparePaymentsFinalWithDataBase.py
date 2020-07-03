@@ -343,7 +343,7 @@ class ComparePaymentsFinalWithDataBase(object):
             accountCode = 0 if accountCode is None else int(accountCode)
             payment["accountCode"] = accountCode
             payment["codiEmp"] = self._codiEmp
-            payment["nameProvider"] = funcoesUteis.analyzeIfFieldIsValid(provider, "nome_for") if nameProvider is None else nameProvider
+            payment["nameProvider"] = funcoesUteis.analyzeIfFieldIsValid(provider, "nome_for") if nameProvider is None or nameProvider == "" else nameProvider
 
             if document == "":
                 payment["document"] = int(funcoesUteis.analyzeIfFieldIsValid(entryNote, "nume_ent", 0))
