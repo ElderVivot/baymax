@@ -53,11 +53,21 @@ class SettingsCompaniesSettings{
             }
 
             const statusIntegrattionOfCompanie = new StatusIntegrattionOfCompanie(dataSettingsCompaniesSettings)
-            dataSettingsCompaniesSettings.statusAccountPaid = statusIntegrattionOfCompanie.identifiesTheStatus()
+            const statusIdentified = statusIntegrattionOfCompanie.identifiesTheStatus()
+            
+            dataSettingsCompaniesSettings.statusAccountPaid = statusIdentified
             if(dataSettingsCompaniesSettings.statusAccountPaid !== "Concluída - Modelo Antigo"){
                 dataSettingsCompaniesSettings.dateAccountPaid = companiesSettings.dateAccountPaid
                 dataSettingsCompaniesSettings.obsAccountPaid = companiesSettings.obsAccountPaid
                 dataSettingsCompaniesSettings.responsibleFinancialClient = companiesSettings.responsibleFinancialClient
+            } 
+            
+            if(statusIdentified === "Sem Movimento") {
+                dataSettingsCompaniesSettings.stat_emp = 'Sem Movimento'
+            }
+
+            if( dataSettingsCompaniesSettings.dina_emp !== "" && dataSettingsCompaniesSettings.dina_emp !== null ){
+                dataSettingsCompaniesSettings.stat_emp = 'Inativa'
             }
 
             this.dataSettingsCompaniesSettings.push(dataSettingsCompaniesSettings)

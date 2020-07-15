@@ -17,7 +17,7 @@ function AccountPaid( { values, errors, touched, handleChange, handleBlur, setFi
     useEffect(() => {
         async function loadLayouts() {
             try {
-                const response = await api.get(`/integrattion_layouts?layoutType=account_paid`)
+                const response = await api.get(`/integrattion_layouts`)
 
                 if(response.statusText === "OK"){
                     setIntegrattionLayouts(response.data)                    

@@ -61,7 +61,7 @@ const columns = [
         title: 'Status Integração',
         type: 'dropdown',
         filter: true,
-        source: ['Pendente', 'Analisando', 'Enviado Email', 'Não tem Financeiro', 'Não é possível Realizar', 'Cliente não vai Enviar Dados', 'Explicar pro Contábil', 'Concluída - ERP', 'Concluída - Excel', 'Concluída - Comp. Pagto', 'Concluída - Modelo Antigo', 'Feito em Outro Sistema', 'Mov. Pequena - Ñ Compensa', 'Feito no Honorários', 'Empresa Inativa', 'É Filial', 'Sem Movimento']
+        source: ['Pendente', 'Analisando', 'Não tem Financeiro', 'Cliente não vai Enviar Dados', 'Explicar pro Contábil', 'Concluída - ERP', 'Concluída - Excel', 'Concluída - Comp. Pagto', 'Concluída - Modelo Antigo', 'Feito em Outro Sistema', 'Mov. Pequena - Ñ Compensa', 'Feito no Honorários', 'Empresa Inativa', 'É Filial', 'Sem Movimento']
     }, { data: 'responsibleFinancialClient',
         title: 'Com quem Falar no Cliente?',
         type: 'text',
@@ -117,8 +117,7 @@ const columns = [
     }, { data: 'accountingResponsible',
         title: 'Responsável Contábil',
         type: 'text',
-        filter: true,
-        readOnly: true
+        filter: true
     }, { data: 'qtdEntryNotes',
         title: 'NF Ent.',
         type: 'numeric',

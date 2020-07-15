@@ -58,8 +58,8 @@ const CompaniesSettingsList = ( {history} ) => {
                 filtersPlugin.filter()
                 filtersPlugin.addCondition(3, 'by_value', [['Ativa']], 'conjunction')
                 filtersPlugin.addCondition(9, 'by_value', [['Não']], 'conjunction')
-                filtersPlugin.addCondition(10, 'neq', ['Sem Movimento'], 'conjunction')
-                filtersPlugin.addCondition(10, 'neq', ['Empresa Inativa'], 'conjunction')
+                // filtersPlugin.addCondition(10, 'neq', ['Sem Movimento'], 'conjunction')
+                // filtersPlugin.addCondition(10, 'neq', ['Empresa Inativa'], 'conjunction')
                 filtersPlugin.filter()
             }, 500)
         } catch (error) {
@@ -97,7 +97,7 @@ const CompaniesSettingsList = ( {history} ) => {
                     manualRowResize: true,
                     contextMenu: true,
                     hiddenColumns: {
-                        columns: [2, 6, 7, 8, 19, 20, 24, 25, 30],
+                        columns: [2, 6, 7, 8, 19, 20, 24, 25],
                         indicators: true
                     },
                     columnSorting: {
