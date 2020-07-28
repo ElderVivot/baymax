@@ -27,7 +27,6 @@ class SanitizeOFX(object):
 
     def process(self, file, sequential):
         dataFile = leTxt(file, removeBlankLines=True, treatAsText=True)
-        print(len(dataFile))
         
         nameFile = f"{funcoesUteis.getOnlyNameFile(os.path.basename(file))}-{sequential}.ofx"
 
