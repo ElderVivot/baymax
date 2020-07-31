@@ -73,7 +73,8 @@ function addOptionInCreatable(vector, value, label=undefined){
 
 const formatDateOptions = [
     { value: 'dd/mm/aaaa', label: 'dd/mm/aaaa'},
-    { value: 'aaaa-mm-dd', label: 'aaaa-mm-dd'}
+    { value: 'aaaa-mm-dd', label: 'aaaa-mm-dd'},
+    { value: 'dd/mm/aa', label: 'dd/mm/aa'}
 ]
 
 let positionInFileOptions = ClassUtil.createAnObjetOfCount()

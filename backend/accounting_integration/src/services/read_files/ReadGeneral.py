@@ -196,6 +196,8 @@ class ReadGeneral(object):
                     formatDate = 1
                 elif formatDate == 'aaaa-mm-dd':
                     formatDate = 2
+                elif formatDate == 'dd/mm/aa':
+                    formatDate = 5
                 else:
                     formatDate = 1
                 

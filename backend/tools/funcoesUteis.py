@@ -272,6 +272,9 @@ def retornaCampoComoData(valorCampo, formatoData=1):
     elif formatoData == 4:
         formatoDataStr = "%d%m%Y"
         lengthField = 8
+    elif formatoData == 5:
+        formatoDataStr = "%d/%m/%Y"
+        valorCampo = valorCampo[0:6] + '/20' + valorCampo[6:]
 
     try:
         return datetime.datetime.strptime(valorCampo[:lengthField], formatoDataStr).date()
