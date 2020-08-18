@@ -45,6 +45,7 @@ class GenerateExcel(object):
         sheet = self._workbook.add_worksheet('ExtratosBancarios')
         sheet.freeze_panes(1, 0)
 
+        sheet.set_column(9,10,options={'hidden':True})
         sheet.set_column(11,11,options={'hidden':True})
         sheet.set_column(12,12,options={'hidden':True})
         sheet.set_column(14,16,options={'hidden':True})
@@ -109,11 +110,11 @@ class GenerateExcel(object):
             sheet.write(row, 14, amount, self._cell_format_money)
             sheet.write(row, 15, document)
             sheet.write(row, 16, historic)
-            sheet.write_formula(row, 17, f'=IF(AND(B{row2}<>"",B{row2}<>"0",B{row2}<>0,C{row2}<>"",C{row2}<>"0",C{row2}<>0),D2,0)')
+            sheet.write_formula(row, 17, f'=IF(AND(B{row2}<>"",B{row2}<>"0",B{row2}<>0,C{row2}<>"",C{row2}<>"0",C{row2}<>0),D{row2},0)', self._cell_format_money)
             sheet.write_formula(row, 18, f'=CONCATENATE(J{row2},"-",K{row2})')
-            sheet.write_formula(row, 19, f'=SUMIFS(D:D,A:A,A{row2},S:S,S{row2},N:N,N{row2})')
-            sheet.write_formula(row, 20, f'=IF(N{row2}="-",SUMIFS(Pagamentos!O:O,Pagamentos!L:L,ExtratosBancarios!A{row2},Pagamentos!G:G,ExtratosBancarios!S{row2}),0)+SUMIFS(R:R,A:A,A{row2},S:S,S{row2},N:N,N{row2})')
-            sheet.write_formula(row, 21, f'=T{row2}-U{row2}')
+            sheet.write_formula(row, 19, f'=SUMIFS(D:D,A:A,A{row2},S:S,S{row2},N:N,N{row2})', self._cell_format_money)
+            sheet.write_formula(row, 20, f'=IF(N{row2}="-",SUMIFS(Pagamentos!O:O,Pagamentos!L:L,ExtratosBancarios!A{row2},Pagamentos!G:G,ExtratosBancarios!S{row2}),0)+SUMIFS(R:R,A:A,A{row2},S:S,S{row2},N:N,N{row2})', self._cell_format_money)
+            sheet.write_formula(row, 21, f'=T{row2}-U{row2}', self._cell_format_money)
 
     def sheetPayments(self, payments):
         sheet = self._workbook.add_worksheet('Pagamentos')
