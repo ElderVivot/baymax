@@ -35,6 +35,9 @@ class GenerateExcel(object):
             self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"atualizado_{nameFileUpdate}"))
         
         self._cell_format_header = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'yellow', 'text_wrap': True})
+        self._cell_format_header_green = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'green', 'text_wrap': True})
+        self._cell_format_header_red = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'red', 'text_wrap': True})
+        self._cell_format_header_orange = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'orange', 'text_wrap': True})
         self._cell_format_money = self._workbook.add_format({'num_format': '##0.00'})
         self._cell_format_date = self._workbook.add_format({'num_format': 'dd/mm/yyyy'})
         
@@ -45,6 +48,7 @@ class GenerateExcel(object):
         sheet.set_column(11,11,options={'hidden':True})
         sheet.set_column(12,12,options={'hidden':True})
         sheet.set_column(14,16,options={'hidden':True})
+        sheet.set_column(17,17,options={'hidden':True})
 
         sheet.write(0, 0, "Data", self._cell_format_header)
         sheet.write(0, 1, "Debito", self._cell_format_header)
@@ -63,9 +67,17 @@ class GenerateExcel(object):
         sheet.write(0, 14, "Valor Extrato", self._cell_format_header)
         sheet.write(0, 15, "Documento", self._cell_format_header)
         sheet.write(0, 16, "Historico Extrato", self._cell_format_header)
+        sheet.write(0, 17, "Valor 2", self._cell_format_header)
+        sheet.write(0, 18, "Banco/Conta", self._cell_format_header)
+        sheet.write(0, 19, "Total Extrato Banco, Dia e Operação", self._cell_format_header_green)
+        sheet.write(0, 20, "Total Financeiro + Extrato", self._cell_format_header_orange)
+        sheet.write(0, 21, "Diferença", self._cell_format_header_red)
+        sheet.write_comment(0, 20, "Esta coluna é o total da aba 'Pagamentos' por banco e dia + o valor do extrato onde a coluna débito e crédito são válidas (diferente de vazio ou zero).")
+        sheet.write_comment(0, 21, "Esta coluna é o total do extrato por banco e dia menos o total do financeiro do cliente. Esta coluna sempre deve estar com o valor igual à zero.")
 
         for key, extract in enumerate(extracts):
             row = key+1
+            row2 = key+2
 
             dateExtract = funcoesUteis.analyzeIfFieldIsValid(extract, "dateTransaction")
             bank = funcoesUteis.analyzeIfFieldIsValid(extract, "bank")
@@ -97,6 +109,11 @@ class GenerateExcel(object):
             sheet.write(row, 14, amount, self._cell_format_money)
             sheet.write(row, 15, document)
             sheet.write(row, 16, historic)
+            sheet.write_formula(row, 17, f'=IF(AND(B{row2}<>"",B{row2}<>"0",B{row2}<>0,C{row2}<>"",C{row2}<>"0",C{row2}<>0),D2,0)')
+            sheet.write_formula(row, 18, f'=CONCATENATE(J{row2},"-",K{row2})')
+            sheet.write_formula(row, 19, f'=SUMIFS(D:D,A:A,A{row2},S:S,S{row2},N:N,N{row2})')
+            sheet.write_formula(row, 20, f'=IF(N{row2}="-",SUMIFS(Pagamentos!O:O,Pagamentos!L:L,ExtratosBancarios!A{row2},Pagamentos!G:G,ExtratosBancarios!S{row2}),0)+SUMIFS(R:R,A:A,A{row2},S:S,S{row2},N:N,N{row2})')
+            sheet.write_formula(row, 21, f'=T{row2}-U{row2}')
 
     def sheetPayments(self, payments):
         sheet = self._workbook.add_worksheet('Pagamentos')

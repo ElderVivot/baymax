@@ -79,6 +79,9 @@ class ExtractsOFX(object):
                 document = funcoesUteis.treatTextField(transaction.checknum)
 
                 historic = funcoesUteis.treatTextField(transaction.memo)
+                # ignora lancamentos no extrato como saldo parcial, pq nao é um lançamento em si
+                if historic.find('SALDO PARCIAL') >= 0:
+                    continue
 
                 valuesOfLine = {
                     "bank": bankName,
