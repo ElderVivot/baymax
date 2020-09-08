@@ -39,9 +39,9 @@ class ProcessIntegration(object):
         self._codiEmp = int(input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: '))
         self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
         self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
-        # self._codiEmp = 1657
-        # self._inicialDate = '01/04/2020'
-        # self._finalDate = '30/04/2020'
+        # self._codiEmp = 224
+        # self._inicialDate = '01/07/2020'
+        # self._finalDate = '31/07/2020'
         self._lenghtLayoutsAccountPaid = 0
         self._waySettings = os.path.join(fileDir, f'backend/accounting_integration/data/settings/company{self._codiEmp}.json')
         if os.path.exists(self._waySettings) is False:

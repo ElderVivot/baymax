@@ -45,9 +45,10 @@ class Gps(object):
             if self._accountDebitOrCredit == 'DEBIT':
                 if fieldOne.count('AGENCIA') > 0:
                     account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplit, 3))
-                    account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1))
-                    if account.find(' ') > 0:
-                        account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split(' '), 1))               
+                    account = funcoesUteis.treatNumberField(account)
+                    # account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1))
+                    # if account.find(' ') > 0:
+                    #     account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split(' '), 1))               
             elif self._accountDebitOrCredit == 'CREDIT':
                 if fieldOne == "DATA DO PAGAMENTO":
                     paymentDate = funcoesUteis.retornaCampoComoData(fieldTwo)
