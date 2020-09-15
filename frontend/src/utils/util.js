@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const zeroLeft = (valueInsert, countZeros=2) => {
         return ("0000".repeat(countZeros) + valueInsert).slice(-countZeros);
 }
@@ -5,14 +7,14 @@ module.exports.zeroLeft = zeroLeft
 
 function transformToDate(date){
     try {
-        let newDate = date.substring(0,10)
-        newDate = new Date(newDate)
-        return `${zeroLeft(newDate.getDay(), 2)}/${zeroLeft(newDate.getMonth(), 2)}/${newDate.getFullYear()}`
+        console.log(moment(date.substring(0,10)).format('DD/MM/YYYY'))
+        return moment(date.substring(0,10)).format('DD/MM/YYYY')
     } catch (error) {
         return null
     }
 }
 module.exports.transformToDate = transformToDate
+transformToDate('2020-03-04')
 
 function implementsFilterInURL(baseURL='', filter={}){
     let url = `${baseURL}?`
