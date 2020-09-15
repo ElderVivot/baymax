@@ -135,13 +135,14 @@ class ComparePaymentsFinalWithDataBase(object):
         for provider in self._providers:
 
             provider['cgce_for_original'] = provider['cgce_for']
+            # quando retorno o cnpj já retorno com 12 char
             provider['cgce_for'] = "" if provider['cgce_for'] is None else provider['cgce_for'][:12]
 
             if int(provider['codi_for']) == int(codi_for):
                 return provider
 
             # pega só os 12 primeiros caracteres pois os dois últimos são apenas de validação do cnpj. Já se for CPF pega todos normal
-            if provider['cgce_for_original'] == cgce and cgce is not None:
+            if provider['cgce_for'] == cgce and cgce is not None:
                 return provider
 
             # agora as verificações pelo nome (esta primeira tem grau alto de confiabilidade)

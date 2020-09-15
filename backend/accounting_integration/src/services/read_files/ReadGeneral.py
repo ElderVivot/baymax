@@ -312,7 +312,7 @@ class ReadGeneral(object):
             return ""
 
         if self._validateIfCnpjOrCpfIsValid is False:
-            return ""
+            return cgce
         else:
             cgceValid = False
             if len(cgce) <= 11:

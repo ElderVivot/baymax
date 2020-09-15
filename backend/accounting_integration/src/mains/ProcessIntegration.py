@@ -39,7 +39,7 @@ class ProcessIntegration(object):
         self._codiEmp = int(input(f'\n - Digite o código da empresa dentro da Domínio que será realizada a integração: '))
         self._inicialDate = input(f'\n - Informe a data inicial (dd/mm/aaaa): ')
         self._finalDate = input(f' - Informe a data final (dd/mm/aaaa): ')
-        # self._codiEmp = 224
+        # self._codiEmp = 118
         # self._inicialDate = '01/07/2020'
         # self._finalDate = '31/07/2020'
         self._lenghtLayoutsAccountPaid = 0
