@@ -26,14 +26,14 @@ class StatusIntegrattionOfCompanie {
     }
 
     statusCompanie(){
-        if(this.dataCompanie.stat_emp !== "Ativa" || ( this.dataCompanie.dina_emp !== "" && this.dataCompanie.dina_emp !== null ) ){
+        if(this.dataCompanie.stat_emp !== "Ativa" || this.dataCompanie.dina_emp ){
             this.status = 'Empresa Inativa'
         }
     }
 
     isCompletedOldModel(){
         try {
-            if( ( this.dataCompanie.layoutsAccountPaidNewModel === "" || this.dataCompanie.layoutsAccountPaidNewModel === undefined ) && this.dataCompanie.dateAccountPaidOld !== undefined){
+            if( !this.dataCompanie.layoutsAccountPaidNewModel && this.dataCompanie.dateAccountPaidOld){
                 this.status = 'Concluída - Modelo Antigo'
             }
         } catch (error) {
@@ -43,7 +43,7 @@ class StatusIntegrattionOfCompanie {
 
     isCompleted(){
         try {
-            if(this.dataCompanie.layoutsAccountPaidNewModel !== "" && this.dataCompanie.layoutsAccountPaidNewModel !== undefined){
+            if(this.dataCompanie.layoutsAccountPaidNewModel && !this.dataCompanie.statusAccountPaid){
                 this.status = 'Concluída - ERP'
             }
         } catch (error) {
@@ -52,7 +52,7 @@ class StatusIntegrattionOfCompanie {
     }
 
     identifiesTheStatus(){
-        if(this.dataCompanie.statusAccountPaid !== "" && this.dataCompanie.statusAccountPaid !== undefined && this.dataCompanie.statusAccountPaid !== null){
+        if(this.dataCompanie.statusAccountPaid && this.dataCompanie.statusAccountPaid !== "Pendente"){
             this.status = this.dataCompanie.statusAccountPaid
             return this.status
         }

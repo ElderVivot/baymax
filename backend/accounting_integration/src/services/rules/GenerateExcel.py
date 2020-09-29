@@ -32,7 +32,7 @@ class GenerateExcel(object):
         if update is False:
             self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"integracao_contabil_{self._codiEmp}_{funcoesUteis.getDateTimeNowInFormatStr()}.xlsx"))
         else:
-            self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"atualizado_{nameFileUpdate}"))
+            self._workbook = xlsxwriter.Workbook(os.path.join(self._wayBaseToSaveFiles, f"{nameFileUpdate}"))
         
         self._cell_format_header = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'yellow', 'text_wrap': True})
         self._cell_format_header_green = self._workbook.add_format({'bold': True, 'font_color': 'black', 'bg_color': 'green', 'text_wrap': True})

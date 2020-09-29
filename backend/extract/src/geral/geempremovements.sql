@@ -1,5 +1,5 @@
 SELECT emp.codi_emp,
-       dini = YMD(YEAR(today()), MONTH(today()) - 7, 1),
+       dini = YMD(YEAR(today()), MONTH(today()) - 3, 1),
        dfin = YMD(YEAR(today()), MONTH(today()), 0),
        lan_manual = COALESCE(( SELECT SUM( CASE WHEN lote.tipo = 'X' THEN 1
                                        ELSE 0.5
@@ -62,6 +62,16 @@ SELECT emp.codi_emp,
                            AND ser.SEGI_SER <= 1
                            AND ser.origem_reg <> 0 ),
        servicos = servicos_manual + servicos_importada,
+       COALESCE( ( SELECT SUM( DSDBA.BI_DIF_S( DSDBA.DT_TIMESTAMP( loguser.data_log, loguser.TINI_LOG ), DSDBA.DT_TIMESTAMP( loguser.DFIM_LOG, loguser.TFIM_LOG ) ))
+                     FROM BETHADBA.GELOGUSER AS loguser 
+                    WHERE loguser.codi_emp = emp.codi_emp
+                      and YMD( year(loguser.data_log), month(loguser.data_log), 1 ) BETWEEN dini AND dfin
+			                AND loguser.sist_log IN (1) ), 0) AS tempo_acesso_contabil,
+       COALESCE( ( SELECT SUM( DSDBA.BI_DIF_S( DSDBA.DT_TIMESTAMP( loguser.data_log, loguser.TINI_LOG ), DSDBA.DT_TIMESTAMP( loguser.DFIM_LOG, loguser.TFIM_LOG ) ))
+                     FROM BETHADBA.GELOGUSER AS loguser 
+                    WHERE loguser.codi_emp = emp.codi_emp
+                      and YMD( year(loguser.data_log), month(loguser.data_log), 1 ) BETWEEN dini AND dfin
+			                AND loguser.sist_log IN (5) ), 0) AS tempo_acesso_fiscal,
        ( SELECT LIST( usu.i_usuario )
              FROM bethadba.usconfusuario AS usu
                   INNER JOIN bethadba.usconfempresas AS usuconfemp
@@ -70,7 +80,7 @@ SELECT emp.codi_emp,
             WHERE usu.tipo = 3
               AND emp.codi_emp = usuconfemp.i_empresa
               AND usuconfemp.modulos <> ''
-              AND usu.i_confusuario IN ( 7, 16, 19, 36, 67, 72 ) ) AS grupos_contabil,
+              AND usu.i_confusuario IN ( 7, 16, 19, 36, 67/*, 72*/ ) ) AS grupos_contabil,
        ( SELECT LIST( usu.i_usuario )
              FROM bethadba.usconfusuario AS usu
                   INNER JOIN bethadba.usconfempresas AS usuconfemp
@@ -79,7 +89,7 @@ SELECT emp.codi_emp,
             WHERE usu.tipo = 3
               AND emp.codi_emp = usuconfemp.i_empresa
               AND usuconfemp.modulos <> ''
-              AND usu.i_confusuario IN ( 7, 8, 9, 36, 72 ) ) AS grupos_fiscal
+              AND usu.i_confusuario IN ( 7, 8, 9, 36, 66/*, 72*/ ) ) AS grupos_fiscal
        
   FROM bethadba.geempre AS emp
   

@@ -46,7 +46,7 @@ class Darf(object):
                 if fieldOne.count('AGENCIA/CONTA') > 0:
                     account = fieldTwo.split()
                     account = funcoesUteis.analyzeIfFieldIsValidMatrix(account, 2)
-                    account = funcoesUteis.treatNumberField(account)            
+                    account = str(funcoesUteis.treatNumberField(account))            
             elif self._accountDebitOrCredit == 'CREDIT':
                 if fieldOne == "DATA DO PAGAMENTO":
                     paymentDate = funcoesUteis.retornaCampoComoData(fieldTwo)

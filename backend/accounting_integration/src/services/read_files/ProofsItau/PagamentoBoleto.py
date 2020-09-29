@@ -41,7 +41,7 @@ class PagamentoBoleto(object):
 
             if fieldOne.count('AGENCIA/CONTA') > 0:
                 account = funcoesUteis.analyzeIfFieldIsValidMatrix(fieldTwo.split('/'), 2)
-                account = funcoesUteis.treatNumberField(account)
+                account = str(funcoesUteis.treatNumberField(account))
                 # account = str(funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1), isInt=True))
 
                 cgcePaying = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplitTwoPoints, 3))

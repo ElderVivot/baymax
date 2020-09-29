@@ -53,7 +53,7 @@ class Agendamento(object):
             if self._typeLineRead == "conta_debitada":
                 if fieldOne.count('AGENCIA') > 0:
                     account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplit, 3))
-                    account = funcoesUteis.treatNumberField(account)
+                    account = str(funcoesUteis.treatNumberField(account))
                     # account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1))
                     # if account.find(' ') > 0:
                     #     account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split(' '), 1))

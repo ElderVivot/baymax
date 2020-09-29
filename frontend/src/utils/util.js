@@ -7,14 +7,12 @@ module.exports.zeroLeft = zeroLeft
 
 function transformToDate(date){
     try {
-        console.log(moment(date.substring(0,10)).format('DD/MM/YYYY'))
         return moment(date.substring(0,10)).format('DD/MM/YYYY')
     } catch (error) {
         return null
     }
 }
 module.exports.transformToDate = transformToDate
-transformToDate('2020-03-04')
 
 function implementsFilterInURL(baseURL='', filter={}){
     let url = `${baseURL}?`

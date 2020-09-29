@@ -180,6 +180,7 @@ class GenerateExportDominio(object):
         idRecord = '6100'
         user = ""
         scp = ""
+        historic = funcoesUteis.treatTextField(historic)
 
         if amountFloat > 0:
             return f"{idRecord}|{exportDate}|{accountCodeDebit}|{accountCodeCredit}|{amount}|{historicCode}|{historic}|{user}|{branch}|{scp}|\n"

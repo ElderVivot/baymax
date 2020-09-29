@@ -80,7 +80,7 @@ class ExtractsOFX(object):
 
                 historic = funcoesUteis.treatTextField(transaction.memo)
                 # ignora lancamentos no extrato como saldo parcial, pq nao é um lançamento em si
-                if historic.find('SALDO') >= 0:
+                if historic == 'SALDO' or historic.find('SALDO PARCIAL') >= 0:
                     continue
 
                 valuesOfLine = {
@@ -111,7 +111,7 @@ class ExtractsOFX(object):
         return funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
 
 if __name__ == "__main__":
-    codi_emp = str(293)
+    codi_emp = str(1345)
 
     # extractOFX = SanitizeOFX(codi_emp, f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}", f"C:/integracao_contabil/{codi_emp}/arquivos_originais")
     # extractOFX.processAll()

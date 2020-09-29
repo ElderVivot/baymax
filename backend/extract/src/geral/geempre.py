@@ -28,7 +28,6 @@ class ExtractGeempre():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
-        self._cursor = None
         self._wayToSave = os.path.join(wayDefaultToSave, 'empresas.json') 
         self._columns = []
 
@@ -38,12 +37,8 @@ class ExtractGeempre():
 
     def getCompanies(self):
         try:
-            self._cursor = self._connection.cursor()
             sql = "SELECT codi_emp, nome_emp FROM bethadba.geempre ORDER BY codi_emp"
-            self._cursor.execute(sql)
-
             df = pd.read_sql_query(sql, self._connection)
-
             data = json.loads(df.to_json(orient='records', date_format='iso'))
 
             return data
@@ -51,19 +46,14 @@ class ExtractGeempre():
         except Exception as e:
             print(f"Erro ao executar a consulta. O erro é: {e}")
         finally:
-            if self._cursor is not None:
-                self._cursor.close()
             self._DB.closeConnection()
 
     def exportData(self):
         try:
-            self._cursor = self._connection.cursor()
             sql = readSql(os.path.dirname(os.path.abspath(__file__)), 'geempre.sql')
-            self._cursor.execute(sql)
-
             df = pd.read_sql_query(sql, self._connection)
-
             data = json.loads(df.to_json(orient='records', date_format='iso'))
+
             print('- Exportando empresas:')
             for companie in data:
                 self._collection.update_one( { "codi_emp": companie['codi_emp'] }, { "$set": companie}, upsert=True )
@@ -73,8 +63,6 @@ class ExtractGeempre():
         except Exception as e:
             print(f"Erro ao executar a consulta. O erro é: {e}")
         finally:
-            if self._cursor is not None:
-                self._cursor.close()
             self._DB.closeConnection()
             self._connectionMongo.closeConnection()
 

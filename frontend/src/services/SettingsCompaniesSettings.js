@@ -66,7 +66,7 @@ class SettingsCompaniesSettings{
                 dataSettingsCompaniesSettings.stat_emp = 'Sem Movimento'
             }
 
-            if( dataSettingsCompaniesSettings.dina_emp !== "" && dataSettingsCompaniesSettings.dina_emp !== null ){
+            if( dataSettingsCompaniesSettings.dina_emp ){
                 dataSettingsCompaniesSettings.stat_emp = 'Inativa'
             }
 

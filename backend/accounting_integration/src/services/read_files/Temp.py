@@ -7,7 +7,7 @@ fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
 
 import json
-from tools.leArquivos import readCsv, leXls_Xlsx
+from tools.leArquivos import readCsv, leXls_Xlsx, ImageToText
 import tools.funcoesUteis as funcoesUteis
 
 
@@ -16,37 +16,14 @@ class Temp(object):
         self._wayFile = wayFile
 
     def process(self):
-        dataFile = leXls_Xlsx(self._wayFile)
-
-        classificacaoParte1 = ""
-        classificacaoParte2 = ""
-        nomeConta = ""
-        codigoConta = 0
-        codigoContaCorreto = ""
-        classificacaoCompleta = ""
-        tipoConta = ""
-
-        for data in dataFile:
-            classificacaoParte1 = funcoesUteis.treatNumberFieldInVector(data, 1)
-            classificacaoParte2 = funcoesUteis.treatNumberFieldInVector(data, 3)
-            nomeConta = funcoesUteis.treatTextFieldInVector(data, 6).replace(' .', '')
-            if nomeConta != "" and int(classificacaoParte1) > 0:
-                if nomeConta[0] == ".":
-                    nomeConta = nomeConta[1:].strip()
-
-                if int(classificacaoParte2) == 0:
-                    codigoConta += 1
-                    codigoContaCorreto = codigoConta
-                    classificacaoCompleta = classificacaoParte1
-                    tipoConta = "S"
-                else:
-                    codigoContaCorreto = int(classificacaoParte2)
-                    classificacaoCompleta = f'{classificacaoParte1}{classificacaoParte2}'
-                    tipoConta = "A"
-                
-                print(f'{codigoContaCorreto};{classificacaoCompleta};{nomeConta};{tipoConta}')
+        
+        for root, dirs, files in os.walk(self._wayFile):
+            for file in files:
+                wayFile = os.path.join(root, file)
+                print(wayFile)
+                ImageToText(wayFile, 'C:/_temp/robson_imgs')
 
 if __name__ == "__main__":
 
-    temp = Temp('C:/_temp/plano_contas_britago/plano_contas.xlsx')
+    temp = Temp('C:/_temp/robson_imgs')
     temp.process()
