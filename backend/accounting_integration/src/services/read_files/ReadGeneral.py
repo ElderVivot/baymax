@@ -459,11 +459,11 @@ class ReadGeneral(object):
         if bankAndAccountCorrelation is not None and len(bankAndAccountCorrelation) > 0:
             for correlation in bankAndAccountCorrelation:
                 correlationBankFile = funcoesUteis.treatTextFieldInDictionary(correlation, 'bankFile').replace('-', '')
-                correlationAccountFile = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountFile', isInt=True)).replace('-', '')
+                correlationAccountFile = funcoesUteis.treatTextFieldInDictionary(correlation, 'accountFile').replace('-', '')
                 correlationAccountFile = "" if correlationAccountFile == "0" else correlationAccountFile
                 
                 correlationBankNew = funcoesUteis.treatTextFieldInDictionary(correlation, 'bankNew').replace('-', '')
-                correlationAccountNew = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountNew', isInt=True)).replace('-', '')
+                correlationAccountNew = funcoesUteis.treatTextFieldInDictionary(correlation, 'accountNew').replace('-', '')
                 correlationAccountNew = "" if correlationAccountNew == "0" else correlationAccountNew                
 
                 if correlationAccountFile == "":
@@ -657,7 +657,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1605
+    codi_emp = 1344
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()

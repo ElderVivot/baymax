@@ -21,9 +21,9 @@ class Temp(object):
             for file in files:
                 wayFile = os.path.join(root, file)
                 print(wayFile)
-                ImageToText(wayFile, 'C:/_temp/robson_imgs')
+                ImageToText(wayFile, 'C:/_temp/robson_imgs/teste')
 
 if __name__ == "__main__":
 
-    temp = Temp('C:/_temp/robson_imgs')
+    temp = Temp('C:/_temp/robson_imgs/teste')
     temp.process()
