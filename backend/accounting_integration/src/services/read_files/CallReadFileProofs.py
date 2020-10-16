@@ -35,4 +35,11 @@ class CallReadFileProofs(object):
             proofsPaymentsSantander = ProofsPaymentsSantander(self._wayTemp)
             self._proofs.append(proofsPaymentsSantander.processAll())
 
+        if banksNumberList.count(3) > 0:
+            print(f'\t - Processando comprovantes de pagamento do Amazônia')
+            from read_files.ProofsAmazonia.Main import ProofsAmazonia
+
+            proofsAmazonia = ProofsAmazonia(self._wayTemp)                
+            self._proofs.append(proofsAmazonia.processAll())
+
         return funcoesUteis.removeAnArrayFromWithinAnother(self._proofs)

@@ -4,7 +4,8 @@ import { Col, Form } from "react-bootstrap"
 
 const banksOptions = [
     { value: 341, label: 'Itaú'},
-    { value: 33, label: 'Santander'}
+    { value: 33, label: 'Santander'},
+    { value: 3, label: 'Amazônia'}
 ]
 
 function ProofPayment( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues } ){

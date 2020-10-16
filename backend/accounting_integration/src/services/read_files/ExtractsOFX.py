@@ -34,7 +34,7 @@ class ExtractsOFX(object):
             return ""
 
     def returnAccount(self, numberBank, account):
-        if numberBank == 748 or numberBank == 341:
+        if numberBank == 748 or numberBank == 341 or numberBank == 3:
             return str(int(account[4:]))
         else:
             return account
