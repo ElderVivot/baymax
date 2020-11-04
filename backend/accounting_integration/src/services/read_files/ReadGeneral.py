@@ -494,7 +494,7 @@ class ReadGeneral(object):
 
         for correlation in bankAndAccountCorrelation:
             correlationBankNew = funcoesUteis.treatTextFieldInDictionary(correlation, 'bankNew').replace('-', '')
-            correlationAccountNew = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountNew', isInt=True)).replace('-', '')
+            correlationAccountNew = str(funcoesUteis.treatNumberFieldInDictionary(correlation, 'accountNew')).replace('-', '')
             correlationAccountNew = "" if correlationAccountNew == "0" else correlationAccountNew
 
             if bank == correlationBankNew and account == correlationAccountNew:
@@ -621,7 +621,7 @@ class ReadGeneral(object):
                     valuesOfLine['cgceProvider'] = self.validateIfCnpjOrCpfIsValid(funcoesUteis.returnDataFieldInDict(valuesOfLine, ['cgceProvider']))
 
                     isValid = self.isValidLineToPrint(valuesOfLine)
-                    isValidDataThisCompanie = self.isValidDataThisCompanie(valuesOfLine, validateIfDataIsThisCompanie, bankAndAccountCorrelation)              
+                    isValidDataThisCompanie = self.isValidDataThisCompanie(valuesOfLine, validateIfDataIsThisCompanie, bankAndAccountCorrelation)
                     if isValid is True and isValidDataThisCompanie is True:
                         valuesOfLine = self.multiplePerLessOneWhenNecessary(valuesOfLine)
                         if layoutType == 'account_paid':
@@ -657,7 +657,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 72
+    codi_emp = 1997
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
