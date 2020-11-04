@@ -8,6 +8,7 @@ from datetime import datetime
 from extract.src.functions.extractFunctions import returnMonthsOfYear
 from get_companies import GetCompanies
 from process_natureza_conta import ProcessNaturezaConta
+from process_sem_movimento import ProcessSemMovimento
 
 class ProcessCompetences():
     def __init__(self, startDate: datetime, endDate: datetime):
@@ -29,11 +30,14 @@ class ProcessCompetences():
                 if month in (3,6,9,12):
                     getCompanies = GetCompanies(f'{year}-{month:0>2}-01')
                     companies = getCompanies.get()
+
+                    process_natureza_conta = ProcessNaturezaConta(year, month, companies)
+                    process_natureza_conta.process()
+
+                    process_sem_movimento = ProcessSemMovimento(year, month, companies)
+                    process_sem_movimento.process()
                 else:
                     continue
-
-                process_natureza_conta = ProcessNaturezaConta(year, month, companies)
-                process_natureza_conta.process()
 
             print('')
             year += 1

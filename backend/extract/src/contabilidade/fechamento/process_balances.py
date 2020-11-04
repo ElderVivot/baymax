@@ -65,7 +65,7 @@ class ProcessBalances():
         self._companie['end_date'] = self._end_date
         self._companie['competence'] = self._end_date[:7]
 
-        self._saveProcessDb = SaveProcessDb(self._companie)
+        self._saveProcessDb = SaveProcessDb(self._companie, 'AccountFechamento')
         self._saveProcessDb.save()
 
         print(f"- Exportado empresa {self._companie['codi_emp']} - {self._companie['nome_emp']} | mês {self._companie['competence']}")

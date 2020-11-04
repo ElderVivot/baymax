@@ -657,7 +657,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1442
+    codi_emp = 72
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()

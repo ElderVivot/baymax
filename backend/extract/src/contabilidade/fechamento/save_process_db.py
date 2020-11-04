@@ -7,12 +7,12 @@ sys.path.append(absPath[:absPath.find('extract')])
 from dao.src.ConnectMongo import ConnectMongo
 
 class SaveProcessDb():
-    def __init__(self, dataToSave):
+    def __init__(self, dataToSave, collectionName):
         self._dataTosave = dataToSave
 
         self._connectionMongo = ConnectMongo()
         self._dbMongo = self._connectionMongo.getConnetion()
-        self._collection = self._dbMongo['AccountFechamento']
+        self._collection = self._dbMongo[collectionName]
 
     def save(self):
         try:
