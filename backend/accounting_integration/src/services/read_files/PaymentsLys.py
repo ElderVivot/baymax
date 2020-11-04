@@ -51,6 +51,8 @@ class PaymentsLysPorMoeda(object):
 
                 bankAndAccount = funcoesUteis.treatTextFieldInVector(data, 20, posionsOfHeader, "idFonte")
 
+                idCentroCusto = funcoesUteis.treatTextFieldInVector(data, 17, posionsOfHeader, "idCentroDeCustoPagamento")
+
                 positionWordBank = bankAndAccount.find('BANCO')
                 if positionWordBank >= 0:
                     positionPlusSign = bankAndAccount[positionWordBank:].find('>') + positionWordBank
@@ -62,10 +64,7 @@ class PaymentsLysPorMoeda(object):
                 else:
                     bank = "DINHEIRO"
                     accountBank = ""
-
-                idCentroCusto = funcoesUteis.treatTextFieldInVector(data, 17, posionsOfHeader, "idCentroDeCustoPagamento")
-
-                bank = f'{bank} {idCentroCusto}'
+                    bank = f'{bank} {idCentroCusto}'                
 
                 if paymentDate is not None:
                     valuesOfLine = {
