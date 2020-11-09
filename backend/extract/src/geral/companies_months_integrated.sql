@@ -7,7 +7,7 @@ SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini = DATE('2019-11-01'), dfin
           WHERE lan.codi_emp = emp.codi_emp
             AND year(lan.data_lan) = ano
             AND month(lan.data_lan) = mes
-            AND lan.codi_usu IN ('ELDER.DIAS', 'MIRLA')
+            AND lan.codi_usu IN ('ELDER.DIAS', 'MIRLA', 'AUGUSTO.MACHADO')
             AND lan.origem_reg = 2 ) AS qtd_por_mes,
        ( SELECT count()
            FROM bethadba.geempre AS emp2

@@ -10,8 +10,8 @@ from process_competences import ProcessCompetences
 
 class MainFechamento():
     def __init__(self):
-        self._startDate = retornaCampoComoData('01/01/2019')
-        self._endDate = retornaCampoComoData('01/10/2020')
+        self._startDate = retornaCampoComoData(input('Informe o data inicial (dd/mm/aaaa): '))#retornaCampoComoData('01/01/2019')
+        self._endDate = retornaCampoComoData(input('Informe o data final (dd/mm/aaaa): '))
 
         processCompetences = ProcessCompetences(self._startDate, self._endDate)
         processCompetences.process()
