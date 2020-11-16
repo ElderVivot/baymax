@@ -97,6 +97,7 @@ class ExtractsOFX(object):
 
                 valuesOfFile.append(valuesOfLine.copy())
         except Exception as e:
+            print(e)
             pass
         
         return valuesOfFile
@@ -111,10 +112,10 @@ class ExtractsOFX(object):
         return funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
 
 if __name__ == "__main__":
-    codi_emp = str(1345)
+    codi_emp = str(43)
 
     # extractOFX = SanitizeOFX(codi_emp, f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}", f"C:/integracao_contabil/{codi_emp}/arquivos_originais")
     # extractOFX.processAll()
 
-    extractOFX = ExtractsOFX(codi_emp, f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}/ofxs", f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}")
+    extractOFX = ExtractsOFX(codi_emp, f"C:/integracao_contabil/{codi_emp}/arquivos_originais", f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}")
     print(extractOFX.processAll())

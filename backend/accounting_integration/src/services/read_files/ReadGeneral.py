@@ -640,7 +640,7 @@ class ReadGeneral(object):
             for file in files:
                 wayFile = os.path.join(root, file)
 
-                if file.lower().endswith(('.xls', '.xlsx', '.csv', '.html', '.txt')):
+                if file.lower().endswith(('.xls', '.xlsx', '.csv', '.html', '.txt', '.xltx')):
                     process = self.process(wayFile)
                     self._payments.append(process[0])
                     self._extracts.append(process[1])
