@@ -28,7 +28,7 @@ class Darf(object):
         paymentDate = None
         
         for data in self._dataFile:
-            if isDarf == False and data.find('PAGAMENTO DARF') >= 0:
+            if isDarf == False and data.find('PAGAMENTO') >= 0 and ( data.find('DARF') >= 0 or data.find('SIMPLES NACIONAL') >= 0):
                 isDarf = True
 
             data = str(data)
@@ -43,10 +43,14 @@ class Darf(object):
                 self._accountDebitOrCredit = 'CREDIT'
 
             if self._accountDebitOrCredit == 'DEBIT':
-                if fieldOne.count('AGENCIA/CONTA') > 0:
-                    account = fieldTwo.split()
+                # if fieldOne.count('AGENCIA/CONTA') > 0:
+                #     account = fieldTwo.split()
+                #     account = funcoesUteis.analyzeIfFieldIsValidMatrix(account, 2)
+                #     account = str(funcoesUteis.treatNumberField(account))
+                if fieldOne.count('AGENCIA') > 0 and fieldOne.count('CONTA') > 0:
+                    account = fieldTwo.split('/')
                     account = funcoesUteis.analyzeIfFieldIsValidMatrix(account, 2)
-                    account = str(funcoesUteis.treatNumberField(account))            
+                    account = str(funcoesUteis.treatNumberField(account, isInt=True))
             elif self._accountDebitOrCredit == 'CREDIT':
                 if fieldOne == "DATA DO PAGAMENTO":
                     paymentDate = funcoesUteis.retornaCampoComoData(fieldTwo)
@@ -62,8 +66,10 @@ class Darf(object):
                     amountPaid = funcoesUteis.treatDecimalField(fieldTwo)
                 if fieldOne.count('CPF OU CNPJ') > 0:
                     nameProvider = f"DARF - {fieldTwo}"    
+                if nameProvider == "":
+                    nameProvider = "SIMPLES NACIONAL"
 
-            if fieldOne.count('AGENCIA/CONTA') > 0:
+            if fieldOne.count('AGENCIA') > 0 and fieldOne.count('CONTA') > 0:
                 if paymentDate is not None and amountPaid > 0 and isDarf is True:
                     valuesOfLine = {
                         "paymentDate": paymentDate,
@@ -78,7 +84,7 @@ class Darf(object):
                         "amountFine": round(amountFine, 2),
                         "amountOriginal": round(amountOriginal, 2),
                         "historic": historic,
-                        "category": 'DARF',
+                        "category": 'DARF' if nameProvider != "SIMPLES NACIONAL" else nameProvider,
                         "cgcePaying": "",
                         "foundProof": True,
                         "amountPaidPerLote": round(amountPaid, 2)

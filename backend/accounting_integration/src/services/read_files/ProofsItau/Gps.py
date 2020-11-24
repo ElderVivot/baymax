@@ -43,12 +43,10 @@ class Gps(object):
                 self._accountDebitOrCredit = 'CREDIT'
 
             if self._accountDebitOrCredit == 'DEBIT':
-                if fieldOne.count('AGENCIA') > 0:
-                    account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(dataSplit, 3))
-                    account = str(funcoesUteis.treatNumberField(account))
-                    # account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split('-'), 1))
-                    # if account.find(' ') > 0:
-                    #     account = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValidMatrix(account.split(' '), 1))               
+                if fieldOne.count('AGENCIA') > 0 and fieldOne.count('CONTA') > 0:
+                    account = fieldTwo.split('/')
+                    account = funcoesUteis.analyzeIfFieldIsValidMatrix(account, 2)
+                    account = str(funcoesUteis.treatNumberField(account, isInt=True))
             elif self._accountDebitOrCredit == 'CREDIT':
                 if fieldOne == "DATA DO PAGAMENTO":
                     paymentDate = funcoesUteis.retornaCampoComoData(fieldTwo)
@@ -61,7 +59,7 @@ class Gps(object):
                 if fieldOne.count('IDENTIFICADOR') > 0:
                     cgceProvider = fieldTwo
 
-            if fieldOne == "AGENCIA":
+            if fieldOne == "AGENCIA" or ( fieldOne.count('AGENCIA') > 0 and fieldOne.count('CONTA') > 0 ):
                 if paymentDate is not None and amountPaid > 0 and isDarf is True:
                     valuesOfLine = {
                         "paymentDate": paymentDate,
