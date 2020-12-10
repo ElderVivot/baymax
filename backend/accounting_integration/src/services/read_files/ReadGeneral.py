@@ -611,7 +611,6 @@ class ReadGeneral(object):
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
-                    print(data)
                     
                     valuesOfLine = self.correlationBankAndAccountBetweenSettingsAndClient(valuesOfLine, bankAndAccountCorrelation)
                     # ele verifica se é necessário somar juros/multa e subtrair o desconto no valor pago
