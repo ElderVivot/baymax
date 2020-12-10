@@ -611,6 +611,7 @@ class ReadGeneral(object):
                     valuesOfLine = self.treatDataLayout(data, fields, posionsOfHeader)
                     self.updateFieldsNotMain(valuesOfLine, fields)
                     valuesOfLine = self.groupsRowData(valuesOfLine)
+                    print(data)
                     
                     valuesOfLine = self.correlationBankAndAccountBetweenSettingsAndClient(valuesOfLine, bankAndAccountCorrelation)
                     # ele verifica se é necessário somar juros/multa e subtrair o desconto no valor pago
@@ -657,7 +658,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 1997
+    codi_emp = 52
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()

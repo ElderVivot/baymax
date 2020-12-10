@@ -89,12 +89,15 @@ class CompareWithSettings(object):
 
                 accountDominio = int(funcoesUteis.treatNumberFieldInVector(data, 4, self._posionsOfHeaderProviderOrExpense, "Conta Contábil Domínio"))
 
+                overwriteAccount = funcoesUteis.treatTextFieldInVector(data, 5, self._posionsOfHeaderProviderOrExpense, "Sobrescrever a Conta na Planilha Processada?")
+
                 if fieldComparation != "" and valueComparation != "" and accountDominio > 0:
                     self._valuesOfLineProviderOrExpense = {
                         "fieldComparation": fieldComparation,
                         "typeComparation": typeComparation,
                         "valueComparation": valueComparation,
-                        "accountDominio": accountDominio
+                        "accountDominio": accountDominio,
+                        "overwriteAccount": overwriteAccount
                     }
 
                     self._valuesOfFileProviderOrExpense.append(self._valuesOfLineProviderOrExpense.copy())
@@ -254,37 +257,36 @@ class CompareWithSettings(object):
             fieldComparation = funcoesUteis.analyzeIfFieldIsValid(providerOrExpense, "fieldComparation")
             typeComparation = funcoesUteis.analyzeIfFieldIsValid(providerOrExpense, "typeComparation")
             valueComparation = funcoesUteis.analyzeIfFieldIsValid(providerOrExpense, "valueComparation")
-            accountDominio = funcoesUteis.analyzeIfFieldIsValid(providerOrExpense, "accountDominio")
 
             try:
                 if fieldComparation == 1: # comparação pelo fornecedor
                     if typeComparation == 1: # comparação caso o valor seja idêntico
                         if nameProvider == valueComparation and nameProvider is not None:
-                            return accountDominio
+                            return providerOrExpense
                     else:
                         if nameProvider.count(valueComparation) > 0 and nameProvider is not None: # comparação caso contenha o texto
-                            return accountDominio
+                            return providerOrExpense
                 elif fieldComparation == 2: # comparação pela conta contábil
                     if typeComparation == 1: # comparação caso o valor seja idêntico
                         if account == valueComparation and account is not None:
-                            return accountDominio
+                            return providerOrExpense
                     else:
                         if account.count(valueComparation) > 0 and account is not None: # comparação caso contenha o texto
-                            return accountDominio
+                            return providerOrExpense
                 elif fieldComparation == 3: # comparação pela categoria
                     if typeComparation == 1: # comparação caso o valor seja idêntico
                         if category == valueComparation and category is not None:
-                            return accountDominio
+                            return providerOrExpense
                     else:
                         if category.count(valueComparation) > 0 and category is not None: # comparação caso contenha o texto
-                            return accountDominio
+                            return providerOrExpense
                 elif fieldComparation == 4: # comparação pelo historico
                     if typeComparation == 1: # comparação caso o valor seja idêntico
                         if historic == valueComparation and historic is not None:
-                            return accountDominio
+                            return providerOrExpense
                     else:
                         if historic.count(valueComparation) > 0 and historic is not None: # comparação caso contenha o texto
-                            return accountDominio
+                            return providerOrExpense
             except Exception:
                 pass
 
@@ -360,9 +362,14 @@ class CompareWithSettings(object):
 
             # busca a conta da despesa/fornecedor
             accountCode = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(payment, "accountCode", 0), isInt=True)
-            if accountCode == 0:
-                accountCode = self.returnDataProviderOrExpense(nameProvider, accountPlan, category, historic)
-                accountCode = 0 if accountCode is None else accountCode
+            dataProviderOrExpense = self.returnDataProviderOrExpense(nameProvider, accountPlan, category, historic)
+            accountCodeNew = funcoesUteis.analyzeIfFieldIsValid(dataProviderOrExpense, 'accountDominio', None)
+            overwriteAccount = funcoesUteis.analyzeIfFieldIsValid(dataProviderOrExpense, 'overwriteAccount', '')
+            if overwriteAccount == 'SIM':
+                accountCode = 0 if accountCodeNew is None else accountCodeNew
+            else:
+                if accountCode == 0:
+                    accountCode = 0 if accountCodeNew is None else accountCodeNew
             
             # pra empresas que tem plano de contas no sistema deles e o plano não bate, tem que fazer um de-para
             accountCodeOld = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeOld", None)

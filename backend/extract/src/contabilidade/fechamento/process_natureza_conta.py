@@ -9,7 +9,7 @@ class ProcessNaturezaConta():
 
     def process(self):
         for companie in self._companies:
-            if self._year == 2019 and companie['regime_emp'] in (2, 4) and self._month in (3, 6, 9):
+            if self._year <= 2019 and companie['regime_emp'] in (2, 4) and self._month in (3, 6, 9):
                 continue
             
             getNaturezaConta = GetNaturezaConta(companie['codi_emp'])
