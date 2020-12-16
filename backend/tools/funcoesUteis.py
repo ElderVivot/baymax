@@ -427,6 +427,8 @@ def returnBankForNumber(numberBank):
         nameBank = 'SOFISA'
     elif numberBank == 4:
         nameBank = 'NORDESTE'
+    elif numberBank == 218:
+        nameBank = 'BS2'
     else:
         nameBank = str(numberBankOriginal)
 

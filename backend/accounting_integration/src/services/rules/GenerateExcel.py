@@ -113,7 +113,7 @@ class GenerateExcel(object):
             sheet.write_formula(row, 17, f'=IF(AND(B{row2}<>"",B{row2}<>"0",B{row2}<>0,C{row2}<>"",C{row2}<>"0",C{row2}<>0),D{row2},0)', self._cell_format_money)
             sheet.write_formula(row, 18, f'=CONCATENATE(J{row2},"-",K{row2})')
             sheet.write_formula(row, 19, f'=SUMIFS(D:D,A:A,A{row2},S:S,S{row2},N:N,N{row2})', self._cell_format_money)
-            sheet.write_formula(row, 20, f'=IF(N{row2}="-",SUMIFS(Pagamentos!O:O,Pagamentos!L:L,ExtratosBancarios!A{row2},Pagamentos!G:G,ExtratosBancarios!S{row2}),0)+SUMIFS(R:R,A:A,A{row2},S:S,S{row2},N:N,N{row2})', self._cell_format_money)
+            sheet.write_formula(row, 20, f'=IF(N{row2}="-",SUMIFS(Pagamentos!O:O,Pagamentos!L:L,A{row2},Pagamentos!G:G,S{row2}),0)+SUMIFS(R:R,A:A,A{row2},S:S,S{row2},N:N,N{row2})', self._cell_format_money)
             sheet.write_formula(row, 21, f'=T{row2}-U{row2}', self._cell_format_money)
 
     def sheetPayments(self, payments):
@@ -154,12 +154,14 @@ class GenerateExcel(object):
         sheet.write(0, 24, "CNPJ Pagador", self._cell_format_header)
         sheet.write(0, 25, "Historico Extrato Bancário", self._cell_format_header)
         sheet.write(0, 26, "Conta Contabil Sistema Cliente", self._cell_format_header)
+        sheet.write(0, 27, "Total no Extrato por Banco e Dia", self._cell_format_header_orange)
 
         # ordena os payments por data
         payments = sorted(payments, key=itemgetter('bank', 'account', 'dateOfImport'))
 
         for key, payment in enumerate(payments):
             row = key+1
+            row2 = key+2
 
             numberLote = funcoesUteis.analyzeIfFieldIsValid(payment, "numberLote", 0)
             numberLote = row if numberLote == 0 else numberLote
@@ -190,7 +192,7 @@ class GenerateExcel(object):
             cgcePaying = funcoesUteis.analyzeIfFieldIsValid(payment, "cgcePaying")
             historicExtract = funcoesUteis.analyzeIfFieldIsValid(payment, "historicExtract")
             accountCodeOld = funcoesUteis.analyzeIfFieldIsValid(payment, "accountCodeOld")
-
+            
             sheet.write(row, 0, numberLote)
             sheet.write(row, 1, document)
             sheet.write(row, 2, findNote)
@@ -218,6 +220,7 @@ class GenerateExcel(object):
             sheet.write(row, 24, cgcePaying)
             sheet.write(row, 25, historicExtract)
             sheet.write(row, 26, accountCodeOld)
+            sheet.write_formula(row, 27, f'=SUMIFS(ExtratosBancarios!D:D,ExtratosBancarios!S:S,G{row2},ExtratosBancarios!A:A,L{row2},ExtratosBancarios!N:N,"-")', self._cell_format_money)
 
     def closeFile(self):
         self._workbook.close()
