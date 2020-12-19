@@ -23,6 +23,7 @@ from services.rules.GenerateExcel import GenerateExcel
 from services.rules.FilterPeriod import FilterPeriod
 from services.rules.CompareWithSettings import CompareWithSettings
 from services.rules.ReturnFilesDontFindForm import ReturnFilesDontFindForm
+from services.rules.DeleteExtractDuplicate import DeleteExtractDuplicate
 from dao.src.GetSettingsCompany import GetSettingsCompany
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
@@ -79,10 +80,13 @@ class ProcessIntegration(object):
         readPDFs.transformPDFToText()
         readPDFs.doBackupFolderPDF() # faz o bkp pra não perder os dados quando apagar as informações
 
-        # reads the txts
         print(' - Etapa 2: Lendo os OFXs ')
         extractsOFX = ExtractsOFX(self._codiEmp, self._wayFilesToRead, self._wayFilesTemp)
-        self._extracts.append(extractsOFX.processAll())
+        extracts = extractsOFX.processAll()
+        
+        print(' \t- Etapa 2.1: Retirando lançamento de extrato duplicados. ')
+        deleteExtractDuplicate = DeleteExtractDuplicate(extracts)
+        self._extracts.append(deleteExtractDuplicate.process())
 
         # reads the financy
         print(' - Etapa 3: Lendo o financeiro do cliente')

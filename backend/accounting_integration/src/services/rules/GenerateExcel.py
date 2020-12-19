@@ -76,6 +76,8 @@ class GenerateExcel(object):
         sheet.write_comment(0, 20, "Esta coluna é o total da aba 'Pagamentos' por banco e dia + o valor do extrato onde a coluna débito e crédito são válidas (diferente de vazio ou zero).")
         sheet.write_comment(0, 21, "Esta coluna é o total do extrato por banco e dia menos o total do financeiro do cliente. Esta coluna sempre deve estar com o valor igual à zero.")
 
+        extracts = sorted(extracts, key=itemgetter('bank', 'account', 'dateTransaction', 'operation'))
+
         for key, extract in enumerate(extracts):
             row = key+1
             row2 = key+2
