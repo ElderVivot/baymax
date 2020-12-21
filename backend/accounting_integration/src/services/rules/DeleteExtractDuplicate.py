@@ -22,22 +22,17 @@ class DeleteExtractDuplicate(object):
         document = funcoesUteis.treatNumberField(document, isInt=True)
         extract['document'] = document
         return extract
-    
-    # def extractWithOnlyDataNecessary(self):
-    #     for extract in self._extracts:
-    #         newExtract = self.cleanExtractWithOnlyDataNecessary(extract)
-    #         self._extractsWithOnlyDataNecessary.append(newExtract)
 
     def checkIfDuplicate(self, extract) -> bool:
-        qtdExtract = list(filter(lambda x: x == extract, self._newExtracts))
+        qtdExtract = list(filter(lambda x: x == extract, self._extractsWithOnlyDataNecessary))
         return False if len(qtdExtract) < 1 else True
 
     def process(self):
-        # self.extractWithOnlyDataNecessary()
         for extract in self._extracts:
-            newExtract = self.cleanExtractWithOnlyDataNecessary(extract)
+            newExtract = self.cleanExtractWithOnlyDataNecessary(extract.copy())
             duplicateExtract = self.checkIfDuplicate(newExtract)
             if duplicateExtract is not True:
+                self._extractsWithOnlyDataNecessary.append(newExtract)
                 self._newExtracts.append(extract)
             else:
                 continue
