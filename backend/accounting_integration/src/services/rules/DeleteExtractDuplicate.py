@@ -38,7 +38,7 @@ class DeleteExtractDuplicate(object):
             newExtract = self.cleanExtractWithOnlyDataNecessary(extract)
             duplicateExtract = self.checkIfDuplicate(newExtract)
             if duplicateExtract is not True:
-                self._newExtracts.append(newExtract)
+                self._newExtracts.append(extract)
             else:
                 continue
 
