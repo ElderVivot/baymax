@@ -429,6 +429,8 @@ def returnBankForNumber(numberBank):
         nameBank = 'NORDESTE'
     elif numberBank == 218:
         nameBank = 'BS2'
+    elif numberBank == 634:
+        nameBank = 'TRIANGULO'    
     else:
         nameBank = str(numberBankOriginal)
 
