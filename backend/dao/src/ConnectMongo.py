@@ -36,10 +36,6 @@ class ConnectMongo(object):
             except Exception as e:
                 print(f"** Não foi possível fechar a conexão. O erro é: {e}")
 
-    def testFunctionPymongo(self):
-        self._collection = self._selectDB.teste
-        self._collection.aggregate()
-
 
 if __name__ == "__main__":
     connect = ConnectMongo()

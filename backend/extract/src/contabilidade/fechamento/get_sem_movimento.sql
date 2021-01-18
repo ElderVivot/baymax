@@ -2,6 +2,10 @@ SELECT emp.codi_emp,
        dini = DATE('#'),
        dfin = DATE('#'),
        cgce_raiz = SUBSTR(emp.cgce_emp, 1, 8),
+       parcta.fechamento_data AS dt_fechamento_contabil,
+       parcta.dini_par AS dt_periodo_ini_trabalho,
+       parcta.dfin_par AS dt_periodo_fim_trabalho,
+       parcta.lant_par AS lan_permitido_fora_trabalho,
        entradas = (SELECT COUNT(*)
                             FROM BETHADBA.EFENTRADAS AS ent
                                  INNER JOIN bethadba.geempre AS emp2
@@ -42,5 +46,7 @@ SELECT emp.codi_emp,
               AND bas.competencia BETWEEN dini AND dfin ) AS calc_folha                                                                  
 
 FROM BETHADBA.GEEMPRE AS emp
+     LEFT OUTER JOIN bethadba.ctparmto AS parcta
+                  ON     parcta.codi_emp = emp.codi_emp
 
 WHERE emp.codi_emp = #

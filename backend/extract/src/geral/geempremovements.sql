@@ -80,7 +80,7 @@ SELECT emp.codi_emp,
             WHERE usu.tipo = 3
               AND emp.codi_emp = usuconfemp.i_empresa
               AND usuconfemp.modulos <> ''
-              AND usu.i_confusuario IN ( 7, 16, 19, 36, 67/*, 72*/ ) ) AS grupos_contabil,
+              AND usu.i_confusuario IN ( 16, 19, 36, 67, 72 ) ) AS grupos_contabil,
        ( SELECT LIST( usu.i_usuario )
              FROM bethadba.usconfusuario AS usu
                   INNER JOIN bethadba.usconfempresas AS usuconfemp
@@ -89,7 +89,7 @@ SELECT emp.codi_emp,
             WHERE usu.tipo = 3
               AND emp.codi_emp = usuconfemp.i_empresa
               AND usuconfemp.modulos <> ''
-              AND usu.i_confusuario IN ( 7, 8, 9, 36, 66/*, 72*/ ) ) AS grupos_fiscal
+              AND usu.i_confusuario IN ( 8, 9, 36, 66, 72 ) ) AS grupos_fiscal
        
   FROM bethadba.geempre AS emp
   

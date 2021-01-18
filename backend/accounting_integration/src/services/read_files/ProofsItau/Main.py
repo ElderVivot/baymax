@@ -21,6 +21,7 @@ from Agendamento import Agendamento
 from Darf import Darf
 from Gps import Gps
 from Fgts import Fgts
+from Pix import Pix
 
 
 class ProofsItau(object):
@@ -86,8 +87,14 @@ class ProofsItau(object):
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Fgts')
             return proofFgts
 
+        pix = Pix(dataFile)
+        proofPix = pix.process()
+        if proofPix is not None:
+            funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Pix')
+            return proofPix
+
     def processAll(self):
-        for root, dirs, files in os.walk(self._wayTemp):
+        for root, _, files in os.walk(self._wayTemp):
             for file in files:
                 if file.lower().endswith(('.txt')):
                     wayFile = os.path.join(root, file)
