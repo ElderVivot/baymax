@@ -92,7 +92,8 @@ class ExtractsOFX(object):
                     "operation": operation,
                     "document": document,
                     "historicCode": historicCode,
-                    "historic": historic
+                    "historic": historic,
+                    "wayFile": file
                 }
 
                 valuesOfFile.append(valuesOfLine.copy())
@@ -112,7 +113,7 @@ class ExtractsOFX(object):
         return funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
 
 if __name__ == "__main__":
-    codi_emp = str(656)
+    codi_emp = str(1418)
 
     # extractOFX = SanitizeOFX(codi_emp, f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}", f"C:/integracao_contabil/{codi_emp}/arquivos_originais")
     # extractOFX.processAll()
