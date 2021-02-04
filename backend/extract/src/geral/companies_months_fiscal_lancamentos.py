@@ -16,7 +16,7 @@ from dateutil.relativedelta import relativedelta
 from db.ConexaoBanco import DB
 from dao.src.ConnectMongo import ConnectMongo
 from tools.leArquivos import readSql
-from tools.funcoesUteis import treatTextField, retornaCampoComoData, analyzeIfFieldIsValid
+from tools.funcoesUteis import treatTextField, retornaCampoComoData, analyzeIfFieldIsValid, analyzeIfFieldIsValidMatrix
 from geempre import ExtractGeempre
 import functions.extractFunctions as extractFunctions
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
@@ -28,11 +28,11 @@ class CompaniesMonthsIntegrated():
 
         self._connectionMongo = ConnectMongo()
         self._dbMongo = self._connectionMongo.getConnetion()
-        self._collection = self._dbMongo['CompaniesMonthsIntegrated'] # vai adicionar na tabela de empresas os dados
+        self._collection = self._dbMongo['CompaniesMonthsAmountNotes']
 
-    def getCompaniesMonthsIntegrated(self, codiEmp):
+    def getCompaniesMonthsAmountNotes(self, codiEmp):
         try:
-            sql = readSql(os.path.dirname(os.path.abspath(__file__)), 'companies_months_integrated.sql', codiEmp)
+            sql = readSql(os.path.dirname(os.path.abspath(__file__)), 'companies_months_fiscal_lancamentos.sql', codiEmp, codiEmp, codiEmp)
             df = pd.read_sql_query(sql, self._connection)
             data = json.loads(df.to_json(orient='records', date_format='iso'))
 
@@ -40,11 +40,7 @@ class CompaniesMonthsIntegrated():
         except Exception as e:
             print(e)  
 
-    def checkMonthsIntegrated(self, companieSettingView, companieMonthsIntegrated):
-        statusAccountPaid = treatTextField(companieSettingView['statusAccountPaid'])
-        isCompanyBranch = treatTextField(companieSettingView['isCompanyBranch'])
-
-        dateAccountPaid = retornaCampoComoData(analyzeIfFieldIsValid(companieSettingView, 'dateAccountPaid', '01/01/1900'))
+    def saveMongo(self, codiEmp, companieMonthsAmountNotes):
         dateStart = retornaCampoComoData('01/11/2019')
         dateNow = datetime.today() - relativedelta(months=1)
         
@@ -59,36 +55,39 @@ class CompaniesMonthsIntegrated():
             
             print('\t\t - ', end='')
             for month in months:
+                companieDataToSave = {}
+
                 monthYearFormated = f'{month:0>2}/{year}'
-                competence = retornaCampoComoData(f"01/{monthYearFormated}")
                 print(f'{monthYearFormated}, ', end='')
 
-                integrated = list(filter(lambda companieMonths: companieMonths['comp'][:10] == f"{year}-{month:0>2}-01", companieMonthsIntegrated))
-                
-                try:
-                    companieSettingView['monthIntegratedMandatory'] = True if dateAccountPaid < competence and \
-                        statusAccountPaid.find('CONCLUIDA') >= 0 and statusAccountPaid.find('ANTIGO') < 0 and \
-                        isCompanyBranch == "NAO" else False
-                except Exception:
-                    companieSettingView['monthIntegratedMandatory'] = False
+                amountNotaSaida = list(filter(lambda companieMonths: companieMonths['comp'][:10] == f"{year}-{month:0>2}-01" \
+                    and companieMonths['tipo'] == 'SAIDA', companieMonthsAmountNotes))
+                amountNotaSaida = analyzeIfFieldIsValidMatrix(amountNotaSaida, 1, [])
 
-                if len(integrated) > 0:
-                    integrated = integrated[0]
-                    companieSettingView['existIntegrated'] = True if integrated['qtd_lan_ti_importado_dlan'] > 0 else False
-                    
-                companieSettingView['qtd_lan_ti_importado_dlan'] = analyzeIfFieldIsValid(integrated, 'qtd_lan_ti_importado_dlan', 0)
-                companieSettingView['qtd_lan_ti_importado_dori'] = analyzeIfFieldIsValid(integrated, 'qtd_lan_ti_importado_dori', 0)
-                companieSettingView['qtd_lan_operacao'] = analyzeIfFieldIsValid(integrated, 'qtd_lan_operacao', 0)
-                companieSettingView['qtd_lan_operacao_dori'] = analyzeIfFieldIsValid(integrated, 'qtd_lan_operacao_dori', 0)
+                amountNotaEntrada = list(filter(lambda companieMonths: companieMonths['comp'][:10] == f"{year}-{month:0>2}-01" \
+                    and companieMonths['tipo'] == 'ENTRADA', companieMonthsAmountNotes))
+                amountNotaEntrada = analyzeIfFieldIsValidMatrix(amountNotaEntrada, 1, [])
 
-                companieSettingView['competence'] = f'{year}-{month:0>2}'
+                amountNotaServico = list(filter(lambda companieMonths: companieMonths['comp'][:10] == f"{year}-{month:0>2}-01" \
+                    and companieMonths['tipo'] == 'SERVICO', companieMonthsAmountNotes))
+                amountNotaServico = analyzeIfFieldIsValidMatrix(amountNotaServico, 1, [])
+    
+                companieDataToSave['qtd_notas_saidas_operacao'] = analyzeIfFieldIsValid(amountNotaSaida, 'qtd_notas_operacao', 0)
+                companieDataToSave['qtd_notas_saidas_operacao_dori'] = analyzeIfFieldIsValid(amountNotaSaida, 'qtd_notas_operacao_dori', 0)
+                companieDataToSave['qtd_notas_entradas_operacao'] = analyzeIfFieldIsValid(amountNotaEntrada, 'qtd_notas_operacao', 0)
+                companieDataToSave['qtd_notas_entradas_operacao_dori'] = analyzeIfFieldIsValid(amountNotaEntrada, 'qtd_notas_operacao_dori', 0)
+                companieDataToSave['qtd_notas_servicos_operacao'] = analyzeIfFieldIsValid(amountNotaServico, 'qtd_notas_operacao', 0)
+                companieDataToSave['qtd_notas_servicos_operacao_dori'] = analyzeIfFieldIsValid(amountNotaServico, 'qtd_notas_operacao_dori', 0)               
+
+                companieDataToSave['codi_emp'] = codiEmp
+                companieDataToSave['competence'] = f'{year}-{month:0>2}'
                 
                 self._collection.update_one( 
                     { 
-                        "codi_emp": companieSettingView['codi_emp'],
-                        "competence": companieSettingView['competence']
+                        "codi_emp": companieDataToSave['codi_emp'],
+                        "competence": companieDataToSave['competence']
                     }, 
-                    { "$set": companieSettingView }, 
+                    { "$set": companieDataToSave }, 
                     upsert=True 
                 )
 
@@ -105,9 +104,9 @@ class CompaniesMonthsIntegrated():
                 codiEmp = companieSettingView['codi_emp']
                 print(f"\t- Processando empresa {codiEmp} - {companieSettingView['nome_emp']}")
 
-                companieMonthsIntegrated = self.getCompaniesMonthsIntegrated(codiEmp)
+                companieMonthsAmountNotes = self.getCompaniesMonthsAmountNotes(codiEmp)
                 
-                self.checkMonthsIntegrated(companieSettingView, companieMonthsIntegrated)
+                self.saveMongo(codiEmp, companieMonthsAmountNotes)
 
         except Exception as e:
             print(f"Erro ao executar a consulta. O erro é: {e}")
