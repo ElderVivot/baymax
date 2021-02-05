@@ -80,7 +80,8 @@ class ExtractsOFX(object):
 
                 historic = funcoesUteis.treatTextField(transaction.memo)
                 # ignora lancamentos no extrato como saldo parcial, pq nao é um lançamento em si
-                if historic == 'SALDO' or historic.find('SALDO PARCIAL') >= 0 or historic.find('SALDO INICIAL') >= 0 or historic.find('SALDO FINAL') >= 0 or historic.find('SALDO APLIC') >= 0:
+                if historic == 'SALDO' or historic.find('SALDO PARCIAL') >= 0 or historic.find('SALDO INICIAL') >= 0 \
+                    or historic.find('SALDO FINAL') >= 0 or historic.find('SALDO APLIC') >= 0 or historic.find('SALDO A LIBERAR') >= 0:
                     continue
 
                 valuesOfLine = {
