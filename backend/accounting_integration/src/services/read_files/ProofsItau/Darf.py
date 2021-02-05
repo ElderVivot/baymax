@@ -8,8 +8,9 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import tools.funcoesUteis as funcoesUteis
 
 class Darf(object):
-    def __init__(self, dataFile):
+    def __init__(self, dataFile, file):
         self._dataFile = dataFile
+        self._file = file
         self._accountDebitOrCredit = ''
 
     def process(self):
@@ -87,7 +88,8 @@ class Darf(object):
                         "category": 'DARF' if nameProvider != "SIMPLES NACIONAL" else nameProvider,
                         "cgcePaying": "",
                         "foundProof": True,
-                        "amountPaidPerLote": round(amountPaid, 2)
+                        "amountPaidPerLote": round(amountPaid, 2),
+                        "wayFile": self._file
                     }
 
                     return valuesOfLine.copy()

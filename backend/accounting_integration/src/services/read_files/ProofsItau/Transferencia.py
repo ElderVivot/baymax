@@ -8,8 +8,9 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import tools.funcoesUteis as funcoesUteis
 
 class Transferencia(object):
-    def __init__(self, dataFile):
+    def __init__(self, dataFile, file):
         self._dataFile = dataFile
+        self._file = file
         self._valuesOfLineDatePayment = ["TRANSFERENCIA REALIZADA EM", "TRANSFERENCIA EFETUADA EM", "OPERACAO EFETUADA EM", "TED SOLICITADA EM"]
         self._accountDebitOrCredit = ''
 
@@ -76,7 +77,8 @@ class Transferencia(object):
                             "category": 'TRANSFERENCIA',
                             "cgcePaying": '',
                             "foundProof": True,
-                            "amountPaidPerLote": round(amountPaid, 2)
+                            "amountPaidPerLote": round(amountPaid, 2),
+                            "wayFile": self._file
                         }
 
                         return valuesOfLine.copy()

@@ -8,8 +8,9 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import tools.funcoesUteis as funcoesUteis
 
 class TedC(object):
-    def __init__(self, dataFile):
+    def __init__(self, dataFile, file):
         self._dataFile = dataFile
+        self._file = file
         self._valuesOfLineDatePayment = ["TED SOLICITADA EM"]
         self._accountDebitOrCredit = ''
 
@@ -80,7 +81,8 @@ class TedC(object):
                             "category": 'TED C',
                             "cgcePaying": '',
                             "foundProof": True,
-                            "amountPaidPerLote": round(amountPaid, 2)
+                            "amountPaidPerLote": round(amountPaid, 2),
+                            "wayFile": self._file
                         }
 
                         return valuesOfLine.copy()

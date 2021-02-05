@@ -8,8 +8,9 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import tools.funcoesUteis as funcoesUteis
 
 class Agendamento(object):
-    def __init__(self, dataFile):
+    def __init__(self, dataFile, file):
         self._dataFile = dataFile
+        self._file = file
         self._valuesOfLineDatePayment = ["AGENDAMENTO EFETUADO EM"]
         self._typeLineRead = ''
 
@@ -109,7 +110,8 @@ class Agendamento(object):
                             "category": 'AGENDAMENTO',
                             "cgcePaying": cgcePaying,
                             "foundProof": True,
-                            "amountPaidPerLote": round(amountPaid, 2)
+                            "amountPaidPerLote": round(amountPaid, 2),
+                            "wayFile": self._file
                         }
 
                         return valuesOfLine.copy()

@@ -36,58 +36,60 @@ class ProofsItau(object):
         returnFilesDontFindForm = ReturnFilesDontFindForm(0, self._wayTemp)
         returnFilesDontFindForm.removeAlreadyProcessed()
 
-    def process(self, file):
+    def process(self, file: str):
         dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
+        fileWaySplit = file.split('\\')
+        fileWay = '/'.join(fileWaySplit[:len(fileWaySplit)-1])
 
-        defaultSispag = DefaultSispag(dataFile)
+        defaultSispag = DefaultSispag(dataFile, fileWay)
         proofDefaultSispag = defaultSispag.process()
         if proofDefaultSispag is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-DefaultSispag')
             return proofDefaultSispag
 
-        transferencia = Transferencia(dataFile)
+        transferencia = Transferencia(dataFile, fileWay)
         proofTransferencia = transferencia.process()
         if proofTransferencia is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Transferencia')
             return proofTransferencia
 
-        pagamentoBoleto = PagamentoBoleto(dataFile)
+        pagamentoBoleto = PagamentoBoleto(dataFile, fileWay)
         proofPagamentoBoleto = pagamentoBoleto.process()
         if proofPagamentoBoleto is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-PagtoBoleto')
             return proofPagamentoBoleto
 
-        tedC = TedC(dataFile)
+        tedC = TedC(dataFile, fileWay)
         proofTedC = tedC.process()
         if proofTedC is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-TedC')
             return proofTedC
 
-        agendamento = Agendamento(dataFile)
+        agendamento = Agendamento(dataFile, fileWay)
         proofAgendamento = agendamento.process()
         if proofAgendamento is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Agendamento')
             return proofAgendamento
 
-        darf = Darf(dataFile)
+        darf = Darf(dataFile, fileWay)
         proofDarf = darf.process()
         if proofDarf is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Darf')
             return proofDarf
 
-        gps = Gps(dataFile)
+        gps = Gps(dataFile, fileWay)
         proofGps = gps.process()
         if proofGps is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Gps')
             return proofGps
 
-        fgts = Fgts(dataFile)
+        fgts = Fgts(dataFile, fileWay)
         proofFgts = fgts.process()
         if proofFgts is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Fgts')
             return proofFgts
 
-        pix = Pix(dataFile)
+        pix = Pix(dataFile, fileWay)
         proofPix = pix.process()
         if proofPix is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsItau-Pix')

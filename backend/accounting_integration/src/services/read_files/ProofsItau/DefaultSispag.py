@@ -8,8 +8,9 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import tools.funcoesUteis as funcoesUteis
 
 class DefaultSispag(object):
-    def __init__(self, dataFile):
+    def __init__(self, dataFile, file):
         self._dataFile = dataFile
+        self._file = file
         self._valuesOfLineDatePayment = ["PAGAMENTO EFETUADO EM", "TRANSFERENCIA REALIZADA EM", "TRANSFERENCIA EFETUADA EM", "PAGAMENTO REALIZADO EM", \
             "OPERACAO EFETUADA EM", "TED SOLICITADA EM"]
         self._accountDebitOrCredit = ''
@@ -115,7 +116,8 @@ class DefaultSispag(object):
                             "category": category,
                             "cgcePaying": cgcePaying,
                             "foundProof": True,
-                            "amountPaidPerLote": round(amountPaid, 2)
+                            "amountPaidPerLote": round(amountPaid, 2),
+                            "wayFile": self._file
                         }
 
                         return valuesOfLine.copy()
