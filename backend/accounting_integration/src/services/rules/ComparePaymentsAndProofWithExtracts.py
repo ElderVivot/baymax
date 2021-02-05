@@ -180,7 +180,9 @@ class ComparePaymentsAndProofWithExtracts(object):
                  
                 if payment is not None:
                     for nameField, valueField in payment.items():
-                        if funcoesUteis.analyzeIfFieldIsValid(proof, nameField, None) is None:
+                        valueFieldProof = funcoesUteis.analyzeIfFieldIsValid(proof, nameField, None)
+                        if ( valueFieldProof is None or valueFieldProof == '' or valueFieldProof == 0 ) \
+                            and valueField is not None and valueField != '' and valueField != 0:
                             proof[nameField] = valueField
 
                 # somente o histórico que eu substituo do que está no comprovante de pagamento, mesmo que ele já exista. Pois o histórico do
