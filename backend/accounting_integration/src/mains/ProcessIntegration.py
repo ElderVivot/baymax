@@ -24,6 +24,7 @@ from services.rules.FilterPeriod import FilterPeriod
 from services.rules.CompareWithSettings import CompareWithSettings
 from services.rules.ReturnFilesDontFindForm import ReturnFilesDontFindForm
 from services.rules.DeleteExtractDuplicate import DeleteExtractDuplicate
+from services.rules.DeleteProofPaymentDuplicate import DeleteProofPaymentDuplicate
 from dao.src.GetSettingsCompany import GetSettingsCompany
 
 wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
@@ -110,7 +111,11 @@ class ProcessIntegration(object):
         # reads the txts
         print(' - Etapa 4: Lendo os comprovantes de pagamentos e analisando as estruturas deles.')
         callReadFileProofs = CallReadFileProofs(self._codiEmp, self._wayFilesTemp, self._wayFilesToRead, self._banksToProof)
-        self._proofsOfPayments = callReadFileProofs.process()
+        proofsOfPayments = callReadFileProofs.process()
+
+        print(' - Etapa 4.1: Retirando lançamento de comprovantes duplicados. ')
+        deleteProofDuplicate = DeleteProofPaymentDuplicate(proofsOfPayments)
+        self._proofsOfPayments = deleteProofDuplicate.process()
         
         print(' - Etapa 5: Comparação entre o Financeiro com os Comprovantes de Pagamentos e Extratos.')
         comparePaymentsAndProofWithExtracts = ComparePaymentsAndProofWithExtracts(self._settings, self._extracts, self._payments, self._proofsOfPayments)
