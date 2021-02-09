@@ -42,4 +42,19 @@ class CallReadFileProofs(object):
             proofsAmazonia = ProofsAmazonia(self._wayTemp)                
             self._proofs.append(proofsAmazonia.processAll())
 
+        if banksNumberList.count(756) > 0:
+            print(f'\t - Processando comprovantes de pagamento do Sicoob')
+            from read_files.ProofsSicoob.Main import ProofsSicoob
+
+            proofsSicoob = ProofsSicoob(self._wayTemp)                
+            self._proofs.append(proofsSicoob.processAll())
+
+        if banksNumberList.count(237) > 0:
+            print(f'\t - Processando comprovantes de pagamento do Bradesco')
+            from read_files.ProofsBradesco.Main import ProofsBradesco
+
+            proofsBradesco = ProofsBradesco(self._wayTemp)                
+            self._proofs.append(proofsBradesco.processAll())
+
+
         return funcoesUteis.removeAnArrayFromWithinAnother(self._proofs)
