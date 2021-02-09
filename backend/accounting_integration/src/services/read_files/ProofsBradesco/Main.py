@@ -17,7 +17,6 @@ class ProofsBradesco(object):
 
     def __init__(self, wayTemp):
         self._proofs = []
-        # possíveis textos que a linha de pagamento começa, exemplo: TRANSFERENCIA REALIZADA EM 19.09.2019
         self._wayTemp = wayTemp
         self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
 
@@ -33,7 +32,7 @@ class ProofsBradesco(object):
 
         pagamento = Pagamento(dataFile, fileWay)
         proofPagamento = pagamento.process()
-        if proofPagamento is not None:
+        if proofPagamento is not None and len(proofPagamento) > 0:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsBradesco-Pagamento')
             return proofPagamento
 

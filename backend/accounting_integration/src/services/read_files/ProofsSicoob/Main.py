@@ -33,7 +33,7 @@ class ProofsSicoob(object):
 
         pagamento = Pagamento(dataFile, fileWay)
         proofPagamento = pagamento.process()
-        if proofPagamento is not None:
+        if proofPagamento is not None and len(proofPagamento) > 0:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsSicoob-Pagamento')
             return proofPagamento
 

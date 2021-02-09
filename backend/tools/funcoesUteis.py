@@ -205,13 +205,15 @@ def treatNumberFieldInDictionary(data, nameField, isInt=False):
     except Exception:
         return 0
 
-def treatDecimalField(value, numberOfDecimalPlaces=2):
+def treatDecimalField(value, numberOfDecimalPlaces=2, decimalSeparator=','):
     if type(value) == float:
         return value
     try:
         value = str(value)
         value = re.sub('[^0-9.,-]', '', value)
-        if value.find(',') >= 0 and value.find('.') >= 0:
+        if decimalSeparator == '.' and value.find(',') >= 0 and value.find('.') >= 0:
+            value = value.replace(',', '')
+        elif value.find(',') >= 0 and value.find('.') >= 0:
             value = value.replace('.','')
 
         if value.find(',') >= 0:
