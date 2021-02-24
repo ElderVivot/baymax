@@ -187,14 +187,11 @@ class GenerateExportDominio(object):
         else:
             return ""
 
-    # def entry6100PaymentsAmountOfBank(self):
-
     def exportExtracts(self):
         for key, extract in enumerate(self._extracts):
             accountCodeDebit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeDebit"), isInt=True)
             accountCodeCredit = funcoesUteis.treatNumberField(funcoesUteis.analyzeIfFieldIsValid(extract, "accountCodeCredit"), isInt=True)
-            operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")
-            
+            operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")            
             
             if accountCodeDebit > 0 and accountCodeCredit > 0:
                 self._file.write(self.header6000())
@@ -223,13 +220,16 @@ class GenerateExportDominio(object):
                 # somente gera o cabeçalho e o total do lote caso ainda não tenha processado aquele 'numberLote'
                 if numberLotesProcessed.count(numberLote) == 0:
                     self._file.write(self.header6000())
-                    self._file.write(self.entry6100(payment, 'C', 'N', isAmountPaidPerLote=True))
-                    numberLotesProcessed.append(numberLote)
                 
                 if amountPaid > 0:
                     self._file.write(self.entry6100(payment, 'D', 'N'))
-                else:
+                if amountPaid < 0:
                     self._file.write(self.entry6100(payment, 'C', 'N')) # os negativos tenho que creditar, geralmente são os descontos
+
+                # faz a checagem do lote novamente pois precisa gerar antes o débito pra depois o crédito
+                if numberLotesProcessed.count(numberLote) == 0:
+                    self._file.write(self.entry6100(payment, 'C', 'N', isAmountPaidPerLote=True))
+                    numberLotesProcessed.append(numberLote)
                 
                 self._file.write(self.entry6100(payment, 'D', 'J'))
                 self._file.write(self.entry6100(payment, 'D', 'M'))
