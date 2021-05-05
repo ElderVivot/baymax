@@ -31,32 +31,32 @@ class ProofsAmazonia(object):
     def process(self, file):
         dataFile = leTxt(file, treatAsText=True, removeBlankLines=True)
 
-        transferencia = Transferencia(dataFile)
+        transferencia = Transferencia(dataFile, file)
         proofTransferencia = transferencia.process()
         if proofTransferencia is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsAmazonia-Transferencia')
             return proofTransferencia
 
-        pagamento = Pagamento(dataFile)
+        pagamento = Pagamento(dataFile, file)
         proofPagamento = pagamento.process()
         if proofPagamento is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsAmazonia-Pagamento')
             return proofPagamento
 
-        pagamentoConvenio = PagamentoConvenio(dataFile)
+        pagamentoConvenio = PagamentoConvenio(dataFile, file)
         proofPagamentoConvenio = pagamentoConvenio.process()
         if proofPagamentoConvenio is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsAmazonia-PagamentoConvenio')
             return proofPagamentoConvenio
 
-        pagamentoInss = PagamentoInss(dataFile)
+        pagamentoInss = PagamentoInss(dataFile, file)
         proofPagamentoInss = pagamentoInss.process()
         if proofPagamentoInss is not None:
             funcoesUteis.updateFilesRead(self._wayTempFilesRead, file.replace('.txt', '.pdf'), 'ProofsPaymentsAmazonia-PagamentoInss')
             return proofPagamentoInss
 
     def processAll(self):
-        for root, dirs, files in os.walk(self._wayTemp):
+        for root, _, files in os.walk(self._wayTemp):
             for file in files:
                 if file.lower().endswith(('.txt')):
                     wayFile = os.path.join(root, file)

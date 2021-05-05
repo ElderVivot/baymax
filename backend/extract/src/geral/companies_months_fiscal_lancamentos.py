@@ -16,7 +16,7 @@ from dateutil.relativedelta import relativedelta
 from db.ConexaoBanco import DB
 from dao.src.ConnectMongo import ConnectMongo
 from tools.leArquivos import readSql
-from tools.funcoesUteis import treatTextField, retornaCampoComoData, analyzeIfFieldIsValid, analyzeIfFieldIsValidMatrix
+from tools.funcoesUteis import treatTextField, retornaCampoComoData, analyzeIfFieldIsValid, analyzeIfFieldIsValidMatrix, treatNumberField
 from geempre import ExtractGeempre
 import functions.extractFunctions as extractFunctions
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
@@ -30,9 +30,9 @@ class CompaniesMonthsIntegrated():
         self._dbMongo = self._connectionMongo.getConnetion()
         self._collection = self._dbMongo['CompaniesMonthsAmountNotes']
 
-    def getCompaniesMonthsAmountNotes(self, codiEmp):
+    def getCompaniesMonthsAmountNotes(self, cgceMatriz):
         try:
-            sql = readSql(os.path.dirname(os.path.abspath(__file__)), 'companies_months_fiscal_lancamentos.sql', codiEmp, codiEmp, codiEmp)
+            sql = readSql(os.path.dirname(os.path.abspath(__file__)), 'companies_months_fiscal_lancamentos.sql', cgceMatriz, cgceMatriz, cgceMatriz)
             df = pd.read_sql_query(sql, self._connection)
             data = json.loads(df.to_json(orient='records', date_format='iso'))
 
@@ -40,7 +40,7 @@ class CompaniesMonthsIntegrated():
         except Exception as e:
             print(e)  
 
-    def saveMongo(self, codiEmp, companieMonthsAmountNotes):
+    def saveMongo(self, codiEmp, cgceMatriz, companieMonthsAmountNotes):
         dateStart = retornaCampoComoData('01/11/2019')
         dateNow = datetime.today() - relativedelta(months=1)
         
@@ -80,6 +80,7 @@ class CompaniesMonthsIntegrated():
                 companieDataToSave['qtd_notas_servicos_operacao_dori'] = analyzeIfFieldIsValid(amountNotaServico, 'qtd_notas_operacao_dori', 0)               
 
                 companieDataToSave['codi_emp'] = codiEmp
+                companieDataToSave['cgce_matriz'] = cgceMatriz
                 companieDataToSave['competence'] = f'{year}-{month:0>2}'
                 
                 self._collection.update_one( 
@@ -101,12 +102,20 @@ class CompaniesMonthsIntegrated():
             for companieSettingView in companiesSettingsView:
                 del companieSettingView['_id']
 
-                codiEmp = companieSettingView['codi_emp']
+                codiEmp = companieSettingView['codi_emp']                
                 print(f"\t- Processando empresa {codiEmp} - {companieSettingView['nome_emp']}")
 
-                companieMonthsAmountNotes = self.getCompaniesMonthsAmountNotes(codiEmp)
+                cgceEmp = treatNumberField(companieSettingView['cgce_emp'])
+                cgceMatriz = cgceEmp[:8]
+
+                isCompanyBranch = treatTextField(companieSettingView['isCompanyBranch'])
+
+                if isCompanyBranch == 'NAO':
+                    companieMonthsAmountNotes = self.getCompaniesMonthsAmountNotes(cgceMatriz)
+                else:
+                    companieMonthsAmountNotes = self.getCompaniesMonthsAmountNotes(cgceEmp)
                 
-                self.saveMongo(codiEmp, companieMonthsAmountNotes)
+                self.saveMongo(codiEmp, cgceMatriz, companieMonthsAmountNotes)
 
         except Exception as e:
             print(f"Erro ao executar a consulta. O erro é: {e}")

@@ -1,4 +1,5 @@
-SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
+SELECT CASE WHEN emp.tins_emp NOT IN (1) THEN emp.cgce_emp ELSE SUBSTR(emp.cgce_emp, 1, 8) END cgce_matriz,
+       dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
        mes = month(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        ano = year(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        comp = YMD(ano, mes, 1),
@@ -11,14 +12,15 @@ SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini = DATE('2019-11-01'), dfin
             ON    sai.codi_emp = emp.codi_emp,
        dbo.rowgenerator AS linha
 
- WHERE emp.codi_emp = #
+ WHERE emp.cgce_emp LIKE '#%'
    AND linha.row_num <= months( dini, dfin ) + 1
    AND ( YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 ) ), 1 ) BETWEEN dini AND dfin )
-GROUP BY emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini, dfin, mes, ano, comp, tipo
+GROUP BY cgce_matriz, dini, dfin, mes, ano, comp, tipo
 
 UNION ALL
 
-SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
+SELECT CASE WHEN emp.tins_emp NOT IN (1) THEN emp.cgce_emp ELSE SUBSTR(emp.cgce_emp, 1, 8) END cgce_matriz,
+       dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
        mes = month(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        ano = year(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        comp = YMD(ano, mes, 1),
@@ -31,14 +33,15 @@ SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini = DATE('2019-11-01'), dfin
             ON    ent.codi_emp = emp.codi_emp,
        dbo.rowgenerator AS linha
 
- WHERE emp.codi_emp = #
+ WHERE emp.cgce_emp LIKE '#%'
    AND linha.row_num <= months( dini, dfin ) + 1
    AND ( YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 ) ), 1 ) BETWEEN dini AND dfin )
-GROUP BY emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini, dfin, mes, ano, comp, tipo
+GROUP BY cgce_matriz, dini, dfin, mes, ano, comp, tipo
 
 UNION ALL
 
-SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
+SELECT CASE WHEN emp.tins_emp NOT IN (1) THEN emp.cgce_emp ELSE SUBSTR(emp.cgce_emp, 1, 8) END cgce_matriz,
+       dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
        mes = month(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        ano = year(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        comp = YMD(ano, mes, 1),
@@ -51,9 +54,9 @@ SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini = DATE('2019-11-01'), dfin
             ON    ser.codi_emp = emp.codi_emp,
        dbo.rowgenerator AS linha
 
- WHERE emp.codi_emp = #
+ WHERE emp.cgce_emp LIKE '#%'
    AND linha.row_num <= months( dini, dfin ) + 1
    AND ( YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 ) ), 1 ) BETWEEN dini AND dfin )
-GROUP BY emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini, dfin, mes, ano, comp, tipo
+GROUP BY cgce_matriz, dini, dfin, mes, ano, comp, tipo
 
-ORDER BY 1, comp
+ORDER BY cgce_matriz, comp, tipo

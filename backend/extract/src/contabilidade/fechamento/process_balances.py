@@ -20,7 +20,7 @@ class ProcessBalances():
         self._hasZeramento = False
         self._differenceBetweenAtivoAndPassivo = False
         self._accountResultadoZerado = False
-        self._hasPendencia = True
+        self._hasFechamentoCompleto = False
         self._year = year
         self._month = month
         self._naturezasConta = naturezasConta
@@ -31,10 +31,21 @@ class ProcessBalances():
     def startAndDate(self):
         last_day_end_date = monthrange(self._year, self._month)[1]  
         self._end_date = f"{self._year}-{self._month:0>2}-{last_day_end_date:0>2}"
+        self._competence = self._end_date[:7]
+        
         if self._companie['regime_emp'] in (2, 4):
             self._start_date = f"{self._year}-01-01"
         else:
             self._start_date = f"{self._year}-{(self._month-2):0>2}-01"
+
+        if self._companie['dina_emp'] is not None:            
+            dina_emp = self._companie['dina_emp'][:10]
+            dina_emp_int = dina_emp.replace('-', '')
+
+            start_date_int = self._start_date.replace('-', '')
+            end_date_int = self._end_date.replace('-', '')
+            if start_date_int <= dina_emp_int and dina_emp_int <= end_date_int:
+                self._end_date = dina_emp
 
     def getHasZeramento(self, end_date):
         codi_emp = self._companie['codi_emp']
@@ -59,16 +70,16 @@ class ProcessBalances():
         self._companie['despesas'] = self._despesas
         self._companie['hasZeramento'] = self._hasZeramento
         self._companie['differenceBetweenAtivoAndPassivo'] = self._differenceBetweenAtivoAndPassivo
-        self._companie['hasPendencia'] = self._hasPendencia
+        self._companie['hasFechamentoCompleto'] = self._hasFechamentoCompleto
         self._companie['accountResultadoZerado'] = self._accountResultadoZerado
         self._companie['start_date'] = self._start_date
         self._companie['end_date'] = self._end_date
-        self._companie['competence'] = self._end_date[:7]
+        self._companie['competence'] = self._competence
 
         self._saveProcessDb = SaveProcessDb(self._companie, 'AccountFechamento')
         self._saveProcessDb.save()
 
-        print(f"- Exportado empresa {self._companie['codi_emp']} - {self._companie['nome_emp']} | mês {self._companie['competence']}")
+        print(f"- Exportado empresa {self._companie['codi_emp']} - {self._companie['nome_emp']} | período {self._companie['start_date']} à {self._companie['end_date']}")
             
     def process(self):
         self.getHasZeramento(self._end_date)
@@ -92,8 +103,8 @@ class ProcessBalances():
         if self._receitas == 0 and self._despesas == 0:
             self._accountResultadoZerado = True
 
-        if self._differenceBetweenAtivoAndPassivo is True or self._accountResultadoZerado is False:
-            self._hasPendencia = False
+        if self._differenceBetweenAtivoAndPassivo is False and self._accountResultadoZerado is True and self._hasZeramento is True:
+            self._hasFechamentoCompleto = True
 
         self.sendToSave()
 

@@ -80,6 +80,7 @@ class CompaniesMonthsIntegrated():
                 companieSettingView['qtd_lan_ti_importado_dori'] = analyzeIfFieldIsValid(integrated, 'qtd_lan_ti_importado_dori', 0)
                 companieSettingView['qtd_lan_operacao'] = analyzeIfFieldIsValid(integrated, 'qtd_lan_operacao', 0)
                 companieSettingView['qtd_lan_operacao_dori'] = analyzeIfFieldIsValid(integrated, 'qtd_lan_operacao_dori', 0)
+                companieSettingView['cgce_matriz'] = analyzeIfFieldIsValid(integrated, 'cgce_matriz')
 
                 companieSettingView['competence'] = f'{year}-{month:0>2}'
                 

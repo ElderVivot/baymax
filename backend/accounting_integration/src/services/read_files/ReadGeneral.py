@@ -382,7 +382,7 @@ class ReadGeneral(object):
         for key, validation in enumerate(self._validationsLineToPrint):
             nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(validation, 'nextValidationOrAnd', 'and')
 
-            if nextValidationOrAnd == 'and' or key == len(self._validationsLineToPrint)-1:
+            if nextValidationOrAnd == 'and' or key == len(self._validationsLineToPrint)-1:                
                 countValidationsConfigured += 1
 
             nameField = funcoesUteis.analyzeIfFieldIsValid(validation, 'nameField')
@@ -420,7 +420,7 @@ class ReadGeneral(object):
     def multiplePerLessOneWhenNecessary(self, valuesOfLine):
         for nameField, valueField in valuesOfLine.items():
             if funcoesUteis.analyzeIfFieldIsValid(self._fieldsThatMultiplePerLessOne, nameField, False) is True:
-                valuesOfLine[nameField] = valueField * (-1)
+                valuesOfLine[nameField] = valueField * (-1) if valueField < 0 else valueField
         
         return valuesOfLine
 
@@ -516,7 +516,7 @@ class ReadGeneral(object):
             typeValidation = funcoesUteis.analyzeIfFieldIsValid(validation, 'typeValidation')
             valueValidation = funcoesUteis.treatTextField(funcoesUteis.analyzeIfFieldIsValid(validation, 'valueValidation'))
             valueValidation = funcoesUteis.treatDecimalField(valueValidation) if nameField.find('amount') >= 0 else valueValidation
-            nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(validateIfDataIsThisCompanie, 'nextValidationOrAnd', 'and')
+            nextValidationOrAnd = funcoesUteis.analyzeIfFieldIsValid(validation, 'nextValidationOrAnd', 'and')
 
             valueFieldData = funcoesUteis.analyzeIfFieldIsValid(valuesOfLine, nameField)
 
@@ -577,11 +577,11 @@ class ReadGeneral(object):
             if layoutType != "account_paid" and layoutType != "extract_bank":
                 return None
             
-            if setting['fileType'] == 'excel':
+            if setting['fileType'] == 'excel' and file.lower().endswith(('.xls', '.xlsx', '.xltx')):
                 dataFile = leXls_Xlsx(file)
-            elif setting['fileType'] == 'csv':
+            elif setting['fileType'] == 'csv' and file.lower().endswith(('.csv')):
                 dataFile = readCsv(file)
-            elif setting['fileType'] == 'txt':
+            elif setting['fileType'] == 'txt' and file.lower().endswith(('.txt', '.html')):
                 dataFile = leTxt(file)
             else:
                 dataFile = []
@@ -657,11 +657,10 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 312
+    codi_emp = 84
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()
 
     readFiles = ReadGeneral(codi_emp, f"C:/integracao_contabil/{codi_emp}/arquivos_originais", settings)
     print(readFiles.processAll()[0])
-

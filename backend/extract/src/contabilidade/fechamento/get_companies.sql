@@ -29,7 +29,7 @@ SELECT emp.codi_emp, emp.apel_emp, emp.nome_emp, emp.razao_emp, emp.cgce_emp, em
            FROM bethadba.geempre AS emp2
           WHERE SUBSTR(emp2.cgce_emp, 1, 8) = SUBSTR(emp.cgce_emp, 1, 8)
             AND ( emp2.dina_emp IS NULL 
-                  OR CASE WHEN regime_emp IN (2,4) AND YEAR(competence) = 2019 THEN MONTHS(emp2.dina_emp,11) ELSE MONTHS(emp2.dina_emp,2) END >= competence )
+                  OR CASE WHEN regime_emp IN (2,4) THEN MONTHS(emp2.dina_emp,11) ELSE MONTHS(emp2.dina_emp,2) END >= competence )
             AND ( emp2.dcad_emp IS NULL OR emp2.dcad_emp <= competence )
             AND emp2.cgce_emp <> ''
             AND emp2.cgce_emp IS NOT NULL ) AS qtd_fiais_e_matriz
@@ -41,7 +41,7 @@ SELECT emp.codi_emp, emp.apel_emp, emp.nome_emp, emp.razao_emp, emp.cgce_emp, em
  WHERE SUBSTR(emp.cgce_emp, 9, 4) = '0001'
    AND emp.dcad_emp <= competence
    AND ( emp.dina_emp IS NULL
-         OR CASE WHEN regime_emp IN (2,4) AND YEAR(competence) = 2019 THEN MONTHS(emp.dina_emp,11) ELSE MONTHS(emp.dina_emp,2) END >= competence )
+         OR CASE WHEN regime_emp IN (2,4) THEN MONTHS(emp.dina_emp,11) ELSE MONTHS(emp.dina_emp,2) END >= competence )
    AND ( vig.vigencia_par = ( SELECT MAX(vig2.vigencia_par)
                                 FROM bethadba.efparametro_vigencia AS vig2
                                WHERE vig2.codi_emp = vig.codi_emp

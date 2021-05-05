@@ -7,8 +7,9 @@ sys.path.append(absPath[:absPath.find('extract')])
 import tools.funcoesUteis as funcoesUteis
 
 class PagamentoConvenio(object):
-    def __init__(self, dataFile):
+    def __init__(self, dataFile, file):
         self._dataFile = dataFile
+        self._file = file
 
     def process(self):
         valuesOfLine = {}
@@ -73,7 +74,8 @@ class PagamentoConvenio(object):
                         "category": 'PAGAMENTO',
                         "cgcePaying": "",
                         "foundProof": True,
-                        "amountPaidPerLote": round(amountPaid, 2)
+                        "amountPaidPerLote": round(amountPaid, 2),
+                        "wayFile": self._file
                     }
 
                     return valuesOfLine.copy()

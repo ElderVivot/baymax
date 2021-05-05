@@ -1,4 +1,6 @@
-SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
+SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, 
+       CASE WHEN emp.tins_emp NOT IN (1) THEN emp.cgce_emp ELSE SUBSTR(emp.cgce_emp, 1, 8) END cgce_matriz,
+       dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
        mes = month(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        ano = year(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        comp = YMD(ano, mes, 1),
@@ -21,5 +23,5 @@ SELECT emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini = DATE('2019-11-01'), dfin
  WHERE emp.codi_emp = #
    AND linha.row_num <= months( dini, dfin ) + 1
    AND ( YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 ) ), 1 ) BETWEEN dini AND dfin )
-GROUP BY emp.codi_emp, emp.nome_emp, emp.cgce_emp, dini, dfin, mes, ano, comp
+GROUP BY emp.codi_emp, emp.nome_emp, emp.cgce_emp, cgce_matriz, dini, dfin, mes, ano, comp
 ORDER BY emp.codi_emp, comp

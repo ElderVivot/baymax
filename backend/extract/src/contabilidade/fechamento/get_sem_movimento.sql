@@ -42,7 +42,9 @@ SELECT emp.codi_emp,
                          AND lan.data_lan BETWEEN dini AND dfin),
          ( SELECT COUNT(*)
              FROM bethadba.fobasesserv AS bas
-            WHERE bas.codi_emp = emp.codi_emp
+                  INNER JOIN bethadba.geempre AS emp2
+                       ON    emp2.codi_emp = bas.codi_emp
+            WHERE SUBSTR(emp2.cgce_emp,1,8) = cgce_raiz
               AND bas.competencia BETWEEN dini AND dfin ) AS calc_folha                                                                  
 
 FROM BETHADBA.GEEMPRE AS emp
