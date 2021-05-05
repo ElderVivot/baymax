@@ -26,7 +26,7 @@ const IntegrattionLayoutSchema = new mongoose.Schema({
         validateIfCnpjOrCpfIsValid: Boolean,
         multiplePerLessOne: Boolean,
         groupingField: Boolean,
-        considerToCheckIfTtIsDuplicated: Boolean,
+        considerToCheckIfItIsDuplicated: Boolean,
         lineThatTheDataIs: String
     }],
     validationLineToPrint: [{

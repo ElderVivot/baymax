@@ -36,7 +36,7 @@ let validationSchema = Yup.object().shape({
         validateIfCnpjOrCpfIsValid: Yup.boolean(),
         multiplePerLessOne: Yup.boolean(),
         groupingField: Yup.boolean(),
-        considerToCheckIfTtIsDuplicated: Yup.boolean(),        
+        considerToCheckIfItIsDuplicated: Yup.boolean(),        
         lineThatTheDataIs: Yup.string()
     })),
     validationLineToPrint: Yup.array().of( Yup.object().shape({
@@ -81,7 +81,7 @@ const defaultValues = {
         validateIfCnpjOrCpfIsValid: false,
         multiplePerLessOne: false,
         groupingField: false,
-        considerToCheckIfTtIsDuplicated: false,
+        considerToCheckIfItIsDuplicated: false,
         lineThatTheDataIs: ""
     } ],
     validationLineToPrint: [{
@@ -123,7 +123,7 @@ const initialValuesStruct = {
         validateIfCnpjOrCpfIsValid: false,
         multiplePerLessOne: false,
         groupingField: false,
-        considerToCheckIfTtIsDuplicated: false,
+        considerToCheckIfItIsDuplicated: false,
         lineThatTheDataIs: ""
     } ],
     validationLineToPrint: [{

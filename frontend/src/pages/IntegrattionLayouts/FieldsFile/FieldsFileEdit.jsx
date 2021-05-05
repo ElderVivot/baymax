@@ -553,12 +553,12 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                                     <Form.Check
                                         className="font-weight-600"
                                         type='checkbox'
-                                        id={`fields[${idx}].considerToCheckIfTtIsDuplicated`}
+                                        id={`fields[${idx}].considerToCheckIfItIsDuplicated`}
                                         label={`Considerar este campo pra verificar se pode ter outras linhas com registros igual à ele, e caso sim, considerar como "duplicado"`}
                                         custom={true}
                                         value={false}
-                                        checked={values.fields[idx].considerToCheckIfTtIsDuplicated}
-                                        onChange={handleChange(`fields[${idx}].considerToCheckIfTtIsDuplicated`)}
+                                        checked={values.fields[idx].considerToCheckIfItIsDuplicated}
+                                        onChange={handleChange(`fields[${idx}].considerToCheckIfItIsDuplicated`)}
                                     />
                                 </Col>
                             </Form.Row>
