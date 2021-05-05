@@ -14,7 +14,8 @@ let bankNewOptions = [
     { value: 'sicredi', label: 'SICREDI' },
     { value: 'banpara', label: 'BANPARÁ' },
     { value: 'safra', label: 'SAFRA' },
-    { value: 'amazonia', label: 'AMAZÔNIA' }
+    { value: 'amazonia', label: 'AMAZÔNIA' },
+	{ value: 'banrisul', label: 'BANRISUL' }
 ]
 
 function BanksCorrelation( { values, errors, touched, handleChange, handleBlur, setFieldValue, setFieldTouched, defaultValues, idxAccountPaid } ){

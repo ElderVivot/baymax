@@ -549,6 +549,21 @@ function FieldsFileEdit( { idx, values, errors, touched, handleChange, handleBlu
                             </Form.Row>
 
                             <Form.Row className="mt-2">
+                                <Col lg={10}>
+                                    <Form.Check
+                                        className="font-weight-600"
+                                        type='checkbox'
+                                        id={`fields[${idx}].considerToCheckIfTtIsDuplicated`}
+                                        label={`Considerar este campo pra verificar se pode ter outras linhas com registros igual à ele, e caso sim, considerar como "duplicado"`}
+                                        custom={true}
+                                        value={false}
+                                        checked={values.fields[idx].considerToCheckIfTtIsDuplicated}
+                                        onChange={handleChange(`fields[${idx}].considerToCheckIfTtIsDuplicated`)}
+                                    />
+                                </Col>
+                            </Form.Row>
+
+                            <Form.Row className="mt-2">
                                 <Form.Label as="label" htmlFor="field" className="col-form-label font-weight-600">Este campo está na linha:</Form.Label>
                                 <Col lg={6}>
                                     <Select 

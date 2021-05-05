@@ -35,7 +35,8 @@ let validationSchema = Yup.object().shape({
         calcDifferencePaidOriginalAsInterestDiscount: Yup.boolean(),
         validateIfCnpjOrCpfIsValid: Yup.boolean(),
         multiplePerLessOne: Yup.boolean(),
-        groupingField: Yup.boolean(),        
+        groupingField: Yup.boolean(),
+        considerToCheckIfTtIsDuplicated: Yup.boolean(),        
         lineThatTheDataIs: Yup.string()
     })),
     validationLineToPrint: Yup.array().of( Yup.object().shape({
@@ -80,6 +81,7 @@ const defaultValues = {
         validateIfCnpjOrCpfIsValid: false,
         multiplePerLessOne: false,
         groupingField: false,
+        considerToCheckIfTtIsDuplicated: false,
         lineThatTheDataIs: ""
     } ],
     validationLineToPrint: [{
@@ -121,6 +123,7 @@ const initialValuesStruct = {
         validateIfCnpjOrCpfIsValid: false,
         multiplePerLessOne: false,
         groupingField: false,
+        considerToCheckIfTtIsDuplicated: false,
         lineThatTheDataIs: ""
     } ],
     validationLineToPrint: [{
