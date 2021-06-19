@@ -19,7 +19,7 @@ class GetHasZeramento():
             sql = readSql(
                 os.path.dirname(os.path.abspath(__file__)), 
                 'get_has_zeramento.sql', 
-                codi_emp, end_date
+                end_date, codi_emp
             )
             df = pd.read_sql_query(sql, self._connection)
             data = json.loads(df.to_json(orient='records', date_format='iso'))

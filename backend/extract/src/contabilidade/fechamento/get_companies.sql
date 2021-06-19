@@ -1,5 +1,6 @@
 SELECT emp.codi_emp, emp.apel_emp, emp.nome_emp, emp.razao_emp, emp.cgce_emp, emp.tins_emp, emp.stat_emp, emp.dcad_emp, emp.dina_emp,
-       emp.dtinicio_emp, emp.dddf_emp, emp.fone_emp, emp.email_emp, emp.i_cnae20, emp.ramo_emp, emp.rleg_emp, emp.esta_emp,
+       emp.dtinicio_emp, emp.dddf_emp, emp.fone_emp, emp.email_emp, emp.i_cnae20, emp.ramo_emp, emp.rleg_emp, emp.esta_emp, 
+       par.codi_pad AS codi_emp_plano_contas,
        COALESCE( mun.nome_municipio, '' ) AS nome_municipio_emp,
        COALESCE( vig.rfed_par, 0 ) AS regime_emp,
        COALESCE( CASE WHEN regime_emp IS NULL THEN ''
@@ -38,6 +39,8 @@ SELECT emp.codi_emp, emp.apel_emp, emp.nome_emp, emp.razao_emp, emp.cgce_emp, em
                  ON    mun.codigo_municipio = emp.codigo_municipio
        LEFT OUTER JOIN bethadba.efparametro_vigencia AS vig
                  ON    vig.codi_emp = emp.codi_emp
+       LEFT OUTER JOIN bethadba.ctparmto AS par
+                 ON    par.codi_emp = emp.codi_emp
  WHERE SUBSTR(emp.cgce_emp, 9, 4) = '0001'
    AND emp.dcad_emp <= competence
    AND ( emp.dina_emp IS NULL

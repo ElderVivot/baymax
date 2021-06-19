@@ -21,6 +21,7 @@ class ReadGeneral(object):
         self._linesOfFile = []
         self._fieldsRowNotMain = {}
         self._groupingFields = {} # este obj irá gravar todos os campos que são agrupadores, linhas onde for partidas multiplas e será um lançamento só, e o que une elas é este campo
+        self._considerToCheckIfItIsDuplicatedFields = {}
         self._validationsLineToPrint = [] # vai salvar os critérios pra ver se uma linha é válida pra gerar o lançamento ou não
         self._sumInterestFineAndDiscount = False # alguns valores amountPaid não vem com o juros/multa somados, este é pra definir isto
         self._calcDifferencePaidOriginalAsInterestDiscount = False # alguns layouts não tem campo de juros/desconto, este serve pra calcular
@@ -126,6 +127,10 @@ class ReadGeneral(object):
             groupingField = funcoesUteis.analyzeIfFieldIsValid(settingField, 'groupingField', False)
             if groupingField is True:
                 self._groupingFields[nameField] = True
+
+            considerToCheckIfItIsDuplicatedFields = funcoesUteis.analyzeIfFieldIsValid(settingField, 'considerToCheckIfItIsDuplicated', False)
+            if considerToCheckIfItIsDuplicatedFields is True:
+                self._considerToCheckIfItIsDuplicatedFields[nameField] = True
 
             if nameField == "amountPaid":
                 self._sumInterestFineAndDiscount = funcoesUteis.analyzeIfFieldIsValid(settingField, 'sumInterestFineAndDiscount', False)
@@ -551,6 +556,29 @@ class ReadGeneral(object):
         if countValidationsOK >= countValidationsConfigured:
             return True
     
+    def checkIfItIsDuplicatedFields(self, valuesOfFile):
+        if len(self._considerToCheckIfItIsDuplicatedFields) > 0:
+            newValuesOfFile = []
+            arrayFieldToCheckDuplicate = []
+            for valuesOfLine in valuesOfFile:
+                valuesOfLine['fieldToCheckDuplicate'] = ''
+                
+                for field in valuesOfLine.items():
+                    nameField = field[0]
+                    valueField = field[1]
+
+                    fieldToCheck = funcoesUteis.analyzeIfFieldIsValid(self._considerToCheckIfItIsDuplicatedFields, nameField, False)
+                    if fieldToCheck is True:
+                        valuesOfLine['fieldToCheckDuplicate'] += str(valueField)
+                
+                if arrayFieldToCheckDuplicate.count(valuesOfLine['fieldToCheckDuplicate']) == 0:
+                    arrayFieldToCheckDuplicate.append(valuesOfLine['fieldToCheckDuplicate'])                
+                    newValuesOfFile.append(valuesOfLine.copy())
+            
+            return newValuesOfFile
+        else:
+            return valuesOfFile
+    
     def process(self, file):
         # a cada processamento de um novo arquivo limpa os dados que ficam armazenados
         self._fieldsRowNotMain.clear()
@@ -633,6 +661,7 @@ class ReadGeneral(object):
                 except Exception as e:
                     print(e.with_traceback())
                     
+        valuesOfFilePayments = self.checkIfItIsDuplicatedFields(valuesOfFilePayments)
         return [valuesOfFilePayments, valuesOfFileExtracts]
 
     def processAll(self):
@@ -657,7 +686,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 84
+    codi_emp = 218
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()

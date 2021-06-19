@@ -6,7 +6,7 @@ SELECT credit = sum(lan.vlor_lan),
    AND con.codi_emp = #
    AND lan.ccre_lan = con.codi_cta
    AND substr(trim(con.clas_cta), 1, 1) = '#'
-   AND lan.data_lan <= DATE('#')
+   AND lan.data_lan BETWEEN DATE('#') AND DATE('#')
 
 UNION ALL
 
@@ -18,4 +18,4 @@ SELECT credit = 0,
    AND con.codi_emp = #
    AND lan.cdeb_lan = con.codi_cta
    AND substr(trim(con.clas_cta), 1, 1) = '#'
-   AND lan.data_lan <= DATE('#')
+   AND lan.data_lan BETWEEN DATE('#') AND DATE('#')

@@ -7,6 +7,7 @@ sys.path.append(absPath[:absPath.find('extract')])
 from calendar import monthrange
 from get_sem_movimento import GetSemMovimento
 from save_process_db import SaveProcessDb
+from tools.funcoesUteis import retornaCampoComoData
 
 class ProcessSemMovimento():
     def __init__(self, year, month, companies):
@@ -25,13 +26,15 @@ class ProcessSemMovimento():
             start_date = f"{self._year}-{(self._month-2):0>2}-01"
 
         if companie['dina_emp'] is not None:            
-            dina_emp = companie['dina_emp'][:10]
-            dina_emp_int = dina_emp.replace('-', '')
+            dina_emp = retornaCampoComoData(companie['dina_emp'][:10], formatoData=2)
+            year_dina_emp = dina_emp.year
+            month_dina_emp = dina_emp.month
 
-            start_date_int = start_date.replace('-', '')
-            end_date_int = end_date.replace('-', '')
-            if start_date_int <= dina_emp_int and dina_emp_int <= end_date_int:
-                end_date = dina_emp
+            start_date_date = retornaCampoComoData(start_date, formatoData=2)
+            end_date_date = retornaCampoComoData(end_date, formatoData=2)
+            if start_date_date <= dina_emp and dina_emp <= end_date_date:
+                last_day_end_date = monthrange(year_dina_emp, month_dina_emp)[1]  
+                end_date = f"{year_dina_emp}-{month_dina_emp:0>2}-{last_day_end_date:0>2}"
 
         return [start_date, end_date, competence]
 

@@ -9,7 +9,7 @@ import pandas as pd
 from extract.src.db.ConexaoBanco import DB
 from tools.leArquivos import readSql
 
-class GetBalances():
+class GetBalancesPeriod():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
@@ -18,9 +18,9 @@ class GetBalances():
         try:
             sql = readSql(
                 os.path.dirname(os.path.abspath(__file__)), 
-                'get_balances.sql', 
-                codi_emp, codi_emp_plano_contas, clas_cta, end_date,
-                codi_emp, codi_emp_plano_contas, clas_cta, end_date
+                'get_balances_period.sql', 
+                codi_emp, codi_emp_plano_contas, clas_cta, start_date, end_date,
+                codi_emp, codi_emp_plano_contas, clas_cta, start_date, end_date
             )
             df = pd.read_sql_query(sql, self._connection)
             data = json.loads(df.to_json(orient='records', date_format='iso'))
