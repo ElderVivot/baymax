@@ -143,7 +143,7 @@ class ReadExcelToUpdateOrExportData(object):
                     self._posionsOfHeaderExtracts[nameField] = keyField
                 continue
 
-            dateExtract = funcoesUteis.treatDateFieldInVector(data, 1, self._posionsOfHeaderExtracts, "Data")
+            dateExtract = funcoesUteis.treatDateFieldInVector(data, 1)
             accountCodeDebit = funcoesUteis.treatNumberFieldInVector(data, 2, self._posionsOfHeaderExtracts, "Debito")
             accountCodeCredit = funcoesUteis.treatNumberFieldInVector(data, 3, self._posionsOfHeaderExtracts, "Credito")
             amount = funcoesUteis.treatDecimalFieldInVector(data, 4, self._posionsOfHeaderExtracts, "Valor")
@@ -164,21 +164,22 @@ class ReadExcelToUpdateOrExportData(object):
             operation = funcoesUteis.treatTextFieldInVector(data, 14, self._posionsOfHeaderExtracts, "Operacao")
             document = funcoesUteis.treatTextFieldInVector(data, 16, self._posionsOfHeaderExtracts, "Documento")
 
-            self._extractsOfLine = {
-                "dateTransaction": dateExtract,
-                "accountCodeDebit": accountCodeDebit,
-                "accountCodeCredit": accountCodeCredit,
-                "amount": amount,
-                "historicCode": historicCode,
-                "historic": historic,
-                "foundProofInPayments": foundProofInPayments,
-                "bank": bank,
-                "account": account,
-                "typeTransaction": typeTransaction,
-                "operation": operation,
-                "document": document
-            }
-
-            self._extractsOfFile.append(self._extractsOfLine.copy())
+            if dateExtract is not None and amount > 0:
+                self._extractsOfLine = {
+                    "dateTransaction": dateExtract,
+                    "accountCodeDebit": accountCodeDebit,
+                    "accountCodeCredit": accountCodeCredit,
+                    "amount": amount,
+                    "historicCode": historicCode,
+                    "historic": historic,
+                    "foundProofInPayments": foundProofInPayments,
+                    "bank": bank,
+                    "account": account,
+                    "typeTransaction": typeTransaction,
+                    "operation": operation,
+                    "document": document
+                }
+                self._extractsOfFile.append(self._extractsOfLine.copy())
+                self._extractsOfLine.clear()
 
         return self._extractsOfFile

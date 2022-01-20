@@ -45,7 +45,7 @@ class CompaniesMonthsIntegrated():
         isCompanyBranch = treatTextField(companieSettingView['isCompanyBranch'])
 
         dateAccountPaid = retornaCampoComoData(analyzeIfFieldIsValid(companieSettingView, 'dateAccountPaid', '01/01/1900'))
-        dateStart = retornaCampoComoData('01/11/2019')
+        dateStart = retornaCampoComoData('01/01/2021')
         dateNow = datetime.today() - relativedelta(months=1)
         
         year = dateStart.year

@@ -41,7 +41,7 @@ class CompaniesMonthsIntegrated():
             print(e)  
 
     def saveMongo(self, codiEmp, cgceMatriz, companieMonthsAmountNotes):
-        dateStart = retornaCampoComoData('01/11/2019')
+        dateStart = retornaCampoComoData('01/01/2021')
         dateNow = datetime.today() - relativedelta(months=1)
         
         year = dateStart.year
@@ -105,7 +105,7 @@ class CompaniesMonthsIntegrated():
                 codiEmp = companieSettingView['codi_emp']                
                 print(f"\t- Processando empresa {codiEmp} - {companieSettingView['nome_emp']}")
 
-                cgceEmp = treatNumberField(companieSettingView['cgce_emp'])
+                cgceEmp = str(treatNumberField(companieSettingView['cgce_emp']))
                 cgceMatriz = cgceEmp[:8]
 
                 isCompanyBranch = treatTextField(companieSettingView['isCompanyBranch'])

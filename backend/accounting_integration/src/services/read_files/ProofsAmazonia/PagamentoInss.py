@@ -42,7 +42,7 @@ class PagamentoInss(object):
                 paymentDate = funcoesUteis.retornaCampoComoData(fieldThree)
 
             if fieldOne == 'CONTA':
-                account = funcoesUteis.treatNumberField(fieldTwo)
+                account = str(funcoesUteis.treatNumberField(fieldTwo, isInt=True))
 
             if fieldOne.count('MULTA') > 0 or fieldOne.count('JUROS') > 0:
                 amountInterest = funcoesUteis.treatDecimalField(fieldTwo)

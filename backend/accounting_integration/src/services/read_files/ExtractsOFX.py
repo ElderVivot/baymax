@@ -51,7 +51,14 @@ class ExtractsOFX(object):
 
             accountData = ofx.account
 
+            try:
+                institution = accountData.institution
+                fid = int(institution.fid)
+            except Exception:
+                fid = 0
+
             bankId = int(accountData.routing_number)
+            bankId = fid if fid == 82 else bankId
             bankName = funcoesUteis.returnBankForNumber(bankId) #self.returnNameBank(bankId)
 
             account = accountData.account_id
@@ -85,7 +92,7 @@ class ExtractsOFX(object):
                 # ignora lancamentos no extrato como saldo parcial, pq nao é um lançamento em si
                 if historic == 'SALDO' or historic.find('SALDO PARCIAL') >= 0 or historic.find('SALDO INICIAL') >= 0 \
                     or historic.find('SALDO FINAL') >= 0 or historic.find('SALDO APLIC') >= 0 or historic.find('SALDO A LIBERAR') >= 0 \
-                    or historic.find('SDO CTA') >= 0:
+                    or historic.find('SDO CTA') >= 0 or historic.find('SALDO') >= 0:
                     continue
 
                 valuesOfLine = {
@@ -103,7 +110,7 @@ class ExtractsOFX(object):
 
                 valuesOfFile.append(valuesOfLine.copy())
         except Exception as e:
-            print(e)
+            print(file, e)
             pass
         
         return valuesOfFile
@@ -120,7 +127,7 @@ class ExtractsOFX(object):
         return funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
 
 if __name__ == "__main__":
-    codi_emp = str(1183)
+    codi_emp = str(1617)
 
     # extractOFX = SanitizeOFX(codi_emp, f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}", f"C:/integracao_contabil/{codi_emp}/arquivos_originais")
     # extractOFX.processAll()

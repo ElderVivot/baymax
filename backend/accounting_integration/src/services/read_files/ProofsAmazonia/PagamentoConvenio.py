@@ -42,7 +42,7 @@ class PagamentoConvenio(object):
                 paymentDate = funcoesUteis.retornaCampoComoData(fieldThree)
 
             if fieldOne == 'CONTA':
-                account = funcoesUteis.treatNumberField(fieldTwo)
+                account = str(funcoesUteis.treatNumberField(fieldTwo, isInt=True))
 
             if fieldOne == 'BENEFICIARIO':
                 nameProvider = fieldTwo    

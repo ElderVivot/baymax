@@ -43,7 +43,7 @@ class Pagamento(object):
                 paymentDate = funcoesUteis.retornaCampoComoData(fieldThree)
 
             if fieldOne == 'CONTA':
-                account = funcoesUteis.treatNumberField(fieldTwo)
+                account = str(funcoesUteis.treatNumberField(fieldTwo, isInt=True))
 
             if fieldOne.count('BENEFICIARIO') > 0:
                 self._accountDebitOrCredit = 'DEBIT'

@@ -26,15 +26,19 @@ class SanitizeOFX(object):
             os.makedirs(self._folderOFX)
 
     def process(self, file, sequential):
-        dataFile = leTxt(file, removeBlankLines=True, treatAsText=True)
-        
-        nameFile = f"{funcoesUteis.getOnlyNameFile(os.path.basename(file))}-{sequential}.ofx"
+        try:
+            dataFile = leTxt(file, removeBlankLines=True, treatAsText=True)
+            
+            nameFile = f"{funcoesUteis.getOnlyNameFile(os.path.basename(file))}-{sequential}.ofx"
 
-        wayFileToSave = os.path.join(self._folderOFX, nameFile)
+            wayFileToSave = os.path.join(self._folderOFX, nameFile)
 
-        with open(wayFileToSave, 'w') as txtfile:
-            for row in dataFile:
-                txtfile.write(f'{row}\n')
+            with open(wayFileToSave, 'w') as txtfile:
+                for row in dataFile:
+                    txtfile.write(f'{row}\n')
+        except Exception as e:
+            print(file, e)
+            pass
         
     def processAll(self):
         print('\t - 2.1: Retirando caracteres inválidos OFXs')

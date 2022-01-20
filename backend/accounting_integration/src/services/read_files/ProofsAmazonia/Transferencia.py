@@ -49,7 +49,7 @@ class Transferencia(object):
 
             if self._accountDebitOrCredit == 'DEBIT':
                 if fieldOne == 'CONTA':
-                    account = funcoesUteis.treatNumberField(fieldTwo)
+                    account = str(funcoesUteis.treatNumberField(fieldTwo, isInt=True))
 
             if fieldOne == 'NOME':
                 nameProvider = fieldTwo  

@@ -18,6 +18,8 @@ class Pagamento(object):
 
         isPagamento = False
 
+        cgceProvider = ''
+        cgcePaying = ''
         nameProvider = ""
         historic = ""
         amountPaid = float(0)

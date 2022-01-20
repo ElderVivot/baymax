@@ -441,7 +441,7 @@ class ReadGeneral(object):
             currentNumberLote = funcoesUteis.analyzeIfFieldIsValid(currentLine, "numberLote")
             amountPaid = funcoesUteis.analyzeIfFieldIsValid(currentLine, "amountPaid")
 
-            if previousNumberLote == currentNumberLote:
+            if previousNumberLote == currentNumberLote and key > 0:
                 amountPaidPerLote[currentNumberLote] += amountPaid
             else:
                 amountPaidPerLote[currentNumberLote] = amountPaid
@@ -607,7 +607,7 @@ class ReadGeneral(object):
             
             if setting['fileType'] == 'excel' and file.lower().endswith(('.xls', '.xlsx', '.xltx')):
                 dataFile = leXls_Xlsx(file)
-            elif setting['fileType'] == 'csv' and file.lower().endswith(('.csv')):
+            elif setting['fileType'] == 'csv' and file.lower().endswith(('.csv', '.txt')):
                 dataFile = readCsv(file)
             elif setting['fileType'] == 'txt' and file.lower().endswith(('.txt', '.html')):
                 dataFile = leTxt(file)
@@ -686,7 +686,7 @@ if __name__ == "__main__":
 
     from dao.src.GetSettingsCompany import GetSettingsCompany
 
-    codi_emp = 218
+    codi_emp = 2345
 
     getSettingsCompany = GetSettingsCompany(codi_emp)
     settings = getSettingsCompany.getSettingsFinancy()

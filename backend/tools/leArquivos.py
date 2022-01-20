@@ -177,7 +177,8 @@ def readCsv(arquivo,separadorCampos=';'):
 
                 # limpa os dados da linha para ler a próxima
                 dados_linha.clear()
-    except Exception:
+    except Exception as e:
+        print(e)
         pass
 
     # retorna uma lista dos dados
