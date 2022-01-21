@@ -8,12 +8,11 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import json
 from datetime import datetime
 from operator import itemgetter
-import xlsxwriter
 import tools.funcoesUteis as funcoesUteis
+from tools.leArquivos import readJson
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayToSaveFiles.close()
+envData = readJson(os.path.join(fileDir, 'backend/env.json'))
+folderToSaveFilesAccountIntegration = envData['folderToSaveFilesAccountIntegration']
 
 
 class GenerateExportDominio(object):
@@ -21,7 +20,7 @@ class GenerateExportDominio(object):
     def __init__(self, codiEmp, nameFileExport, payments=[], extracts=[]):
         self._codiEmp = codiEmp
 
-        self._wayBaseToSaveFiles = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados/exportados')
+        self._wayBaseToSaveFiles = os.path.join(folderToSaveFilesAccountIntegration, f'{self._codiEmp}/arquivos_processados/exportados')
         if os.path.exists(self._wayBaseToSaveFiles) is False:
             os.makedirs(self._wayBaseToSaveFiles)
 

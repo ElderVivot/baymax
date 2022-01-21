@@ -8,12 +8,12 @@ sys.path.append(os.path.join(fileDir, 'backend'))
 import json
 import shutil
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayToSaveFiles.close()
-
 import tools.funcoesUteis as funcoesUteis
 from tools.leArquivos import leXls_Xlsx
+import tools.leArquivos as leArquivos
+
+envData = leArquivos.readJson(os.path.join(fileDir, 'backend/env.json'))
+folderToSaveFilesAccountIntegration = envData['folderToSaveFilesAccountIntegration']
 
 
 class CompareWithSettings(object):
@@ -56,7 +56,7 @@ class CompareWithSettings(object):
             "SUBTRAI": "-"
         }
         self._wayFileDefaultSettings = os.path.join(fileDir, f'backend/accounting_integration/data/configuracoes.xlsx')
-        self._wayFileSettings = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/configuracoes_{self._codiEmp}.xlsx')
+        self._wayFileSettings = os.path.join(folderToSaveFilesAccountIntegration, f'{self._codiEmp}/configuracoes_{self._codiEmp}.xlsx')
         if os.path.exists(self._wayFileSettings) is False:
             shutil.copyfile(self._wayFileDefaultSettings, self._wayFileSettings)
 

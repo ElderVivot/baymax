@@ -10,10 +10,10 @@ from datetime import datetime
 from operator import itemgetter
 import xlsxwriter
 import tools.funcoesUteis as funcoesUteis
+import tools.leArquivos as leArquivos
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayToSaveFiles.close()
+envData = leArquivos.readJson(os.path.join(fileDir, 'backend/env.json'))
+folderToSaveFilesAccountIntegration = envData['folderToSaveFilesAccountIntegration']
 
 
 class GenerateExcel(object):
@@ -22,9 +22,9 @@ class GenerateExcel(object):
         self._codiEmp = codiEmp
 
         if update is False:
-            self._wayBaseToSaveFiles = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados')
+            self._wayBaseToSaveFiles = os.path.join(folderToSaveFilesAccountIntegration, f'{self._codiEmp}/arquivos_processados')
         else:
-            self._wayBaseToSaveFiles = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados/atualizados')
+            self._wayBaseToSaveFiles = os.path.join(folderToSaveFilesAccountIntegration, f'{self._codiEmp}/arquivos_processados/atualizados')
 
         if os.path.exists(self._wayBaseToSaveFiles) is False:
             os.makedirs(self._wayBaseToSaveFiles)

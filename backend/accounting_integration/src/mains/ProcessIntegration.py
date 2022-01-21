@@ -27,9 +27,8 @@ from services.rules.DeleteExtractDuplicate import DeleteExtractDuplicate
 from services.rules.DeleteProofPaymentDuplicate import DeleteProofPaymentDuplicate
 from dao.src.GetSettingsCompany import GetSettingsCompany
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayToSaveFiles.close()
+envData = leArquivos.readJson(os.path.join(fileDir, 'backend/env.json'))
+folderToSaveFilesAccountIntegration = envData['folderToSaveFilesAccountIntegration']
 
 
 class ProcessIntegration(object):
@@ -55,7 +54,7 @@ class ProcessIntegration(object):
             self._settings = leArquivos.readJson(self._waySettings)
             self._banksToProof = funcoesUteis.returnDataFieldInDict(self._settings, ["banks", "listNumbers"], [{"value": 0, "label": "" }])
         
-        self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_originais')
+        self._wayFilesToRead = os.path.join(folderToSaveFilesAccountIntegration, f'{self._codiEmp}/arquivos_originais')
         self._wayFilesTemp = os.path.join(fileDir, f'backend/accounting_integration/data/temp/{self._codiEmp}')
         if os.path.exists(self._wayFilesTemp) is False:
             os.makedirs(self._wayFilesTemp)
@@ -133,10 +132,7 @@ class ProcessIntegration(object):
         hasOwnAccountPlan = funcoesUteis.returnDataFieldInDict(self._settings, ["financy", "hasOwnAccountPlan"])
         if hasOwnAccountPlan is False or hasOwnAccountPlan == "":
             print(f' - Etapa {sequentialStep}: Buscando a conta do fornecedor/despesa dentro do sistema.')
-            providers = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/fornecedores/{self._codiEmp}-effornece.json'))
-            entryNotes = [] #leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas/{self._codiEmp}-efentradas.json'))
-            installmentsEntryNote = leArquivos.readJson(os.path.join(fileDir, f'backend/extract/data/entradas_parcelas/{self._codiEmp}-efentradaspar.json'))
-            comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(self._codiEmp, self._finalDate, providers, entryNotes, installmentsEntryNote, paymentsWithFilter)
+            comparePaymentsFinalWithDataBase = ComparePaymentsFinalWithDataBase(self._codiEmp, self._finalDate, paymentsWithFilter)
             paymentsFinal = comparePaymentsFinalWithDataBase.process()
             sequentialStep += 1
         else:

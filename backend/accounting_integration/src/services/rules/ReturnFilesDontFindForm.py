@@ -11,10 +11,8 @@ import shutil
 from tools.leArquivos import readJson
 import tools.funcoesUteis as funcoesUteis
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayToSaveFiles.close()
-
+envData = readJson(os.path.join(fileDir, 'backend/env.json'))
+folderToSaveFilesAccountIntegration = envData['folderToSaveFilesAccountIntegration']
 
 class ReturnFilesDontFindForm(object):
 
@@ -23,7 +21,7 @@ class ReturnFilesDontFindForm(object):
         self._wayTemp = wayTemp
         self._wayTempFilesRead = os.path.join(wayTemp, 'FilesReads.json')
         self._filesRead = readJson(self._wayTempFilesRead)
-        self._wayBaseToSaveFiles = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados/docs_nao_lidos')
+        self._wayBaseToSaveFiles = os.path.join(folderToSaveFilesAccountIntegration, f'{self._codiEmp}/arquivos_processados/docs_nao_lidos')
         if os.path.exists(self._wayBaseToSaveFiles) is False:
             os.makedirs(self._wayBaseToSaveFiles)
 

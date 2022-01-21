@@ -8,23 +8,21 @@ fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
 sys.path.append(os.path.join(fileDir, 'backend/accounting_integration/src'))
 
-import json
+import tools.leArquivos as leArquivos
 from services.rules.ReadExcelToUpdateOrExportData import ReadExcelToUpdateOrExportData
 from services.rules.GenerateExcel import GenerateExcel
 from services.rules.GenerateExportDominio import GenerateExportDominio
 from services.rules.CompareWithSettings import CompareWithSettings
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayToSaveFiles.close()
+envData = leArquivos.readJson(os.path.join(fileDir, 'backend/env.json'))
+folderToSaveFilesAccountIntegration = envData['folderToSaveFilesAccountIntegration']
 
 
 class UpdateOrExportData(object):
     def __init__(self):
         self._UpdateOrExport = int(input(f'\n - Para exportar os dados no Leiaute Domínio digite 1, já se quiser atualizar a planilha Financeiro e Extratos pra conferência digite 2: '))
         self._codiEmp = input(f'\n - Digite o código da empresa dentro da Domínio: ')
-        # self._codiEmp = 1428
-        self._wayFilesToRead = os.path.join(wayDefault['WayToSaveFilesOriginals'], f'{self._codiEmp}/arquivos_processados')
+        self._wayFilesToRead = os.path.join(folderToSaveFilesAccountIntegration, f'{self._codiEmp}/arquivos_processados')
 
     def process(self):
         for root, dirs, files in os.walk(self._wayFilesToRead):

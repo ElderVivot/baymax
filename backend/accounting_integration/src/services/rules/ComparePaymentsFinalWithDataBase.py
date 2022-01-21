@@ -2,6 +2,7 @@
 
 import sys
 import os
+import json
 
 absPath = os.path.dirname(os.path.abspath(__file__))
 fileDir = absPath[:absPath.find('backend')]
@@ -14,16 +15,17 @@ from datetime import datetime, timedelta
 from tools.leArquivos import leXls_Xlsx, leTxt, readJson
 import tools.funcoesUteis as funcoesUteis
 
+envData = readJson(os.path.join(fileDir, 'backend/env.json'))
+folderExtractDatabaseAccount = envData['folderExtractDatabaseAccount']
 
 class ComparePaymentsFinalWithDataBase(object):
     
-    def __init__(self, codiEmp, finalDate, providers=[], entryNotes=[], installments=[], payments=[]):
-        self._providers = providers
-        self._entryNotes = entryNotes
-        self._payments = payments
-        self._installments = installments
+    def __init__(self, codiEmp, finalDate, payments=[]):
         self._codiEmp = codiEmp
         self._finalDate = funcoesUteis.retornaCampoComoData(finalDate)
+        self._payments = payments
+        self._providers = readJson(os.path.join(fileDir, f'{folderExtractDatabaseAccount}/fornecedores/{self._codiEmp}-effornece.json'))
+        self._installments = readJson(os.path.join(fileDir, f'{folderExtractDatabaseAccount}/entradas_parcelas/{self._codiEmp}-efentradaspar.json'))
         self._paymentsFinal = []
         self._listWordsNotConsiderInTheName = ['LTDA', 'LTDA.', '-', 'ME', 'ME.', 'EPP', 'EPP.', 'EIRELI', 'EIRELI.', \
             'MEI', 'MEI.', 'EI', 'EI.', 'S.A.', 'SA', 'S.A', 'S/A']
@@ -179,7 +181,7 @@ class ComparePaymentsFinalWithDataBase(object):
         if note == 0 and ddoc_ent is None and dent_ent is None and cgceProvider is None and nameProvider is None:
             return None
 
-        wayFiles = os.path.join(fileDir, 'backend/extract/data/entradas/', str(self._codiEmp))
+        wayFiles = os.path.join(fileDir, f'{folderExtractDatabaseAccount}/entradas/', str(self._codiEmp))
 
         for root, dirs, files in os.walk(wayFiles):
             for file in sorted(files, reverse=True):

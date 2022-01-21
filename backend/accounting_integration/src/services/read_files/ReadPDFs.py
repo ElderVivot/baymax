@@ -10,10 +10,6 @@ import shutil
 from tools.leArquivos import readJson, splitPdfOnePageEach, PDFToText
 import tools.funcoesUteis as funcoesUteis
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/accounting_integration/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayToSaveFiles.close()
-
 
 class ReadPDFs(object):
 
