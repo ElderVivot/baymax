@@ -210,4 +210,4 @@ typings/
 /.vscode/
 ip.json
 teste.js
-.env
+env.json
