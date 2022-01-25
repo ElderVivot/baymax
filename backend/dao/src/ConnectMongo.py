@@ -4,13 +4,13 @@ import os
 import sys
 
 absPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(absPath[:absPath.find('backend')])
+fileDir = absPath[:absPath.find('backend')]
+sys.path.append(os.path.join(fileDir, 'backend'))
 
 from backend.tools.leArquivos import readJson
 
-host = readJson(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'env.json'))
-host = host['host']
-
+envData = readJson(os.path.join(fileDir, 'backend/env.json'))
+hostDatabase = envData['hostDatabase']
 
 class ConnectMongo(object):
 
@@ -22,7 +22,7 @@ class ConnectMongo(object):
     def getConnetion(self):
         if self._connection is None:
             try:
-                self._connection = MongoClient(f'mongodb://{host}:27017/') # conecta num cliente do MongoDB rodando na sua máquina
+                self._connection = MongoClient(f'mongodb://{hostDatabase}:27017/') # conecta num cliente do MongoDB rodando na sua máquina
                 self._selectDB = self._connection[self._nameDB]
             except Exception as e:
                 print(f"** Não foi possível realizar a conexão. O erro é: {e}")
