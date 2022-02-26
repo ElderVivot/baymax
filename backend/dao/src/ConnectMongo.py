@@ -7,7 +7,7 @@ absPath = os.path.dirname(os.path.abspath(__file__))
 fileDir = absPath[:absPath.find('backend')]
 sys.path.append(os.path.join(fileDir, 'backend'))
 
-from backend.tools.leArquivos import readJson
+from tools.leArquivos import readJson
 
 envData = readJson(os.path.join(fileDir, 'backend/env.json'))
 hostDatabase = envData['hostDatabase']

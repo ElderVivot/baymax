@@ -11,24 +11,24 @@ import pandas as pd
 import pyodbc
 import json
 from db.ConexaoBanco import DB
+from tools.leArquivos import readJson
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayToSaveFiles.close()
+envData = readJson(os.path.join(fileDir, 'backend/env.json'))
+wayDefaultToSave = envData['folderToSaveFilesData']
 
 class extractEffornece():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
         self._cursor = None
-        self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
+        self._wayCompanies = os.path.join(wayDefaultToSave, 'empresas.json') 
 
     def exportData(self, filterCompanie=0):
         with open(self._wayCompanies) as companies:
             data = json.load(companies)
             try:
                 for companie in data:
-                    self._wayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'fornecedores')
+                    self._wayToSave = os.path.join(wayDefaultToSave, 'fornecedores')
                     if os.path.exists(self._wayToSave) is False:
                         os.makedirs(self._wayToSave)
                     self._wayToSave = os.path.join(self._wayToSave, f"{companie['codi_emp']}-effornece.json")

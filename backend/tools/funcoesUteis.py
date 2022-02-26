@@ -439,6 +439,8 @@ def returnBankForNumber(numberBank):
         nameBank = 'BRB'
     elif numberBank == 82:
         nameBank = 'TOPAZIO'
+    elif numberBank == 260:
+        nameBank = 'NUBANK'
     else:
         nameBank = str(numberBankOriginal)
 

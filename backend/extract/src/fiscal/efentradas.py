@@ -16,18 +16,17 @@ from db.ConexaoBanco import DB
 from tools.leArquivos import readJson
 import functions.extractFunctions as extractFunctions
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayToSaveFiles.close()
+envData = readJson(os.path.join(fileDir, 'backend/env.json'))
+wayDefaultToSave = envData['folderToSaveFilesData']
 
 class extractEfentradas():
     def __init__(self):
         self._DB = DB()
         self._connection = self._DB.getConnection()
         self._cursor = None
-        self._wayCompanies = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'empresas.json') 
+        self._wayCompanies = os.path.join(wayDefaultToSave, 'empresas.json') 
         self._dataCompanies = readJson(self._wayCompanies)
-        self._baseWayToSave = os.path.join(wayDefault['wayDefaultToSaveFiles'], 'entradas')
+        self._baseWayToSave = os.path.join(wayDefaultToSave, 'entradas')
         if os.path.exists(self._baseWayToSave) is False:
             os.makedirs(self._baseWayToSave)
         self._today = datetime.date.today()

@@ -14,13 +14,11 @@ import json
 from datetime import datetime
 from db.ConexaoBanco import DB
 from dao.src.ConnectMongo import ConnectMongo
-from tools.leArquivos import readSql
+from tools.leArquivos import readSql, readJson
 # from functions.usefulFunctions import parseTypeFiedValueCorrect
 
-wayToSaveFiles = open(os.path.join(fileDir, 'backend/extract/src/WayToSaveFiles.json') )
-wayDefault = json.load(wayToSaveFiles)
-wayDefaultToSave = wayDefault['wayDefaultToSaveFiles']
-wayToSaveFiles.close()
+envData = readJson(os.path.join(fileDir, 'backend/env.json'))
+wayDefaultToSave = envData['folderToSaveFilesData']
 if os.path.exists(wayDefaultToSave) is False:
     os.makedirs(wayDefaultToSave)
 
