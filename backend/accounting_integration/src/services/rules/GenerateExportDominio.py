@@ -63,11 +63,11 @@ class GenerateExportDominio(object):
         else:
             return "E"
 
-    def header6000(self):
+    def header6000(self, isExtract = False):
         idRecord = '6000'
-        typeEntry = 'V' # vários débitos pra vários créditos
+        typeEntry = 'X' if isExtract is True else 'V' # X = um débito pra um crédito | V = vários débitos pra vários créditos
         codeDefaultEntry = ''
-        localizador = ''
+        localizador = 'INTEGRACAO'
         rttFcont = ''
 
         return f"{idRecord}|{typeEntry}|{codeDefaultEntry}|{localizador}|{rttFcont}|\n"
@@ -82,10 +82,8 @@ class GenerateExportDominio(object):
 
         if paymentOrExtract == "E":
             exportDate = funcoesUteis.transformaCampoDataParaFormatoBrasileiro(funcoesUteis.analyzeIfFieldIsValid(data, "dateTransaction", None))
-            if typeData == 'D':
-                accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeDebit", "")
-            else:
-                accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeCredit", "")
+            accountCodeDebit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeDebit", "")
+            accountCodeCredit = funcoesUteis.analyzeIfFieldIsValid(data, "accountCodeCredit", "")
             amount = funcoesUteis.analyzeIfFieldIsValid(data, "amount", 0.0)
             amountFloat = amount
             amount = str(amount).replace('.', ',')
@@ -193,9 +191,8 @@ class GenerateExportDominio(object):
             operation = funcoesUteis.analyzeIfFieldIsValid(extract, "operation")            
             
             if accountCodeDebit > 0 and accountCodeCredit > 0:
-                self._file.write(self.header6000())
+                self._file.write(self.header6000(True))
                 self._file.write(self.entry6100(extract, 'D'))
-                self._file.write(self.entry6100(extract, 'C'))
                 
     def exportPayments(self):
 

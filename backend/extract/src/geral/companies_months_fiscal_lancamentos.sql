@@ -1,5 +1,5 @@
 SELECT CASE WHEN emp.tins_emp NOT IN (1) THEN emp.cgce_emp ELSE SUBSTR(emp.cgce_emp, 1, 8) END cgce_matriz,
-       dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
+       dini = DATE('2021-01-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
        mes = month(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        ano = year(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        comp = YMD(ano, mes, 1),
@@ -20,7 +20,7 @@ GROUP BY cgce_matriz, dini, dfin, mes, ano, comp, tipo
 UNION ALL
 
 SELECT CASE WHEN emp.tins_emp NOT IN (1) THEN emp.cgce_emp ELSE SUBSTR(emp.cgce_emp, 1, 8) END cgce_matriz,
-       dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
+       dini = DATE('2021-01-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
        mes = month(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        ano = year(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        comp = YMD(ano, mes, 1),
@@ -41,7 +41,7 @@ GROUP BY cgce_matriz, dini, dfin, mes, ano, comp, tipo
 UNION ALL
 
 SELECT CASE WHEN emp.tins_emp NOT IN (1) THEN emp.cgce_emp ELSE SUBSTR(emp.cgce_emp, 1, 8) END cgce_matriz,
-       dini = DATE('2019-11-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
+       dini = DATE('2021-01-01'), dfin = YMD( YEAR(today()), MONTH(today())+1, 0 ),
        mes = month(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        ano = year(YMD( Year(months(dini, linha.row_num -1 )), month(months(dini, linha.row_num -1 )), 1 ) ),
        comp = YMD(ano, mes, 1),
