@@ -31,6 +31,9 @@ class SanitizeOFX(object):
 
             with open(wayFileToSave, 'w') as txtfile:
                 for row in dataFile:
+                    row = str(row)
+                    # ignore rows that no <> tags of ofx
+                    if row.count('<') == 0 and row.count('>') == 0: continue
                     txtfile.write(f'{row}\n')
         except Exception as e:
             print(file, e)

@@ -67,6 +67,7 @@ class GenerateExcel(object):
             'select_unlocked_cells': True,
         })
         sheet.freeze_panes(1, 0)
+        sheet.autofilter(f'A1:W{len(extracts)+1}')
 
         sheet.set_column(7,7,options={'hidden':True})
         sheet.set_column(9,10,options={'hidden':True})
@@ -159,23 +160,24 @@ class GenerateExcel(object):
     def sheetPayments(self, payments):
         sheet = self._workbook.add_worksheet('Pagamentos')
         sheet.freeze_panes(1, 0)
-        sheet.protect('integracao*@', {
-            'objects':               True,
-            'scenarios':             True,
-            'format_cells':          True,
-            'format_columns':        True,
-            'format_rows':           True,
-            'insert_columns':        False,
-            'insert_rows':           True,
-            'insert_hyperlinks':     True,
-            'delete_columns':        False,
-            'delete_rows':           True,
-            'select_locked_cells':   True,
-            'sort':                  False,
-            'autofilter':            True,
-            'pivot_tables':          False,
-            'select_unlocked_cells': True,
-        })
+        sheet.autofilter(f'A1:AC{len(payments)+1}')
+        # sheet.protect('integracao*@', {
+        #     'objects':               True,
+        #     'scenarios':             True,
+        #     'format_cells':          True,
+        #     'format_columns':        True,
+        #     'format_rows':           True,
+        #     'insert_columns':        False,
+        #     'insert_rows':           True,
+        #     'insert_hyperlinks':     True,
+        #     'delete_columns':        False,
+        #     'delete_rows':           True,
+        #     'select_locked_cells':   True,
+        #     'sort':                  True,
+        #     'autofilter':            True,
+        #     'pivot_tables':          False,
+        #     'select_unlocked_cells': True,
+        # })
 
         sheet.set_column(2,2,options={'hidden':True}) # nf da dominio
         sheet.set_column(3,3,options={'hidden':True}) # parcela

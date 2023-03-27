@@ -127,7 +127,7 @@ class ExtractsOFX(object):
         return funcoesUteis.removeAnArrayFromWithinAnother(self._extracts)
 
 if __name__ == "__main__":
-    codi_emp = str(1617)
+    codi_emp = str(3)
 
     # extractOFX = SanitizeOFX(codi_emp, f"C:/programming/baymax/backend/accounting_integration/data/temp/{codi_emp}", f"C:/integracao_contabil/{codi_emp}/arquivos_originais")
     # extractOFX.processAll()
